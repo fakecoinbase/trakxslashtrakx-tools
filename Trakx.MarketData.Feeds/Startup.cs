@@ -6,10 +6,16 @@ using Microsoft.AspNetCore.Hosting;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
+
+using Newtonsoft.Json;
+using Newtonsoft.Json.Serialization;
+
 using Swashbuckle.AspNetCore.Swagger;
 
 using Trakx.MarketData.Feeds.Common;
 using Trakx.MarketData.Feeds.Common.ApiClients;
+using Trakx.MarketData.Feeds.Common.Converters;
+using Trakx.MarketData.Feeds.Models.CoinMarketCap;
 
 namespace Trakx.MarketData.Feeds
 {
@@ -27,7 +33,8 @@ namespace Trakx.MarketData.Feeds
         // This method gets called by the runtime. Use this method to add services to the container.
         public void ConfigureServices(IServiceCollection services)
         {
-            services.AddMvc().SetCompatibilityVersion(CompatibilityVersion.Version_2_1);
+            services.AddMvc()
+                .SetCompatibilityVersion(CompatibilityVersion.Version_2_1);
             services.AddSwaggerGen(c =>
                 {
                     c.SwaggerDoc(Version, new Info { Title = "Trakx MarketData Api", Version = Version });

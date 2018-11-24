@@ -26,6 +26,9 @@
     <None Update="TestData\coinmarketcap-list-all-crytpos-latest.json">
       <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
     </None>
+    <None Update="TestData\coinmarketcap-listing-latest.json">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </None>
     <None Update="TestData\cryptocompare-btc.eur-usd.json">
       <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
     </None>

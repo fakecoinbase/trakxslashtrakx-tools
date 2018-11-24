@@ -2,7 +2,7 @@
 {
     public interface ICoinsAndMarketCapListing
     {
-        ICoinAndMarketCap[] CoinsAndMarketCaps { get; set; }
-        IStatus Status { get; set; }
+        ICoinAndMarketCap[] CoinsAndMarketCaps { get; }
+        IStatus Status { get; }
     }
 }

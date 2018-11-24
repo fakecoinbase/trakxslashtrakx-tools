@@ -25,4 +25,17 @@ namespace Trakx.MarketData.Feeds.Tests.TestData
 
         }
     }
+
+    internal class CoinMarketCap
+    {
+        public static Lazy<string> CoinListAsString;
+        public static Func<Stream> CoinListAsStream;
+
+        static CoinMarketCap()
+        {
+            var coinListJsonFile = Path.Combine(Environment.CurrentDirectory, TestDataProvider.Testdata, "coinmarketcap-listing-latest.json");
+            CoinListAsString = new Lazy<string>(() => File.ReadAllText(coinListJsonFile), LazyThreadSafetyMode.PublicationOnly);
+            CoinListAsStream = () => File.OpenRead(coinListJsonFile);
+        }
+    }
 }

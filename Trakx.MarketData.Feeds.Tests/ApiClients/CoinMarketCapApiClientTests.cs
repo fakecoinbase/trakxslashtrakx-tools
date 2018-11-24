@@ -1,10 +1,16 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.Linq;
+using System.Net;
 using System.Net.Http;
 using System.Text;
 using System.Threading.Tasks;
 
+using FluentAssertions;
+
+using Trakx.MarketData.Feeds.ApiClients;
 using Trakx.MarketData.Feeds.Common.ApiClients;
+using Trakx.MarketData.Feeds.Tests.Utils;
 
 using Xunit;
 using Xunit.Abstractions;
@@ -16,28 +22,48 @@ namespace Trakx.MarketData.Feeds.Tests.ApiClients
     public class CoinMarketCapApiClientTests : IDisposable
     {
         private readonly ITestOutputHelper _output;
-        private HttpClient _apiClient;
+        private CoinMarketCapApiClient _apiClient;
+        private HttpClient _httpClient;
 
         public CoinMarketCapApiClientTests(ITestOutputHelper output)
         {
             _output = output;
-            _apiClient = new HttpClient { BaseAddress = new Uri(Constants.SandboxEndpoint) };
-            _apiClient.DefaultRequestHeaders.Add(Constants.ApiKeyHeader, Constants.ApiKeySandbox);
+            _httpClient = new HttpClient { BaseAddress = new Uri(Constants.SandboxEndpoint) };
+            _httpClient.DefaultRequestHeaders.Add(Constants.ApiKeyHeader, Constants.ApiKeySandbox);
         }
 
         [Fact(Skip = "just a one off, but keep the code to do queries easily")]
         public async Task GetSampleApiResponse()
         {
-            var response = await _apiClient.GetAsync(Constants.LatestMarketCap);
+            var response = await _httpClient.GetAsync(Constants.LatestMarketCap);
             _output.WriteLine(response.ToString());
             var contentAsString = await response.Content.ReadAsStringAsync();
             _output.WriteLine(contentAsString);
         }
 
+        [Fact]
+        public async Task ApiClient_Should_Deserialise_ICoinsAndMarketCapListing()
+        {
+            _apiClient = new CoinMarketCapApiClient(HttpClientFactory.GetHttpClientFactory(
+                "http://hello.com",
+                () => {
+                    var reponse = new HttpResponseMessage(HttpStatusCode.OK);
+                    reponse.Content = new StreamContent(TestData.CoinMarketCap.CoinListAsStream());
+                    return reponse;
+                }));
+
+            var listing = await _apiClient.GetCoinsAndMarketCapListings();
+            listing.CoinsAndMarketCaps.Length.Should().Be(100);
+            listing.Status.Elapsed.Should().Be(12);
+            listing.CoinsAndMarketCaps.First().Name.Should().Be("Bitcoin");
+            listing.CoinsAndMarketCaps.First().Quote.Should().ContainKey("USD");
+            listing.CoinsAndMarketCaps.First().Quote["USD"].MarketCap.Should().Be(111774707273.6615);
+        }
+
         /// <inheritdoc />
         public void Dispose()
         {
-            _apiClient?.Dispose();
+            _httpClient?.Dispose();
         }
     }
 }

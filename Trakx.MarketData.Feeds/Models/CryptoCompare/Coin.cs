@@ -12,7 +12,24 @@ namespace Trakx.MarketData.Feeds.Models.CryptoCompare
 {
     class Coin : ICoin
     {
-        public Coin(uint id, string url, string imageUrl, string name, string symbol, string coinName, string fullName, string algorithm, string proofType, string fullyPremined, decimal? totalCoinSupply, uint? builtOn, string smartContractAddress, string preMinedValue, string totalCoinsFreeFloat, uint sortOrder, bool sponsored)
+        public Coin(
+            uint id,
+            string url,
+            string imageUrl,
+            string name,
+            string symbol,
+            string coinName,
+            string fullName,
+            string algorithm,
+            string proofType,
+            string fullyPremined,
+            decimal? totalCoinSupply,
+            uint? builtOn,
+            string smartContractAddress,
+            string preMinedValue,
+            string totalCoinsFreeFloat,
+            uint sortOrder,
+            bool sponsored)
         {
             Id = id;
             Url = url;

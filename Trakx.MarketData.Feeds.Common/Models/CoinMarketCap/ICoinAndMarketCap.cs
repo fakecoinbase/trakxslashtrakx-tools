@@ -5,17 +5,17 @@ namespace Trakx.MarketData.Feeds.Common.Models.CoinMarketCap
 {
     public interface ICoinAndMarketCap
     {
-        long Id { get; set; }
-        string Name { get; set; }
-        string Symbol { get; set; }
-        string Slug { get; set; }
-        double CirculatingSupply { get; set; }
-        double TotalSupply { get; set; }
-        long? MaxSupply { get; set; }
-        DateTimeOffset DateAdded { get; set; }
-        long NumMarketPairs { get; set; }
-        long CmcRank { get; set; }
-        DateTimeOffset LastUpdated { get; set; }
-        Dictionary<string, IQuote> Quote { get; set; }
+        long Id { get; }
+        string Name { get; }
+        string Symbol { get; }
+        string Slug { get; }
+        double CirculatingSupply { get; }
+        double TotalSupply { get; }
+        long? MaxSupply { get; }
+        DateTimeOffset DateAdded { get; }
+        long NumMarketPairs { get; }
+        long CmcRank { get; }
+        DateTimeOffset LastUpdated { get; }
+        IDictionary<string, IQuote> Quote { get; }
     }
 }
