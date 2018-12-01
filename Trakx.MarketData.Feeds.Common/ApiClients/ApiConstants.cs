@@ -16,5 +16,14 @@ namespace Trakx.MarketData.Feeds.Common.ApiClients
             public const string LatestMarketCap = "v1/cryptocurrency/listings/latest";
         }
 
+        public static class CryptoCompare
+        {
+            public const string HttpClientName = "CryptoCompare";
+            public const string SandboxEndpoint = @"https://min-api.cryptocompare.com/";
+            public const string ApiKeyParam = "api_key";
+            public const string ApiKey = "5f95e17ff4599da5bc6f4b309c2e0b27d3a73ddfaba843a63be66be7ebc3e79e";
+            public const string AllCoins = "data/all/coinlist";
+        }
+
     }
 }

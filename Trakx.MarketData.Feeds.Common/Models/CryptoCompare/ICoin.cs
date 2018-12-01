@@ -1,16 +1,8 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Text;
-
-using Newtonsoft.Json;
-
-using Trakx.MarketData.Feeds.Common.Converters;
-
-namespace Trakx.MarketData.Feeds.Common.Models.CryptoCompare
+﻿namespace Trakx.MarketData.Feeds.Common.Models.CryptoCompare
 {
     public interface ICoin
     {
-        uint Id { get; }
+        long Id { get; }
         string Url { get; }
         string ImageUrl { get; }
         string Name { get; }
@@ -19,15 +11,14 @@ namespace Trakx.MarketData.Feeds.Common.Models.CryptoCompare
         string FullName { get; }
         string Algorithm { get; }
         string ProofType { get; }
-        string FullyPremined { get; }
-        [JsonConverter(typeof(DecimalWithNaConverter))]
-        decimal? TotalCoinSupply { get; }
-        [JsonConverter(typeof(Uint32WithNaConverter))]
-        uint? BuiltOn { get; }
+        long FullyPremined { get; }
+        string TotalCoinSupply { get; }
+        long? BuiltOn { get; }
         string SmartContractAddress { get; }
-        string PreMinedValue { get; }
-        string TotalCoinsFreeFloat { get; }
-        uint SortOrder { get; }
+        decimal? PreMinedValue { get; }
+        ulong? TotalCoinsFreeFloat { get; }
+        long SortOrder { get; }
         bool Sponsored { get; }
+        bool IsTrading { get; }
     }
 }

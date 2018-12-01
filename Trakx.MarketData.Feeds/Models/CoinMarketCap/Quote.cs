@@ -9,12 +9,12 @@ namespace Trakx.MarketData.Feeds.Models.CoinMarketCap
     public partial class Quote : IQuote
     {
         public Quote(
-            double price,
+            decimal price,
             double volume24H,
             double percentChange1H,
             double percentChange24H,
             double percentChange7D,
-            double marketCap,
+            decimal marketCap,
             DateTimeOffset lastUpdated)
         {
             Price = price;
@@ -27,7 +27,7 @@ namespace Trakx.MarketData.Feeds.Models.CoinMarketCap
         }
 
         [JsonProperty("price")]
-        public double Price { get; }
+        public decimal Price { get; }
 
         [JsonProperty("volume_24h")]
         public double Volume24H { get; }
@@ -42,7 +42,7 @@ namespace Trakx.MarketData.Feeds.Models.CoinMarketCap
         public double PercentChange7D { get; }
 
         [JsonProperty("market_cap")]
-        public double MarketCap { get; }
+        public decimal MarketCap { get; }
 
         [JsonProperty("last_updated")]
         public DateTimeOffset LastUpdated { get; }

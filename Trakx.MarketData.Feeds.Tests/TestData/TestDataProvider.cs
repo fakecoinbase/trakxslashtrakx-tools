@@ -16,13 +16,14 @@ namespace Trakx.MarketData.Feeds.Tests.TestData
 
     internal class CryptoCompare
     {
-        public Lazy<string> CoinListAsString;
+        public static Lazy<string> CoinListAsString;
+        public static Func<Stream> CoinListAsStream;
 
-        public CryptoCompare()
+        static CryptoCompare()
         {
             var coinListJsonFile = Path.Combine(Environment.CurrentDirectory, TestDataProvider.Testdata, "cryptocompare-coinlist.json");
             CoinListAsString = new Lazy<string>(() => File.ReadAllText(coinListJsonFile), LazyThreadSafetyMode.PublicationOnly);
-
+            CoinListAsStream = () => File.OpenRead(coinListJsonFile);
         }
     }
 

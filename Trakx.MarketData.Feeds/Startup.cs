@@ -6,15 +6,18 @@ using Microsoft.AspNetCore.Hosting;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
+using Microsoft.Extensions.DependencyInjection.Extensions;
 
 using Newtonsoft.Json;
 using Newtonsoft.Json.Serialization;
 
 using Swashbuckle.AspNetCore.Swagger;
 
+using Trakx.MarketData.Feeds.ApiClients;
 using Trakx.MarketData.Feeds.Common;
 using Trakx.MarketData.Feeds.Common.ApiClients;
 using Trakx.MarketData.Feeds.Common.Converters;
+using Trakx.MarketData.Feeds.Common.Models.CryptoCompare;
 using Trakx.MarketData.Feeds.Models.CoinMarketCap;
 
 namespace Trakx.MarketData.Feeds
@@ -39,13 +42,26 @@ namespace Trakx.MarketData.Feeds
                 {
                     c.SwaggerDoc(Version, new Info { Title = "Trakx MarketData Api", Version = Version });
                 });
+
+            services.AddSingleton<ICryptoCompareApiClient, CryptoCompareApiClient>();
+            services.AddSingleton<ICoinMarketCapApiClient, CoinMarketCapApiClient>();
+            services.AddSingleton<ICoinSymbolMapper, CoinSymbolMapper>();
+            
+            services.AddSingleton<ICoinMarketCapApiClient, CoinMarketCapApiClient>();
             services.AddSingleton<ITrackerComponentProvider, TrackerComponentProvider>();
+
             services.AddHttpClient(
                 ApiConstants.CoinMarketCap.HttpClientName,
                 c =>
                     {
                         c.BaseAddress = new Uri(ApiConstants.CoinMarketCap.SandboxEndpoint);
                         c.DefaultRequestHeaders.Add(ApiConstants.CoinMarketCap.ApiKeyHeader, ApiConstants.CoinMarketCap.ApiKeySandbox);
+                    });
+            services.AddHttpClient(
+                ApiConstants.CryptoCompare.HttpClientName,
+                c =>
+                    {
+                        c.BaseAddress = new Uri(ApiConstants.CryptoCompare.SandboxEndpoint);
                     });
         }
 

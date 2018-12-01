@@ -8,7 +8,7 @@ namespace Trakx.MarketData.Feeds.Common.Models.CoinMarketCap
         long Id { get; }
         string Name { get; }
         string Symbol { get; }
-        string Slug { get; }
+        string Slug { get; } 
         double CirculatingSupply { get; }
         double TotalSupply { get; }
         long? MaxSupply { get; }

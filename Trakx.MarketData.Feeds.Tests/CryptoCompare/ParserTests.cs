@@ -14,23 +14,22 @@ namespace Trakx.MarketData.Feeds.Tests.CryptoCompare
 
         public ParserTests()
         {
-            _dataProvider = new TestData.CryptoCompare();
+           
         }
 
         [Fact]
         public void ReadCoinList_Should_Parse_Response_Content()
         {
-            var coinlistAsString = _dataProvider.CoinListAsString.Value;
-            
-            var parser = new Parser();
-            var coinBySymbol = parser.ReadCoinsBySymbol(coinlistAsString);
+            var coinlistAsString = TestData.CryptoCompare.CoinListAsString.Value;
 
-            coinBySymbol.Should().HaveCount(3233);
-            coinBySymbol.Keys.Should().NotContainNulls();
-            coinBySymbol.Values.Should().NotContainNulls();
+            var coinBySymbol = CryptoCompareResponse.FromJson(coinlistAsString);
 
-            coinBySymbol.ContainsKey("BTC").Should().BeTrue();
-            var coin = coinBySymbol["BTC"];
+            coinBySymbol.Data.Should().HaveCount(3233);
+            coinBySymbol.Data.Keys.Should().NotContainNulls();
+            coinBySymbol.Data.Values.Should().NotContainNulls();
+
+            coinBySymbol.Data.ContainsKey("BTC").Should().BeTrue();
+            var coin = coinBySymbol.Data["BTC"];
             coin.Id.Should().Be(1182);
             coin.Url.Should().Be(@"/coins/btc/overview");
             coin.ImageUrl.Should().Be(@"/media/19633/btc.png");
@@ -40,12 +39,12 @@ namespace Trakx.MarketData.Feeds.Tests.CryptoCompare
             coin.FullName.Should().Be("Bitcoin (BTC)");
             coin.Algorithm.Should().Be("SHA256");
             coin.ProofType.Should().Be("PoW");
-            coin.FullyPremined.Should().Be("0");
-            coin.TotalCoinSupply.Should().Be(21000000);
+            //coin.FullyPremined.Should().Be("0");
+            //coin.TotalCoinSupply.Should().Be(21000000);
             coin.BuiltOn.Should().BeNull();
             coin.SmartContractAddress.Should().Be("N/A");
-            coin.PreMinedValue.Should().Be("N/A");
-            coin.TotalCoinsFreeFloat.Should().Be("N/A");
+            coin.PreMinedValue.Should().Be(null);
+            coin.TotalCoinsFreeFloat.Should().Be(null);
             coin.SortOrder.Should().Be(1);
             coin.Sponsored.Should().BeFalse();
         }
