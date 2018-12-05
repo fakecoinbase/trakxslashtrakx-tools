@@ -62,6 +62,7 @@ namespace Trakx.MarketData.Feeds
                 c =>
                     {
                         c.BaseAddress = new Uri(ApiConstants.CryptoCompare.SandboxEndpoint);
+                        c.DefaultRequestHeaders.Add(ApiConstants.CryptoCompare.ApiKeyHeader, ApiConstants.CryptoCompare.ApiKeyHeaderValue);
                     });
         }
 

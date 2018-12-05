@@ -20,7 +20,7 @@ namespace Trakx.MarketData.Feeds.ApiClients
         {
             using (var client = _clientFactory.CreateClient(ApiConstants.CoinMarketCap.HttpClientName))
             {
-                var response = await client.GetAsync(ApiConstants.CoinMarketCap.LatestMarketCap);
+                var response = await client.GetAsync(ApiConstants.CoinMarketCap.MarketCapLatest);
                 var contentAsString = await response.Content.ReadAsStringAsync();
                 var deserialised = CoinsAndMarketCapListing.FromJson(contentAsString);
                 return deserialised;
