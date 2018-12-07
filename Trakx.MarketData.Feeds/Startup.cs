@@ -1,6 +1,8 @@
 ﻿using System;
 using System.Net.Http.Headers;
 
+using CryptoCompare;
+
 using Microsoft.AspNetCore.Builder;
 using Microsoft.AspNetCore.Hosting;
 using Microsoft.AspNetCore.Mvc;
@@ -18,7 +20,6 @@ using Trakx.MarketData.Feeds.Common;
 using Trakx.MarketData.Feeds.Common.ApiClients;
 using Trakx.MarketData.Feeds.Common.Converters;
 using Trakx.MarketData.Feeds.Common.Models.CryptoCompare;
-using Trakx.MarketData.Feeds.Models.CoinMarketCap;
 
 namespace Trakx.MarketData.Feeds
 {
@@ -43,12 +44,8 @@ namespace Trakx.MarketData.Feeds
                     c.SwaggerDoc(Version, new Info { Title = "Trakx MarketData Api", Version = Version });
                 });
 
-            services.AddSingleton<ICryptoCompareApiClient, CryptoCompareApiClient>();
-            services.AddSingleton<ICoinMarketCapApiClient, CoinMarketCapApiClient>();
-            services.AddSingleton<ICoinSymbolMapper, CoinSymbolMapper>();
-            
-            services.AddSingleton<ICoinMarketCapApiClient, CoinMarketCapApiClient>();
             services.AddSingleton<ITrackerComponentProvider, TrackerComponentProvider>();
+            services.AddSingleton<ICryptoCompareClient, CryptoCompareClient>();
 
             services.AddHttpClient(
                 ApiConstants.CoinMarketCap.HttpClientName,

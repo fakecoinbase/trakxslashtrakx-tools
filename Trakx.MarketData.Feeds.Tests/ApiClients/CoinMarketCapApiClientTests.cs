@@ -9,7 +9,6 @@ using System.Threading.Tasks;
 using FluentAssertions;
 
 using Trakx.MarketData.Feeds.ApiClients;
-using Trakx.MarketData.Feeds.Common.ApiClients;
 using Trakx.MarketData.Feeds.Tests.Utils;
 
 using Xunit;
@@ -36,7 +35,7 @@ namespace Trakx.MarketData.Feeds.Tests.ApiClients
             _httpClient = new HttpClient { BaseAddress = new Uri(Constants.SandboxEndpoint) };
             _httpClient.DefaultRequestHeaders.Add(Constants.ApiKeyHeader, Constants.ApiKeySandbox);
 
-            var response = await _httpClient.GetAsync(Constants.LatestMarketCap);
+            var response = await _httpClient.GetAsync(Constants.MarketCapLatest);
             _output.WriteLine(response.ToString());
             var contentAsString = await response.Content.ReadAsStringAsync();
             _output.WriteLine(contentAsString);
@@ -45,7 +44,7 @@ namespace Trakx.MarketData.Feeds.Tests.ApiClients
         [Fact]
         public async Task ApiClient_Should_Deserialise_ICoinsAndMarketCapListing()
         {
-            _apiClient = new CoinMarketCapApiClient(HttpClientFactory.GetHttpClientFactory(
+            _apiClient = new CoinMarketCapApiClient(Utils.HttpClientFactory.GetHttpClientFactory(
                 "http://hello.com",
                 () => {
                     var reponse = new HttpResponseMessage(HttpStatusCode.OK);

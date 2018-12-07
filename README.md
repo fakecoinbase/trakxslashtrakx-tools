@@ -10,24 +10,24 @@ A web service providing historical and realtime market data for our trackers, th
 
 This tool serves market data for the following trackers
 
-- Levered BTC x2
-- Levered BTC x3
-- Inverse BTC
-- Inverse BTC Levered x2
-- Inverse BTC Levered x3
-- Levered ETH x2
-- Levered ETH x3
-- Inverse ETH
-- Inverse ETH Levered x2
-- Inverse ETH Levered x3
-- Long Top 5 Market cap
-- Long Levered Top 5 Market cap x2
-- Inverse Top 5 Market cap
-- Inverse Levered Top 5 Market x2
-- Long Top 20 Market cap
-- Long Levered Top 20 Market cap x2
-- Inverse Top 20 Market Cap
-- Inverse Levered Top 20 Market x2
+- L2BTC - Long BTC Levered x2
+- L3BTC - Long BTC Levered x3
+- I1BTC - Inverse BTC
+- I2BTC - Inverse BTC Levered x2
+- I3BTC - Inverse BTC Levered x3
+- L2ETH - Long ETH Levered x2
+- L3ETH - Long ETH Levered x3
+- I1ETH - Inverse ETH
+- I2ETH - Inverse ETH Levered x2
+- I3ETH - Inverse ETH Levered x3
+- L1MC005 - Long Top 5 Market Cap
+- L2MC005 - Long Top 5 Market Cap Levered x2
+- I1MC005 - Inverse Top 5 Market Cap
+- I2MC005 - Inverse Top 5 Market Cap Levered x2
+- L1MC005 - Long Top 20 Market Cap
+- L1MC020 - Long Top 20 Market Cap Levered x2
+- I1MC020 - Inverse Top 20 Market Cap
+- I1MC020 - Inverse Top 20 Market Cap Levered x2
 
 ## Available endpoints
 
