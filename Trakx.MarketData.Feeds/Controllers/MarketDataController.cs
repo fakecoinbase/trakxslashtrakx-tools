@@ -2,11 +2,13 @@
 using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
+
+using CryptoCompare;
+
 using Microsoft.AspNetCore.Mvc;
 
 using Trakx.MarketData.Feeds.Common;
 using Trakx.MarketData.Feeds.Common.ApiClients;
-using Trakx.MarketData.Feeds.Common.Models.CoinMarketCap;
 using Trakx.MarketData.Feeds.Common.Models.CryptoCompare;
 using Trakx.MarketData.Feeds.Common.Models.Trakx;
 
@@ -16,73 +18,74 @@ namespace Trakx.MarketData.Feeds.Controllers
     [ApiController]
     public class MarketDataController : ControllerBase
     {
-        private readonly ITrackerComponentProvider _trackerComponentProvider;
+        private readonly ICryptoCompareClient _cryptoCompareClient;
 
-        public MarketDataController(ITrackerComponentProvider trackerComponentProvider)
+        public MarketDataController(ICryptoCompareClient cryptoCompareClient)
         {
-            _trackerComponentProvider = trackerComponentProvider;
+            _cryptoCompareClient = cryptoCompareClient;
         }
 
         [HttpGet]
-        public async Task<ActionResult<IList<ICryptoCompareCoinAndMarketCap>>> GetTop20Tickers()
+        public async Task<ActionResult<TopMarketCapResponse>> GetTop20Tickers()
         {
-            var top20 = await _trackerComponentProvider.GetTopXMarketCapCoins(20);
-            var result = new ActionResult<IList<ICryptoCompareCoinAndMarketCap>>(top20);
-            return result;
+            var top20 = await _cryptoCompareClient.Tops.CoinFullDataByMarketCap("USD", 20);
+            return new ActionResult<TopMarketCapResponse>(top20);
         }
 
         [HttpGet(ApiConstants.CryptoCompare.AllCoins)]
 
-        public async Task<ActionResult<ICryptoCompareResponse<ICoin>>> GetAllCoins()
+        public async Task<ActionResult<ICryptoCompareResponse>> GetAllCoins()
         {
+            var exampleResponse = await _cryptoCompareClient.Coins.ListAsync();
+            var response = new CoinListResponse();
             return null;
         }
 
         [HttpGet(ApiConstants.CryptoCompare.Price)]
 
-        public async Task<ActionResult<ICryptoCompareResponse<ICoin>>> GetPrice()
+        public async Task<ActionResult<ICryptoCompareResponse>> GetPrice()
         {
             return null;
         }
 
         [HttpGet(ApiConstants.CryptoCompare.PriceHistorical)]
 
-        public async Task<ActionResult<ICryptoCompareResponse<ICoin>>> GetPriceHistorical()
+        public async Task<ActionResult<ICryptoCompareResponse>> GetPriceHistorical()
         {
             return null;
         }
 
         [HttpGet(ApiConstants.CryptoCompare.PriceMultifull)]
 
-        public async Task<ActionResult<ICryptoCompareResponse<ICoin>>> GetPriceMultifull()
+        public async Task<ActionResult<ICryptoCompareResponse>> GetPriceMultifull()
         {
             return null;
         }
 
         [HttpGet(ApiConstants.CryptoCompare.TopMarketCap)]
 
-        public async Task<ActionResult<ICryptoCompareResponse<ICoin>>> GetTopMarketCap()
+        public async Task<ActionResult<ICryptoCompareResponse>> GetTopMarketCap()
         {
             return null;
         }
 
         [HttpGet(ApiConstants.CryptoCompare.TopPair)]
 
-        public async Task<ActionResult<ICryptoCompareResponse<ICoin>>> GetTopPair()
+        public async Task<ActionResult<ICryptoCompareResponse>> GetTopPair()
         {
             return null;
         }
 
         [HttpGet(ApiConstants.CryptoCompare.TopTotalVol)]
 
-        public async Task<ActionResult<ICryptoCompareResponse<ICoin>>> GetTopTotalVol()
+        public async Task<ActionResult<ICryptoCompareResponse>> GetTopTotalVol()
         {
             return null;
         }
 
         [HttpGet(ApiConstants.CryptoCompare.TopVolumes)]
 
-        public async Task<ActionResult<ICryptoCompareResponse<ICoin>>> GetTopVolumes()
+        public async Task<ActionResult<ICryptoCompareResponse>> GetTopVolumes()
         {
             return null;
         }

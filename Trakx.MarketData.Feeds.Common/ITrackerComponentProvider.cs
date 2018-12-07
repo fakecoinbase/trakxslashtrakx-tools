@@ -3,7 +3,6 @@ using System.Collections.Generic;
 using System.Text;
 using System.Threading.Tasks;
 
-using Trakx.MarketData.Feeds.Common.Models.CoinMarketCap;
 using Trakx.MarketData.Feeds.Common.Models.Trakx;
 
 namespace Trakx.MarketData.Feeds.Common
