@@ -62,7 +62,8 @@ namespace Trakx.MarketData.Feeds
             }
             else
             {
-                app.UseHsts();
+                app.UseDeveloperExceptionPage();
+                //app.UseHsts();
             }
 
             app.UseHttpsRedirection();
