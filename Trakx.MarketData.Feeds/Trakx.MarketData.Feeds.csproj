@@ -14,23 +14,13 @@
   </PropertyGroup>
 
   <ItemGroup>
-    <Content Remove="StaticData\cryptocompare-coinlist.json" />
-  </ItemGroup>
-
-  <ItemGroup>
     <Folder Include="ApiClients\" />
-    <Folder Include="Converters\" />
+    <Folder Include="Controllers\" />
     <Folder Include="wwwroot\" />
   </ItemGroup>
 
   <ItemGroup>
-    <EmbeddedResource Include="StaticData\cryptocompare-coinlist.json">
-      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
-    </EmbeddedResource>
-  </ItemGroup>
-
-  <ItemGroup>
-    <PackageReference Include="CryptoCompare" Version="1.0.6-beta" />
+    <PackageReference Include="CryptoCompare" Version="1.1.2" />
     <PackageReference Include="Microsoft.AspNetCore.Http.Extensions" Version="2.2.0" />
     <PackageReference Include="Microsoft.AspNetCore.Http.Abstractions" Version="2.2.0" />
     <PackageReference Include="Microsoft.AspNetCore.Http.Features" Version="2.2.0" />
