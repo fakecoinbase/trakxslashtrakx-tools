@@ -14,17 +14,17 @@ namespace Trakx.MarketData.Feeds.Common.StaticData
         private static IList<string> _allSymbols;
 
         public static IList<string> AllSymbols => _allSymbols
-                                                  ?? (_allSymbols = typeof(TrackerSymbols)
-                                                          .GetFields(BindingFlags.Public | BindingFlags.Static)
-                                                          .Where(f => f.FieldType == typeof(string))
-                                                          .Select(f => (string)f.GetValue(null)).ToList());
+              ?? (_allSymbols = typeof(TrackerSymbols)
+                      .GetFields(BindingFlags.Public | BindingFlags.Static)
+                      .Where(f => f.FieldType == typeof(string))
+                      .Select(f => (string)f.GetValue(null)).ToList());
 
         private static IList<string> _allSingleNameSymbols;
         public static IList<string> AllSingleNameSymbols => _allSingleNameSymbols
-                                                            ?? (_allSingleNameSymbols = typeof(TrackerSymbols)
-                                                                    .GetFields(BindingFlags.Public | BindingFlags.Static)
-                                                                    .Where(f => f.FieldType == typeof(string) && f.GetCustomAttributes<SingleNameAttribute>().Any())
-                                                                    .Select(f => (string)f.GetValue(null)).ToList());
+                ?? (_allSingleNameSymbols = typeof(TrackerSymbols)
+                        .GetFields(BindingFlags.Public | BindingFlags.Static)
+                        .Where(f => f.FieldType == typeof(string) && f.GetCustomAttributes<SingleNameAttribute>().Any())
+                        .Select(f => (string)f.GetValue(null)).ToList());
 
         [AttributeUsage(AttributeTargets.Field)] private class SingleNameAttribute : Attribute { }
         [AttributeUsage(AttributeTargets.Field)] private class BasketAttribute : Attribute { }

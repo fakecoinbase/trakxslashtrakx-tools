@@ -24,8 +24,8 @@ namespace Trakx.MarketData.Feeds.Common.Models.Trakx
         public async Task<IList<string>> GetComponentTickers(string trackerTicker)
         {
             var tracker = new Tracker(trackerTicker);
-            var components = _memoryCache.GetComponentsForTracker(tracker.Ticker, tracker.ComponentExtractor);
-            return null;
+            var components = await _memoryCache.GetComponentsForTracker(tracker.Ticker, tracker.ComponentExtractor);
+            return components;
         }
     }
 }

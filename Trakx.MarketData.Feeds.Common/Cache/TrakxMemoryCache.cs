@@ -26,7 +26,7 @@ namespace Trakx.MarketData.Feeds.Common.Cache
         {
             get
             {
-                return this.GetOrCreate(
+                var getOrCreateTask = this.GetOrCreateAsync(
                     CacheEntries.Top20UsdMarketCap,
                     async e =>
                         {
@@ -35,19 +35,22 @@ namespace Trakx.MarketData.Feeds.Common.Cache
                             e.Value = topMarketCapResponse;
                             return topMarketCapResponse;
                         });
+                return getOrCreateTask;
             }
         }
 
         /// <inheritdoc />
-        public IList<string> GetComponentsForTracker(string trackerTicker, Func<ICryptoCompareClient, IList<string>> trackerComponentExtractor)
+        public async Task<IList<string>> GetComponentsForTracker(string trackerTicker, Func<ICryptoCompareClient, Task<IList<string>>> trackerComponentExtractor)
         {
-            return this.GetOrCreate($"{trackerTicker}.{Components}", e =>
-                {
-                    e.AbsoluteExpirationRelativeToNow = TimeSpan.FromHours(1);
-                    var response = trackerComponentExtractor(_cryptoCompareClient);
-                    e.Value = response;
-                    return response;
-                });
+            var getOrCreateTask = this.GetOrCreateAsync($"{trackerTicker}.{Components}",
+                async e =>
+                    {
+                        e.AbsoluteExpirationRelativeToNow = TimeSpan.FromHours(1);
+                        var response = await trackerComponentExtractor(_cryptoCompareClient);
+                        e.Value = response;
+                        return response;
+                    });
+            return await getOrCreateTask;
         }
 
         public class CacheEntries

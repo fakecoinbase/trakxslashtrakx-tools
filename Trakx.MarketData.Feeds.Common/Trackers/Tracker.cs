@@ -2,6 +2,7 @@
 using System.Collections.Generic;
 using System.Linq;
 using System.Text.RegularExpressions;
+using System.Threading.Tasks;
 
 using CryptoCompare;
 
@@ -54,19 +55,20 @@ namespace Trakx.MarketData.Feeds.Common.Trackers
                              ? 1 : int.Parse(basketSizeString);
         }
 
-        public Func<ICryptoCompareClient, IList<string>> ComponentExtractor
+        public Func<ICryptoCompareClient, Task<IList<string>>> ComponentExtractor
         {
             get
             {
                 if (TrackerSymbols.AllSingleNameSymbols.Contains(Symbol))
-                    return _ => new List<string>() { Symbol };
+                    return _ => Task.FromResult(new List<string>() { Symbol } as IList<string>);
                 
                 if (Symbol == TrackerSymbols.MarketCap)
-                       return  c => c.Tops.CoinFullDataByMarketCap("USD", BasketSize)
-                            .ConfigureAwait(false)
-                            .GetAwaiter().GetResult()
-                            .Data.Select(d => d.CoinInfo.Symbol)
-                            .ToList();
+                       return async c =>
+                           {
+                               var tops = await c.Tops.CoinFullDataByMarketCap("USD", BasketSize);
+                               var result = tops.Data.Select(d => d.CoinInfo.Symbol).ToList();
+                               return result;
+                           };
 
                 return _ => throw new NotImplementedException($"Unable to extract component tickers for symbol {Symbol}");
             }

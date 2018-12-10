@@ -12,6 +12,6 @@ namespace Trakx.MarketData.Feeds.Common.Cache
     {
         Task<TopMarketCapResponse> Top20UsdMarketCap { get; }
 
-        IList<string> GetComponentsForTracker(string trackerTicker, Func<ICryptoCompareClient, IList<string>> trackerComponentExtractor);
+        Task<IList<string>> GetComponentsForTracker(string trackerTicker, Func<ICryptoCompareClient, Task<IList<string>>> trackerComponentExtractor);
     }
 }

@@ -5,7 +5,7 @@
     <DockerTargetOS>Windows</DockerTargetOS>
     <ProjectGuid>f8661941-ca4a-4d90-9486-13c87427776e</ProjectGuid>
     <DockerLaunchAction>LaunchBrowser</DockerLaunchAction>
-    <DockerServiceUrl>{Scheme}://{ServiceIPAddress}{ServicePort}/api/values</DockerServiceUrl>
+    <DockerServiceUrl>{Scheme}://{ServiceIPAddress}{ServicePort}/</DockerServiceUrl>
     <DockerServiceName>trakx.marketdata.feeds</DockerServiceName>
   </PropertyGroup>
   <ItemGroup>

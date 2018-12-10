@@ -1,18 +1,15 @@
 ﻿using System;
-using System.Net.Http.Headers;
 
 using CryptoCompare;
 
 using Microsoft.AspNetCore.Builder;
 using Microsoft.AspNetCore.Hosting;
 using Microsoft.AspNetCore.Mvc;
-using Microsoft.EntityFrameworkCore.InMemory.Storage.Internal;
 using Microsoft.Extensions.Caching.Memory;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
 using Swashbuckle.AspNetCore.Swagger;
 
-using Trakx.MarketData.Feeds.Common;
 using Trakx.MarketData.Feeds.Common.ApiClients;
 using Trakx.MarketData.Feeds.Common.Cache;
 using Trakx.MarketData.Feeds.Common.Models.Trakx;
@@ -38,6 +35,7 @@ namespace Trakx.MarketData.Feeds
             services.AddMemoryCache();
             services.AddMvc()
                 .SetCompatibilityVersion(CompatibilityVersion.Version_2_2);
+
             services.AddSwaggerGen(c =>
                 {
                     c.SwaggerDoc(Version, new Info { Title = "Trakx MarketData Api", Version = Version });
