@@ -7,7 +7,7 @@
 
   <ItemGroup>
     <PackageReference Include="CryptoCompare" Version="1.1.2" />
-    <PackageReference Include="Microsoft.AspNetCore.App" Version="2.2.0" />
+    <PackageReference Include="Microsoft.AspNetCore.App" />
     <PackageReference Include="Microsoft.AspNetCore.Http.Extensions" Version="2.2.0" />
     <PackageReference Include="FluentAssertions" Version="5.5.3" />
     <PackageReference Include="NSubstitute" Version="3.1.0" />
