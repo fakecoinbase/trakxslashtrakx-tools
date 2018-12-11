@@ -1,11 +1,8 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Linq;
-using System.Text;
 
 using CryptoCompare;
-
-using Trakx.MarketData.Feeds.Common.StaticData;
 
 namespace Trakx.MarketData.Feeds.Common.Pricing
 {
@@ -20,9 +17,18 @@ namespace Trakx.MarketData.Feeds.Common.Pricing
 
         public PriceSingleResponse CalculatePriceSingleResponse(string ticker, IList<PriceSingleResponse> componentPriceResponses)
         {
-            var price = _pricer.CalculatePrice(ticker, componentPriceResponses.Select(r => r["USD"]).ToList());
+            var price = _pricer.CalculatePricesByCurrencies(ticker, componentPriceResponses.Cast<IReadOnlyDictionary<string, decimal>>().ToList());
 
-            var response = new PriceSingleResponse(new Dictionary<string, decimal>(){{"USD", price}});
+            var response = new PriceSingleResponse(price);
+            return response;
+        }
+
+        /// <inheritdoc />
+        public PriceSingleResponse CalculatePriceSingleResponse(string ticker, PriceMultiResponse componentPricesResponse)
+        {
+            var price = _pricer.CalculatePricesByCurrencies(ticker, componentPricesResponse);
+
+            var response = new PriceSingleResponse(price);
             return response;
         }
     }

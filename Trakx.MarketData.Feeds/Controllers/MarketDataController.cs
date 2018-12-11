@@ -1,4 +1,5 @@
 ﻿using System.Collections.Generic;
+using System.Linq;
 using System.Threading.Tasks;
 
 using CryptoCompare;
@@ -50,15 +51,22 @@ namespace Trakx.MarketData.Feeds.Controllers
 
         [HttpGet(ApiConstants.CryptoCompare.Price)]
         public async Task<ActionResult<PriceSingleResponse>> SingleSymbolPriceAsync(
-            string fromSymbol,
-            IEnumerable<string> toSymbols,
-            bool? tryConversion = null,
-            string exchangeName = null)
+            [FromQuery] string fromSymbol,
+            [FromQuery] string toSymbolsAsCsvList,
+            [FromQuery] bool? tryConversion = null,
+            [FromQuery] string exchangeName = null)
         {
             if(!TrackerDetails.TrakxTrackersAsCoinList.Coins.ContainsKey(fromSymbol))
                 throw new KeyNotFoundException($"Unable to retrieve price for ticker {fromSymbol}");
-            _responseBuilder.CalculatePriceSingleResponse(fromSymbol, null);
-            return null;
+
+            var toSymbols = toSymbolsAsCsvList.Split(",").Select(s => s.Trim().ToUpperInvariant()).Distinct();
+
+            var components = await _componentProvider.GetComponentTickers(fromSymbol);
+
+            var componentsResponse = await _cryptoCompareClient.Prices.MultipleSymbolsPriceAsync(components, toSymbols, tryConversion, exchangeName);
+            var response = _responseBuilder.CalculatePriceSingleResponse(fromSymbol, componentsResponse);
+
+            return new ActionResult<PriceSingleResponse>(response);
         }
 
         [HttpGet(ApiConstants.CryptoCompare.PriceHistorical)]

@@ -8,6 +8,12 @@ namespace Trakx.MarketData.Feeds.Common.Pricing
 {
     public interface IPricer
     {
-        decimal CalculatePrice(string ticker, IList<decimal> componentPrices);
+        IDictionary<string, decimal> CalculatePricesByCurrencies(
+            string ticker,
+            IList<IReadOnlyDictionary<string, decimal>> componentPriceByCurrency);
+
+        IDictionary<string, decimal> CalculatePricesByCurrencies(
+            string ticker,
+            IReadOnlyDictionary<string, IReadOnlyDictionary<string, decimal>> priceByCurrencyByTicker);
     }
 }
