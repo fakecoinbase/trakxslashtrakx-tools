@@ -34,13 +34,6 @@ namespace Trakx.MarketData.Feeds.Controllers
             _responseBuilder = responseBuilder;
         }
 
-        [HttpGet]
-        public async Task<ActionResult<TopMarketCapResponse>> GetTop20Tickers()
-        {
-            var top20 = await _memoryCache.Top20UsdMarketCap;
-            return new ActionResult<TopMarketCapResponse>(top20);
-        }
-
         [HttpGet(ApiConstants.CryptoCompare.AllCoins)]
         public ActionResult<CoinListResponse> GetAllCoins()
         {
