@@ -76,9 +76,14 @@ namespace Trakx.MarketData.Feeds.Controllers
         }
 
         [HttpGet(ApiConstants.CryptoCompare.TopMarketCap)]
-        public async Task<ActionResult<TopMarketCapResponse>> GetTopMarketCap()
+        public async Task<ActionResult<TopMarketCapResponse>> GetTopMarketCap(
+            [FromQuery] string toSymbol,
+            [FromQuery] int? limit = null,
+            [FromQuery] int? page = null,
+            [FromQuery] bool? sign = null)
         {
-            return null;
+            var response = await _cryptoCompareClient.Tops.CoinFullDataByMarketCap(toSymbol, limit, page, sign);
+            return new ActionResult<TopMarketCapResponse>(response);
         }
 
         [HttpGet(ApiConstants.CryptoCompare.TopPair)]

@@ -14,8 +14,14 @@
   </PropertyGroup>
 
   <ItemGroup>
+    <Compile Remove="Converters\**" />
+    <Content Remove="Converters\**" />
+    <EmbeddedResource Remove="Converters\**" />
+    <None Remove="Converters\**" />
+  </ItemGroup>
+
+  <ItemGroup>
     <Folder Include="ApiClients\" />
-    <Folder Include="Converters\" />
     <Folder Include="wwwroot\" />
   </ItemGroup>
 

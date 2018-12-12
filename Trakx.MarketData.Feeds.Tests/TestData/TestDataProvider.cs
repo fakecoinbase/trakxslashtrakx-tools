@@ -32,11 +32,16 @@ namespace Trakx.MarketData.Feeds.Tests.TestData
         public static Lazy<string> CoinListAsString;
         public static Func<Stream> CoinListAsStream;
 
+        public static Func<Stream> HistoricalMarketCap;
+
         static CoinMarketCap()
         {
             var coinListJsonFile = Path.Combine(Environment.CurrentDirectory, TestDataProvider.Testdata, "coinmarketcap-listing-latest.json");
             CoinListAsString = new Lazy<string>(() => File.ReadAllText(coinListJsonFile), LazyThreadSafetyMode.PublicationOnly);
             CoinListAsStream = () => File.OpenRead(coinListJsonFile);
+
+            var historicalMarketCapFile = Path.Combine(Environment.CurrentDirectory, TestDataProvider.Testdata, "coinmarketcap-historicalrecord.html");
+            HistoricalMarketCap = () => File.OpenRead(historicalMarketCapFile);
         }
     }
 }

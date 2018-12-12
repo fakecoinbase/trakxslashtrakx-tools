@@ -25,6 +25,9 @@
     <None Update="TestData\coinmarketcap-cryptocurrency-quotes-latest.json">
       <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
     </None>
+    <None Update="TestData\coinmarketcap-historicalrecord.html">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </None>
     <None Update="TestData\coinmarketcap-list-all-crytpos-latest.json">
       <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
     </None>

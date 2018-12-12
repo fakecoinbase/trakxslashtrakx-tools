@@ -20,7 +20,7 @@ namespace Trakx.MarketData.Feeds.Tests.Utils
             _output = output;
         }
 
-        [Fact]
+        //[Fact]
         public async Task Extract_Data_For_Edouard()
         {
             var client = new CryptoCompareClient(ApiConstants.CryptoCompare.ApiKey);
