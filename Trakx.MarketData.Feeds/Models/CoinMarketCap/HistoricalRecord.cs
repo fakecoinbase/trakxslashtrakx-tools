@@ -56,7 +56,7 @@ namespace Trakx.MarketData.Feeds.Models.CoinMarketCap
             Change1W = change1W;
         }
 
-        public string GetCsvHeaders()
+        public static string GetCsvHeaders()
         {
             var headers = new []
                   {
@@ -100,7 +100,7 @@ namespace Trakx.MarketData.Feeds.Models.CoinMarketCap
             return string.Join(",", values.Select(AddQuotes));
         }
 
-        private string AddQuotes(string unquoted)
+        private static string AddQuotes(string unquoted)
         {
             return $"\"{unquoted}\"";
         }

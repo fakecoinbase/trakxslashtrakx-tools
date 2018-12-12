@@ -19,7 +19,7 @@ namespace Trakx.MarketData.Feeds.Tests.Utils
     public class HistoricalMarketCapRecordExtractor : IDisposable
     {
         private const string RegexPattern =
-            "<tr[^>]+>[^\\d]*<td class=\"text-center\">[^\\d]*(?<Rank>[\\d]+)[^\\d]*</td>[^\\d]*<td class=\"no-wrap currency-name\" data-sort=\\\"(?<CurrencyName>[\\w\\s]+)\\\">[^\\d]*<img data-src=[^>]+>[^\\d]*<span class=\"currency-symbol [^>]+><a class=\"link-secondary\"[^>]+>(?<CurrencySymbol>[\\w]+)</a></span>[^\\d]*<[^>]+>[^\\d]*<a [^>]+>[\\w\\s]+</a>[^\\d]*</td>[^\\d]*<td class=\"text-left col-symbol\">[\\w]+</td>[^\\d]*<td class=\"no-wrap market-cap text-right\" data-usd=\"(?<MarketCapUsd>[e\\-\\.0-9\\?]+)\" data-btc=\"(?<MarketCapBtc>[e\\-\\.0-9\\?]+)\" [^>]+>[^<]+</td>[^\\d]*<td class=[^>]+>[^\\d]*<a href=\"[^\\\"]+\" class=\"price\" data-usd=\"(?<PriceUsd>[e\\-\\.0-9]+)\" data-btc=\"(?<PriceBtc>[e\\-\\.0-9]+)\">[^>]+>[^\\d]*</td>[^\\d]*<td[^>]+>[^\\d]*<span data-supply=\"(?<CirculatingSupply>([e\\-\\.0-9]+|None))\" [^>]+>[^<]+</span>[^\\d]*</td>[^\\d]*<td[^>]+>[^\\d]*<a href=\"[^\\\"]+\" class=\"volume\" data-usd=\"(?<Volume24HUsd>[e\\-\\.0-9]+)\" data-btc=\"(?<Volume24HBtc>[e\\-\\.0-9]+)\">[^<]+</a>[^\\d]*</td>[^\\d]*<td class=\"[^\\\"]+\" data-timespan=\"1h\" data-percentusd=\"[e\\-\\.0-9]+\" data-symbol=\"[^\\\"]+\" data-sort=\"(?<Change1H>[e\\-\\.0-9]+)\">[^<]+</td>[^\\d]*<td class=\"[^\\\"]+\" data-timespan=\"24h\" data-percentusd=\"[e\\-\\.0-9]+\" data-symbol=\"[^\\\"]+\" data-sort=\"(?<Change1D>[e\\-\\.0-9]+)\">[^<]+</td>[^\\d]*<td class=\"[^\\\"]+\" data-timespan=\"7d\" data-percentusd=\"[e\\-\\.0-9]+\" data-symbol=\"[^\\\"]+\" data-sort=\"(?<Change1W>[e\\-\\.0-9]+)\">[^<]+</td>";
+            "<tr[^>]+>[^\\d]*<td class=\"text-center\">[^\\d]*(?<Rank>[\\d]+)[^\\d]*</td>[^\\d]*<td class=\"no-wrap currency-name\" data-sort=\\\"(?<CurrencyName>[^\\\"]+)\\\">[^\\d]*<img data-src=[^>]+>[^\\d]*<span class=\"currency-symbol [^>]+><a class=\"link-secondary\"[^>]+>(?<CurrencySymbol>[^<]+)</a></span>[^\\d]*<[^>]+>[^\\d]*<a [^>]+>[^<]+</a>[^\\d]*</td>[^\\d]*<td class=\"text-left col-symbol\">[^<]+</td>[^\\d]*<td class=\"no-wrap market-cap text-right\" data-usd=\"(?<MarketCapUsd>[e\\+\\-\\.0-9\\?]+)\" data-btc=\"(?<MarketCapBtc>[e\\+\\-\\.0-9\\?]+)\" [^>]+>[^<]+</td>[^\\d]*<td class=[^>]+>[^\\d]*<a href=\"[^\\\"]+\" class=\"price\" data-usd=\"(?<PriceUsd>[e\\+\\-\\.0-9]+)\" data-btc=\"(?<PriceBtc>[e\\+\\-\\.0-9]+)\">[^>]+>[^\\d]*</td>[^\\d]*<td[^>]+>[^\\d]*<span data-supply=\"(?<CirculatingSupply>([e\\+\\-\\.0-9]+|None))\" [^>]+>[^<]+</span>[^\\d]*</td>[^\\d]*<td[^>]+>[^\\d]*<a href=\"[^\\\"]+\" class=\"volume\" data-usd=\"(?<Volume24HUsd>[e\\+\\-\\.0-9]+)\" data-btc=\"(?<Volume24HBtc>[e\\+\\-\\.0-9]+)\">[^<]+</a>[^\\d]*</td>[^\\d]*<td class=\"[^\\\"]+\"( data-timespan=\"1h\" data-percentusd=\"[e\\+\\-\\.0-9]+\" data-symbol=\"[^\\\"]+\")* data-sort=\"(?<Change1H>[e\\+\\-\\.0-9]+)\">[^<]+</td>[^\\d]*<td class=\"[^\\\"]+\"( data-timespan=\"24h\" data-percentusd=\"[e\\+\\-\\.0-9]+\" data-symbol=\"[^\\\"]+\")* data-sort=\"(?<Change1D>[e\\+\\-\\.0-9]+)\">[^<]+</td>[^\\d]*<td class=\"[^\\\"]+\"( data-timespan=\"7d\" data-percentusd=\"[e\\+\\-\\.0-9]+\" data-symbol=\"[^\\\"]+\")* data-sort=\"(?<Change1W>[e\\+\\-\\.0-9]+)\">[^<]+</td>";
         private const string CoinMarketCapUrlStub = "https://coinmarketcap.com/historical/{0:yyyyMMdd}/";
         private Regex _regex;
         private HttpClient _httpClient;
@@ -33,7 +33,7 @@ namespace Trakx.MarketData.Feeds.Tests.Utils
             //_regex.MatchTimeout = TimeSpan.FromMinutes(1);
         }
 
-        [Fact(Skip = "One off runs only")]
+        [Fact]
         public async Task<IDictionary<DateTime, IList<HistoricalMarketCapRecord>>> ExtractRecordsForPeriod()
         {
             var minDate = new DateTime(2018,12,10);
@@ -41,6 +41,8 @@ namespace Trakx.MarketData.Feeds.Tests.Utils
 
             var results = new Dictionary<DateTime, IList<HistoricalMarketCapRecord>>();
             var date = minDate;
+
+            _output.WriteLine(HistoricalMarketCapRecord.GetCsvHeaders());
 
             while (date <= maxDate)
             {
@@ -77,11 +79,12 @@ namespace Trakx.MarketData.Feeds.Tests.Utils
             {
                 var content = await reader.ReadToEndAsync();
                 var matches = _regex.Matches(content);
-                var records = matches.Select(m => GetHistoricalRecordFromMatch(m, DateTime.MinValue)).ToList();
-                records.Count.Should().BeGreaterOrEqualTo(1855); //aim for 2068
+                var records = matches.Select(m => GetHistoricalRecordFromMatch(m, DateTime.MinValue)).OrderBy(r => r.Rank).ToList();
+                records.Count.Should().BeGreaterOrEqualTo(2068);
+                _output.WriteLine(string.Join(Environment.NewLine, records.Select(r => r.CurrencySymbol)));
             }
         }
-
+        
         private static HistoricalMarketCapRecord GetHistoricalRecordFromMatch(Match m, DateTime timeStamp)
         {
             var rank = int.Parse(m.Groups[nameof(HistoricalMarketCapRecord.Rank)].Value);
