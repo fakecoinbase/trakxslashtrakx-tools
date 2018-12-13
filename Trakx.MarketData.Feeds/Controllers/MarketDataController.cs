@@ -1,12 +1,16 @@
-﻿using System.Collections.Generic;
+﻿using System;
+using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
 
 using CryptoCompare;
 
+using JetBrains.Annotations;
+
 using Microsoft.AspNetCore.Mvc;
 using Trakx.MarketData.Feeds.Common.ApiClients;
 using Trakx.MarketData.Feeds.Common.Cache;
+using Trakx.MarketData.Feeds.Common.Helpers;
 using Trakx.MarketData.Feeds.Common.Pricing;
 using Trakx.MarketData.Feeds.Common.StaticData;
 using Trakx.MarketData.Feeds.Common.Trackers;
@@ -38,68 +42,110 @@ namespace Trakx.MarketData.Feeds.Controllers
         public ActionResult<CoinListResponse> GetAllCoins()
         {
             var trakxCoins = TrackerDetails.TrakxTrackersAsCoinList;
-            var response = new ActionResult<CoinListResponse>(trakxCoins);
-            return response;
+            return trakxCoins;
         }
 
         [HttpGet(ApiConstants.CryptoCompare.Price)]
         public async Task<ActionResult<PriceSingleResponse>> SingleSymbolPriceAsync(
-            [FromQuery] string fromSymbol,
-            [FromQuery] string toSymbolsAsCsvList,
+            [FromQuery][NotNull] string fromSymbol,
+            [FromQuery][NotNull] string toSymbolsAsCsvList,
             [FromQuery] bool? tryConversion = null,
             [FromQuery] string exchangeName = null)
         {
-            if(!TrackerDetails.TrakxTrackersAsCoinList.Coins.ContainsKey(fromSymbol))
-                throw new KeyNotFoundException($"Unable to retrieve price for ticker {fromSymbol}");
-
-            var toSymbols = toSymbolsAsCsvList.Split(",").Select(s => s.Trim().ToUpperInvariant()).Distinct();
+            Check.IsKnownNonNullOrWhiteSpaceKey(fromSymbol, TrackerDetails.TrakxTrackersAsCoinList.Coins, nameof(fromSymbol));
+            var toSymbols = toSymbolsAsCsvList.FromCsvToDistinctNonNullOrWhiteSpaceUpperList();
+            Check.NotEmpty(toSymbols, nameof(toSymbolsAsCsvList));
 
             var components = await _componentProvider.GetComponentTickers(fromSymbol);
 
             var componentsResponse = await _cryptoCompareClient.Prices.MultipleSymbolsPriceAsync(components, toSymbols, tryConversion, exchangeName);
             var response = _responseBuilder.CalculatePriceSingleResponse(fromSymbol, componentsResponse);
 
-            return new ActionResult<PriceSingleResponse>(response);
+            return response;
         }
 
         [HttpGet(ApiConstants.CryptoCompare.PriceHistorical)]
-        public async Task<ActionResult<PriceHistoricalReponse>> GetPriceHistorical()
+        public async Task<ActionResult<PriceHistoricalReponse>> PriceHistoricalForTimestampAsync(
+            [FromQuery] [NotNull] string fromSymbol,
+            [FromQuery] [NotNull] string toSymbolsAsCsvList,
+            [FromQuery] DateTimeOffset requestedDate,
+            [FromQuery] string marketsAsCsvList = null,
+            [FromQuery] CalculationType? calculationType = null,
+            [FromQuery] bool? tryConversion = null)
         {
-            return null;
+            Check.IsKnownNonNullOrWhiteSpaceKey(fromSymbol, TrackerDetails.TrakxTrackersAsCoinList.Coins, nameof(fromSymbol));
+            fromSymbol = "BTC";
+            var toSymbols = toSymbolsAsCsvList.FromCsvToDistinctNonNullOrWhiteSpaceUpperList();
+            Check.NotEmpty(toSymbols, nameof(toSymbolsAsCsvList));
+
+            var markets = marketsAsCsvList.FromCsvToDistinctNonNullOrWhiteSpaceUpperList();
+
+            var response = await _cryptoCompareClient.History.HistoricalForTimestampAsync(
+                                                  fromSymbol,
+                                                  toSymbols,
+                                                  requestedDate,
+                                                  markets,
+                                                  calculationType,
+                                                  tryConversion);
+            return response;
         }
 
         [HttpGet(ApiConstants.CryptoCompare.PriceMultifull)]
 
-        public async Task<ActionResult<PriceMultiFullResponse>> GetPriceMultifull()
+        public async Task<ActionResult<PriceMultiFullResponse>> PriceMultipleSymbolFullDataAsync(
+            [FromQuery] [NotNull] string fromSymbolAsCsvList,
+            [FromQuery] [NotNull] string toSymbolsAsCsvList,
+            bool? tryConversion = null,
+            string exchangeName = null)
         {
-            return null;
+            var fromSymbols = fromSymbolAsCsvList.FromCsvToDistinctNonNullOrWhiteSpaceUpperList();
+            fromSymbols = "BTC,ETH".FromCsvToDistinctNonNullOrWhiteSpaceUpperList();
+            Check.NotEmpty(fromSymbols, nameof(fromSymbolAsCsvList));
+            var toSymbols = toSymbolsAsCsvList.FromCsvToDistinctNonNullOrWhiteSpaceUpperList();
+            Check.NotEmpty(toSymbols, nameof(toSymbolsAsCsvList));
+
+            return await _cryptoCompareClient.Prices.MultipleSymbolFullDataAsync(
+                       fromSymbols,
+                       toSymbols,
+                       tryConversion,
+                       exchangeName);
         }
 
         [HttpGet(ApiConstants.CryptoCompare.TopMarketCap)]
         public async Task<ActionResult<TopMarketCapResponse>> GetTopMarketCap(
-            [FromQuery] string toSymbol,
+            [FromQuery][NotNull] string toSymbol,
             [FromQuery] int? limit = null,
             [FromQuery] int? page = null,
             [FromQuery] bool? sign = null)
         {
+            Check.NotNullOrWhiteSpace(toSymbol, nameof(toSymbol));
             var response = await _cryptoCompareClient.Tops.CoinFullDataByMarketCap(toSymbol, limit, page, sign);
             return new ActionResult<TopMarketCapResponse>(response);
         }
 
-        [HttpGet(ApiConstants.CryptoCompare.TopPair)]
-        public async Task<ActionResult<TopResponse>> GetTopPair()
+        [HttpGet(ApiConstants.CryptoCompare.TopPairs)]
+        public async Task<ActionResult<TopResponse>> TradingPairsAsync(
+            [NotNull] string fromSymbol,
+            int? limit = null)
         {
-            return null;
+            Check.IsKnownNonNullOrWhiteSpaceKey(
+                fromSymbol,
+                TrackerDetails.TrakxTrackersAsCoinList.Coins,
+                nameof(fromSymbol));
+
+            fromSymbol = "ETH";
+            return await _cryptoCompareClient.Tops.TradingPairsAsync(fromSymbol, limit);
         }
 
         [HttpGet(ApiConstants.CryptoCompare.TopTotalVol)]
-        public async Task<ActionResult<TopVolumesResponse>> GetTopTotalVol()
+        public async Task<ActionResult<TopVolumesResponse>> ByPairVolumeAsync([NotNull] string toSymbol, int? limit = null)
         {
-            return null;
+            Check.NotNull(toSymbol, nameof(toSymbol));
+            return await _cryptoCompareClient.Tops.ByPairVolumeAsync(toSymbol, limit);
         }
 
         [HttpGet(ApiConstants.CryptoCompare.TopVolumes)]
-        public async Task<ActionResult<TopResponse>> GetTopVolumes()
+        public async Task<ActionResult<TopVolumesResponse>> TopTotalVol([NotNull] string toSymbol, int? limit = null)
         {
             return null;
         }

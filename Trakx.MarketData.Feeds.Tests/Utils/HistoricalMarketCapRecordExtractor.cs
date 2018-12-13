@@ -9,6 +9,7 @@ using System.Threading.Tasks;
 using FluentAssertions;
 
 using Trakx.MarketData.Feeds.Common.Converters;
+using Trakx.MarketData.Feeds.Common.Helpers;
 using Trakx.MarketData.Feeds.Models.CoinMarketCap;
 
 using Xunit;
@@ -24,6 +25,8 @@ namespace Trakx.MarketData.Feeds.Tests.Utils
         private Regex _regex;
         private HttpClient _httpClient;
         private ITestOutputHelper _output;
+        private FileStream _fileStream;
+        private StreamWriter _fileWriter;
 
         public HistoricalMarketCapRecordExtractor(ITestOutputHelper output)
         {
@@ -33,16 +36,20 @@ namespace Trakx.MarketData.Feeds.Tests.Utils
             //_regex.MatchTimeout = TimeSpan.FromMinutes(1);
         }
 
-        [Fact]
+        //[Fact]
         public async Task<IDictionary<DateTime, IList<HistoricalMarketCapRecord>>> ExtractRecordsForPeriod()
         {
-            var minDate = new DateTime(2018,12,10);
-            var maxDate = DateTime.Today.AddDays(-1);
+            var minDate = new DateTime(2013, 01, 01);
+            var maxDate = new DateTime(2013, 12, 31);
 
             var results = new Dictionary<DateTime, IList<HistoricalMarketCapRecord>>();
             var date = minDate;
 
-            _output.WriteLine(HistoricalMarketCapRecord.GetCsvHeaders());
+            _fileStream = File.Create($"marketCaps.from.{minDate:yyyyMMdd}.to.{maxDate:yyyyMMdd}.csv");
+            _fileWriter = new StreamWriter(_fileStream);
+
+            //_output.WriteLine(HistoricalMarketCapRecord.GetCsvHeaders());
+            _fileWriter.WriteLine(HistoricalMarketCapRecord.GetCsvHeaders());
 
             while (date <= maxDate)
             {
@@ -66,12 +73,17 @@ namespace Trakx.MarketData.Feeds.Tests.Utils
 
             var records = matches.Select(m => GetHistoricalRecordFromMatch(m, timeStamp)).ToList();
 
-            records.ForEach(r => _output.WriteLine(r.ToCsv()));
+            records.ForEach(r =>
+                {
+                    var csvLine = r.ToCsv();
+                    //_output.WriteLine(csvLine);
+                    _fileWriter.WriteLine(csvLine);
+                });
 
             return records;
         }
 
-        [Fact]
+        //[Fact]
         public async Task ExtractRecordsForOneSampleDay()
         {
             using(var rawHtmlStream = TestData.CoinMarketCap.HistoricalMarketCap())
@@ -122,6 +134,8 @@ namespace Trakx.MarketData.Feeds.Tests.Utils
         public void Dispose()
         {
             _httpClient?.Dispose();
+            _fileWriter?.Close();
+            _fileWriter?.Dispose();
         }
     }
 }

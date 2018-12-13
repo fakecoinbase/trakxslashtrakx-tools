@@ -34,7 +34,7 @@ namespace Trakx.MarketData.Feeds.Common.ApiClients
             public const string TopMarketCap = "data/top/mktcapfull";
             public const string TopTotalVol = "data/top/totalvol";
             public const string TopVolumes = "data/top/volumes";
-            public const string TopPair = "data/top/pair";
+            public const string TopPairs = "data/top/pairs";
             public const string Price = "data/price";
             public const string PriceHistorical = "data/pricehistorical";
             public const string PriceMultifull = "data/pricemultifull";
