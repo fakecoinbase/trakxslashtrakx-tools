@@ -20,6 +20,7 @@ namespace Trakx.MarketData.Feeds.Common.Helpers
 
         public static IList<string> FromCsvToDistinctNonNullOrWhiteSpaceUpperList(this string listAsCsv)
         {
+            if(listAsCsv == null) return null;
             if(string.IsNullOrWhiteSpace(listAsCsv)) return new List<string>();
             var result = listAsCsv.Split(",")
                 .Select(s => s.Trim().ToUpperInvariant())
