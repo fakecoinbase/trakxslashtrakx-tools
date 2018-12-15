@@ -65,8 +65,8 @@ namespace Trakx.MarketData.Feeds.Common.Trackers
                 if (Symbol == TrackerSymbols.MarketCap)
                        return async c =>
                            {
-                               var tops = await c.Tops.CoinFullDataByMarketCap("USD", BasketSize);
-                               var result = tops.Data.Select(d => d.CoinInfo.Name).ToList();
+                               var tops = await c.Tops.CoinFullDataByMarketCap("USD", Math.Max(BasketSize, 10));
+                               var result = tops.Data.Take(BasketSize).Select(d => d.CoinInfo.Name).ToList();
                                return result;
                            };
 

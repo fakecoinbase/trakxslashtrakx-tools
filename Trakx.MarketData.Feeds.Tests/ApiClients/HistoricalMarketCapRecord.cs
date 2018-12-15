@@ -1,29 +1,26 @@
 ﻿using System;
-using System.Collections.Generic;
 using System.Linq;
-using System.Threading.Tasks;
 
-using Microsoft.CodeAnalysis.Operations;
-
-namespace Trakx.MarketData.Feeds.Models.CoinMarketCap
+namespace Trakx.MarketData.Feeds.Tests.ApiClients
 {
     public class HistoricalMarketCapRecord
     {
-        public DateTime TimeStamp { get; }
-        public int Rank { get; }
-        public string CurrencyName { get; }
-        public string CurrencySymbol { get; }
-        public decimal? MarketCapUsd { get; }
-        public decimal? MarketCapBtc { get; }
-        public decimal? PriceUsd { get; }
-        public decimal? PriceBtc { get; }
-        public decimal? CirculatingSupply { get; }
-        public decimal? Volume24HUsd { get; }
-        public decimal? Volume24HBtc { get; }
-        public decimal? Change1H { get; }
-        public decimal? Change1D { get; }
-        public decimal? Change1W { get; }
-        
+        //setters are only here because of CsvHelper
+        public DateTime TimeStamp { get; set; }
+        public int Rank { get; set; }
+        public string CurrencyName { get; set; }
+        public string CurrencySymbol { get; set; }
+        public decimal? MarketCapUsd { get; set; }
+        public decimal? MarketCapBtc { get; set; }
+        public decimal? PriceUsd { get; set; }
+        public decimal? PriceBtc { get; set; }
+        public decimal? CirculatingSupply { get; set; }
+        public decimal? Volume24HUsd { get; set; }
+        public decimal? Volume24HBtc { get; set; }
+        public decimal? Change1H { get; set; }
+        public decimal? Change1D { get; set; }
+        public decimal? Change1W { get; set; }
+
         public HistoricalMarketCapRecord(
             DateTime timeStamp,
             int rank,
@@ -55,6 +52,7 @@ namespace Trakx.MarketData.Feeds.Models.CoinMarketCap
             Change1D = change1D;
             Change1W = change1W;
         }
+
 
         public static string GetCsvHeaders()
         {
@@ -100,9 +98,12 @@ namespace Trakx.MarketData.Feeds.Models.CoinMarketCap
             return string.Join(",", values.Select(AddQuotes));
         }
 
+
         private static string AddQuotes(string unquoted)
         {
             return $"\"{unquoted}\"";
         }
+
+
     }
 }

@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.Diagnostics;
 using System.Linq;
 using System.Threading.Tasks;
 
@@ -74,19 +75,33 @@ namespace Trakx.MarketData.Feeds.Controllers
             [FromQuery] bool? tryConversion = null)
         {
             Check.IsKnownNonNullOrWhiteSpaceKey(fromSymbol, TrackerDetails.TrakxTrackersAsCoinList.Coins, nameof(fromSymbol));
-            fromSymbol = "BTC";
+            
             var toSymbols = toSymbolsAsCsvList.FromCsvToDistinctNonNullOrWhiteSpaceUpperList();
             Check.NotEmpty(toSymbols, nameof(toSymbolsAsCsvList));
 
             var markets = marketsAsCsvList.FromCsvToDistinctNonNullOrWhiteSpaceUpperList();
 
-            var response = await _cryptoCompareClient.History.HistoricalForTimestampAsync(
-                                                  fromSymbol,
-                                                  toSymbols,
-                                                  requestedDate,
-                                                  markets,
-                                                  calculationType,
-                                                  tryConversion);
+            var components = await _componentProvider.GetComponentTickers(fromSymbol);
+
+            var fetchComponentsResponses = components.Select(
+                async (c,i) =>
+                    {
+                        var priceHistoricalReponse = await _cryptoCompareClient.History.HistoricalForTimestampAsync(
+                                                         c,
+                                                         toSymbols,
+                                                         requestedDate,
+                                                         markets,
+                                                         calculationType,
+                                                         tryConversion);
+                        //current api key doesn't let us do too many queries per second :/
+                        if (i != components.Count - 1) await Task.Delay(200);
+                        return priceHistoricalReponse;
+                    }).ToList();
+
+            var componentsResponses = await Task.WhenAll(fetchComponentsResponses);
+
+            var response = _responseBuilder.CalculatePriceHistoricalResponse(fromSymbol, componentsResponses.ToList());
+
             return response;
         }
 

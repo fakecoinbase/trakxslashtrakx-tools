@@ -1,16 +1,21 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.Globalization;
 using System.IO;
 using System.Linq;
 using System.Net.Http;
 using System.Text.RegularExpressions;
 using System.Threading.Tasks;
 
+using CsvHelper;
+using CsvHelper.Configuration;
+
 using FluentAssertions;
 
 using Trakx.MarketData.Feeds.Common.Converters;
 using Trakx.MarketData.Feeds.Common.Helpers;
 using Trakx.MarketData.Feeds.Models.CoinMarketCap;
+using Trakx.MarketData.Feeds.Tests.ApiClients;
 
 using Xunit;
 using Xunit.Abstractions;
@@ -96,7 +101,90 @@ namespace Trakx.MarketData.Feeds.Tests.Utils
                 _output.WriteLine(string.Join(Environment.NewLine, records.Select(r => r.CurrencySymbol)));
             }
         }
+
+        [Fact(Skip = "One off")]
+        public async Task ReformatMarketCapRecords()
+        {
+            var filesToRead = Directory.EnumerateFileSystemEntries(
+                Environment.CurrentDirectory,
+                $"marketCaps.from.????????.to.????????.csv");
+
+            var allRecords = filesToRead.SelectMany(ExtractMarketCapRecords).ToList();
+
+            var allSymbols = allRecords.Select(ToColumnName).Distinct().ToList();
+
+            var marketCapByDateBySymbol = allSymbols.ToDictionary(
+                r => r, 
+                r =>
+                    {
+                        var historicalMarketCapRecords = allRecords.Where(a => ToColumnName(a) == r);
+                        var dates = historicalMarketCapRecords.Select(h => h.TimeStamp).ToList();
+                        return historicalMarketCapRecords.ToDictionary(
+                            a => a.TimeStamp,
+                            a => a.MarketCapUsd);
+                    });
+
+            var allDates = allRecords.Select(r => r.TimeStamp).Distinct().ToList();
+
+            using (var stream = File.Create("marketcap.usd.by.day.csv"))
+            using (var writer = new StreamWriter(stream))
+            {
+                var dateColumn = AddQuotes("Date");
+                var columnNames = new[] { dateColumn }.Concat(allSymbols).ToList();
+                writer.WriteLine(string.Join(",", columnNames));
+                foreach (var date in allDates)
+                {
+                    var columnContent = columnNames.Select(
+                        c => c == dateColumn
+                                 ? date.ToString("yyyyMMdd")
+                                 : marketCapByDateBySymbol.TryGetValue(c, out Dictionary<DateTime, decimal?> d) 
+                                     ? d.TryGetValue(date, out decimal? volume) 
+                                           ? volume?.ToString() ?? string.Empty
+                                           : string.Empty
+                                     : string.Empty);
+                    writer.WriteLine(string.Join(",", columnContent.Select(AddQuotes)));
+                }
+            }
+
+        }
+
+        private string ToColumnName(HistoricalMarketCapRecord record)
+        {
+            return $"{record.CurrencyName} - ({record.CurrencySymbol})";
+        }
+
+        private static string AddQuotes(string unquoted)
+        {
+            return $"\"{unquoted}\"";
+        }
         
+        public IList<HistoricalMarketCapRecord> ExtractMarketCapRecords(string filePath)
+        {
+            using(var fileStream = File.OpenRead(filePath))
+            using (var reader = new StreamReader(fileStream))
+            {
+                var headers = reader.ReadLine();
+                Assert.Equal(headers, "\"TimeStamp\",\"Rank\",\"CurrencyName\",\"CurrencySymbol\",\"MarketCapUsd\",\"MarketCapBtc\",\"PriceUsd\",\"PriceBtc\",\"CirculatingSupply\",\"Volume24HUsd\",\"Volume24HBtc\",\"Change1H\",\"Change1D\",\"Change1W\"");
+                var records = new List<HistoricalMarketCapRecord>();
+                while (!reader.EndOfStream)
+                {
+                    var recordRawLine = reader.ReadLine();
+                    var fields = recordRawLine.Split(",").Select(s => s.Trim('"')).ToArray();
+                    var record = new HistoricalMarketCapRecord(
+                        DateTime.Parse(fields[0]), 
+                        int.Parse(fields[1]),
+                        fields[2], 
+                        fields[3], 
+                        decimal.TryParse(fields[4], out decimal marketCapUsd) ? marketCapUsd : (decimal?)null,
+                        decimal.TryParse(fields[5], out decimal marketCapBtc) ? marketCapBtc : (decimal?)null,
+                        null, null, null, null, null, null, null, null);
+                    records.Add(record);
+                }
+
+                return records;
+            }
+        }
+
         private static HistoricalMarketCapRecord GetHistoricalRecordFromMatch(Match m, DateTime timeStamp)
         {
             var rank = int.Parse(m.Groups[nameof(HistoricalMarketCapRecord.Rank)].Value);
@@ -136,6 +224,14 @@ namespace Trakx.MarketData.Feeds.Tests.Utils
             _httpClient?.Dispose();
             _fileWriter?.Close();
             _fileWriter?.Dispose();
+        }
+    }
+
+    public class HistoricalMarketCapRecordMap : ClassMap<HistoricalMarketCapRecord>
+    {
+        public HistoricalMarketCapRecordMap()
+        {
+            AutoMap();
         }
     }
 }
