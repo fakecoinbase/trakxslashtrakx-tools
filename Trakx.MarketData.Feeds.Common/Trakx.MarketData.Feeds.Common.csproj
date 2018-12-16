@@ -20,6 +20,7 @@
 
   <ItemGroup>
     <PackageReference Include="CryptoCompare" Version="1.1.2" />
+    <PackageReference Include="Humanizer" Version="2.5.16" />
     <PackageReference Include="JetBrains.Annotations" Version="2018.2.1" />
     <PackageReference Include="Microsoft.Extensions.Caching.Abstractions" Version="2.1.2" />
     <PackageReference Include="Microsoft.Extensions.Caching.Memory" Version="2.1.2" />

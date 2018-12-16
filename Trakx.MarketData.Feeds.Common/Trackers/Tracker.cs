@@ -10,22 +10,9 @@ using Trakx.MarketData.Feeds.Common.StaticData;
 
 namespace Trakx.MarketData.Feeds.Common.Trackers
 {
-    public class Tracker
+    public class Tracker : ITracker
     {
-        private const string LeverageDirection = nameof(LeverageDirection);
-        private const string LeverageAmplitude = nameof(LeverageAmplitude);
-        private const string SymbolGroup = nameof(SymbolGroup);
-        private const string BasketSizeGroup = nameof(BasketSizeGroup);
-        private const string Long = "L";
-        private const string Inverse = "I";
 
-        protected static string tickerPattern = "^(?<" +
-                                              LeverageDirection + $">({Inverse}|{Long}))(?<" +
-                                              LeverageAmplitude + ">[\\d]{1})(?<" +
-                                              SymbolGroup + ">(" + string.Join("|", TrackerSymbols.AllSymbols) + ")+)(?<" +
-                                              BasketSizeGroup + ">[\\d]*)$";
-
-        private static Regex _regex = new Regex(tickerPattern, RegexOptions.IgnoreCase | RegexOptions.Singleline);
 
         private string _ticker;
         public string Ticker => _ticker ?? (_ticker = ToString());
@@ -38,21 +25,6 @@ namespace Trakx.MarketData.Feeds.Common.Trackers
             Leverage = leverage;
             Symbol = symbol;
             BasketSize = basketSize;
-        }
-
-        public Tracker(string ticker)
-        {
-            var match = _regex.Matches(ticker).Single();
-
-            _ticker = ticker;
-
-            var sign = match.Groups[LeverageDirection].Value.ToUpperInvariant().Equals(Long) ? 1 : -1;
-            var amplitude = int.Parse(match.Groups[LeverageAmplitude].Value);
-            Leverage = sign * amplitude;
-            Symbol = match.Groups[SymbolGroup].Value.ToUpperInvariant();
-            var basketSizeString = match.Groups[BasketSizeGroup].Value;
-            BasketSize = string.IsNullOrEmpty(basketSizeString) 
-                             ? 1 : int.Parse(basketSizeString);
         }
 
         public Func<ICryptoCompareClient, Task<IList<string>>> ComponentExtractor
@@ -76,7 +48,7 @@ namespace Trakx.MarketData.Feeds.Common.Trackers
 
         public override string ToString()
         {
-            var sign = Leverage < 0 ? Inverse : Long;
+            var sign = Leverage < 0 ? TrackerConstants.Inverse : TrackerConstants.Long;
             var basketSize = TrackerSymbols.AllSingleNameSymbols.Contains(Symbol)
                                  ? String.Empty
                                  : BasketSize.ToString("000");

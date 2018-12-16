@@ -5,6 +5,8 @@ using System.Text;
 using System.Threading;
 using System.Threading.Tasks;
 
+using CryptoCompare;
+
 using Newtonsoft.Json;
 
 namespace Trakx.MarketData.Feeds.Tests.TestData
@@ -19,11 +21,17 @@ namespace Trakx.MarketData.Feeds.Tests.TestData
         public static Lazy<string> CoinListAsString;
         public static Func<Stream> CoinListAsStream;
 
+        public static Lazy<PriceMultiFullResponse> PriceMultiFullResponse;
+
         static CryptoCompare()
         {
             var coinListJsonFile = Path.Combine(Environment.CurrentDirectory, TestDataProvider.Testdata, "cryptocompare-coinlist.json");
+            
             CoinListAsString = new Lazy<string>(() => File.ReadAllText(coinListJsonFile), LazyThreadSafetyMode.PublicationOnly);
             CoinListAsStream = () => File.OpenRead(coinListJsonFile);
+
+            var priceMultiFullJsonFile = Path.Combine(Environment.CurrentDirectory, TestDataProvider.Testdata, "cryptocompare-pricemultifull.json");
+            PriceMultiFullResponse = new Lazy<PriceMultiFullResponse>(() => JsonConvert.DeserializeObject<PriceMultiFullResponse>(File.ReadAllText(priceMultiFullJsonFile)));
         }
     }
 

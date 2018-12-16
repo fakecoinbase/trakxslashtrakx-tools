@@ -114,16 +114,23 @@ namespace Trakx.MarketData.Feeds.Controllers
             string exchangeName = null)
         {
             var fromSymbols = fromSymbolAsCsvList.FromCsvToDistinctNonNullOrWhiteSpaceUpperList();
-            fromSymbols = "BTC,ETH".FromCsvToDistinctNonNullOrWhiteSpaceUpperList();
             Check.NotEmpty(fromSymbols, nameof(fromSymbolAsCsvList));
             var toSymbols = toSymbolsAsCsvList.FromCsvToDistinctNonNullOrWhiteSpaceUpperList();
             Check.NotEmpty(toSymbols, nameof(toSymbolsAsCsvList));
 
-            return await _cryptoCompareClient.Prices.MultipleSymbolFullDataAsync(
-                       fromSymbols,
-                       toSymbols,
-                       tryConversion,
-                       exchangeName);
+            var fetchSymbolsByTracker = fromSymbols.Select(async s => (s, await _componentProvider.GetComponentTickers(s)));
+            var symbolsByTracker = (await Task.WhenAll(fetchSymbolsByTracker)).ToDictionary(r => r.Item1, r => r.Item2);
+            var allSymbols = symbolsByTracker.Values.SelectMany(c => c).Distinct().ToList();
+
+            var pricesMultiFullResponses = await _cryptoCompareClient.Prices.MultipleSymbolFullDataAsync(
+                                                       allSymbols,
+                                                       toSymbols,
+                                                       tryConversion,
+                                                       exchangeName);
+
+            var response = _responseBuilder.CalculatePriceMultiFullResponse(symbolsByTracker, pricesMultiFullResponses);
+
+            return response;
         }
 
         [HttpGet(ApiConstants.CryptoCompare.TopMarketCap)]
