@@ -1,4 +1,5 @@
 ﻿using System;
+using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
 
@@ -143,6 +144,9 @@ namespace Trakx.MarketData.Feeds.Controllers
             return new ActionResult<TopMarketCapResponse>(response);
         }
 
+        /// <summary>
+        /// Simply uses BTC top pairs and returns of fraction of the corresponding volumes
+        /// </summary>
         [HttpGet(ApiConstants.CryptoCompare.TopPairs)]
         public async Task<ActionResult<TopResponse>> TradingPairsAsync(
             [NotNull] string fromSymbol,
@@ -153,8 +157,15 @@ namespace Trakx.MarketData.Feeds.Controllers
                 TrackerDetails.TrakxTrackersAsCoinList.Coins,
                 nameof(fromSymbol));
 
-            fromSymbol = "ETH";
-            return await _cryptoCompareClient.Tops.TradingPairsAsync(fromSymbol, limit);
+            var components = await _componentProvider.GetComponentTickers(fromSymbol);
+            var btcPairs = await _cryptoCompareClient.Tops.TradingPairsAsync("BTC", limit);
+
+            var allToSymbols = btcPairs.Data.Select(d => d.ToSymbol).Distinct().ToList();
+            var trackerPrices = await SingleSymbolPriceAsync(fromSymbol, string.Join(",", allToSymbols));
+            
+            var response = _responseBuilder.CalculateTopPairResponse(fromSymbol, trackerPrices.Value, btcPairs);
+
+            return response;
         }
 
         [HttpGet(ApiConstants.CryptoCompare.TopTotalVol)]

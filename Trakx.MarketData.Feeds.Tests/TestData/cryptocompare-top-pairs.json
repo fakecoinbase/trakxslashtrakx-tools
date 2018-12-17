@@ -1,0 +1,43 @@
+﻿{
+  "Response": "Success",
+  "Data": [
+    {
+      "exchange": "CCCAGG",
+      "fromSymbol": "BTC",
+      "toSymbol": "USDT",
+      "volume24h": 248998.42880996832,
+      "volume24hTo": 812299356.6815071
+    },
+    {
+      "exchange": "CCCAGG",
+      "fromSymbol": "BTC",
+      "toSymbol": "USD",
+      "volume24h": 41616.57082568351,
+      "volume24hTo": 136251897.15063596
+    },
+    {
+      "exchange": "CCCAGG",
+      "fromSymbol": "BTC",
+      "toSymbol": "QC",
+      "volume24h": 9398.115899999986,
+      "volume24hTo": 211926342.835316
+    },
+    {
+      "exchange": "CCCAGG",
+      "fromSymbol": "BTC",
+      "toSymbol": "JPY",
+      "volume24h": 9037.063994070006,
+      "volume24hTo": 3303293419.8191032
+    },
+    {
+      "exchange": "CCCAGG",
+      "fromSymbol": "BTC",
+      "toSymbol": "EUR",
+      "volume24h": 6878.002103409998,
+      "volume24hTo": 19789398.2229651
+    }
+  ],
+  "RateLimit": {},
+  "HasWarning": false,
+  "Type": 100
+}

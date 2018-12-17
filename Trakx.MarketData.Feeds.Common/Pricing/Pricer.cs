@@ -10,8 +10,10 @@ namespace Trakx.MarketData.Feeds.Common.Pricing
 {
     public class Pricer : IPricer
     {
-        private readonly ITrackerFactory _trackerFactory;
+        private const decimal TrackersToUnderlyingVolumeRatio = 0.3m;
 
+        private readonly ITrackerFactory _trackerFactory;
+        
         public Pricer(ITrackerFactory trackerFactory)
         {
             _trackerFactory = trackerFactory;
@@ -51,6 +53,12 @@ namespace Trakx.MarketData.Feeds.Common.Pricing
         public double? LeveragedAverage(int leverage, IList<CoinFullAggregatedData> componentData, Func<CoinFullAggregatedData, double?> selector)
         {
             return componentData.Select(selector).Average() * leverage;
+        }
+
+        /// <inheritdoc />
+        public decimal CalculateVolumeFromUnderlyingVolumeTo(List<decimal> componentVolumes)
+        {
+            return TrackersToUnderlyingVolumeRatio * componentVolumes.Average();
         }
     }
 }

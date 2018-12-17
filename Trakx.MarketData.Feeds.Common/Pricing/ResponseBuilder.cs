@@ -48,6 +48,26 @@ namespace Trakx.MarketData.Feeds.Common.Pricing
         }
 
         /// <inheritdoc />
+        public TopResponse CalculateTopPairResponse(string trackerSymbol, IReadOnlyDictionary<string, decimal> trackerPrices, TopResponse btcPairs)
+        {
+            var response = btcPairs.Data.Select(
+                d =>
+                {
+                    var assumedVolumeTo = _pricer.CalculateVolumeFromUnderlyingVolumeTo(new List<decimal>(){d.Volume24HTo});
+                    var assumedVolume = trackerPrices[d.ToSymbol] == 0 ? 0: assumedVolumeTo / trackerPrices[d.ToSymbol];
+                    return new TopInfo()
+                               {
+                                   Exchange = d.Exchange,
+                                   ToSymbol = d.ToSymbol,
+                                   Volume24HTo = assumedVolumeTo,
+                                   Volume24H = assumedVolume
+                                };
+                }).ToList();
+
+            return new TopResponse() { Data = response };
+        }
+
+        /// <inheritdoc />
         public PriceMultiFullResponse CalculatePriceMultiFullResponse(Dictionary<string, IList<string>> symbolsByTracker, PriceMultiFullResponse componentsPriceMultiFullResponse)
         {
             var toCurrencies = componentsPriceMultiFullResponse.Raw

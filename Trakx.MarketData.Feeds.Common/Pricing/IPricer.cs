@@ -20,5 +20,7 @@ namespace Trakx.MarketData.Feeds.Common.Pricing
         decimal? LeveragedAverage(int leverage, IList<CoinFullAggregatedData> componentData, Func<CoinFullAggregatedData, decimal?> selector);
 
         double? LeveragedAverage(int leverage, IList<CoinFullAggregatedData> componentData, Func<CoinFullAggregatedData, double?> selector);
+
+        decimal CalculateVolumeFromUnderlyingVolumeTo(List<decimal> componentVolumes);
     }
 }
