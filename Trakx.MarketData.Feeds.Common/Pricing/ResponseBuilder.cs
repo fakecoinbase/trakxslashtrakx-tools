@@ -145,15 +145,21 @@ namespace Trakx.MarketData.Feeds.Common.Pricing
 
             var leverage = tracker.Leverage;
             var datas = componentsData.Values.ToList();
-            
+
+            var price = _pricer.LeveragedAverage(leverage, datas, c => c.Price);
+            var lastVolumeTo = _pricer.CalculateVolumeFromUnderlyingVolumeTo(componentsData.Values.Select(c => c.LastVolumeTo).ToList());
+            var totalVolume24To = _pricer.CalculateVolumeFromUnderlyingVolumeTo(componentsData.Values.Select(c => c.TotalVolume24HTo).ToList());
+            var volume24To = _pricer.CalculateVolumeFromUnderlyingVolumeTo(componentsData.Values.Select(c => c.Volume24HourTo).ToList());
+            var volumeDayTo = _pricer.CalculateVolumeFromUnderlyingVolumeTo(componentsData.Values.Select(c => c.VolumeDayTo).ToList());
+
             var result = new CoinFullAggregatedData()
             {
-                MarketCap = null,
+                MarketCap = _pricer.CalculateMarketCapFrom24hVolumeTo((decimal?)volume24To),
                 Flags = componentsData.Values.Select(c => c.Flags).Distinct().First(),
                 FromSymbol = ticker,
                 ToSymbol = componentsData.Values.Select(c => c.ToSymbol).Distinct().Single(),
 
-                Price = _pricer.LeveragedAverage(leverage, datas, c => c.Price),
+                Price = price,
 
                 Change24Hour = _pricer.LeveragedAverage(leverage, datas, c => c.Change24Hour),
                 ChangeDay = _pricer.LeveragedAverage(leverage, datas, c => c.ChangeDay),
@@ -169,14 +175,14 @@ namespace Trakx.MarketData.Feeds.Common.Pricing
 
                 LastTradeId = null,
                 LastUpdate = componentsData.Values.Select(c => c.LastUpdate).Max(),
-                LastVolume = null,
-                LastVolumeTo = null,
-                TotalVolume24H = null,
-                TotalVolume24HTo = null,
-                Volume24Hour = null,
-                Volume24HourTo = null,
-                VolumeDay = null,
-                VolumeDayTo = null,
+                LastVolume = price == 0 ? null : lastVolumeTo / price,
+                LastVolumeTo = lastVolumeTo,
+                TotalVolume24H = price == 0 ? null : totalVolume24To / (decimal)price,
+                TotalVolume24HTo = totalVolume24To,
+                Volume24Hour = price == 0 ? null : volume24To / price,
+                Volume24HourTo = volume24To,
+                VolumeDay = price == 0 ? null : volumeDayTo / price,
+                VolumeDayTo = volumeDayTo,
 
                 Market = string.Join(",", componentsData.Values.Select(c => c.Market).Distinct().ToList()),
                 LastMarket = string.Join(",", componentsData.Values.Select(c => c.LastMarket).Distinct().ToList()),

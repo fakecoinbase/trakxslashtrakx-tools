@@ -11,6 +11,7 @@ namespace Trakx.MarketData.Feeds.Common.Pricing
     public class Pricer : IPricer
     {
         private const decimal TrackersToUnderlyingVolumeRatio = 0.3m;
+        private const decimal MarketCapToVolumeRatio = 10m;
 
         private readonly ITrackerFactory _trackerFactory;
         
@@ -59,6 +60,24 @@ namespace Trakx.MarketData.Feeds.Common.Pricing
         public decimal CalculateVolumeFromUnderlyingVolumeTo(List<decimal> componentVolumes)
         {
             return TrackersToUnderlyingVolumeRatio * componentVolumes.Average();
+        }
+
+        /// <inheritdoc />
+        public decimal? CalculateVolumeFromUnderlyingVolumeTo(List<decimal?> componentVolumes)
+        {
+            return TrackersToUnderlyingVolumeRatio * componentVolumes.Average();
+        }
+
+        /// <inheritdoc />
+        public double? CalculateVolumeFromUnderlyingVolumeTo(List<double?> componentVolumes)
+        {
+            return (double)TrackersToUnderlyingVolumeRatio * componentVolumes.Average();
+        }
+
+        /// <inheritdoc />
+        public decimal? CalculateMarketCapFrom24hVolumeTo(decimal? volume24HTo)
+        {
+            return MarketCapToVolumeRatio * volume24HTo;
         }
     }
 }
