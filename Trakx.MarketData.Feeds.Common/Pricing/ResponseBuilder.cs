@@ -177,10 +177,10 @@ namespace Trakx.MarketData.Feeds.Common.Pricing
 
                 Price = $"{targetCurrencySymbol} {((double)rawData.Price):N}",
 
-                Change24Hour = $"{targetCurrencySymbol} {((double)rawData.Change24Hour):N}",
-                ChangeDay = $"{targetCurrencySymbol} {((double)rawData.ChangeDay):N}",
-                ChangePCT24Hour = $"{rawData.ChangePCT24Hour:P}",
-                ChangePCTDay = $"{rawData.ChangePCTDay:P}",
+                Change24Hour = $"{(double)rawData.Change24Hour/100d:P}",
+                ChangeDay = $"{(double)rawData.ChangeDay/100d:P}",
+                ChangePCT24Hour = $"{rawData.ChangePCT24Hour/100:P}",
+                ChangePCTDay = $"{rawData.ChangePCTDay/100:P}",
 
                 High24Hour = rawData.High24Hour.HasValue ? $"{targetCurrencySymbol} {rawData.High24Hour.Value:N}" : null,
                 HighDay = rawData.HighDay.HasValue ? $"{targetCurrencySymbol} {rawData.HighDay.Value:N}" : null,

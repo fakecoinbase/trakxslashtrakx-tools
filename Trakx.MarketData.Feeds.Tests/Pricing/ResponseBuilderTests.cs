@@ -60,6 +60,9 @@ namespace Trakx.MarketData.Feeds.Tests.Pricing
 
             result.Display.Values.SelectMany(v => v.Values).Select(v => v.ToSymbol).Distinct().Should()
                 .BeEquivalentTo(new[] { "$", "€" });
+
+            result.Raw[l2tbx]["EUR"].Change24Hour.Should().Be(64.6538000000000900256m);
+            result.Display[l2tbx]["EUR"].Change24Hour.Should().Be("64.65%");
         }
     }
 }
