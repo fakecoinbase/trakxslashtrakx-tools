@@ -46,6 +46,7 @@ namespace Trakx.MarketData.Feeds
                     c.SwaggerDoc(Version, new Info { Title = "Trakx MarketData Api", Version = Version });
                 });
 
+            services.AddSingleton<ITrackerFactory, TrackerFactory>();
             services.AddSingleton<IPricer, Pricer>();
             services.AddSingleton<IResponseBuilder, ResponseBuilder>();
             services.AddSingleton<ICryptoCompareClient, CryptoCompareClient>();

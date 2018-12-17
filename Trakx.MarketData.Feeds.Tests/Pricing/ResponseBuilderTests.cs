@@ -46,9 +46,6 @@ namespace Trakx.MarketData.Feeds.Tests.Pricing
             result.Raw.Keys.Count.Should().Be(3);
             result.Raw.Keys.Should().BeEquivalentTo(new[] { l2tbx, i1tbe, i3tex });
 
-            result.Display.Keys.Count.Should().Be(3);
-            result.Display.Keys.Should().BeEquivalentTo(new[] { l2tbx, i1tbe, i3tex });
-
             result.Raw.Values.Count.Should().Be(3);
             result.Raw.Values.All(v => v.Count == 2).Should().BeTrue();
             result.Raw.Values.All(v => v.ContainsKey("USD") && v.ContainsKey("EUR")).Should().BeTrue();
@@ -56,6 +53,16 @@ namespace Trakx.MarketData.Feeds.Tests.Pricing
             result.Raw[i3tex]["EUR"].Price.Should().Be((double)(76.25m + 0.2538m) / 2d * -3);
             result.Raw[i1tbe]["USD"].ChangePCT24Hour.Should().Be((2.475754209468657m + 4.293595586471574m) / 2m * -1);
             result.Raw[l2tbx]["USD"].High24Hour.Should().Be((3318.31d + 0.2985d) / 2d * 2);
+
+            result.Display.Keys.Count.Should().Be(3);
+            result.Display.Keys.Should().BeEquivalentTo(new[] { l2tbx, i1tbe, i3tex });
+
+            result.Display.Values.Count.Should().Be(3);
+            result.Display.Values.All(v => v.Count == 2).Should().BeTrue();
+            result.Display.Values.All(v => v.ContainsKey("USD") && v.ContainsKey("EUR")).Should().BeTrue();
+
+            result.Display.Values.SelectMany(v => v.Values).Select(v => v.ToSymbol).Distinct().Should()
+                .BeEquivalentTo(new[] { "$", "€" });
         }
     }
 }

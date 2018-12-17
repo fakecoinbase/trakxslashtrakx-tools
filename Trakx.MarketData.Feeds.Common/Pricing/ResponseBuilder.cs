@@ -54,35 +54,11 @@ namespace Trakx.MarketData.Feeds.Common.Pricing
             var toCurrencies = componentsPriceMultiFullResponse.Raw
                 .Values.SelectMany(p => p.Keys).Distinct();
             
-            var rawPricesByToCurrencyByTracker = new Dictionary<string, IReadOnlyDictionary< string, CoinFullAggregatedData>> ();
-            foreach (var trackerTicker in symbolsByTracker.Keys)
-            {
-                var rawResponses = componentsPriceMultiFullResponse.Raw
-                    .Where(r => symbolsByTracker[trackerTicker].Contains(r.Key))
-                    .ToDictionary(r => r.Key, r => r.Value);
+            var rawPricesByToCurrencyByTracker = CalculatePriceMultiFullRaw(symbolsByTracker, componentsPriceMultiFullResponse, toCurrencies);
 
-                var dataByTickerByToCurrency = toCurrencies.ToDictionary(
-                    t => t,
-                    t => rawResponses.ToDictionary(r => r.Key, r => r.Value[t]));
-
-                var trackerDetailsByCurrency = toCurrencies.ToDictionary(c => c, c =>
-                {
-                    var mergedRawResponse = MergeCoinFullAggregatedDatas(
-                        trackerTicker,
-                        dataByTickerByToCurrency[c]);
-                    return mergedRawResponse;
-                }).AsReadonly();
-
-                rawPricesByToCurrencyByTracker.Add(trackerTicker, trackerDetailsByCurrency);
-            }
-            
             var priceMultiFullRaw = new PriceMultiFullRaw(rawPricesByToCurrencyByTracker);
 
-            var displayPricesByToCurrencyByTracker = rawPricesByToCurrencyByTracker.ToDictionary(
-                p => p.Key,
-                p => p.Value.ToDictionary(q => q.Key, q => GetCoinFullDataDisplay(p.Key, q.Key, q.Value)).AsReadonly());
-
-            var priceMultiFullDisplay = new PriceMultiFullDisplay(displayPricesByToCurrencyByTracker);
+            var priceMultiFullDisplay = CalculatePriceMultiFullDisplay(componentsPriceMultiFullResponse, rawPricesByToCurrencyByTracker);
 
             var response = new PriceMultiFullResponse()
                {
@@ -91,6 +67,52 @@ namespace Trakx.MarketData.Feeds.Common.Pricing
                };
 
             return response;
+        }
+
+        private Dictionary<string, IReadOnlyDictionary<string, CoinFullAggregatedData>> CalculatePriceMultiFullRaw(
+            Dictionary<string, IList<string>> symbolsByTracker,
+            PriceMultiFullResponse componentsPriceMultiFullResponse,
+            IEnumerable<string> toCurrencies)
+        {
+            var rawPricesByToCurrencyByTracker = new Dictionary<string, IReadOnlyDictionary<string, CoinFullAggregatedData>>();
+            foreach (var trackerTicker in symbolsByTracker.Keys)
+            {
+                var rawResponses = componentsPriceMultiFullResponse.Raw
+                    .Where(r => symbolsByTracker[trackerTicker].Contains(r.Key)).ToDictionary(r => r.Key, r => r.Value);
+
+                var dataByTickerByToCurrency = toCurrencies.ToDictionary(
+                    t => t,
+                    t => rawResponses.ToDictionary(r => r.Key, r => r.Value[t]));
+
+                var trackerDetailsByCurrency = toCurrencies.ToDictionary(
+                    c => c,
+                    c =>
+                        {
+                            var mergedRawResponse = MergeCoinFullAggregatedDatas(trackerTicker, dataByTickerByToCurrency[c]);
+                            return mergedRawResponse;
+                        }).AsReadonly();
+
+                rawPricesByToCurrencyByTracker.Add(trackerTicker, trackerDetailsByCurrency);
+            }
+
+            return rawPricesByToCurrencyByTracker;
+        }
+
+        private PriceMultiFullDisplay CalculatePriceMultiFullDisplay(
+            PriceMultiFullResponse componentsPriceMultiFullResponse,
+            Dictionary<string, IReadOnlyDictionary<string, CoinFullAggregatedData>> rawPricesByToCurrencyByTracker)
+        {
+            var displayPricesByToCurrencyByTracker = rawPricesByToCurrencyByTracker.ToDictionary(
+                p => p.Key,
+                p => p.Value.ToDictionary(
+                    q => q.Key,
+                    q => GetCoinFullDataDisplay(
+                        p.Key,
+                        componentsPriceMultiFullResponse.Display.Values.First()[q.Key].ToSymbol,
+                        q.Value)).AsReadonly());
+
+            var priceMultiFullDisplay = new PriceMultiFullDisplay(displayPricesByToCurrencyByTracker);
+            return priceMultiFullDisplay;
         }
 
         /// <summary>
@@ -154,19 +176,19 @@ namespace Trakx.MarketData.Feeds.Common.Pricing
                 FromSymbol = ticker,
                 ToSymbol = targetCurrencySymbol,
 
-                Price = $"{targetCurrencySymbol} {((double)rawData.Price).ToMetric()}",
+                Price = $"{targetCurrencySymbol} {((double)rawData.Price):N}",
 
-                Change24Hour = $"{targetCurrencySymbol} {((double)rawData.Change24Hour).ToMetric()}",
-                ChangeDay = $"{targetCurrencySymbol} {((double)rawData.ChangeDay).ToMetric()}",
-                ChangePCT24Hour = $"{rawData.ChangePCT24Hour:0.##}%",
-                ChangePCTDay = $"{rawData.ChangePCTDay:0.##}%",
+                Change24Hour = $"{targetCurrencySymbol} {((double)rawData.Change24Hour):N}",
+                ChangeDay = $"{targetCurrencySymbol} {((double)rawData.ChangeDay):N}",
+                ChangePCT24Hour = $"{rawData.ChangePCT24Hour:P}",
+                ChangePCTDay = $"{rawData.ChangePCTDay:P}",
 
-                High24Hour = rawData.High24Hour.HasValue ? $"{targetCurrencySymbol} {rawData.High24Hour.Value.ToMetric()}" : null,
-                HighDay = rawData.HighDay.HasValue ? $"{targetCurrencySymbol} {rawData.HighDay.Value.ToMetric()}" : null,
-                Low24Hour = rawData.Low24Hour.HasValue ? $"{targetCurrencySymbol} {rawData.Low24Hour.Value.ToMetric()}" : null,
-                LowDay = rawData.LowDay.HasValue ? $"{targetCurrencySymbol} {rawData.LowDay.Value.ToMetric()}" : null,
-                Open24Hour = rawData.Open24Hour.HasValue ? $"{targetCurrencySymbol} {rawData.Open24Hour.Value.ToMetric()}" : null,
-                OpenDay = rawData.OpenDay.HasValue ? $"{targetCurrencySymbol} {rawData.OpenDay.Value.ToMetric()}" : null,
+                High24Hour = rawData.High24Hour.HasValue ? $"{targetCurrencySymbol} {rawData.High24Hour.Value:N}" : null,
+                HighDay = rawData.HighDay.HasValue ? $"{targetCurrencySymbol} {rawData.HighDay.Value:N}" : null,
+                Low24Hour = rawData.Low24Hour.HasValue ? $"{targetCurrencySymbol} {rawData.Low24Hour.Value:N}" : null,
+                LowDay = rawData.LowDay.HasValue ? $"{targetCurrencySymbol} {rawData.LowDay.Value:N}" : null,
+                Open24Hour = rawData.Open24Hour.HasValue ? $"{targetCurrencySymbol} {rawData.Open24Hour.Value:N}" : null,
+                OpenDay = rawData.OpenDay.HasValue ? $"{targetCurrencySymbol} {rawData.OpenDay.Value:N}" : null,
 
                 LastTradeId = null,
                 LastUpdate = rawData.LastUpdate.Humanize(),
