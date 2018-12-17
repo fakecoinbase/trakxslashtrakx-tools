@@ -1,4 +1,6 @@
-﻿using System.Linq;
+﻿using System;
+using System.IO;
+using System.Linq;
 using System.Text.RegularExpressions;
 
 using Trakx.MarketData.Feeds.Common.StaticData;
@@ -35,17 +37,24 @@ namespace Trakx.MarketData.Feeds.Common.Trackers
         /// <inheritdoc />
         public ITracker FromTicker(string ticker)
         {
-            var match = _regex.Matches(ticker).Single();
+            try
+            {
+                var match = _regex.Matches(ticker).Single();
 
-            var sign = match.Groups[TrackerConstants.LeverageDirection].Value.ToUpperInvariant().Equals(TrackerConstants.Long) ? 1 : -1;
-            var amplitude = int.Parse(match.Groups[TrackerConstants.LeverageAmplitude].Value);
-            var leverage = sign * amplitude;
-            var symbol = match.Groups[TrackerConstants.SymbolGroup].Value.ToUpperInvariant();
-            var basketSizeString = match.Groups[TrackerConstants.BasketSizeGroup].Value;
-            var basketSize = string.IsNullOrEmpty(basketSizeString)
-                             ? 1 : int.Parse(basketSizeString);
+                var sign = match.Groups[TrackerConstants.LeverageDirection].Value.ToUpperInvariant().Equals(TrackerConstants.Long) ? 1 : -1;
+                var amplitude = int.Parse(match.Groups[TrackerConstants.LeverageAmplitude].Value);
+                var leverage = sign * amplitude;
+                var symbol = match.Groups[TrackerConstants.SymbolGroup].Value.ToUpperInvariant();
+                var basketSizeString = match.Groups[TrackerConstants.BasketSizeGroup].Value;
+                var basketSize = string.IsNullOrEmpty(basketSizeString)
+                                     ? 1 : int.Parse(basketSizeString);
 
-            return new Tracker(leverage, symbol, basketSize);
+                return new Tracker(leverage, symbol, basketSize);
+            }
+            catch (Exception e)
+            {
+                throw new InvalidDataException($"Unable to create tracker from ticker {ticker}", e);
+            }
         }
     }
 }

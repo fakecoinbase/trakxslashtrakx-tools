@@ -68,6 +68,32 @@ namespace Trakx.MarketData.Feeds.Common.Pricing
         }
 
         /// <inheritdoc />
+        public TopVolume24HResponse CalculateTopVolumesResponse(CoinListResponse trackers, PriceMultiFullResponse prices, TopVolume24HResponse baseResponse)
+        {
+            var volInfos = trackers.Coins.OrderByDescending(c => prices.Raw[c.Value.Symbol].Values.Single().TotalVolume24HTo)
+                .Select(c => new TopVolume24HInfo()
+                                 {
+                                     CoinInfo = c.Value,
+                                     Raw = new Volume24HRaw(prices.Raw[c.Value.Symbol].ToDictionary(p => p.Key, p => p.Value)),
+                                     Display = new Volume24HDisplay(prices.Display[c.Value.Symbol].ToDictionary(p => p.Key, p => p.Value))
+                }).ToList();
+
+
+
+            var response = new TopVolume24HResponse()
+                               {
+                                   Data = volInfos,
+                                   ErrorsSummary = baseResponse.ErrorsSummary,
+                                   Path = baseResponse.Path,
+                                   Status = baseResponse.Status,
+                                   StatusMessage = baseResponse.StatusMessage,
+                                   StatusType = baseResponse.StatusType
+                               };
+
+            return response;
+        }
+
+        /// <inheritdoc />
         public PriceMultiFullResponse CalculatePriceMultiFullResponse(Dictionary<string, IList<string>> symbolsByTracker, PriceMultiFullResponse componentsPriceMultiFullResponse)
         {
             var toCurrencies = componentsPriceMultiFullResponse.Raw
@@ -151,10 +177,11 @@ namespace Trakx.MarketData.Feeds.Common.Pricing
             var totalVolume24To = _pricer.CalculateVolumeFromUnderlyingVolumeTo(componentsData.Values.Select(c => c.TotalVolume24HTo).ToList());
             var volume24To = _pricer.CalculateVolumeFromUnderlyingVolumeTo(componentsData.Values.Select(c => c.Volume24HourTo).ToList());
             var volumeDayTo = _pricer.CalculateVolumeFromUnderlyingVolumeTo(componentsData.Values.Select(c => c.VolumeDayTo).ToList());
+            var marketCap = _pricer.CalculateMarketCapFrom24hVolumeTo((decimal?)volume24To);
 
             var result = new CoinFullAggregatedData()
             {
-                MarketCap = _pricer.CalculateMarketCapFrom24hVolumeTo((decimal?)volume24To),
+                MarketCap = marketCap,
                 Flags = componentsData.Values.Select(c => c.Flags).Distinct().First(),
                 FromSymbol = ticker,
                 ToSymbol = componentsData.Values.Select(c => c.ToSymbol).Distinct().Single(),
@@ -217,14 +244,14 @@ namespace Trakx.MarketData.Feeds.Common.Pricing
 
                 LastTradeId = null,
                 LastUpdate = rawData.LastUpdate.Humanize(),
-                LastVolume = null,
-                LastVolumeTo = null,
-                TotalVolume24H = null,
-                TotalVolume24HTo = null,
-                Volume24Hour = null,
-                Volume24HourTo = null,
-                VolumeDay = null,
-                VolumeDayTo = null,
+                LastVolume = rawData.LastVolume?.ToString("N"),
+                LastVolumeTo = rawData.LastVolumeTo == null ? null : $"{targetCurrencySymbol} {rawData.LastVolumeTo:N}",
+                TotalVolume24H = rawData.TotalVolume24H?.ToString("N"),
+                TotalVolume24HTo = rawData.TotalVolume24HTo == null ? null : $"{targetCurrencySymbol} {rawData.TotalVolume24HTo:N}",
+                Volume24Hour = rawData.Volume24Hour?.ToString("N"),
+                Volume24HourTo = rawData.Volume24HourTo == null ? null : $"{targetCurrencySymbol} {rawData.Volume24HourTo:N}",
+                VolumeDay = rawData.VolumeDay?.ToString("N"),
+                VolumeDayTo = rawData.VolumeDayTo == null ? null : $"{targetCurrencySymbol} {rawData.VolumeDayTo:N}",
 
                 Market = rawData.Market,
                 LastMarket = rawData.LastMarket,

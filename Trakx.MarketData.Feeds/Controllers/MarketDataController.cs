@@ -169,10 +169,19 @@ namespace Trakx.MarketData.Feeds.Controllers
         }
 
         [HttpGet(ApiConstants.CryptoCompare.TopTotalVol)]
-        public async Task<ActionResult<TopVolumesResponse>> ByPairVolumeAsync([NotNull] string toSymbol, int? limit = null)
+        public async Task<ActionResult<TopVolume24HResponse>> CoinFullDataBy24HVolume([NotNull] string toSymbol, int? limit = null)
         {
             Check.NotNull(toSymbol, nameof(toSymbol));
-            return await _cryptoCompareClient.Tops.ByPairVolumeAsync(toSymbol, limit);
+            var trakxCoins = TrackerDetails.TrakxTrackersAsCoinList;
+            var coinsSymbolsCsv = string.Join(",", trakxCoins.Coins.Select(c => c.Value.Symbol));
+
+            var baseResponse = await _cryptoCompareClient.Tops.CoinFullDataBy24HVolume(toSymbol, trakxCoins.Coins.Count);
+
+            var prices = await PriceMultipleSymbolFullDataAsync(coinsSymbolsCsv, toSymbol);
+
+            var response = _responseBuilder.CalculateTopVolumesResponse(trakxCoins, prices.Value, baseResponse);
+
+            return response;
         }
 
         [HttpGet(ApiConstants.CryptoCompare.TopVolumes)]
