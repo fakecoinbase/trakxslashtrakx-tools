@@ -1,12 +1,9 @@
-﻿using System;
-using System.Collections.Generic;
+﻿using System.Collections.Generic;
 using System.Linq;
-using System.Text;
 
 using FluentAssertions;
 
 using NSubstitute;
-using NSubstitute.Exceptions;
 
 using Trakx.MarketData.Feeds.Common.Pricing;
 using Trakx.MarketData.Feeds.Common.Trackers;

@@ -4,7 +4,6 @@ using System.Linq;
 
 using CryptoCompare;
 
-using Trakx.MarketData.Feeds.Common.Models.Trakx;
 using Trakx.MarketData.Feeds.Common.Trackers;
 
 namespace Trakx.MarketData.Feeds.Common.Pricing

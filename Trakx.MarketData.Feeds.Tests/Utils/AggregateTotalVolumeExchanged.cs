@@ -9,7 +9,6 @@ using CryptoCompare;
 
 using Trakx.MarketData.Feeds.Common.ApiClients;
 
-using Xunit;
 using Xunit.Abstractions;
 
 namespace Trakx.MarketData.Feeds.Tests.Utils

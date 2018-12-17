@@ -1,8 +1,4 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Text;
-
-namespace Trakx.MarketData.Feeds.Common.ApiClients
+﻿namespace Trakx.MarketData.Feeds.Common.ApiClients
 {
     public static class ApiConstants
     {

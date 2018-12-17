@@ -1,8 +1,4 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Text;
-
-using FluentAssertions;
+﻿using FluentAssertions;
 
 using Trakx.MarketData.Feeds.Common.StaticData;
 

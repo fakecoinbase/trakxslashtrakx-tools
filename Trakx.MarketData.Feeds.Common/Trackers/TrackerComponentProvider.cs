@@ -1,10 +1,5 @@
-﻿using System;
-using System.Collections.Generic;
+﻿using System.Collections.Generic;
 using System.Threading.Tasks;
-
-using CryptoCompare;
-
-using Microsoft.Extensions.Caching.Memory;
 
 using Trakx.MarketData.Feeds.Common.Cache;
 using Trakx.MarketData.Feeds.Common.Trackers;

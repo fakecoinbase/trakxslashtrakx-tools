@@ -3,7 +3,6 @@ using System.Linq;
 
 using FluentAssertions;
 
-using Trakx.MarketData.Feeds.Common.Models.Trakx;
 using Trakx.MarketData.Feeds.Common.Trackers;
 
 using Xunit;
