@@ -53,6 +53,9 @@
     <None Update="TestData\cryptocompare-top-marketcap.json">
       <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
     </None>
+    <None Update="TestData\messari-all-assets-with-profile-with-metrics.json">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </None>
   </ItemGroup>
 
 </Project>

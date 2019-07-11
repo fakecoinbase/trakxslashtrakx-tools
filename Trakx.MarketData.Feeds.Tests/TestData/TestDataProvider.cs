@@ -49,4 +49,17 @@ namespace Trakx.MarketData.Feeds.Tests.TestData
             HistoricalMarketCap = () => File.OpenRead(historicalMarketCapFile);
         }
     }
+
+    internal class Messari
+    {
+        public static Lazy<string> CoinListAsString;
+        public static Func<Stream> CoinListAsStream;
+        
+        static Messari()
+        {
+            var coinListJsonFile = Path.Combine(Environment.CurrentDirectory, TestDataProvider.Testdata, "messari-all-assets-with-profile-with-metrics.json");
+            CoinListAsString = new Lazy<string>(() => File.ReadAllText(coinListJsonFile), LazyThreadSafetyMode.PublicationOnly);
+            CoinListAsStream = () => File.OpenRead(coinListJsonFile);
+        }
+    }
 }
