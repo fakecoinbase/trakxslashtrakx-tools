@@ -8,11 +8,10 @@ using Microsoft.AspNetCore.Mvc;
 using Microsoft.Extensions.Caching.Memory;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
-using Swashbuckle.AspNetCore.Swagger;
-
+using Microsoft.Extensions.Hosting;
+using Microsoft.OpenApi.Models;
 using Trakx.MarketData.Feeds.Common.ApiClients;
 using Trakx.MarketData.Feeds.Common.Cache;
-using Trakx.MarketData.Feeds.Common.Models.Trakx;
 using Trakx.MarketData.Feeds.Common.Pricing;
 using Trakx.MarketData.Feeds.Common.Trackers;
 
@@ -34,16 +33,16 @@ namespace Trakx.MarketData.Feeds
         {
             services.AddMemoryCache();
             services.AddMvc()
-                .SetCompatibilityVersion(CompatibilityVersion.Version_2_1)
+                .SetCompatibilityVersion(CompatibilityVersion.Version_3_0)
                 .AddJsonOptions(options =>
                     {
-                        options.SerializerSettings.Converters.Add(new Newtonsoft.Json.Converters.StringEnumConverter());
-                        options.SerializerSettings.NullValueHandling = Newtonsoft.Json.NullValueHandling.Ignore;
+                        //options.JsonSerializerOptions.Converters.Add(new StringEnumConverter());
+                        options.JsonSerializerOptions.IgnoreNullValues = true;
                     });
 
             services.AddSwaggerGen(c =>
                 {
-                    c.SwaggerDoc(Version, new Info { Title = "Trakx MarketData Api", Version = Version });
+                    c.SwaggerDoc(Version, new OpenApiInfo { Title = "Trakx MarketData Api", Version = Version });
                 });
 
             services.AddSingleton<ITrackerFactory, TrackerFactory>();
@@ -60,7 +59,7 @@ namespace Trakx.MarketData.Feeds
         }
 
         // This method gets called by the runtime. Use this method to configure the HTTP request pipeline.
-        public void Configure(IApplicationBuilder app, IHostingEnvironment env)
+        public void Configure(IApplicationBuilder app, IWebHostEnvironment env)
         {
             if (env.IsDevelopment())
             {
@@ -72,7 +71,7 @@ namespace Trakx.MarketData.Feeds
             }
 
             app.UseHttpsRedirection();
-            app.UseMvc();
+            //app.UseMvc();
             app.UseSwagger();
             app.UseSwaggerUI(c =>
                 {
@@ -82,7 +81,7 @@ namespace Trakx.MarketData.Feeds
         }
     }
 
-    public static class IServiceCollectionExtensions
+    public static class ServiceCollectionExtensions
     {
         public static IHttpClientBuilder AddCryptoCompareHttpClient(this IServiceCollection services)
         {

@@ -1,7 +1,5 @@
 ﻿using System;
 using System.Collections.Generic;
-using System.Transactions;
-
 using CryptoCompare;
 
 namespace Trakx.MarketData.Feeds.Common.Pricing

@@ -36,5 +36,10 @@
             public const string PriceMultifull = "data/pricemultifull";
         }
 
+        public static class Trakx
+        {
+            public const string NetAssetValue = "NetAssetValue";
+        }
+
     }
 }

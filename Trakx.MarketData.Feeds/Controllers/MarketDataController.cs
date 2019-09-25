@@ -1,5 +1,4 @@
 ﻿using System;
-using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
 
@@ -188,6 +187,21 @@ namespace Trakx.MarketData.Feeds.Controllers
         public async Task<ActionResult<TopVolumesResponse>> TopTotalVol([NotNull] string toSymbol, int? limit = null)
         {
             return null;
+        }
+
+        [HttpGet(ApiConstants.Trakx.NetAssetValue)]
+        public async Task<ActionResult<string>> NetAssetValue([FromQuery][NotNull] string indexSymbol, [FromQuery]string quoteSymbol = "usd")
+        {
+            if(!Enum.TryParse(indexSymbol, out KnownIndexes symbol))
+                return $"Known index symbols are [{string.Join(", ", Enum.GetNames(typeof(KnownIndexes)))}]";
+
+            if (!TrackerDetails.IndexDetails.TryGetValue(symbol, out var details))
+                return $"failed to retrieve details for index {indexSymbol}";
+
+            var components = details.Components.Select(c => c.Symbol);
+            var prices = await _cryptoCompareClient.Prices.MultipleSymbolsPriceAsync(components, new [] {quoteSymbol}, null, null);
+            var nav = details.Components.Sum(c => c.Proportion.ToDecimalOrNull() * prices[c.Symbol][quoteSymbol]);
+            return nav.ToString();
         }
     }
 }

@@ -1,10 +1,8 @@
 ﻿using System.Collections.Generic;
 using System.Threading.Tasks;
-
 using Trakx.MarketData.Feeds.Common.Cache;
-using Trakx.MarketData.Feeds.Common.Trackers;
 
-namespace Trakx.MarketData.Feeds.Common.Models.Trakx
+namespace Trakx.MarketData.Feeds.Common.Trackers
 {
     public class TrackerComponentProvider : ITrackerComponentProvider
     {

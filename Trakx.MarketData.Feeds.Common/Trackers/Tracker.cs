@@ -9,6 +9,7 @@ using Trakx.MarketData.Feeds.Common.StaticData;
 
 namespace Trakx.MarketData.Feeds.Common.Trackers
 {
+    [Obsolete]
     public class Tracker : ITracker
     {
 
