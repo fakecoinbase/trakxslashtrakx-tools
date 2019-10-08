@@ -1,0 +1,31 @@
+﻿
+Microsoft Visual Studio Solution File, Format Version 12.00
+# Visual Studio Version 16
+VisualStudioVersion = 16.0.29123.88
+MinimumVisualStudioVersion = 10.0.40219.1
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Trakx.MarketApi", "Trakx.MarketApi\Trakx.MarketApi.csproj", "{FC3AE14F-360C-4CB7-8C28-FF4208A4D008}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Trakx.MarketApi.Tests", "Trakx.MarketApi.Tests\Trakx.MarketApi.Tests.csproj", "{C4546C24-C26B-4A52-ADE4-EA07FFB52533}"
+EndProject
+Global
+	GlobalSection(SolutionConfigurationPlatforms) = preSolution
+		Debug|Any CPU = Debug|Any CPU
+		Release|Any CPU = Release|Any CPU
+	EndGlobalSection
+	GlobalSection(ProjectConfigurationPlatforms) = postSolution
+		{FC3AE14F-360C-4CB7-8C28-FF4208A4D008}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{FC3AE14F-360C-4CB7-8C28-FF4208A4D008}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{FC3AE14F-360C-4CB7-8C28-FF4208A4D008}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{FC3AE14F-360C-4CB7-8C28-FF4208A4D008}.Release|Any CPU.Build.0 = Release|Any CPU
+		{C4546C24-C26B-4A52-ADE4-EA07FFB52533}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{C4546C24-C26B-4A52-ADE4-EA07FFB52533}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{C4546C24-C26B-4A52-ADE4-EA07FFB52533}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{C4546C24-C26B-4A52-ADE4-EA07FFB52533}.Release|Any CPU.Build.0 = Release|Any CPU
+	EndGlobalSection
+	GlobalSection(SolutionProperties) = preSolution
+		HideSolutionNode = FALSE
+	EndGlobalSection
+	GlobalSection(ExtensibilityGlobals) = postSolution
+		SolutionGuid = {C2790A6B-0ADB-4658-9312-76CC450A142A}
+	EndGlobalSection
+EndGlobal

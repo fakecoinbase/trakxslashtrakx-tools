@@ -1,8 +1,0 @@
-version: '3.4'
-
-services:
-  trakx.marketdata.feeds:
-    image: ${DOCKER_REGISTRY}trakxmarketdatafeeds
-    build:
-      context: .
-      dockerfile: Trakx.MarketData.Feeds\Dockerfile
