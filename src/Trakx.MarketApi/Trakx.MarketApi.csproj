@@ -8,6 +8,7 @@
   </PropertyGroup>
 
   <ItemGroup>
+    <Content Remove="DataSources\CryptoCompare\CoinList.json" />
     <Content Remove="Indexes\L1CPU003.json" />
     <Content Remove="Indexes\L1EXC003.json" />
     <Content Remove="Indexes\L1FIN003.json" />
@@ -17,6 +18,7 @@
   </ItemGroup>
 
   <ItemGroup>
+    <EmbeddedResource Include="DataSources\CryptoCompare\CoinList.json" />
     <EmbeddedResource Include="Indexes\L1CPU003.json" />
     <EmbeddedResource Include="Indexes\L1EXC003.json" />
     <EmbeddedResource Include="Indexes\L1FIN003.json" />

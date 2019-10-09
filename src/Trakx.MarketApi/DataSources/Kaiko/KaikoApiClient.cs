@@ -1,8 +1,11 @@
 ﻿using System;
+using System.Globalization;
 using System.IO;
+using System.Linq;
 using System.Net;
 using System.Net.Http;
 using System.Net.Http.Headers;
+using System.Text.Encodings.Web;
 using System.Threading.Tasks;
 using Newtonsoft.Json;
 using Remotion.Linq.Parsing.Structure.IntermediateModel;
@@ -58,12 +61,14 @@ namespace Trakx.MarketApi.DataSources.Kaiko
         public async Task<AggregatedPrice.Response> GetAggregatedPrice(AggregatedPrice.Query query)
         {
             //todo:  build the URL from a HttpQuery, not manually like that
+            var startTimeIso8601 = query.StartTime.DateTime.ToUniversalTime().ToString("o", CultureInfo.InvariantCulture);
             var path = _marketDataEndpoint + $"data/{query.Commodity}.{query.DataVersion}/" +
                 $"spot_direct_exchange_rate/{query.BaseAsset}/{query.QuoteAsset}?"
-                                    + $"start_time={query.StartTime.ToUnixTimeMilliseconds()}"
-                                    + $"interval={query.Interval}"
-                                    + $"page_size={query.PageSize}"
-                                    + $"source={query.Sources}";
+                                    + $"start_time={UrlEncoder.Default.Encode(startTimeIso8601)}"
+                                    + $"&interval={query.Interval}"
+                                    + $"&page_size={query.PageSize}"
+                                    + $"&exchanges={string.Join(",", query.Exchanges)}"
+                                    + $"&sources={query.Sources.ToString().ToLower()}";
             
             var response = await _httpMarketDataClient.GetAsync(path).ConfigureAwait(false);
             var content = await response.Content.ReadAsStringAsync();
