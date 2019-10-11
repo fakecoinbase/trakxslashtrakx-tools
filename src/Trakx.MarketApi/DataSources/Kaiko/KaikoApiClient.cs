@@ -7,6 +7,7 @@ using System.Net.Http;
 using System.Net.Http.Headers;
 using System.Text.Encodings.Web;
 using System.Threading.Tasks;
+using Microsoft.Extensions.Logging;
 using Newtonsoft.Json;
 using Remotion.Linq.Parsing.Structure.IntermediateModel;
 
@@ -14,6 +15,7 @@ namespace Trakx.MarketApi.DataSources.Kaiko
 {
     public class KaikoApiClient : IDisposable
     {
+        private readonly ILogger _logger;
         private readonly string _apiKey;
         private readonly string _marketDataEndpoint;
         private readonly string _referenceDataEndpoint;
@@ -21,8 +23,9 @@ namespace Trakx.MarketApi.DataSources.Kaiko
         private HttpClient _httpReferenceDataClient;
         private HttpClient _httpMarketDataClient;
 
-        public KaikoApiClient(/*IHttpClientFactory httpClientFactory*/)
+        public KaikoApiClient(/*IHttpClientFactory httpClientFactory*/ILogger logger)
         {
+            _logger = logger;
             //_httpClientFactory = httpClientFactory ?? throw new ArgumentNullException(nameof(httpClientFactory));
             //todo: this is probably one of the worst ways to do HttpRequests
             //https://josefottosson.se/you-are-probably-still-using-httpclient-wrong-and-it-is-destabilizing-your-software/
@@ -69,11 +72,18 @@ namespace Trakx.MarketApi.DataSources.Kaiko
                                     + $"&page_size={query.PageSize}"
                                     + $"&exchanges={string.Join(",", query.Exchanges)}"
                                     + $"&sources={query.Sources.ToString().ToLower()}";
-            
-            var response = await _httpMarketDataClient.GetAsync(path).ConfigureAwait(false);
-            var content = await response.Content.ReadAsStringAsync();
-            var converted = JsonConvert.DeserializeObject<AggregatedPrice.Response>(content);
-            return converted;
+            try
+            {
+                var response = await _httpMarketDataClient.GetAsync(path).ConfigureAwait(false);
+                var content = await response.Content.ReadAsStringAsync();
+                var converted = JsonConvert.DeserializeObject<AggregatedPrice.Response>(content);
+                return converted;
+            }
+            catch (Exception exception)
+            {
+                _logger.LogError("Failed to retrieve data for {0}", query.BaseAsset, exception);
+                return null;
+            }
         }
 
         protected virtual void Dispose(bool disposing)

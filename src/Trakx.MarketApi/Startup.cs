@@ -26,6 +26,7 @@ namespace Trakx.MarketApi
             {
                 c.SwaggerDoc(Version, new Swashbuckle.AspNetCore.Swagger.Info { Title = "Trakx MarketData Api", Version = Version });
             });
+            services.AddLogging();
         }
 
         // This method gets called by the runtime. Use this method to configure the HTTP request pipeline.

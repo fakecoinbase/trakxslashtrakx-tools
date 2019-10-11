@@ -1,6 +1,7 @@
 using System;
 using System.Linq;
 using System.Threading.Tasks;
+using Divergic.Logging.Xunit;
 using Trakx.MarketApi.DataSources.CryptoCompare;
 using Trakx.MarketApi.DataSources.Kaiko;
 using Trakx.MarketApi.DataSources.Kaiko.AggregatedPrice;
@@ -12,16 +13,18 @@ namespace Trakx.MarketApi.Tests
     public class KaikoApiClientTests
     {
         private readonly ITestOutputHelper _output;
+        private ICacheLogger<KaikoApiClient> _logger;
 
         public KaikoApiClientTests(ITestOutputHelper output)
         {
             _output = output;
+            _logger = output.BuildLoggerFor<KaikoApiClient>();
         }
 
         [Fact]
         public async Task GetExchanges_should_return_exchanges()
         {
-            var kaikoApi = new KaikoApiClient();
+            var kaikoApi = new KaikoApiClient(_logger);
             var exchanges = await kaikoApi.GetExchanges();
 
             _output.WriteLine(exchanges.ToString());
@@ -32,7 +35,7 @@ namespace Trakx.MarketApi.Tests
         [Fact]
         public async Task GetAssets_should_return_assets()
         {
-            var kaikoApi = new KaikoApiClient();
+            var kaikoApi = new KaikoApiClient(_logger);
             var assets = await kaikoApi.GetAssets();
 
             _output.WriteLine(assets.ToString());
@@ -44,7 +47,7 @@ namespace Trakx.MarketApi.Tests
         [Fact]
         public async Task GetInstruments_should_return_instruments()
         {
-            var kaikoApi = new KaikoApiClient();
+            var kaikoApi = new KaikoApiClient(_logger);
             var instruments = await kaikoApi.GetInstruments();
 
             _output.WriteLine(instruments.ToString());
@@ -57,7 +60,7 @@ namespace Trakx.MarketApi.Tests
         {
             var query = CreateCoinQuery("OMG");
 
-            var kaikoApi = new KaikoApiClient();
+            var kaikoApi = new KaikoApiClient(_logger);
             var price = await kaikoApi.GetAggregatedPrice(query).ConfigureAwait(false);
 
             var results = price.Data;
@@ -74,11 +77,11 @@ namespace Trakx.MarketApi.Tests
 
             var queries = erc20Symbols.Select(CreateCoinQuery).ToList();
 
-            var kaikoApi = new KaikoApiClient();
+            var kaikoApi = new KaikoApiClient(_logger);
             var priceTasks = queries.Select(async q =>
                 {
                     var aggregatedPrice = await kaikoApi.GetAggregatedPrice(q).ConfigureAwait(false);
-                    if(aggregatedPrice.Result == "success") return aggregatedPrice;
+                    if(aggregatedPrice?.Result == "success") return aggregatedPrice;
                     return null;
                 })
                 .Where(r => r != null)

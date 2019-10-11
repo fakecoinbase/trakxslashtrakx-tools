@@ -21,7 +21,7 @@ namespace Trakx.MarketApi.Controllers
         public KaikoController(ILogger<KaikoController> logger)
         {
             _logger = logger;
-            _kaikoApiClient = new KaikoApiClient();
+            _kaikoApiClient = new KaikoApiClient(logger);
         }
 
         [HttpGet]
