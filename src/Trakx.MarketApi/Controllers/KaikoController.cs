@@ -1,13 +1,8 @@
-﻿using System;
-using System.Linq;
-using System.Net.Http;
-using System.Threading.Tasks;
-using CryptoCompare;
+﻿using System.Threading.Tasks;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.Extensions.Logging;
 using Newtonsoft.Json;
-using Trakx.MarketApi.DataSources.Kaiko;
-using Trakx.MarketApi.Indexes;
+using Trakx.MarketApi.DataSources.Kaiko.Client;
 
 namespace Trakx.MarketApi.Controllers
 {
@@ -18,10 +13,10 @@ namespace Trakx.MarketApi.Controllers
         private readonly ILogger<KaikoController> _logger;
         private readonly KaikoApiClient _kaikoApiClient;
 
-        public KaikoController(ILogger<KaikoController> logger)
+        public KaikoController(KaikoApiClient kaikoApiClient, ILogger<KaikoController> logger)
         {
             _logger = logger;
-            _kaikoApiClient = new KaikoApiClient(logger);
+            _kaikoApiClient = kaikoApiClient;
         }
 
         [HttpGet]
