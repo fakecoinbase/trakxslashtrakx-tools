@@ -4,6 +4,7 @@ using Microsoft.AspNetCore.Mvc;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Hosting;
+using Trakx.MarketApi.DataSources.Kaiko.Client;
 
 namespace Trakx.MarketApi
 {
@@ -27,6 +28,7 @@ namespace Trakx.MarketApi
                 c.SwaggerDoc(Version, new Swashbuckle.AspNetCore.Swagger.Info { Title = "Trakx MarketData Api", Version = Version });
             });
             services.AddLogging();
+            services.AddKaikoClient();
         }
 
         // This method gets called by the runtime. Use this method to configure the HTTP request pipeline.
