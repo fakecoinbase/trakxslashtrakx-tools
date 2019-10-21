@@ -17,11 +17,11 @@ namespace Trakx.MarketApi.DataSources.Kaiko.Client
     {
         private readonly HttpClient _httpClient;
         private readonly JsonSerializer _serializer;
-        private readonly ILogger _logger;
+        private readonly ILogger<KaikoApiClient> _logger;
 
-        internal KaikoApiClient(HttpClient httpClient,
+        public KaikoApiClient(HttpClient httpClient,
             JsonSerializer serializer,
-            ILogger logger)
+            ILogger<KaikoApiClient> logger)
         {
             _httpClient = httpClient;
             _serializer = serializer;
@@ -65,7 +65,7 @@ namespace Trakx.MarketApi.DataSources.Kaiko.Client
             var path = Constants.MarketDataEndpoint + $"data/{query.Commodity}.{query.DataVersion}/" +
                 $"spot_direct_exchange_rate/{query.BaseAsset}/{query.QuoteAsset}?"
                                     + $"start_time={UrlEncoder.Default.Encode(startTimeIso8601)}"
-                                    + $"end_time={UrlEncoder.Default.Encode(endTimeIso8601)}"
+                                   // + $"&end_time={UrlEncoder.Default.Encode(endTimeIso8601)}"
                                     + $"&interval={query.Interval}"
                                     + $"&page_size={query.PageSize}"
                                     + (query.Exchanges?.Any() ?? false ? $"&exchanges={string.Join(",", query.Exchanges)}" : "")
