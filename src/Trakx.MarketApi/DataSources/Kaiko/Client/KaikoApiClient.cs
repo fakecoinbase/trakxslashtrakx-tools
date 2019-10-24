@@ -61,16 +61,16 @@ namespace Trakx.MarketApi.DataSources.Kaiko.Client
         {
             //todo:  build the URL from a HttpQuery, not manually like that
             var startTimeIso8601 = query.StartTime.ToIso8601();
-            var endTimeIso8601 = query.EndTime.ToIso8601();
-            var path = Constants.MarketDataEndpoint + $"data/{query.Commodity}.{query.DataVersion}/" +
-                $"spot_direct_exchange_rate/{query.BaseAsset}/{query.QuoteAsset}?"
-                                    + $"start_time={UrlEncoder.Default.Encode(startTimeIso8601)}"
-                                   // + $"&end_time={UrlEncoder.Default.Encode(endTimeIso8601)}"
-                                    + $"&interval={query.Interval}"
-                                    + $"&page_size={query.PageSize}"
-                                    + (query.Exchanges?.Any() ?? false ? $"&exchanges={string.Join(",", query.Exchanges)}" : "")
+            var endTimeIso8601 = query.StartTime.AddDays(1).ToIso8601();
+            var path = $"data/{query.Commodity}.{query.DataVersion}/" +
+                $"spot_direct_exchange_rate/{query.BaseAsset}/{query.QuoteAsset}"
+                + $"?start_time={UrlEncoder.Default.Encode(startTimeIso8601)}"
+                + $"&end_time={UrlEncoder.Default.Encode(endTimeIso8601)}"
+                + $"&interval={query.Interval}"
+                + $"&page_size={query.PageSize}"
+                + (query.Exchanges?.Any() ?? false ? $"&exchanges={string.Join(",", query.Exchanges)}" : "")
                 + (query.Sources ? $"&sources={query.Sources.ToString().ToLower()}" : "");
-            
+
             var request = new HttpRequestMessage(HttpMethod.Get, new Uri(Constants.MarketDataEndpoint + path));
 
             try

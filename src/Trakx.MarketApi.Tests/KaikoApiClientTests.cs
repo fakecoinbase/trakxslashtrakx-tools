@@ -82,17 +82,19 @@ namespace Trakx.MarketApi.Tests
         {
             var cryptoCompareCoins = new CryptoCompareApiClient();
             var erc20Symbols = cryptoCompareCoins.GetAllErc20Symbols()
-                .Select(c => c.ToLower()).Intersect(WorkingTokens);
+                .Select(c => c.ToLower());
+                //.Intersect(WorkingTokens);
 
             var queries = erc20Symbols.Select(CreateCoinQuery).ToList();
 
-            Directory.CreateDirectory("kaikodata");
+            var kaikodata = "kaikodata" + DateTime.Now.ToString("yyyyMMdd.hhmmss");
+            Directory.CreateDirectory(kaikodata);
             var priceTasks = queries.AsParallel().Select(async q =>
                 {
                     var aggregatedPrice = await _kaikoApiClient.GetAggregatedPrice(q).ConfigureAwait(false);
                     if (aggregatedPrice?.Result == "success" && aggregatedPrice.Data.Any())
                     {
-                        File.WriteAllText(Path.Combine("kaikodata", q.BaseAsset + ".json"), JsonConvert.SerializeObject(aggregatedPrice.Data));
+                        File.WriteAllText(Path.Combine(kaikodata, q.BaseAsset + ".json"), JsonConvert.SerializeObject(aggregatedPrice.Data));
                         return new { Query = q, Prices = aggregatedPrice};
                     }
                     return null;
@@ -117,10 +119,10 @@ namespace Trakx.MarketApi.Tests
                 DataVersion = "latest",
                 BaseAsset = coinSymbol.ToLower(),
                 Commodity = "trades",
-                Exchanges = Constants.TrustedExchanges,
+                Exchanges = new List<string>(),
                 Interval = "1d",
                 PageSize = 1000,
-                QuoteAsset = "eth",
+                QuoteAsset = "btc",
                 StartTime = new DateTimeOffset(2019, 10, 01, 00, 00, 00, TimeSpan.Zero),
                 Sources = true
             };
