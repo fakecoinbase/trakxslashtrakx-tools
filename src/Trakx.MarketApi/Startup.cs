@@ -1,5 +1,4 @@
 using Microsoft.AspNetCore.Builder;
-using Microsoft.AspNetCore.Hosting.Internal;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
@@ -27,6 +26,7 @@ namespace Trakx.MarketApi
             {
                 c.SwaggerDoc(Version, new Swashbuckle.AspNetCore.Swagger.Info { Title = "Trakx MarketData Api", Version = Version });
             });
+
             services.AddLogging();
             services.AddKaikoClient();
         }

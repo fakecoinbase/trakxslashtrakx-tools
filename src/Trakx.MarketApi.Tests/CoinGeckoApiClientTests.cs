@@ -1,7 +1,5 @@
-using System;
 using System.Threading.Tasks;
 using Trakx.MarketApi.DataSources.CoinGecko;
-using Trakx.MarketApi.DataSources.Kaiko;
 using Xunit;
 using Xunit.Abstractions;
 

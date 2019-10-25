@@ -1,6 +1,6 @@
 ﻿using System.Collections.Generic;
 
-namespace Trakx.MarketApi.DataSources.Kaiko.Assets
+namespace Trakx.MarketApi.DataSources.Kaiko.DTOs
 {
     public partial class AssetsResponse
     {

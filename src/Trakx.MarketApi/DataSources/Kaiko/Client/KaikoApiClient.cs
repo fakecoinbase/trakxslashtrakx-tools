@@ -1,5 +1,4 @@
 ﻿using System;
-using System.Globalization;
 using System.IO;
 using System.Linq;
 using System.Net.Http;
@@ -7,8 +6,7 @@ using System.Text.Encodings.Web;
 using System.Threading.Tasks;
 using Microsoft.Extensions.Logging;
 using Newtonsoft.Json;
-using Trakx.MarketApi.DataSources.Kaiko.AggregatedPrice;
-using Trakx.MarketApi.DataSources.Kaiko.Assets;
+using Trakx.MarketApi.DataSources.Kaiko.DTOs;
 using Trakx.MarketApi.Extensions;
 
 namespace Trakx.MarketApi.DataSources.Kaiko.Client
@@ -57,7 +55,7 @@ namespace Trakx.MarketApi.DataSources.Kaiko.Client
             return JsonConvert.DeserializeObject<ExchangesResponse>(content);
         }
 
-        public async Task<AggregatedPrice.Response> GetAggregatedPrice(AggregatedPriceRequest.QueryParameters query)
+        public async Task<Response> GetAggregatedPrice(AggregatedPriceRequest query)
         {
             //todo:  build the URL from a HttpQuery, not manually like that
             var startTimeIso8601 = query.StartTime.ToIso8601();

@@ -1,8 +1,6 @@
-using System;
 using System.Threading.Tasks;
 using FluentAssertions;
 using Trakx.MarketApi.DataSources.CryptoCompare;
-using Trakx.MarketApi.DataSources.Kaiko;
 using Xunit;
 using Xunit.Abstractions;
 

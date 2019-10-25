@@ -1,7 +1,7 @@
 ﻿using System;
 using System.Collections.Generic;
 
-namespace Trakx.MarketApi.DataSources.Kaiko
+namespace Trakx.MarketApi.DataSources.Kaiko.DTOs
 {
     public partial class InstrumentsResponse
     {

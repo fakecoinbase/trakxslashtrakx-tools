@@ -1,5 +1,4 @@
 ﻿using System.Collections.Generic;
-using System.Threading.Tasks.Dataflow;
 
 namespace Trakx.MarketApi.DataSources.Kaiko
 {

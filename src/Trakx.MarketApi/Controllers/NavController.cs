@@ -13,7 +13,7 @@ namespace Trakx.MarketApi.Controllers
     public class NavController : ControllerBase
     {
         private readonly ILogger<NavController> _logger;
-        private CryptoCompareClient _cryptoCompareClient;
+        private readonly CryptoCompareClient _cryptoCompareClient;
 
         public NavController(ILogger<NavController> logger)
         {
@@ -32,7 +32,9 @@ namespace Trakx.MarketApi.Controllers
                 return $"failed to retrieve details for index {indexSymbol}";
 
             var components = details.Components.Select(c => c.Symbol);
-            var prices = await _cryptoCompareClient.Prices.MultipleSymbolsPriceAsync(components, new[] { quoteSymbol }, null, null);
+
+            var prices = await _cryptoCompareClient.Prices.MultipleSymbolsPriceAsync(
+                components, new[] { quoteSymbol }, null, null);
             var nav = details.Components.Sum(c => decimal.Parse(c.Proportion) * prices[c.Symbol][quoteSymbol]);
             return nav.ToString();
         }

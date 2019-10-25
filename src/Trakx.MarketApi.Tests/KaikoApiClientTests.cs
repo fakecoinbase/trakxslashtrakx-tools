@@ -2,15 +2,14 @@ using System;
 using System.Collections.Generic;
 using System.IO;
 using System.Linq;
-using System.Net.Http;
 using System.Threading.Tasks;
 using Divergic.Logging.Xunit;
 using Microsoft.Extensions.DependencyInjection;
 using Newtonsoft.Json;
 using Trakx.MarketApi.DataSources.CryptoCompare;
 using Trakx.MarketApi.DataSources.Kaiko;
-using Trakx.MarketApi.DataSources.Kaiko.AggregatedPrice;
 using Trakx.MarketApi.DataSources.Kaiko.Client;
+using Trakx.MarketApi.DataSources.Kaiko.DTOs;
 using Xunit;
 using Xunit.Abstractions;
 
@@ -87,14 +86,15 @@ namespace Trakx.MarketApi.Tests
 
             var queries = erc20Symbols.Select(CreateCoinQuery).ToList();
 
-            var kaikodata = "kaikodata" + DateTime.Now.ToString("yyyyMMdd.hhmmss");
-            Directory.CreateDirectory(kaikodata);
+            var tempPath = $"kaikodata_{DateTime.Now:yyyyMMddHHmmss}";
+
+            Directory.CreateDirectory(tempPath);
             var priceTasks = queries.AsParallel().Select(async q =>
                 {
                     var aggregatedPrice = await _kaikoApiClient.GetAggregatedPrice(q).ConfigureAwait(false);
                     if (aggregatedPrice?.Result == "success" && aggregatedPrice.Data.Any())
                     {
-                        File.WriteAllText(Path.Combine(kaikodata, q.BaseAsset + ".json"), JsonConvert.SerializeObject(aggregatedPrice.Data));
+                        File.WriteAllText(Path.Combine(tempPath, q.BaseAsset + ".json"), JsonConvert.SerializeObject(aggregatedPrice.Data));
                         return new { Query = q, Prices = aggregatedPrice};
                     }
                     return null;
@@ -112,9 +112,9 @@ namespace Trakx.MarketApi.Tests
            });
         }
 
-        private AggregatedPriceRequest.QueryParameters CreateCoinQuery(string coinSymbol)
+        private AggregatedPriceRequest CreateCoinQuery(string coinSymbol)
         {
-            var query = new AggregatedPriceRequest.QueryParameters
+            var query = new AggregatedPriceRequest
             {
                 DataVersion = "latest",
                 BaseAsset = coinSymbol.ToLower(),
