@@ -1,9 +1,7 @@
 ﻿using System;
 using System.Collections.Generic;
-using System.Linq;
-using System.Threading.Tasks;
 
-namespace Trakx.MarketApi.DataSources.Messari.DTOs
+namespace Trakx.MarketApi.DataSources.Messari.DTOs.GetAllAssets
 {
     public partial class AllAssetsResponse
     {

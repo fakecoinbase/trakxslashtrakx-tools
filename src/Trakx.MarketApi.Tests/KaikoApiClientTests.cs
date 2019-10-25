@@ -6,6 +6,7 @@ using System.Threading.Tasks;
 using Divergic.Logging.Xunit;
 using FluentAssertions;
 using Microsoft.Extensions.DependencyInjection;
+using Microsoft.IdentityModel.Tokens.Saml2;
 using Newtonsoft.Json;
 using Trakx.MarketApi.DataSources.CryptoCompare;
 using Trakx.MarketApi.DataSources.Kaiko;
@@ -70,13 +71,15 @@ namespace Trakx.MarketApi.Tests
         [Fact]
         public async Task GetAggregatedPrice_for_one_token_should_return_aggregated_prices()
         {
-            var query = CreateCoinQuery("celr", "btc");
+            var coinSymbol = "celr";
+            var query = CreateCoinQuery(coinSymbol, "btc");
 
             var price = await _kaikoApiClient.GetAggregatedPrice(query).ConfigureAwait(false);
+            var profile = (await _messariClient.GetProfileBySymbol(coinSymbol).ConfigureAwait(false)).Data;
 
             var results = price.Data;
 
-            results.ForEach(r => _output.WriteLine($"{r.Price}, {r.Volume}"));
+            results.ForEach(r => _output.WriteLine($"{r.Price}, {profile.Sector}, {r.Volume}"));
         }
 
 
@@ -86,8 +89,6 @@ namespace Trakx.MarketApi.Tests
             var cryptoCompareCoins = new CryptoCompareApiClient();
             var ccErc20Symbols = cryptoCompareCoins.GetAllErc20Symbols()
                 .Select(c => c.ToLower()).OrderBy(s => s).ToList();
-
-            ccErc20Symbols.Should().Contain("celr");
 
             var kaikoInstruments = await _kaikoApiClient.GetInstruments().ConfigureAwait(false);
             var kaikoErc20Symbols = kaikoInstruments.Data.Select(i => i.Code.Split("-")[0].ToLower())
@@ -99,7 +100,7 @@ namespace Trakx.MarketApi.Tests
             var assetNameByCode = (await _kaikoApiClient.GetAssets().ConfigureAwait(false))
                 .Data.ToDictionary(a => a.Code, a => a.Name);
 
-            var messariAssetDetails = (await _messariClient.GetAllAssets()).Data.ToDictionary(a => a.Symbol.ToLower(), a => a.Profile);
+            //var messariAssetDetails = (await _messariClient.GetAllAssets()).Data.ToDictionary(a => a.Symbol.ToLower(), a => a.Profile);
 
             var quoteAsset = "btc";
             
@@ -107,13 +108,14 @@ namespace Trakx.MarketApi.Tests
 
             var tempPath = "kaikoData." + DateTime.Now.ToString("yyyyMMdd.hhmmss");
             Directory.CreateDirectory(tempPath);
-            var priceTasks = queries.Take(20).AsParallel().Select(async q =>
+            var priceTasks = queries.AsParallel().Select(async q =>
                 {
                     var aggregatedPrice = await _kaikoApiClient.GetAggregatedPrice(q).ConfigureAwait(false);
+                    var profile = await _messariClient.GetProfileBySymbol(q.BaseAsset).ConfigureAwait(false);
                     if (aggregatedPrice?.Result == "success" && aggregatedPrice.Data.Any())
                     {
                         File.WriteAllText(Path.Combine(tempPath, q.BaseAsset + ".json"), JsonConvert.SerializeObject(aggregatedPrice.Data));
-                        return new { Query = q, Prices = aggregatedPrice};
+                        return new { Query = q, Prices = aggregatedPrice, Sector = profile?.Data?.Sector ?? "" };
                     }
                     return null;
                 })
@@ -128,8 +130,7 @@ namespace Trakx.MarketApi.Tests
                    var averagePrice = r.Prices.Data.Average(a => decimal.Parse(a.Price) * decimal.Parse(a.Volume)) / summedVolume;
                    var symbol = r.Query.BaseAsset;
                    var assetName = assetNameByCode[symbol];
-                   var sector = messariAssetDetails.TryGetValue(symbol, out var profile) ? profile.Sector : "";
-                   _output.WriteLine($"{symbol}, {assetName}, {sector}, {summedVolume}, {averagePrice}");
+                   _output.WriteLine($"{symbol}, {assetName}, {r.Sector}, {summedVolume}, {averagePrice}");
                });
         }
 

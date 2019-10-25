@@ -2,6 +2,7 @@
 using System.Collections.Generic;
 using System.Threading.Tasks;
 using Trakx.MarketApi.DataSources.Messari.DTOs;
+using Trakx.MarketApi.DataSources.Messari.DTOs.GetAllAssets;
 
 namespace Trakx.MarketApi.DataSources.Messari.Client
 {
