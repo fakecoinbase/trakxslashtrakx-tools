@@ -7,8 +7,8 @@ namespace Trakx.MarketApi.DataSources.Kaiko.DTOs
     {
         public string DataVersion { get; set; }
         public string Commodity { get; set; }
-        public DateTime EndTime { get; set; }
-        public DateTime StartTime { get; set; }
+        public DateTimeOffset EndTime { get; set; }
+        public DateTimeOffset StartTime { get; set; }
         public long PageSize { get; set; }
         public string Interval { get; set; }
         public string QuoteAsset { get; set; }

@@ -4,12 +4,14 @@ using System.IO;
 using System.Linq;
 using System.Threading.Tasks;
 using Divergic.Logging.Xunit;
+using FluentAssertions;
 using Microsoft.Extensions.DependencyInjection;
 using Newtonsoft.Json;
 using Trakx.MarketApi.DataSources.CryptoCompare;
 using Trakx.MarketApi.DataSources.Kaiko;
 using Trakx.MarketApi.DataSources.Kaiko.Client;
 using Trakx.MarketApi.DataSources.Kaiko.DTOs;
+using Trakx.MarketApi.DataSources.Messari.Client;
 using Xunit;
 using Xunit.Abstractions;
 
@@ -27,8 +29,10 @@ namespace Trakx.MarketApi.Tests
             _logger = output.BuildLoggerFor<KaikoApiClient>();
             var serviceCollection = new ServiceCollection();
             serviceCollection.AddKaikoClient();
+            serviceCollection.AddMessariClient();
             _serviceProvider = serviceCollection.BuildServiceProvider();
             _kaikoApiClient = _serviceProvider.GetRequiredService<KaikoApiClient>();
+            _messariClient = _serviceProvider.GetRequiredService<MessariApiClient>();
         }
 
 
@@ -66,7 +70,7 @@ namespace Trakx.MarketApi.Tests
         [Fact]
         public async Task GetAggregatedPrice_for_one_token_should_return_aggregated_prices()
         {
-            var query = CreateCoinQuery("OMG");
+            var query = CreateCoinQuery("celr", "btc");
 
             var price = await _kaikoApiClient.GetAggregatedPrice(query).ConfigureAwait(false);
 
@@ -80,16 +84,30 @@ namespace Trakx.MarketApi.Tests
         public async Task GetAggregatedPrice_should_return_aggregated_prices()
         {
             var cryptoCompareCoins = new CryptoCompareApiClient();
-            var erc20Symbols = cryptoCompareCoins.GetAllErc20Symbols()
-                .Select(c => c.ToLower());
-                //.Intersect(WorkingTokens);
+            var ccErc20Symbols = cryptoCompareCoins.GetAllErc20Symbols()
+                .Select(c => c.ToLower()).OrderBy(s => s).ToList();
 
-            var queries = erc20Symbols.Select(CreateCoinQuery).ToList();
+            ccErc20Symbols.Should().Contain("celr");
 
-            var tempPath = $"kaikodata_{DateTime.Now:yyyyMMddHHmmss}";
+            var kaikoInstruments = await _kaikoApiClient.GetInstruments().ConfigureAwait(false);
+            var kaikoErc20Symbols = kaikoInstruments.Data.Select(i => i.Code.Split("-")[0].ToLower())
+                .Distinct()
+                .Intersect(ccErc20Symbols)
+                .OrderBy(s => s)
+                .ToList();
 
+            var assetNameByCode = (await _kaikoApiClient.GetAssets().ConfigureAwait(false))
+                .Data.ToDictionary(a => a.Code, a => a.Name);
+
+            var messariAssetDetails = (await _messariClient.GetAllAssets()).Data.ToDictionary(a => a.Symbol.ToLower(), a => a.Profile);
+
+            var quoteAsset = "btc";
+            
+            var queries = kaikoErc20Symbols.Select(e => CreateCoinQuery(e, quoteAsset)).ToList();
+
+            var tempPath = "kaikoData." + DateTime.Now.ToString("yyyyMMdd.hhmmss");
             Directory.CreateDirectory(tempPath);
-            var priceTasks = queries.AsParallel().Select(async q =>
+            var priceTasks = queries.Take(20).AsParallel().Select(async q =>
                 {
                     var aggregatedPrice = await _kaikoApiClient.GetAggregatedPrice(q).ConfigureAwait(false);
                     if (aggregatedPrice?.Result == "success" && aggregatedPrice.Data.Any())
@@ -102,17 +120,20 @@ namespace Trakx.MarketApi.Tests
                 .Where(r => r?.Result != null)
                 .ToArray();
 
-            var results = priceTasks.Select(p => p.Result).Where(r => r != null).ToList();
-
-           results.ForEach(r =>
-           {
-               var summedVolume = r.Prices.Data.Sum(a => decimal.Parse(a.Volume));
-               var averagePrice = r.Prices.Data.Average(a => decimal.Parse(a.Price) * decimal.Parse(a.Volume)) / summedVolume;
-               _output.WriteLine($"{r.Query.BaseAsset}, {summedVolume}, {averagePrice}");
-           });
+            var results = priceTasks.Select(p => p.Result).Where(r => r != null).OrderBy(r => r.Query.BaseAsset).ToList();
+            _output.WriteLine($"symbol, name, sector, volume ({quoteAsset}), price ({quoteAsset})");
+            results.ForEach(r =>
+               {
+                   var summedVolume = r.Prices.Data.Sum(a => decimal.Parse(a.Volume));
+                   var averagePrice = r.Prices.Data.Average(a => decimal.Parse(a.Price) * decimal.Parse(a.Volume)) / summedVolume;
+                   var symbol = r.Query.BaseAsset;
+                   var assetName = assetNameByCode[symbol];
+                   var sector = messariAssetDetails.TryGetValue(symbol, out var profile) ? profile.Sector : "";
+                   _output.WriteLine($"{symbol}, {assetName}, {sector}, {summedVolume}, {averagePrice}");
+               });
         }
 
-        private AggregatedPriceRequest CreateCoinQuery(string coinSymbol)
+        private AggregatedPriceRequest CreateCoinQuery(string coinSymbol, string quoteSymbol)
         {
             var query = new AggregatedPriceRequest
             {
@@ -122,25 +143,15 @@ namespace Trakx.MarketApi.Tests
                 Exchanges = new List<string>(),
                 Interval = "1d",
                 PageSize = 1000,
-                QuoteAsset = "btc",
+                QuoteAsset = quoteSymbol,
                 StartTime = new DateTimeOffset(2019, 10, 01, 00, 00, 00, TimeSpan.Zero),
-                Sources = true
+                Sources = false
             };
             return query;
         }
 
-        private List<string> WorkingTokens = new List<string>
-        {
-            "rep", "bnt", "sngls", "gnt", "mkr", "mln", "rlc", "gno", "bat", "qtum", "snt", "avt", "san", "fun", "zrx",
-            "storj", "omg", "mana", "utk", "ctx", "wtc", "vee", "rcn", "link", "edo", "knc", "lrc", "yoyow", "req",
-            "dat", "ast", "cnd", "wax", "wpr", "drgn", "atm", "aid", "qash", "ufr", "spank", "abyss", "utnp", "tnb",
-            "mgo", "elf", "onl", "int", "cbt", "agi", "bft", "dta", "iost", "zil", "poly", "swm", "hbz", "lym", "fsn",
-            "dai", "ht", "nec", "dadi", "dth", "auc", "ncash", "loom", "tusd", "mith", "pas", "ctxc", "vld", "ors",
-            "cnn", "ode", "hot", "ants", "dgx", "scrl", "atmi", "seer", "zb", "eurs", "box", "kan", "dgtx", "trio",
-            "usdc", "pax", "foam", "pxg", "dusk", "wbtc", "usds", "mrs", "yeed", "voco", "ampl", "ftxt", "xchf", "pnk",
-        };
-
         private readonly ServiceProvider _serviceProvider;
+        private readonly MessariApiClient _messariClient;
 
         public void Dispose()
         {

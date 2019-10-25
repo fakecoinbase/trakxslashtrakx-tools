@@ -8,6 +8,7 @@
         public string[] ComponentAddresses { get; set; }
         public double TargetUsdPrice { get; set; }
         public UsdBidAsk UsdBidAsk { get; set; }
+        public string Description { get; set; }
     }
 
     public partial class Component

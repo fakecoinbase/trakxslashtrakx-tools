@@ -53,6 +53,7 @@
     "0x5732046a883704404f284ce41ffadd5b007fd668",
     "0x607F4C5BB672230e8672085532f7e901544a7375"
   ],
+  "description": "This index is composed of the top 4 erc20 tokens for Storage Services. Created on the 1st of October as a POC.",
   "targetUsdPrice": 0.1,
   "usdBidAsk": {
     "bid": "0.10085425",

@@ -53,6 +53,7 @@
     "0x4f9254c83eb525f9fcf346490bbb3ed28a81c667",
     "0x4e15361fd6b4bb609fa63c81a2be19d873717870"
   ],
+  "description": "This index is composed of the top 4 erc20 tokens for Scalability Services. Created on the 1st of October as a POC.",
   "targetUsdPrice": 0.1,
   "usdBidAsk": {
     "bid": "0.2707685",

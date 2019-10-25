@@ -41,6 +41,7 @@
     "0xd26114cd6EE289AccF82350c8d8487fedB8A0C07",
     "0xa15c7ebe1f07caf6bff097d8a589fb8ac49ae5b3"
   ],
+  "description": "This index is composed of the top 3 erc20 tokens for Financial Services. Created on the 1st of October as a POC.",
   "targetUsdPrice": 0.1,
   "usdBidAsk": {
     "bid": "1.449118066666685165486",
