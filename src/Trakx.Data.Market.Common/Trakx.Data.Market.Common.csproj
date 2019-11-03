@@ -1,0 +1,39 @@
+<Project Sdk="Microsoft.NET.Sdk">
+
+  <PropertyGroup>
+    <TargetFramework>netcoreapp3.0</TargetFramework>
+  </PropertyGroup>
+
+  <ItemGroup>
+    <None Remove="Indexes\L1CPU003.json" />
+    <None Remove="Indexes\L1EXC003.json" />
+    <None Remove="Indexes\L1FIN003.json" />
+    <None Remove="Indexes\L1INF003.json" />
+    <None Remove="Indexes\L1SCA004.json" />
+    <None Remove="Indexes\L1STR004.json" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <EmbeddedResource Include="Indexes\L1CPU003.json" />
+    <EmbeddedResource Include="Indexes\L1EXC003.json" />
+    <EmbeddedResource Include="Indexes\L1FIN003.json" />
+    <EmbeddedResource Include="Indexes\L1INF003.json" />
+    <EmbeddedResource Include="Indexes\L1SCA004.json" />
+    <EmbeddedResource Include="Indexes\L1STR004.json" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <PackageReference Include="Microsoft.AspNetCore.Http.Extensions" Version="2.2.0" />
+    <PackageReference Include="Microsoft.Extensions.Http" Version="3.0.0" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <Reference Include="Microsoft.Extensions.DependencyInjection.Abstractions">
+      <HintPath>..\..\..\..\..\..\..\Program Files\dotnet\packs\Microsoft.AspNetCore.App.Ref\3.0.0\ref\netcoreapp3.0\Microsoft.Extensions.DependencyInjection.Abstractions.dll</HintPath>
+    </Reference>
+    <Reference Include="Microsoft.Extensions.Logging.Abstractions">
+      <HintPath>..\..\..\..\..\..\..\Program Files\dotnet\packs\Microsoft.AspNetCore.App.Ref\3.0.0\ref\netcoreapp3.0\Microsoft.Extensions.Logging.Abstractions.dll</HintPath>
+    </Reference>
+  </ItemGroup>
+
+</Project>
