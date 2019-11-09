@@ -7,6 +7,11 @@
   </PropertyGroup>
 
   <ItemGroup>
+    <Content Remove="wwwroot\npm-libs\.gitignore" />
+    <Content Remove="wwwroot\npm-libs\src\index.ts" />
+  </ItemGroup>
+
+  <ItemGroup>
     <PackageReference Include="CryptoCompare" Version="1.4.0" />
     <PackageReference Include="Microsoft.AspNetCore.Diagnostics.EntityFrameworkCore" Version="3.0.0" />
     <PackageReference Include="Microsoft.AspNetCore.Identity.EntityFrameworkCore" Version="3.0.0" />
@@ -19,6 +24,11 @@
 
   <ItemGroup>
     <ProjectReference Include="..\Trakx.Data.Market.Common\Trakx.Data.Market.Common.csproj" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <TypeScriptCompile Include="wwwroot\npm-libs\.gitignore" />
+    <TypeScriptCompile Include="wwwroot\npm-libs\src\index.ts" />
   </ItemGroup>
 
 </Project>
