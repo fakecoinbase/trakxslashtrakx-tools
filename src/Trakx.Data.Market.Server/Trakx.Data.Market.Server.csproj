@@ -31,4 +31,8 @@
     <TypeScriptCompile Include="wwwroot\npm-libs\src\index.ts" />
   </ItemGroup>
 
+  <ItemGroup>
+    <Folder Include="wwwroot\npm-libs\public\" />
+  </ItemGroup>
+
 </Project>

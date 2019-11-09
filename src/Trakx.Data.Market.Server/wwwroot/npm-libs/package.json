@@ -9,9 +9,9 @@
   "license": "LGPL-3.0+",
   "private": true,
   "scripts": {
-    "lint": "tsc --noEmit && eslint . --ext .ts,.js --quiet --fix",
+    "lint": "tsc --noEmit && eslint ./src --ext .ts,.js --quiet --fix",
     "build": "yarn lint && tsc",
-    "test": "jest" 
+    "test": "jest"
   },
   "husky": {
     "hooks": {
@@ -26,6 +26,7 @@
   },
   "devDependencies": {
     "@types/jest": "^24.0.22",
+    "@types/lodash": "^4.14.146",
     "@typescript-eslint/eslint-plugin": "^2.6.1",
     "@typescript-eslint/parser": "^2.6.1",
     "eslint": "^6.6.0",
@@ -35,5 +36,8 @@
     "prettier": "^1.19.0",
     "ts-jest": "^24.1.0",
     "typescript": "^3.7.2"
+  },
+  "dependencies": {
+    "lodash": "^4.17.15"
   }
 }
