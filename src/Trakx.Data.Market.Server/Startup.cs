@@ -42,11 +42,13 @@ namespace Trakx.Data.Market.Server
                     Configuration.GetConnectionString("DefaultConnection")));
             services.AddDefaultIdentity<IdentityUser>()
                 .AddEntityFrameworkStores<ApplicationDbContext>();
+            
             services.AddRazorPages();
             services.AddServerSideBlazor();
+
             services.AddScoped<AuthenticationStateProvider, RevalidatingIdentityAuthenticationStateProvider<IdentityUser>>();
             services.AddSingleton<WeatherForecastService>();
-
+            
             services.AddSwaggerGen(c =>
             {
                 c.SwaggerDoc(Version, new OpenApiInfo { Title = ApiName, Version = Version });
@@ -75,6 +77,7 @@ namespace Trakx.Data.Market.Server
             app.UseSwaggerUI(c =>
             {
                 c.SwaggerEndpoint($"/swagger/{Version}/swagger.json", ApiName);
+                c.InjectJavascript($"public/index.js");
             });
 
 

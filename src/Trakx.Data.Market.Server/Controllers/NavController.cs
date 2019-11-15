@@ -36,7 +36,7 @@ namespace Trakx.Data.Market.Server.Controllers
 
             var prices = await _cryptoCompareClient.Prices.MultipleSymbolsPriceAsync(
                 components, new[] { quoteSymbol }, null, null);
-            var nav = details.Components.Sum(c => decimal.Parse(c.Proportion) * prices[c.Symbol][quoteSymbol]);
+            var nav = details.Components.Sum(c => (ulong)c.Quantity * prices[c.Symbol][quoteSymbol]);
             return nav.ToString(CultureInfo.InvariantCulture);
         }
     }

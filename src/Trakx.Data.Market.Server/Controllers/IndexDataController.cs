@@ -1,7 +1,9 @@
 ﻿using System;
+using System.Threading.Tasks;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.Extensions.Logging;
 using Trakx.Data.Market.Common.Indexes;
+using Trakx.Data.Market.Server.Data;
 
 namespace Trakx.Data.Market.Server.Controllers
 {
@@ -10,10 +12,12 @@ namespace Trakx.Data.Market.Server.Controllers
     public class IndexDataController : ControllerBase
     {
         private readonly ILogger<IndexDataController> _logger;
+        //private readonly JsInterop _interop;
 
         public IndexDataController(ILogger<IndexDataController> logger)
         {
             _logger = logger;
+            //_interop = interop;
         }
 
         [HttpGet]
@@ -27,5 +31,12 @@ namespace Trakx.Data.Market.Server.Controllers
 
             return new JsonResult(details);
         }
+
+        //[HttpGet]
+        //public async Task<ActionResult<string>> GetGreetings([FromQuery] string name)
+        //{
+        //    var greeting = await _interop.Greet(name);
+        //    return new JsonResult(greeting);
+        //}
     }
 }

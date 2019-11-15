@@ -6,7 +6,6 @@
 
   <ItemGroup>
     <None Remove="Indexes\L1CPU003.json" />
-    <None Remove="Indexes\L1EXC003.json" />
     <None Remove="Indexes\L1FIN003.json" />
     <None Remove="Indexes\L1INF003.json" />
     <None Remove="Indexes\L1SCA004.json" />
@@ -15,7 +14,6 @@
 
   <ItemGroup>
     <EmbeddedResource Include="Indexes\L1CPU003.json" />
-    <EmbeddedResource Include="Indexes\L1EXC003.json" />
     <EmbeddedResource Include="Indexes\L1FIN003.json" />
     <EmbeddedResource Include="Indexes\L1INF003.json" />
     <EmbeddedResource Include="Indexes\L1SCA004.json" />
