@@ -9,12 +9,12 @@
       "symbol": "MCO",
       "decimals": 8,
       "usdBidAsk": {
-        "bid": "4.272045883932",
-        "ask": "4.272045883932"
+        "bid": 4.272045883932,
+        "ask": 4.272045883932
       },
       "quantity": "11",
-      "usdWeightAtCreation": "0.33333333333334",
-      "usdValueAtCreation": "3.299"
+      "usdWeightAtCreation": 0.33333333333334,
+      "usdValueAtCreation": 3.299
     },
     {
       "address": "0xd26114cd6EE289AccF82350c8d8487fedB8A0C07",
@@ -22,12 +22,12 @@
       "symbol": "OMG",
       "decimals": 18,
       "usdBidAsk": {
-        "bid": "0.9514550468651",
-        "ask": "0.9514550468651"
+        "bid": 0.9514550468651,
+        "ask": 0.9514550468651
       },
       "quantity": "318066157761",
-      "usdWeightAtCreation": "0.33333333333333",
-      "usdValueAtCreation": "1.048"
+      "usdWeightAtCreation": 0.33333333333333,
+      "usdValueAtCreation": 1.048
     },
     {
       "address": "0xA15C7Ebe1f07CaF6bFF097D8a589fb8AC49Ae5B3",
@@ -35,18 +35,18 @@
       "symbol": "NPXS",
       "decimals": 18,
       "usdBidAsk": {
-        "bid": "0.00017848588780058",
-        "ask": "0.00017848588780058"
+        "bid": 0.00017848588780058,
+        "ask": 0.00017848588780058
       },
       "quantity": "941087897609628",
-      "usdWeightAtCreation": "0.33333333333333",
-      "usdValueAtCreation": "0.0003542"
+      "usdWeightAtCreation": 0.33333333333333,
+      "usdValueAtCreation": 0.0003542
     }
   ],
   "targetUsdPrice": 0.1,
   "naturalUnit": "10000000000000",
   "usdBidAsk": {
-    "bid": "0.094052160717445",
-    "ask": "0.094052160717445"
+    "bid": 0.094052160717445,
+    "ask": 0.094052160717445
   }
 }

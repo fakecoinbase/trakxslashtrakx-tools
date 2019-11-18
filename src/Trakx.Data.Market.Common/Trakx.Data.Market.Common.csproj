@@ -1,9 +1,9 @@
-<Project Sdk="Microsoft.NET.Sdk">
+﻿<Project Sdk="Microsoft.NET.Sdk">
 
   <PropertyGroup>
     <TargetFramework>netcoreapp3.0</TargetFramework>
   </PropertyGroup>
-
+  <Import Project="../Common.Projects.props" />
   <ItemGroup>
     <None Remove="Indexes\L1CPU003.json" />
     <None Remove="Indexes\L1FIN003.json" />

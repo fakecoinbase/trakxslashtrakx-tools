@@ -9,12 +9,12 @@
       "symbol": "STORJ",
       "decimals": 8,
       "usdBidAsk": {
-        "bid": "0.13525771597136",
-        "ask": "0.13525771597136"
+        "bid": 0.13525771597136,
+        "ask": 0.13525771597136
       },
       "quantity": "2",
-      "usdWeightAtCreation": "0.25",
-      "usdValueAtCreation": "0.1493"
+      "usdWeightAtCreation": 0.25,
+      "usdValueAtCreation": 0.1493
     },
     {
       "address": "0x8290333ceF9e6D528dD5618Fb97a76f268f3EDD4",
@@ -22,12 +22,12 @@
       "symbol": "ANKR",
       "decimals": 18,
       "usdBidAsk": {
-        "bid": "0.0022502603676776",
-        "ask": "0.0022502603676776"
+        "bid": 0.0022502603676776,
+        "ask": 0.0022502603676776
       },
       "quantity": "836960160697",
-      "usdWeightAtCreation": "0.25",
-      "usdValueAtCreation": "0.002987"
+      "usdWeightAtCreation": 0.25,
+      "usdValueAtCreation": 0.002987
     },
     {
       "address": "0x5732046A883704404F284Ce41FfADd5b007FD668",
@@ -35,12 +35,12 @@
       "symbol": "BLZ",
       "decimals": 18,
       "usdBidAsk": {
-        "bid": "0.031372774612124",
-        "ask": "0.031372774612124"
+        "bid": 0.031372774612124,
+        "ask": 0.031372774612124
       },
       "quantity": "75688767787",
-      "usdWeightAtCreation": "0.25",
-      "usdValueAtCreation": "0.03303"
+      "usdWeightAtCreation": 0.25,
+      "usdValueAtCreation": 0.03303
     },
     {
       "address": "0x607F4C5BB672230e8672085532f7e901544a7375",
@@ -48,18 +48,18 @@
       "symbol": "RLC",
       "decimals": 9,
       "usdBidAsk": {
-        "bid": "0.71701887514304",
-        "ask": "0.71701887514304"
+        "bid": 0.71701887514304,
+        "ask": 0.71701887514304
       },
       "quantity": "12",
-      "usdWeightAtCreation": "0.25",
-      "usdValueAtCreation": "0.2181"
+      "usdWeightAtCreation": 0.25,
+      "usdValueAtCreation": 0.2181
     }
   ],
   "targetUsdPrice": 0.1,
   "naturalUnit": "100000000000",
   "usdBidAsk": {
-    "bid": "0.15567325752536",
-    "ask": "0.15567325752536"
+    "bid": 0.15567325752536,
+    "ask": 0.15567325752536
   }
 }

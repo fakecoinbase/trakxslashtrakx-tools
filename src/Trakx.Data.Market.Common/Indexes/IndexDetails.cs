@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.ComponentModel;
 using System.Numerics;
 using System.Text.Json;
 using System.Text.Json.Serialization;
@@ -18,7 +19,7 @@ namespace Trakx.Data.Market.Common.Indexes
         [JsonConverter(typeof(JsonStringBigIntegerConverter))]
         public BigInteger NaturalUnit { get; set; }
         
-        [JsonPropertyName("usdBidAsk")] public UsdBidAsk UsdBidAsk { get; set; }
+        [JsonPropertyName("usdBidAsk")] public BidAsk BidAsk { get; set; }
     }
 
     public partial class Component
@@ -31,24 +32,24 @@ namespace Trakx.Data.Market.Common.Indexes
 
         [JsonPropertyName("decimals")] public int Decimals { get; set; }
 
-        [JsonPropertyName("usdBidAsk")] public UsdBidAsk UsdBidAsk { get; set; }
+        [JsonPropertyName("usdBidAsk")] public BidAsk UsdBidAsk { get; set; }
 
         [JsonPropertyName("quantity")]
         [JsonConverter(typeof(JsonStringBigIntegerConverter))]
         public BigInteger Quantity { get; set; }
 
         [JsonPropertyName("usdWeightAtCreation")]
-        public string UsdWeightAtCreation { get; set; }
+        public decimal UsdWeightAtCreation { get; set; }
 
         [JsonPropertyName("usdValueAtCreation")]
-        public string UsdValueAtCreation { get; set; }
+        public decimal UsdValueAtCreation { get; set; }
     }
 
-    public partial class UsdBidAsk
+    public partial class BidAsk
     {
-        [JsonPropertyName("bid")] public string Bid { get; set; }
+        [JsonPropertyName("bid")] public decimal Bid { get; set; }
 
-        [JsonPropertyName("ask")] public string Ask { get; set; }
+        [JsonPropertyName("ask")] public decimal Ask { get; set; }
     }
 
     public sealed class JsonStringBigIntegerConverter : JsonConverter<BigInteger>

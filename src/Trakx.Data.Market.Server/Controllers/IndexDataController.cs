@@ -11,11 +11,14 @@ namespace Trakx.Data.Market.Server.Controllers
     [Route("[controller]")]
     public class IndexDataController : ControllerBase
     {
+        private readonly IIndexDetailsProvider _indexDetailsProvider;
+
         private readonly ILogger<IndexDataController> _logger;
         //private readonly JsInterop _interop;
 
-        public IndexDataController(ILogger<IndexDataController> logger)
+        public IndexDataController(IIndexDetailsProvider indexDetailsProvider, ILogger<IndexDataController> logger)
         {
+            _indexDetailsProvider = indexDetailsProvider;
             _logger = logger;
             //_interop = interop;
         }
@@ -26,7 +29,7 @@ namespace Trakx.Data.Market.Server.Controllers
             if (!Enum.TryParse(indexSymbol, out KnownIndexes symbol))
                 return $"Known index symbols are [{string.Join(", ", Enum.GetNames(typeof(KnownIndexes)))}]";
 
-            if (!TrackerDetails.IndexDetails.TryGetValue(symbol, out var details))
+            if (!_indexDetailsProvider.IndexDetails.TryGetValue(symbol, out var details))
                 return $"failed to retrieve details for index {indexSymbol}";
 
             return new JsonResult(details);

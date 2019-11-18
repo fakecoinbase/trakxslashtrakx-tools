@@ -6,6 +6,7 @@
     <DockerDefaultTargetOS>Linux</DockerDefaultTargetOS>
   </PropertyGroup>
 
+  <Import Project="../Common.Projects.props" />
   <ItemGroup>
     <Content Remove="wwwroot\npm-libs\.gitignore" />
     <Content Remove="wwwroot\npm-libs\src\index.ts" />

@@ -5,9 +5,14 @@ VisualStudioVersion = 16.0.29326.143
 MinimumVisualStudioVersion = 10.0.40219.1
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Trakx.Data.Market.Server", "Trakx.Data.Market.Server\Trakx.Data.Market.Server.csproj", "{802A7FB2-F8C2-41C6-A001-382AEAD6FF19}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Trakx.Data.Market.Common", "Trakx.Data.Market.Common\Trakx.Data.Market.Common.csproj", "{584358E6-9312-405C-A954-77178C3BBFB8}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Trakx.Data.Market.Common", "Trakx.Data.Market.Common\Trakx.Data.Market.Common.csproj", "{584358E6-9312-405C-A954-77178C3BBFB8}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Trakx.Data.Market.Tests", "Trakx.Data.Market.Tests\Trakx.Data.Market.Tests.csproj", "{4797E19C-593D-4931-AB06-921381E4F572}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Trakx.Data.Market.Tests", "Trakx.Data.Market.Tests\Trakx.Data.Market.Tests.csproj", "{4797E19C-593D-4931-AB06-921381E4F572}"
+EndProject
+Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "SolutionItems", "SolutionItems", "{AD1E845A-8787-487F-BDF9-95FDCF9135B4}"
+	ProjectSection(SolutionItems) = preProject
+		Common.Projects.props = Common.Projects.props
+	EndProjectSection
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution

@@ -5,7 +5,7 @@ using Trakx.Data.Market.Common.Sources.Kaiko.DTOs;
 
 namespace Trakx.Data.Market.Common.Sources.Kaiko.Client
 {
-    public class RequestHelper
+    public class RequestHelper : IRequestHelper
     {
         private readonly KaikoApiClientFactory _clientFactory;
 

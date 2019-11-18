@@ -14,11 +14,13 @@ namespace Trakx.Data.Market.Server.Controllers
     public class NavController : ControllerBase
     {
         private readonly ILogger<NavController> _logger;
+        private readonly IIndexDetailsProvider _indexDetailsProvider;
         private readonly CryptoCompareClient _cryptoCompareClient;
 
-        public NavController(ILogger<NavController> logger)
+        public NavController(IIndexDetailsProvider indexDetailsProvider, ILogger<NavController> logger)
         {
             _logger = logger;
+            _indexDetailsProvider = indexDetailsProvider;
             _cryptoCompareClient = new CryptoCompareClient("5f95e17ff4599da5bc6f4b309c2e0b27d3a73ddfaba843a63be66be7ebc3e79e");
 
         }
@@ -29,7 +31,7 @@ namespace Trakx.Data.Market.Server.Controllers
             if (!Enum.TryParse(indexSymbol, out KnownIndexes symbol))
                 return $"Known index symbols are [{string.Join(", ", Enum.GetNames(typeof(KnownIndexes)))}]";
 
-            if (!TrackerDetails.IndexDetails.TryGetValue(symbol, out var details))
+            if (!_indexDetailsProvider.IndexDetails.TryGetValue(symbol, out var details))
                 return $"failed to retrieve details for index {indexSymbol}";
 
             var components = details.Components.Select(c => c.Symbol);
