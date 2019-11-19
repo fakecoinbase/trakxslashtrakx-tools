@@ -12,9 +12,9 @@ namespace Trakx.Data.Market.Server.Controllers
     public class KaikoController : ControllerBase
     {
         private readonly ILogger<KaikoController> _logger;
-        private readonly RequestHelper _requestHelper;
+        private readonly IRequestHelper _requestHelper;
 
-        public KaikoController(RequestHelper requestHelper, ILogger<KaikoController> logger)
+        public KaikoController(IRequestHelper requestHelper, ILogger<KaikoController> logger)
         {
             _logger = logger;
             _requestHelper = requestHelper;

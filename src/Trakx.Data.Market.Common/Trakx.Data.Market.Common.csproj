@@ -34,4 +34,10 @@
     </Reference>
   </ItemGroup>
 
+  <ItemGroup>
+    <Folder Include="Sources\Messari\DTOs\GetAllAssets\" />
+    <Folder Include="Sources\Messari\DTOs\GetMetricsBySymbol\" />
+    <Folder Include="Sources\Messari\DTOs\GetProfileBySymbol\" />
+  </ItemGroup>
+
 </Project>

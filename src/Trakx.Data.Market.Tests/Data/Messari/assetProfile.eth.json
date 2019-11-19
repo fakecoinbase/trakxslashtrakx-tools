@@ -1,0 +1,148 @@
+{
+  "status": {
+    "elapsed": "0",
+    "timestamp": "2019-11-19T17:28:32.936696705Z"
+  },
+  "data": {
+    "id": "21c795f5-1bfd-40c3-858e-e9d7e820c6d0",
+    "symbol": "ETH",
+    "name": "Ethereum",
+    "slug": "ethereum",
+    "_internal_temp_agora_id": "263d8b01-5a96-41f0-85d5-09687bbbf7ca",
+    "is_verified": false,
+    "tagline": "A decentralized computing platform",
+    "overview": "Ethereum is a distributed blockchain computing platform for smart contracts and decentralized applications.",
+    "background": "Ethereum was conceived by Vitalik Buterin in 2013 after what he perceived as limitations in the functionality of Bitcoin’s scripting language, namely the lack of Turing completeness. The white paper was published later that year describing a distributed computing platform for executing smart contracts and building decentralized applications (dApps). \n\nIn 2014, a crowdsale of tokens was overseen by The Ethereum Foundation, a non-profit organization dedicated to Ethereum’s research, core protocol development, and ecosystem growth. The foundation has been a primary funding organization operating through grants for teams building on Ethereum. \n\nThe network officially launched in 2015 with the first live release known as Frontier. Shortly after, the first Initial Coin Offering was conducted by Augur. This ability to create a token for a decentralized network proved to be a key use case for Ethereum as thousands of tokens have since been created raising billions of dollars. \n\nIn July 2017, a bug was exploited in a decentralized venture fund known as The DAO which allowed the attacker to siphon 3.6 million ETH. This led to a contentious hard fork to reverse the transactions causing a permanent split in the network. The legacy chain that did not reverse the transactions is known as Ethereum Classic (ETC). \n\nScalability was long known to be an issue for Ethereum if it was going to execute on its vision, and this was highlighted after a dApp called Cryptokitties became popular and led to the network becoming congested. This resulted in longer transaction times and higher fees which many viewed as an existential threat. In order to solve this problem, key architectural changes had to be made which are now on the roadmap as a shift to ETH 2.0 is on the way.",
+    "technology": null,
+    "category": "Infrastructure",
+    "sector": "Smart Contract Platforms",
+    "tag": null,
+    "sfarScore": 2,
+    "token_distribution": {
+      "sale_start": "2014-07-20",
+      "sale_end": "2014-09-02",
+      "initial_distribution": 72000000,
+      "current_supply": 101590235,
+      "max_supply": 146976613,
+      "description": "Ethereum’s original token distribution event, managed by the Ethereum Foundation, sold roughly 60 million ethers (80% of the initial 72 million ether supply) to the public. The 2015 crowdsale initially priced 2000 ether at 1 bitcoin for the first two weeks and then linearly increased to 1337 ether per bitcoin.\n\nThe remaining 12 million (20% of the initial supply) were allocated to the Foundation and early Ethereum contributors. Of the ether sent to the Foundation, 3 million were allocated to a long-term endowment, 6 million were distributed among 85 developers who contributed prior to the crowdsale, and 3 million were designed as a “developer purchase program” that gave Ethereum developers the rights to purchase ether at crowdsale prices.\n\nNew ether are generated via block rewards, initially set a 5 ether per block. Ethereum has hard-forked three times to reduce block reward issuance. Byzantium, the first fork, reduced block rewards from 5 to 3 ether. Constantinople and St. Petersburg, two later forks, reduce block rewards from 3 to 2 ether.\n\nOf the total issued ether supply, Messari considers as illiquid the 500,000+ ether locked in Ethereum’s Parity multi-sig wallet bug.\n"
+    },
+    "token_details": {
+      "usage": "Payments",
+      "type": "Native",
+      "sales_rounds": [
+        {
+          "roundName": "Public Token Sale",
+          "startDate": "2014-07-22",
+          "endDate": "2014-09-02",
+          "pricePerUnit": 0.0005,
+          "unit": "BTC",
+          "amountCollected": 31529,
+          "restriction": null
+        }
+      ],
+      "block_reward": 2,
+      "targeted_block_time_in_sec": 15,
+      "on_chain_governance_structure": "No On-Chain Governance",
+      "is_treasury_decentralized": false,
+      "launch_style": "Crowdsale",
+      "initial_supply": 72003680.24,
+      "percentage_allocated_to_investors_from_initial_supply": 83.47,
+      "percentage_allocated_to_premined_or_airdrops_from_initial_supply": null,
+      "percentage_allocated_to_organizations_or_founders_supply": 16.53,
+      "mining_algorithm": "Ethash",
+      "next_halving_date": null,
+      "genesis_block_date": "2015-07-30",
+      "is_victim_of_51_percent_attack": false,
+      "emission_type_general": "Inflationary",
+      "emission_type_precise": "Fixed Issuance",
+      "is_capped_supply": false,
+      "max_supply": 146976613
+    },
+    "organizations": [
+      {
+        "name": "Ethereum Foundation",
+        "founded_date": "2014-01-01",
+        "governance": null,
+        "legal_structure": "Foundation",
+        "jurisdiction": "Switzerland",
+        "org_charter": null,
+        "description": "Ethereum is a decentralized platform that runs smart contracts: applications that run exactly as programmed without any possibility of downtime, censorship, fraud or third-party interference.",
+        "people_count_estimate": null
+      }
+    ],
+    "people": {
+      "founding_team": null,
+      "contributors": [
+        {
+          "first_name": "Vlad",
+          "last_name": "Zamfir",
+          "description": null,
+          "avatar_url": "https://messari.s3.amazonaws.com/images/agora-images/0%3Fe%3D1555545600%26v%3Dbeta%26t%3DQ_pAqP8ibCvrTtjrC-GzdmjzvdMV1yOORdsPGKPqmfE",
+          "twitter": "https://twitter.com/VladZamfir",
+          "github": "https://github.com/vladzamfir",
+          "medium": "https://medium.com/@Vlad_Zamfir",
+          "linkedin": "https://www.linkedin.com/in/vlad-zamfir/"
+        },
+        {
+          "first_name": "Vitalik",
+          "last_name": "Buterin",
+          "description": "Vitalik is the creator of Ethereum. He first discovered blockchain and cryptocurrency technologies through Bitcoin in 2011, and was immediately excited by the technology and its potential. He cofounded Bitcoin Magazine in September 2011, and after two and a half years looking at what the existing blockchain technology and applications had to offer, wrote the Ethereum white paper in November 2013. He now leads Ethereum's research team, working on future versions of the Ethereum protocol.",
+          "avatar_url": "https://pbs.twimg.com/profile_images/977496875887558661/L86xyLF4_400x400.jpg",
+          "twitter": "https://twitter.com/VitalikButerin",
+          "github": "https://github.com/vbuterin",
+          "medium": "https://medium.com/@VitalikButerin",
+          "linkedin": "https://ca.linkedin.com/in/vitalik-buterin-267a7450"
+        },
+        {
+          "first_name": "Anthony",
+          "last_name": "Di Iorio",
+          "description": null,
+          "avatar_url": "https://messari.s3.amazonaws.com/images/agora-images/anthony-di-iorio-d8783abcb47d9058f8046c6679b11d14-233b9.webp",
+          "twitter": "https://twitter.com/diiorioanthony",
+          "github": "https://github.com/adiiorio",
+          "medium": "https://medium.com/@diiorioanthony",
+          "linkedin": "https://www.linkedin.com/in/anthonydiiorio1/"
+        },
+        {
+          "first_name": "Joe",
+          "last_name": "Lubin",
+          "description": "Joseph Lubin is a co-founder of blockchain computing platform Ethereum and the founder of Consensus Systems (ConsenSys), a blockchain venture studio. ConsenSys is one of the largest and fastest-growing companies in the blockchain technology space, building developer tools, decentralized applications, and solutions for enterprises and governments that harness the power of Ethereum. Headquartered in New York, ConsenSys also has a global presence, employing top entrepreneurs, computer scientists, software developers, and experts in enterprise delivery worldwide.\n\nLubin graduated from Princeton University with a degree in Electrical Engineering and Computer Science. He worked in the Princeton Robotics Lab, at tomandandy music developing an autonomous music composition tool, and at private research firm Vision Applications Inc. building autonomous mobile robots.\n \nAs a software engineer and consultant, Lubin worked with eMagine on the Identrus project and was involved in the founding and operation of a hedge fund with a partner. He held positions as Director of the New York office of Blacksmith Software Consulting, and VP of Technology in Private Wealth Management at Goldman Sachs. Through these posts, Lubin focused on the intersection of cryptography, engineering, and finance.\n \nSwitching gears, Lubin moved to Kingston, Jamaica to work on projects in the music industry. Two years into his musical endeavors, Lubin co-founded the Ethereum Project and has been working on Ethereum and ConsenSys since January 2014.",
+          "avatar_url": "https://pbs.twimg.com/profile_images/968150222760132608/Dzi20Mri_400x400.jpg",
+          "twitter": "https://twitter.com/ethereumJoseph",
+          "github": null,
+          "medium": null,
+          "linkedin": null
+        }
+      ],
+      "investors": null,
+      "advisors": null
+    },
+    "relevant_resources": [
+      {
+        "name": "Whitepaper",
+        "url": "https://github.com/ethereum/wiki/wiki/White-Paper"
+      },
+      {
+        "name": "Github",
+        "url": "https://github.com/ethereum"
+      },
+      {
+        "name": "Website",
+        "url": "https://www.ethereum.org/"
+      },
+      {
+        "name": "Twitter",
+        "url": "https://twitter.com/ethereum"
+      },
+      {
+        "name": "Reddit",
+        "url": "https://www.reddit.com/r/ethereum/"
+      },
+      {
+        "name": "Yellow Paper",
+        "url": "https://ethereum.github.io/yellowpaper/paper.pdf"
+      }
+    ],
+    "consensus_algorithm": "Proof-of-Work"
+  }
+}

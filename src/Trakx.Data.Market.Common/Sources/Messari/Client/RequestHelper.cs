@@ -1,7 +1,7 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Threading.Tasks;
-using Trakx.Data.Market.Common.Sources.Messari.DTOs.GetAllAssets;
+using Trakx.Data.Market.Common.Sources.Messari.DTOs;
 
 namespace Trakx.Data.Market.Common.Sources.Messari.Client
 {

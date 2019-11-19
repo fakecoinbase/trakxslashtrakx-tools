@@ -5,6 +5,7 @@ using System.Threading.Tasks;
 using Castle.Components.DictionaryAdapter;
 using FluentAssertions;
 using Microsoft.AspNetCore.Mvc.ModelBinding.Validation;
+using Microsoft.Extensions.Logging;
 using NSubstitute;
 using Trakx.Data.Market.Common.Indexes;
 using Trakx.Data.Market.Common.Pricing;
@@ -17,7 +18,7 @@ namespace Trakx.Data.Market.Tests.Unit.Common.Pricing
 {
     public class NavCalculatorTests
     {
-        private NavCalculator _navCalculator;
+        private readonly NavCalculator _navCalculator;
 
         public NavCalculatorTests()
         {
@@ -69,7 +70,9 @@ namespace Trakx.Data.Market.Tests.Unit.Common.Pricing
                     return prices;
                 });
 
-            _navCalculator = new NavCalculator(requestHelper, indexProvider);
+            var logger = Substitute.For<ILogger<NavCalculator>>();
+
+            _navCalculator = new NavCalculator(requestHelper, indexProvider, logger);
         }
 
         [Fact]
@@ -77,7 +80,7 @@ namespace Trakx.Data.Market.Tests.Unit.Common.Pricing
         {
             var nav = await _navCalculator.CalculateKaikoNav(KnownIndexes.L1CPU003, "usdc")
                 .ConfigureAwait(false);
-            nav.Should().Be("1.000");
+            nav.Should().Be(1m);
         }
     }
 }

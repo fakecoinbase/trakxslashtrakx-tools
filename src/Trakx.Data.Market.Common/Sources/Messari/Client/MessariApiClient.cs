@@ -4,8 +4,7 @@ using System.Net.Http;
 using System.Text.Json;
 using System.Threading.Tasks;
 using Microsoft.Extensions.Logging;
-using Trakx.Data.Market.Common.Sources.Messari.DTOs.GetAllAssets;
-using Trakx.Data.Market.Common.Sources.Messari.DTOs.GetProfileBySymbol;
+using Trakx.Data.Market.Common.Sources.Messari.DTOs;
 
 namespace Trakx.Data.Market.Common.Sources.Messari.Client
 {
@@ -21,7 +20,7 @@ namespace Trakx.Data.Market.Common.Sources.Messari.Client
             _logger = logger;
         }
         
-        public async Task<AllAssetsResponse> GetAllAssets()
+        public async Task<GetAllAssetsResponse> GetAllAssets()
         {
             var path = $"assets";
 
@@ -31,7 +30,7 @@ namespace Trakx.Data.Market.Common.Sources.Messari.Client
             {
                 var response = await _httpClient.SendAsync(request).ConfigureAwait(false);
                 await using var streamedContent = await response.Content.ReadAsStreamAsync().ConfigureAwait(false);
-                var result = await JsonSerializer.DeserializeAsync<AllAssetsResponse>(streamedContent).ConfigureAwait(false);
+                var result = await JsonSerializer.DeserializeAsync<GetAllAssetsResponse>(streamedContent).ConfigureAwait(false);
                 return result;
             }
             catch (Exception exception)
@@ -41,7 +40,7 @@ namespace Trakx.Data.Market.Common.Sources.Messari.Client
             }
         }
 
-        public async Task<GetProfileBySymbolResponse> GetProfileBySymbol(string symbol)
+        public async Task<GetAssetProfileResponse> GetProfileBySymbol(string symbol)
         {
             var path = $"assets/{symbol}/profile";
 
@@ -51,7 +50,27 @@ namespace Trakx.Data.Market.Common.Sources.Messari.Client
             {
                 var response = await _httpClient.SendAsync(request).ConfigureAwait(false);
                 await using var streamed = await response.Content.ReadAsStreamAsync().ConfigureAwait(false);
-                var result = await JsonSerializer.DeserializeAsync<GetProfileBySymbolResponse>(streamed).ConfigureAwait(false);
+                var result = await JsonSerializer.DeserializeAsync<GetAssetProfileResponse>(streamed).ConfigureAwait(false);
+                return result;
+            }
+            catch (Exception exception)
+            {
+                _logger.LogError("Failed to retrieve all assets", exception);
+                return null;
+            }
+        }
+
+        public async Task<GetAllAssetsResponse> GetMetricsBySymbol(string symbol)
+        {
+            var path = $"assets/{symbol}/metrics";
+
+            var request = new HttpRequestMessage(HttpMethod.Get, new Uri(Constants.ApiEndpoint + path));
+
+            try
+            {
+                var response = await _httpClient.SendAsync(request).ConfigureAwait(false);
+                await using var streamed = await response.Content.ReadAsStreamAsync().ConfigureAwait(false);
+                var result = await JsonSerializer.DeserializeAsync<GetAllAssetsResponse>(streamed).ConfigureAwait(false);
                 return result;
             }
             catch (Exception exception)

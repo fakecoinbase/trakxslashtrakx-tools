@@ -5,7 +5,7 @@ namespace Trakx.Data.Market.Common.Pricing
 {
     public static class ServiceConfiguration
     {
-        public static IServiceCollection AddPricing(IServiceCollection serviceCollection)
+        public static IServiceCollection AddPricing(this IServiceCollection serviceCollection)
         {
             serviceCollection.AddSingleton<IIndexDetailsProvider, IndexDetailsProvider>();
             serviceCollection.AddSingleton<NavCalculator>();

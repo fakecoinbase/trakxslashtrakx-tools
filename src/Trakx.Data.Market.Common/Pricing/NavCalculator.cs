@@ -1,7 +1,7 @@
 ﻿using System;
 using System.Linq;
-using System.Numerics;
 using System.Threading.Tasks;
+using Microsoft.Extensions.Logging;
 using Trakx.Data.Market.Common.Indexes;
 using Trakx.Data.Market.Common.Sources.Kaiko;
 using Trakx.Data.Market.Common.Sources.Kaiko.Client;
@@ -13,18 +13,25 @@ namespace Trakx.Data.Market.Common.Pricing
     {
         private readonly IRequestHelper _requestHelper;
         private readonly IIndexDetailsProvider _indexDetailsProvider;
+        private readonly ILogger<NavCalculator> _logger;
 
         public NavCalculator(IRequestHelper requestHelper, 
-            IIndexDetailsProvider indexDetailsProvider)
+            IIndexDetailsProvider indexDetailsProvider,
+            ILogger<NavCalculator> logger)
         {
             _requestHelper = requestHelper;
             _indexDetailsProvider = indexDetailsProvider;
+            _logger = logger;
         }
 
-        public async Task<string> CalculateKaikoNav(KnownIndexes index, string quoteSymbol)
+        #region Kaiko
+        public async Task<decimal> CalculateKaikoNav(KnownIndexes index, string quoteSymbol)
         {
             if (!_indexDetailsProvider.IndexDetails.TryGetValue(index, out var details))
-                return $"failed to retrieve details for index {index}";
+            {
+                _logger.LogWarning($"Failed to retrieve {index}");
+                return 0;
+            }
             var components = details.Components.Select(c => c.Symbol);
 
             var getPricesTasks = components.Select(c => CreateKaikoCoinQuery(c))
@@ -32,24 +39,24 @@ namespace Trakx.Data.Market.Common.Pricing
                 {
                     var aggregatedPrice = await _requestHelper.GetAggregatedPrices(q)
                         .ConfigureAwait(false);
-                    return new {Price = aggregatedPrice, Symbol = q.BaseAsset};
+                    return new { Price = aggregatedPrice, Symbol = q.BaseAsset };
                 }).ToArray();
 
             await Task.WhenAll(getPricesTasks).ConfigureAwait(false);
 
             var nav = details.Components.Aggregate(0m, (a, c) =>
             {
-                var scaledQuantity = (decimal)Math.Pow(10, 18 - c.Decimals) * (decimal) c.Quantity;
+                var scaledQuantity = (decimal)Math.Pow(10, 18 - c.Decimals) * (decimal)c.Quantity;
                 var prices = getPricesTasks.Select(t => t.Result)
                     .Single(r => r.Symbol.Equals(c.Symbol, StringComparison.InvariantCultureIgnoreCase)).Price;
                 var summedVolume = prices.Sum(p => decimal.Parse(p.Volume));
                 var averagedPrice = prices.Sum(p => decimal.Parse(p.Price) * decimal.Parse(p.Volume)) / summedVolume;
                 var componentValue = scaledQuantity * averagedPrice;
-                var indexValue = a + componentValue / ((decimal)details.NaturalUnit);
+                var indexValue = a + componentValue / (decimal)details.NaturalUnit;
                 return indexValue;
             });
 
-            return nav.ToString();
+            return nav;
         }
 
         private AggregatedPriceRequest CreateKaikoCoinQuery(string coinSymbol, DateTime? dateTime = null)
@@ -69,7 +76,8 @@ namespace Trakx.Data.Market.Common.Pricing
                 Sources = true
             };
             return query;
-        }
+        } 
+        #endregion
 
     }
 }

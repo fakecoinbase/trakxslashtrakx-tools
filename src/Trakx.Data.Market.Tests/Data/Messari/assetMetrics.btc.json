@@ -1,0 +1,173 @@
+{
+  "status": {
+    "elapsed": "0",
+    "timestamp": "2019-11-19T17:30:57.295639794Z"
+  },
+  "data": {
+    "id": "1e31218a-e44e-4285-820c-8282ee222035",
+    "symbol": "BTC",
+    "name": "Bitcoin",
+    "slug": "bitcoin",
+    "_internal_temp_agora_id": "9793eae6-f374-46b4-8764-c2d224429791",
+    "market_data": {
+      "price_usd": 8081.108675964343,
+      "price_btc": 1,
+      "volume_last_24_hours": 5526257321.9874115,
+      "real_volume_last_24_hours": 366591863.52931684,
+      "volume_last_24_hours_overstatement_multiple": 14.37041546793802,
+      "percent_change_usd_last_24_hours": -1.5511385719180488,
+      "percent_change_btc_last_24_hours": 0,
+      "ohlcv_last_1_hour": {
+        "open": 8130.005438565321,
+        "high": 8144.188381250318,
+        "low": 8052.809742869642,
+        "close": 8081.108675964341,
+        "volume": 33200184.17229863
+      },
+      "ohlcv_last_24_hour": {
+        "open": 8416.740451121208,
+        "high": 8419.990768765947,
+        "low": 8001.458837543618,
+        "close": 8081.108675964344,
+        "volume": 894838681.639706
+      },
+      "last_trade_at": "2019-11-19T17:30:50.372Z"
+    },
+    "marketcap": {
+      "current_marketcap_usd": 145898653030.60782,
+      "y_2050_marketcap_usd": 169573714661.38458,
+      "y_plus10_marketcap_usd": 165546983347.47833,
+      "liquid_marketcap_usd": 145854591961.81247,
+      "volume_turnover_last_24_hours_percent": 0.2592283576869896
+    },
+    "supply": {
+      "y_2050": 20986335.65,
+      "y_plus10": 20487989.93,
+      "liquid": 18050872.03,
+      "circulating": 18056325,
+      "y_2050_issued_percent": 86.0125003766439,
+      "annual_inflation_percent": 2.7602266481748496,
+      "stock_to_flow": 36.22890897967499,
+      "y_plus10_issued_percent": 88.10465102566556
+    },
+    "blockchain_stats_24_hours": {
+      "transaction_volume": 3030844089.2784467,
+      "adjusted_transaction_volume": 1132626022.9153845,
+      "nvt": 35.46079506037207,
+      "adjusted_nvt": 83.7927440542603,
+      "sum_of_fees": 182914.2968481329,
+      "median_tx_value": 4878.041262843368,
+      "median_tx_fee": 0.22073003541330194,
+      "count_of_active_addresses": 666406,
+      "count_of_tx": 280324,
+      "count_of_payments": 621324,
+      "new_issuance": 15001857.660345651,
+      "average_difficulty": 12720005267390.502,
+      "kilobytes_added": 172804.653,
+      "count_of_blocks_added": 148
+    },
+    "all_time_high": {
+      "price": 20089,
+      "at": "2017-12-17",
+      "days_since": 702,
+      "percent_down": 59.634067156974034,
+      "breakeven_multiple": 2.4773365300110246
+    },
+    "cycle_low": {
+      "price": 3126.679993636258,
+      "at": "2018-12-15",
+      "percent_up": 159.35216476710085,
+      "days_since": 339
+    },
+    "token_sale_stats": {
+      "sale_proceeds_usd": null,
+      "sale_start_date": null,
+      "sale_end_date": null,
+      "roi_since_sale_usd_percent": null,
+      "roi_since_sale_btc_percent": null,
+      "roi_since_sale_eth_percent": null
+    },
+    "staking_stats": {
+      "staking_yield_percent": null,
+      "staking_type": null,
+      "staking_minimum": null,
+      "tokens_staked": null,
+      "tokens_staked_percent": 0,
+      "real_staking_yield_percent": null
+    },
+    "mining_stats": {
+      "mining_algo": "SHA-256",
+      "network_hash_rate": "79292 PH/s",
+      "available_on_nicehash_percent": 0.35401014668878067,
+      "1_hour_attack_cost": 566270.7732747839,
+      "24_hours_attack_cost": 13590498.558594812,
+      "attack_appeal": 10679.069758593449
+    },
+    "developer_activity": {
+      "stars": 41194,
+      "watchers": 3495,
+      "commits_last_3_months": 481,
+      "commits_last_1_year": 1882,
+      "lines_added_last_3_months": 75283,
+      "lines_added_last_1_year": 136602,
+      "lines_deleted_last_3_months": 55007,
+      "lines_deleted_last_1_year": 89158
+    },
+    "roi_data": {
+      "percent_change_last_1_week": -8.494524305318386,
+      "percent_change_last_1_month": -2.2428214167242815,
+      "percent_change_last_3_months": -20.429088096836374,
+      "percent_change_last_1_year": 68.82705541529728,
+      "percent_change_btc_last_1_week": 0,
+      "percent_change_btc_last_1_month": 0,
+      "percent_change_btc_last_3_months": 0,
+      "percent_change_btc_last_1_year": 0,
+      "percent_change_month_to_date": -12.917864724726504,
+      "percent_change_quarter_to_date": -3.1422917718215038,
+      "percent_change_year_to_date": 107.25804751732657
+    },
+    "roi_by_year": {
+      "2018_usd_percent": -72.50923276595937,
+      "2017_usd_percent": 1610.7690519883597,
+      "2016_usd_percent": 89.7667,
+      "2015_usd_percent": 35.44,
+      "2014_usd_percent": -57.718,
+      "2013_usd_percent": 5360.674,
+      "2012_usd_percent": 174.8979,
+      "2011_usd_percent": 1420.27027
+    },
+    "risk_metrics": {
+      "sharpe_ratios": {
+        "last_30_days": 0.11454566310454817,
+        "last_90_days": -1.335571498701927,
+        "last_1_year": 1.2352562902678361,
+        "last_3_years": 1.416370620381759
+      },
+      "volatility_stats": {
+        "volatility_last_30_days": 0.7513051162561265,
+        "volatility_last_90_days": 0.5668625547511373,
+        "volatility_last_1_year": 0.618945426428324,
+        "volatility_last_3_years": 0.7412140547733583
+      }
+    },
+    "misc_data": {
+      "private_market_price_usd": null,
+      "vladimir_club_cost": 17015751.95588526,
+      "btc_current_normalized_supply_price_usd": 8109.112248835486,
+      "btc_y2050_normalized_supply_price_usd": 8109.112248835487,
+      "asset_created_at": "2009-01-03",
+      "asset_age_days": 3971,
+      "categories": [ "currency" ],
+      "sectors": [ "currency" ]
+    },
+    "lend_rates": null,
+    "borrow_rates": null,
+    "loan_data": {
+      "originated_last_24_hours_usd": 0,
+      "outstanding_debt_usd": 0,
+      "repaid_last_24_hours_usd": 0,
+      "collateralized_last_24_hours_usd": 0,
+      "collateral_liquidated_last_24_hours_usd": 0
+    }
+  }
+}

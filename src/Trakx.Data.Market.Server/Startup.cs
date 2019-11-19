@@ -14,6 +14,7 @@ using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Hosting;
 using Microsoft.OpenApi.Models;
+using Trakx.Data.Market.Common.Pricing;
 using Trakx.Data.Market.Common.Sources.Kaiko.Client;
 using Trakx.Data.Market.Common.Sources.Messari.Client;
 using Trakx.Data.Market.Server.Areas.Identity;
@@ -54,6 +55,7 @@ namespace Trakx.Data.Market.Server
                 c.SwaggerDoc(Version, new OpenApiInfo { Title = ApiName, Version = Version });
             });
 
+            services.AddPricing();
             services.AddKaikoClient();
             services.AddMessariClient();
         }
