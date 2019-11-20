@@ -13,6 +13,8 @@
     <None Remove="Data\Messari\allAssets.json" />
     <None Remove="Data\Messari\assetMetrics.btc.json" />
     <None Remove="Data\Messari\assetMetrics.eth.json" />
+    <None Remove="Data\Messari\assetMetrics.sym1.json" />
+    <None Remove="Data\Messari\assetMetrics.sym2.json" />
     <None Remove="Data\Messari\assetProfile.btc.json" />
     <None Remove="Data\Messari\assetProfile.eth.json" />
     <None Remove="Unit\Common\Pricing\TestIndexDetails.json" />
@@ -22,6 +24,8 @@
     <EmbeddedResource Include="Data\Kaiko\AggregatedPrice\sym1.json" />
     <EmbeddedResource Include="Data\Kaiko\AggregatedPrice\sym2.json" />
     <EmbeddedResource Include="Data\Messari\allAssets.json" />
+    <EmbeddedResource Include="Data\Messari\assetMetrics.sym1.json" />
+    <EmbeddedResource Include="Data\Messari\assetMetrics.sym2.json" />
     <EmbeddedResource Include="Data\Messari\assetMetrics.btc.json" />
     <EmbeddedResource Include="Data\Messari\assetMetrics.eth.json" />
     <EmbeddedResource Include="Data\Messari\assetProfile.btc.json" />

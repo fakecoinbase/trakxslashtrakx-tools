@@ -3,18 +3,18 @@ using Microsoft.Extensions.DependencyInjection;
 
 namespace Trakx.Data.Market.Common.Sources.Kaiko.Client
 {
-    public class KaikoApiClientFactory
+    public class RequestHelperFactory
     {
         private readonly IServiceProvider _serviceProvider;
 
-        public KaikoApiClientFactory(IServiceProvider serviceProvider)
+        public RequestHelperFactory(IServiceProvider serviceProvider)
         {
             _serviceProvider = serviceProvider;
         }
 
-        public KaikoApiClient Create()
+        public RequestHelper Create()
         {
-            return _serviceProvider.GetRequiredService<KaikoApiClient>();
+            return _serviceProvider.GetRequiredService<RequestHelper>();
         }
     }
 }

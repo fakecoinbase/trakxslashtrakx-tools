@@ -6,39 +6,33 @@ using CryptoCompare;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.Extensions.Logging;
 using Trakx.Data.Market.Common.Indexes;
+using Trakx.Data.Market.Common.Pricing;
+using Trakx.Data.Market.Common.Sources.Messari.Client;
 
 namespace Trakx.Data.Market.Server.Controllers
 {
     [ApiController]
-    [Route("[controller]")]
+    [Route("[controller]/[action]")]
     public class NavController : ControllerBase
     {
         private readonly ILogger<NavController> _logger;
-        private readonly IIndexDetailsProvider _indexDetailsProvider;
-        private readonly CryptoCompareClient _cryptoCompareClient;
+        private readonly NavCalculator _navCalculator;
 
-        public NavController(IIndexDetailsProvider indexDetailsProvider, ILogger<NavController> logger)
+        public NavController(IIndexDetailsProvider indexDetailsProvider, 
+            NavCalculator navCalculator,
+            ILogger<NavController> logger)
         {
             _logger = logger;
-            _indexDetailsProvider = indexDetailsProvider;
-            _cryptoCompareClient = new CryptoCompareClient("5f95e17ff4599da5bc6f4b309c2e0b27d3a73ddfaba843a63be66be7ebc3e79e");
-
+            _navCalculator = navCalculator;
         }
 
         [HttpGet]
-        public async Task<ActionResult<string>> NetAssetValue([FromQuery] string indexSymbol, [FromQuery]string quoteSymbol = "USDC")
+        public async Task<ActionResult<string>> GetNetAssetValue([FromQuery] string indexSymbol, [FromQuery]string quoteSymbol = "USDC")
         {
             if (!Enum.TryParse(indexSymbol, out KnownIndexes symbol))
                 return $"Known index symbols are [{string.Join(", ", Enum.GetNames(typeof(KnownIndexes)))}]";
 
-            if (!_indexDetailsProvider.IndexDetails.TryGetValue(symbol, out var details))
-                return $"failed to retrieve details for index {indexSymbol}";
-
-            var components = details.Components.Select(c => c.Symbol);
-
-            var prices = await _cryptoCompareClient.Prices.MultipleSymbolsPriceAsync(
-                components, new[] { quoteSymbol }, null, null);
-            var nav = details.Components.Sum(c => (ulong)c.Quantity * prices[c.Symbol][quoteSymbol]);
+            var nav = await _navCalculator.CalculateMessariNav(symbol).ConfigureAwait(false);
             return nav.ToString(CultureInfo.InvariantCulture);
         }
     }

@@ -1,12 +1,10 @@
-﻿using System;
-using System.Collections.Generic;
+﻿using System.Collections.Generic;
 using System.Linq;
 using System.Reflection;
 using System.Text.Json;
 using System.Threading.Tasks;
 using FluentAssertions;
 using Trakx.Data.Market.Common.Sources.Messari.DTOs;
-using Trakx.Data.Market.Tests.Data.Kaiko.AggregatedPrice;
 using Xunit;
 
 namespace Trakx.Data.Market.Tests.Data.Messari
@@ -41,23 +39,49 @@ namespace Trakx.Data.Market.Tests.Data.Messari
         private async Task<T> GetAssetDetails<T>(string symbol, string fileNamePrefix)
         {
             var stream = Assembly.GetManifestResourceStream(
-                $"{Namespace}.{fileNamePrefix}.{symbol}.json");
+                $"{Namespace}.{fileNamePrefix}.{symbol.ToLower()}.json");
             var response = await JsonSerializer.DeserializeAsync<T>(stream);
             return response;
         }
 
     }
-    public class AggregatedPriceReaderTests
+    public class MessariReaderTests
     {
         [Fact]
-        public async Task AggregatedPriceReader_can_find_existing_symbols()
+        public async Task GetAllAssets_can_serialise_json()
         {
             var reader = new MessariReader();
             var prices = await reader.GetAllAssets().ConfigureAwait(false);
-            prices.Count.Should().Be(2);
+            prices.Count.Should().Be(20);
 
-            prices.First().Symbol.Should().Be("btc");
-            prices.First().Metrics.MarketData.PriceUsd.Should().Be(22.2);
+            prices.First().Symbol.Should().Be("BTC");
+            prices.First().Metrics.MarketData.PriceUsd.Should().Be(8041.124483003255m);
+        }
+
+        [Theory]
+        [InlineData("BTC", "8081.108675964343")]
+        [InlineData("ETH", "173.78629700493275")]
+        [InlineData("SYM1", "0.05")]
+        [InlineData("SYM2", "0.15")]
+        public async Task GetAssetMetrics_can_serialise_json(string symbol, string expectedPrice)
+        {
+            var reader = new MessariReader();
+            var metrics = await reader.GetAssetMetrics(symbol).ConfigureAwait(false);
+            
+            metrics.Symbol.Should().Be(symbol);
+            metrics.MarketData.PriceUsd.Should().Be(decimal.Parse(expectedPrice));
+        }
+        
+        [Theory]
+        [InlineData("BTC", "Native")]
+        [InlineData("ETH", "Native")]
+        public async Task GetAssetProfile_can_serialise_json(string symbol, string expectedTokenType)
+        {
+            var reader = new MessariReader();
+            var metrics = await reader.GetAssetProfile(symbol).ConfigureAwait(false);
+
+            metrics.Symbol.Should().Be(symbol);
+            metrics.TokenDetails.Type.Should().Be(expectedTokenType);
         }
     }
 }

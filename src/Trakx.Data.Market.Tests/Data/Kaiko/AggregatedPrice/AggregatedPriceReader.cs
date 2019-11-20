@@ -33,7 +33,7 @@ namespace Trakx.Data.Market.Tests.Data.Kaiko.AggregatedPrice
             var prices = await reader.GetAggregatePriceForSymbol("SYM1").ConfigureAwait(false);
             prices.Count.Should().Be(2);
 
-            prices.First().Price.Should().Be("0.24");
+            prices.First().Price.Should().Be("0.04");
         }
 
         [Fact]

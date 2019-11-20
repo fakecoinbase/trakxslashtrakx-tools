@@ -28,19 +28,19 @@ namespace Trakx.Data.Market.Common.Sources.Messari.DTOs
     public partial class MarketData
     {
         [JsonPropertyName("price_usd")]
-        public double PriceUsd { get; set; }
+        public decimal PriceUsd { get; set; }
 
         [JsonPropertyName("price_btc")]
-        public double PriceBtc { get; set; }
+        public decimal PriceBtc { get; set; }
 
         [JsonPropertyName("volume_last_24_hours")]
-        public double VolumeLast24_Hours { get; set; }
+        public decimal VolumeLast24_Hours { get; set; }
 
         [JsonPropertyName("real_volume_last_24_hours")]
-        public double? RealVolumeLast24_Hours { get; set; }
+        public decimal? RealVolumeLast24_Hours { get; set; }
 
         [JsonPropertyName("volume_last_24_hours_overstatement_multiple")]
-        public double? VolumeLast24_HoursOverstatementMultiple { get; set; }
+        public decimal? VolumeLast24_HoursOverstatementMultiple { get; set; }
 
         [JsonPropertyName("percent_change_usd_last_24_hours")]
         public double PercentChangeUsdLast24_Hours { get; set; }

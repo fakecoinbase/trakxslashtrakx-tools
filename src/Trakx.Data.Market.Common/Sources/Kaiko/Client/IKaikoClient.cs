@@ -24,7 +24,7 @@ using Trakx.Data.Market.Common.Sources.Kaiko.DTOs;
 
 namespace Trakx.Data.Market.Common.Sources.Kaiko.Client
 {
-    public interface IRequestHelper
+    public interface IKaikoClient
     {
         Task<IReadOnlyCollection<AggregatedPrice>> GetAggregatedPrices(AggregatedPriceRequest request);
         Task<IReadOnlyCollection<Asset>> GetAssets();

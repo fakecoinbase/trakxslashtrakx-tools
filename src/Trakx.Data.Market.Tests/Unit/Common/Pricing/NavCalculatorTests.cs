@@ -1,17 +1,17 @@
 ﻿using System.Collections.Generic;
 using System.Numerics;
-using System.Text.Json;
 using System.Threading.Tasks;
-using Castle.Components.DictionaryAdapter;
 using FluentAssertions;
-using Microsoft.AspNetCore.Mvc.ModelBinding.Validation;
 using Microsoft.Extensions.Logging;
 using NSubstitute;
+using NSubstitute.Core;
 using Trakx.Data.Market.Common.Indexes;
 using Trakx.Data.Market.Common.Pricing;
 using Trakx.Data.Market.Common.Sources.Kaiko.Client;
 using Trakx.Data.Market.Common.Sources.Kaiko.DTOs;
+using Trakx.Data.Market.Common.Sources.Messari.Client;
 using Trakx.Data.Market.Tests.Data.Kaiko.AggregatedPrice;
+using Trakx.Data.Market.Tests.Data.Messari;
 using Xunit;
 
 namespace Trakx.Data.Market.Tests.Unit.Common.Pricing
@@ -21,6 +21,37 @@ namespace Trakx.Data.Market.Tests.Unit.Common.Pricing
         private readonly NavCalculator _navCalculator;
 
         public NavCalculatorTests()
+        {
+            var indexProvider = PrepareIndexDetailsProvider();
+
+            var aggregatedPriceReader = new AggregatedPriceReader();
+            var kaikoClient = Substitute.For<IKaikoClient>();
+            kaikoClient.GetAggregatedPrices(Arg.Any<AggregatedPriceRequest>())
+                .Returns(async callInfo =>
+                {
+                    var symbol = ((AggregatedPriceRequest) callInfo[0]).BaseAsset;
+                    var prices = await aggregatedPriceReader.GetAggregatePriceForSymbol(symbol)
+                        .ConfigureAwait(false);
+                    return prices;
+                });
+
+            var messariReader = new MessariReader();
+            var messariClient = Substitute.For<IMessariClient>();
+            messariClient.GetMetricsForSymbol(Arg.Any<string>())
+                .Returns(async callInfo =>
+                {
+                    var symbol = (string)callInfo[0];
+                    var price = await messariReader.GetAssetMetrics(symbol)
+                        .ConfigureAwait(false);
+                    return price;
+                });
+
+            var logger = Substitute.For<ILogger<NavCalculator>>();
+
+            _navCalculator = new NavCalculator(kaikoClient, messariClient, indexProvider, logger);
+        }
+
+        private IIndexDetailsProvider PrepareIndexDetailsProvider()
         {
             var indexProvider = Substitute.For<IIndexDetailsProvider>();
             var indexDetails = Substitute.For<IDictionary<KnownIndexes, IndexDetails>>();
@@ -38,19 +69,21 @@ namespace Trakx.Data.Market.Tests.Unit.Common.Pricing
                         NaturalUnit = BigInteger.Pow(10, decimalDiff),
                         Components = new List<Component>()
                         {
-                            new Component() {
+                            new Component()
+                            {
                                 Symbol = "SYM1",
-                                Decimals = minDecimals, 
+                                Decimals = minDecimals,
                                 Quantity = 5,
-                                UsdBidAsk = new BidAsk { Ask = 0.04m, Bid = 0.06m },
+                                UsdBidAsk = new BidAsk {Ask = 0.04m, Bid = 0.06m},
                                 UsdValueAtCreation = 0.05m,
                                 UsdWeightAtCreation = 0.5m
                             },
-                            new Component() {
+                            new Component()
+                            {
                                 Symbol = "SYM2",
                                 Decimals = maxDecimals,
                                 Quantity = BigInteger.Multiply(5, BigInteger.Pow(10, decimalDiff)),
-                                UsdBidAsk = new BidAsk { Ask = 0.16m, Bid = 0.14m },
+                                UsdBidAsk = new BidAsk {Ask = 0.16m, Bid = 0.14m},
                                 UsdValueAtCreation = 0.15m,
                                 UsdWeightAtCreation = 0.5m
                             }
@@ -58,27 +91,21 @@ namespace Trakx.Data.Market.Tests.Unit.Common.Pricing
                     };
                     return true;
                 });
-
-            var aggregatedPriceReader = new AggregatedPriceReader();
-            var requestHelper = Substitute.For<IRequestHelper>();
-            requestHelper.GetAggregatedPrices(Arg.Any<AggregatedPriceRequest>())
-                .Returns(async callInfo =>
-                {
-                    var symbol = ((AggregatedPriceRequest) callInfo[0]).BaseAsset;
-                    var prices = await aggregatedPriceReader.GetAggregatePriceForSymbol(symbol)
-                        .ConfigureAwait(false);
-                    return prices;
-                });
-
-            var logger = Substitute.For<ILogger<NavCalculator>>();
-
-            _navCalculator = new NavCalculator(requestHelper, indexProvider, logger);
+            return indexProvider;
         }
 
         [Fact]
-        public async Task CalculateKaikoNav_should_get_aggregated_prices_from_Kaiko_RequestHelper()
+        public async Task CalculateKaikoNav_should_get_aggregated_prices_from_KaikoClient()
         {
             var nav = await _navCalculator.CalculateKaikoNav(KnownIndexes.L1CPU003, "usdc")
+                .ConfigureAwait(false);
+            nav.Should().Be(1m);
+        }
+
+        [Fact]
+        public async Task CalculateMessariNav_should_get_prices_from_MessariClient()
+        {
+            var nav = await _navCalculator.CalculateMessariNav(KnownIndexes.L1CPU003)
                 .ConfigureAwait(false);
             nav.Should().Be(1m);
         }

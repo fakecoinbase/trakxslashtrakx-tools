@@ -32,8 +32,7 @@ namespace Trakx.Data.Market.Common.Sources.Messari.DTOs
         public string Usage { get; set; }
 
         [JsonPropertyName("type")]
-        [JsonConverter(typeof(JsonStringEnumConverter))]
-        public TypeEnum Type { get; set; }
+        public string Type { get; set; }
 
         [JsonPropertyName("sales_rounds")]
         public List<SalesRound> SalesRounds { get; set; }
@@ -45,8 +44,7 @@ namespace Trakx.Data.Market.Common.Sources.Messari.DTOs
         public double? TargetedBlockTimeInSec { get; set; }
 
         [JsonPropertyName("on_chain_governance_structure")]
-        [JsonConverter(typeof(JsonStringEnumConverter))]
-        public OnChainGovernanceStructure? OnChainGovernanceStructure { get; set; }
+        public string OnChainGovernanceStructure { get; set; }
 
         [JsonPropertyName("is_treasury_decentralized")]
         public bool? IsTreasuryDecentralized { get; set; }
@@ -78,9 +76,10 @@ namespace Trakx.Data.Market.Common.Sources.Messari.DTOs
         [JsonPropertyName("is_victim_of_51_percent_attack")]
         public bool? IsVictimOf51_PercentAttack { get; set; }
 
-        [JsonPropertyName("emission_type_general")]
-        [JsonConverter(typeof(JsonStringEnumConverter))]
-        public EmissionTypeGeneral? EmissionTypeGeneral { get; set; }
+        [JsonIgnore]
+        //[JsonPropertyName("emission_type_general")] 
+        //[JsonConverter(typeof(JsonStringEnumConverter))]
+        public EmissionTypeGeneral EmissionTypeGeneral { get; set; }
 
         [JsonPropertyName("emission_type_precise")]
         public string EmissionTypePrecise { get; set; }

@@ -34,9 +34,10 @@ namespace Trakx.Data.Market.Common.Sources.Messari.DTOs
         public DateTimeOffset? FoundedDate { get; set; }
 
         [JsonPropertyName("governance")]
-        public object Governance { get; set; }
+        public string? Governance { get; set; }
 
-        [JsonPropertyName("legal_structure")]
+        //[JsonPropertyName("legal_structure")]
+        [JsonIgnore]
         public LegalStructure? LegalStructure { get; set; }
 
         [JsonPropertyName("jurisdiction")]

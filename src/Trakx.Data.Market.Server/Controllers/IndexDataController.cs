@@ -1,9 +1,7 @@
 ﻿using System;
-using System.Threading.Tasks;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.Extensions.Logging;
 using Trakx.Data.Market.Common.Indexes;
-using Trakx.Data.Market.Server.Data;
 
 namespace Trakx.Data.Market.Server.Controllers
 {

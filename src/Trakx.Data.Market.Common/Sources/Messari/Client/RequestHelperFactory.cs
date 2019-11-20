@@ -3,18 +3,18 @@ using Microsoft.Extensions.DependencyInjection;
 
 namespace Trakx.Data.Market.Common.Sources.Messari.Client
 {
-    public class MessariApiClientFactory
+    public class RequestHelperFactory
     {
         private readonly IServiceProvider _serviceProvider;
 
-        public MessariApiClientFactory(IServiceProvider serviceProvider)
+        public RequestHelperFactory(IServiceProvider serviceProvider)
         {
             _serviceProvider = serviceProvider;
         }
 
-        public MessariApiClient Create()
+        public RequestHelper Create()
         {
-            return _serviceProvider.GetRequiredService<MessariApiClient>();
+            return _serviceProvider.GetRequiredService<RequestHelper>();
         }
     }
 }

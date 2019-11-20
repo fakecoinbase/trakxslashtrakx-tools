@@ -11,6 +11,7 @@ using Trakx.Data.Market.Common.Sources.Kaiko.DTOs;
 using Trakx.Data.Market.Common.Sources.Messari.Client;
 using Xunit;
 using Xunit.Abstractions;
+using RequestHelper = Trakx.Data.Market.Common.Sources.Kaiko.Client.RequestHelper;
 
 namespace Trakx.Data.Market.Tests.Integration
 {
@@ -18,7 +19,7 @@ namespace Trakx.Data.Market.Tests.Integration
     {
         private readonly ITestOutputHelper _output;
         //private readonly ICacheLogger<KaikoApiClient> _logger;
-        private readonly KaikoApiClient _kaikoApiClient;
+        private readonly RequestHelper _requestHelper;
 
         public KaikoApiClientTests(ITestOutputHelper output)
         {
@@ -28,15 +29,15 @@ namespace Trakx.Data.Market.Tests.Integration
             serviceCollection.AddKaikoClient();
             serviceCollection.AddMessariClient();
             _serviceProvider = serviceCollection.BuildServiceProvider();
-            _kaikoApiClient = _serviceProvider.GetRequiredService<KaikoApiClient>();
-            _messariClient = _serviceProvider.GetRequiredService<MessariApiClient>();
+            _requestHelper = _serviceProvider.GetRequiredService<RequestHelper>();
+            _messariClient = _serviceProvider.GetRequiredService<Common.Sources.Messari.Client.RequestHelper>();
         }
 
 
         [Fact]
         public async Task GetExchanges_should_return_exchanges()
         {
-            var exchanges = await _kaikoApiClient.GetExchanges();
+            var exchanges = await _requestHelper.GetExchanges();
 
             _output.WriteLine(exchanges.ToString());
 
@@ -46,7 +47,7 @@ namespace Trakx.Data.Market.Tests.Integration
         [Fact]
         public async Task GetAssets_should_return_assets()
         {
-            var assets = await _kaikoApiClient.GetAssets();
+            var assets = await _requestHelper.GetAssets();
 
             _output.WriteLine(assets.ToString());
 
@@ -57,7 +58,7 @@ namespace Trakx.Data.Market.Tests.Integration
         [Fact]
         public async Task GetInstruments_should_return_instruments()
         {
-            var instruments = await _kaikoApiClient.GetInstruments();
+            var instruments = await _requestHelper.GetInstruments();
 
             _output.WriteLine(instruments.ToString());
 
@@ -70,8 +71,8 @@ namespace Trakx.Data.Market.Tests.Integration
             var coinSymbol = "celr";
             var query = CreateCoinQuery(coinSymbol, "btc");
 
-            var price = await _kaikoApiClient.GetAggregatedPrice(query).ConfigureAwait(false);
-            var profile = (await _messariClient.GetProfileBySymbol(coinSymbol).ConfigureAwait(false)).Data;
+            var price = await _requestHelper.GetAggregatedPrice(query).ConfigureAwait(false);
+            var profile = (await _messariClient.GetProfileForSymbol(coinSymbol).ConfigureAwait(false)).Data;
 
             var results = price.Data;
 
@@ -86,14 +87,14 @@ namespace Trakx.Data.Market.Tests.Integration
             var ccErc20Symbols = cryptoCompareCoins.GetAllErc20Symbols()
                 .Select(c => c.ToLower()).OrderBy(s => s).ToList();
 
-            var kaikoInstruments = await _kaikoApiClient.GetInstruments().ConfigureAwait(false);
+            var kaikoInstruments = await _requestHelper.GetInstruments().ConfigureAwait(false);
             var kaikoErc20Symbols = kaikoInstruments.Instruments.Select(i => i.Code.Split("-")[0].ToLower())
                 .Distinct()
                 .Intersect(ccErc20Symbols)
                 .OrderBy(s => s)
                 .ToList();
 
-            var assetNameByCode = (await _kaikoApiClient.GetAssets().ConfigureAwait(false))
+            var assetNameByCode = (await _requestHelper.GetAssets().ConfigureAwait(false))
                 .Assets.ToDictionary(a => a.Code, a => a.Name);
 
             //var messariAssetDetails = (await _messariClient.GetAllAssets()).Data.ToDictionary(a => a.Symbol.ToLower(), a => a.Profile);
@@ -106,8 +107,8 @@ namespace Trakx.Data.Market.Tests.Integration
             Directory.CreateDirectory(tempPath);
             var priceTasks = queries.AsParallel().Select(async q =>
                 {
-                    var aggregatedPrice = await _kaikoApiClient.GetAggregatedPrice(q).ConfigureAwait(false);
-                    var profile = await _messariClient.GetProfileBySymbol(q.BaseAsset).ConfigureAwait(false);
+                    var aggregatedPrice = await _requestHelper.GetAggregatedPrice(q).ConfigureAwait(false);
+                    var profile = await _messariClient.GetProfileForSymbol(q.BaseAsset).ConfigureAwait(false);
                     if (aggregatedPrice?.Result == "success" && aggregatedPrice.Data.Any())
                     {
                         File.WriteAllText(Path.Combine(tempPath, q.BaseAsset + ".json"), JsonConvert.SerializeObject(aggregatedPrice.Data));
@@ -148,7 +149,7 @@ namespace Trakx.Data.Market.Tests.Integration
         }
 
         private readonly ServiceProvider _serviceProvider;
-        private readonly MessariApiClient _messariClient;
+        private readonly Common.Sources.Messari.Client.RequestHelper _messariClient;
 
         public void Dispose()
         {

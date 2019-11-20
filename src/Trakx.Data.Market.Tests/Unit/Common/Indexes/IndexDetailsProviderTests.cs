@@ -24,7 +24,6 @@
 using System;
 using System.Linq;
 using FluentAssertions;
-using NSubstitute;
 using Trakx.Data.Market.Common.Indexes;
 using Xunit;
 

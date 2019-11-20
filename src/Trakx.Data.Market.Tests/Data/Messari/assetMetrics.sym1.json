@@ -1,0 +1,15 @@
+{
+  "status": {
+    "elapsed": "0",
+    "timestamp": "2019-11-19T17:30:57.295639794Z"
+  },
+  "data": {
+    "id": "1e31218a-e44e-4285-820c-8282ee222035",
+    "symbol": "SYM1",
+    "name": "Symbol 1",
+    "slug": "symbol1",
+    "market_data": {
+      "price_usd": 0.05
+    }
+  }
+}

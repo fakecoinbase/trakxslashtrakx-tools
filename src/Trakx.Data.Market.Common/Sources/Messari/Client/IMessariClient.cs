@@ -20,19 +20,16 @@
 
 #endregion
 
-using System;
-using System.Text.Json.Serialization;
-using Trakx.Data.Market.Common.Serialisation.Converters;
+using System.Collections.Generic;
+using System.Threading.Tasks;
+using Trakx.Data.Market.Common.Sources.Messari.DTOs;
 
-namespace Trakx.Data.Market.Common.Sources.Messari.DTOs
+namespace Trakx.Data.Market.Common.Sources.Messari.Client
 {
-    public partial class Status
+    public interface IMessariClient
     {
-        [JsonPropertyName("elapsed")]
-        [JsonConverter(typeof(StringLongConverter))]
-        public long Elapsed { get; set; }
-
-        [JsonPropertyName("timestamp")]
-        public DateTimeOffset Timestamp { get; set; }
+        Task<IReadOnlyCollection<Asset>> GetAllAssets();
+        Task<AssetMetrics> GetMetricsForSymbol(string symbol);
+        Task<AssetProfile> GetProfileForSymbol(string symbol);
     }
 }
