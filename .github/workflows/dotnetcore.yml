@@ -14,6 +14,6 @@ jobs:
       with:
         dotnet-version: 3.0.100
     - name: Build with dotnet
-      run: dotnet build --configuration Release
+      run: dotnet build src/Trakx.Data.Market.sln --configuration Release 
     - name: Test with dotnet
-      run: dotnet test --no-rebuild
+      run: dotnet test src/Trakx.Data.Market.sln --no-rebuild
