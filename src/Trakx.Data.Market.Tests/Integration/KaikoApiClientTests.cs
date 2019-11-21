@@ -2,9 +2,10 @@ using System;
 using System.Collections.Generic;
 using System.IO;
 using System.Linq;
+using System.Text.Json;
 using System.Threading.Tasks;
 using Microsoft.Extensions.DependencyInjection;
-using Newtonsoft.Json;
+using Trakx.Data.Market.Common.Sources.BitGo;
 using Trakx.Data.Market.Common.Sources.CryptoCompare;
 using Trakx.Data.Market.Common.Sources.Kaiko.Client;
 using Trakx.Data.Market.Common.Sources.Kaiko.DTOs;
@@ -54,7 +55,6 @@ namespace Trakx.Data.Market.Tests.Integration
             assets.Assets.ForEach(a => _output.WriteLine($"{a.Code}, {a.Name}, {a.AssetClass}"));
         }
 
-
         [Fact]
         public async Task GetInstruments_should_return_instruments()
         {
@@ -68,10 +68,10 @@ namespace Trakx.Data.Market.Tests.Integration
         [Fact]
         public async Task GetAggregatedPrice_for_one_token_should_return_aggregated_prices()
         {
-            var coinSymbol = "celr";
-            var query = CreateCoinQuery(coinSymbol, "btc");
+            var coinSymbol = "eth";
+            var query = CreateCoinQuery(coinSymbol, coinSymbol);
 
-            var price = await _requestHelper.GetAggregatedPrice(query).ConfigureAwait(false);
+            var price = await _requestHelper.GetSpotExchangeRate(query, false).ConfigureAwait(false);
             var profile = (await _messariClient.GetProfileForSymbol(coinSymbol).ConfigureAwait(false)).Data;
 
             var results = price.Data;
@@ -83,23 +83,19 @@ namespace Trakx.Data.Market.Tests.Integration
         [Fact]
         public async Task GetAggregatedPrice_should_return_aggregated_prices()
         {
-            var cryptoCompareCoins = new CryptoCompareApiClient();
-            var ccErc20Symbols = cryptoCompareCoins.GetAllErc20Symbols()
-                .Select(c => c.ToLower()).OrderBy(s => s).ToList();
-
+            var bitGoTokens = new SupportedTokenProvider().SupportedTokensBySymbol;
             var kaikoInstruments = await _requestHelper.GetInstruments().ConfigureAwait(false);
             var kaikoErc20Symbols = kaikoInstruments.Instruments.Select(i => i.Code.Split("-")[0].ToLower())
                 .Distinct()
-                .Intersect(ccErc20Symbols)
                 .OrderBy(s => s)
+                .Intersect(bitGoTokens.Keys)
+                .Take(20)
                 .ToList();
 
             var assetNameByCode = (await _requestHelper.GetAssets().ConfigureAwait(false))
                 .Assets.ToDictionary(a => a.Code, a => a.Name);
 
-            //var messariAssetDetails = (await _messariClient.GetAllAssets()).Data.ToDictionary(a => a.Symbol.ToLower(), a => a.Profile);
-
-            var quoteAsset = "btc";
+            var quoteAsset = "usd";
             
             var queries = kaikoErc20Symbols.Select(e => CreateCoinQuery(e, quoteAsset)).ToList();
 
@@ -107,12 +103,18 @@ namespace Trakx.Data.Market.Tests.Integration
             Directory.CreateDirectory(tempPath);
             var priceTasks = queries.AsParallel().Select(async q =>
                 {
-                    var aggregatedPrice = await _requestHelper.GetAggregatedPrice(q).ConfigureAwait(false);
+                    var aggregatedPrice = await _requestHelper.GetSpotExchangeRate(q).ConfigureAwait(false);
                     var profile = await _messariClient.GetProfileForSymbol(q.BaseAsset).ConfigureAwait(false);
                     if (aggregatedPrice?.Result == "success" && aggregatedPrice.Data.Any())
                     {
-                        File.WriteAllText(Path.Combine(tempPath, q.BaseAsset + ".json"), JsonConvert.SerializeObject(aggregatedPrice.Data));
-                        return new { Query = q, Prices = aggregatedPrice, Sector = profile?.Data?.Sector ?? "" };
+                        File.WriteAllText(Path.Combine(tempPath, q.BaseAsset + ".json"), 
+                            JsonSerializer.Serialize(aggregatedPrice));
+                        return new { 
+                            Query = q, 
+                            Prices = aggregatedPrice, 
+                            Sector = profile?.Data?.Sector ?? "", 
+                            BitGoCustody = bitGoTokens.ContainsKey(q.BaseAsset.ToLower())
+                        };
                     }
                     return null;
                 })
@@ -120,14 +122,14 @@ namespace Trakx.Data.Market.Tests.Integration
                 .ToArray();
 
             var results = priceTasks.Select(p => p.Result).Where(r => r != null).OrderBy(r => r.Query.BaseAsset).ToList();
-            _output.WriteLine($"symbol, name, sector, volume ({quoteAsset}), price ({quoteAsset})");
+            _output.WriteLine($"symbol, name, sector, volume ({quoteAsset}), price ({quoteAsset}), bitgoCustody");
             results.ForEach(r =>
                {
                    var summedVolume = r.Prices.Data.Sum(a => decimal.Parse(a.Volume));
                    var averagePrice = r.Prices.Data.Average(a => decimal.Parse(a.Price) * decimal.Parse(a.Volume)) / summedVolume;
                    var symbol = r.Query.BaseAsset;
                    var assetName = assetNameByCode[symbol];
-                   _output.WriteLine($"{symbol}, {assetName}, {r.Sector}, {summedVolume}, {averagePrice}");
+                   _output.WriteLine($"{symbol}, {assetName}, {r.Sector}, {summedVolume}, {averagePrice}, {r.BitGoCustody}");
                });
         }
 
@@ -143,7 +145,7 @@ namespace Trakx.Data.Market.Tests.Integration
                 PageSize = 1000,
                 QuoteAsset = quoteSymbol,
                 StartTime = new DateTimeOffset(2019, 10, 01, 00, 00, 00, TimeSpan.Zero),
-                Sources = false
+                Sources = true
             };
             return query;
         }

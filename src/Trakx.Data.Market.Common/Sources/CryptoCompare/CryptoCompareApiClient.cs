@@ -16,7 +16,7 @@ namespace Trakx.Data.Market.Common.Sources.CryptoCompare
 
         public List<string> GetAllErc20Symbols()
         {
-            var smartContractCoins = StaticCoinDetails.CoinDetailsBySymbol.Values.Where(c =>
+            var smartContractCoins = CoinDetailsProvider.CoinDetailsBySymbol.Values.Where(c =>
                 c.SmartContractAddress.StartsWith("0x", StringComparison.InvariantCultureIgnoreCase));
 
             return smartContractCoins.Select(c => c.Symbol).ToList();

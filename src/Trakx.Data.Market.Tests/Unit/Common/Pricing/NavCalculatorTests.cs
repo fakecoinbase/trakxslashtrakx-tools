@@ -24,13 +24,13 @@ namespace Trakx.Data.Market.Tests.Unit.Common.Pricing
         {
             var indexProvider = PrepareIndexDetailsProvider();
 
-            var aggregatedPriceReader = new AggregatedPriceReader();
+            var aggregatedPriceReader = new KaikoReader();
             var kaikoClient = Substitute.For<IKaikoClient>();
-            kaikoClient.GetAggregatedPrices(Arg.Any<AggregatedPriceRequest>())
+            kaikoClient.GetSpotExchangeRate(Arg.Any<AggregatedPriceRequest>())
                 .Returns(async callInfo =>
                 {
                     var symbol = ((AggregatedPriceRequest) callInfo[0]).BaseAsset;
-                    var prices = await aggregatedPriceReader.GetAggregatePriceForSymbol(symbol)
+                    var prices = await aggregatedPriceReader.GetSpotExchangeRateForSymbol(symbol, false)
                         .ConfigureAwait(false);
                     return prices;
                 });

@@ -1,0 +1,37 @@
+{
+  "query": {
+    "data_version": "v1",
+    "commodity": "trades",
+    "start_time": "2019-09-30T23:00:00.0000000Z",
+    "end_time": "2019-10-01T23:00:00.0000000Z",
+    "page_size": 1000,
+    "interval": "1d",
+    "quote_asset": "usd",
+    "base_asset": "btg",
+    "request_time": "2019-11-20T15:54:52.432Z",
+    "instruments": [ "bfnx:spot:btg-usd", "btby:spot:btg-usd", "cexi:spot:btg-usd", "yobt:spot:btg-usd" ],
+    "start_timestamp": 1569884400000,
+    "end_timestamp": 1569970800000
+  },
+  "time": "2019-11-20T15:54:57.178Z",
+  "timestamp": 1574265297178,
+  "data": [
+    {
+      "timestamp": 1569888000000,
+      "count": 487,
+      "volume": "5477.47567814",
+      "price": "7.6735451346133718492896844116483257495112942051604"
+    }
+  ],
+  "result": "success",
+  "access": {
+    "access_range": {
+      "start_timestamp": null,
+      "end_timestamp": null
+    },
+    "data_range": {
+      "start_timestamp": null,
+      "end_timestamp": null
+    }
+  }
+}

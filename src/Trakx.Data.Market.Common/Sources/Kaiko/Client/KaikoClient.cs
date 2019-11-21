@@ -14,36 +14,32 @@ namespace Trakx.Data.Market.Common.Sources.Kaiko.Client
             _clientFactory = clientFactory ?? throw new ArgumentNullException(nameof(clientFactory));
         }
 
-        public async Task<IReadOnlyCollection<AggregatedPrice>> GetAggregatedPrices(AggregatedPriceRequest request)
+        public async Task<SpotDirectExchangeRateResponse> GetSpotExchangeRate(AggregatedPriceRequest request)
         {
             var apiClient = _clientFactory.Create();
-            var response = await apiClient.GetAggregatedPrice(request).ConfigureAwait(false);
-            if (response?.Result != Constants.SuccessResponse || response?.Data == null) return new AggregatedPrice[0];
-            return response.Data;
+            var response = await apiClient.GetSpotExchangeRate(request).ConfigureAwait(false);
+            return response;
         }
 
-        public async Task<IReadOnlyCollection<Asset>> GetAssets()
+        public async Task<AssetsResponse> GetAssets()
         {
             var marketDataClient = _clientFactory.Create();
             var response = await marketDataClient.GetAssets().ConfigureAwait(false);
-            if (response?.Result != Constants.SuccessResponse || response?.Assets == null) return new Asset[0];
-            return response.Assets;
+            return response;
         }
 
-        public async Task<IReadOnlyCollection<Instrument>> GetInstruments()
+        public async Task<InstrumentsResponse> GetInstruments()
         {
             var marketDataClient = _clientFactory.Create();
             var response = await marketDataClient.GetInstruments().ConfigureAwait(false);
-            if (response?.Result != Constants.SuccessResponse || response?.Instruments == null) return new Instrument[0];
-            return response.Instruments;
+            return response;
         }
 
-        public async Task<IReadOnlyCollection<Exchange>> GetExchanges()
+        public async Task<ExchangesResponse> GetExchanges()
         {
             var marketDataClient = _clientFactory.Create();
             var response = await marketDataClient.GetExchanges().ConfigureAwait(false);
-            if (response?.Result != Constants.SuccessResponse || response?.Exchanges == null) return new Exchange[0];
-            return response.Exchanges;
+            return response;
         }
     }
 }

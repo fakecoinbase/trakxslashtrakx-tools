@@ -1,4 +1,5 @@
 ﻿#region LICENSE
+
 // 
 // Copyright (c) 2019 Catalyst Network
 // 
@@ -16,19 +17,19 @@
 // 
 // You should have received a copy of the GNU General Public License
 // along with Catalyst.Node. If not, see <https://www.gnu.org/licenses/>.
+
 #endregion
 
-using System.Collections.Generic;
-using System.Threading.Tasks;
-using Trakx.Data.Market.Common.Sources.Kaiko.DTOs;
+using System.Text.Json.Serialization;
 
-namespace Trakx.Data.Market.Common.Sources.Kaiko.Client
+namespace Trakx.Data.Market.Common.Sources.Kaiko.DTOs
 {
-    public interface IKaikoClient
+    public partial class Range
     {
-        Task<SpotDirectExchangeRateResponse> GetSpotExchangeRate(AggregatedPriceRequest request);
-        Task<AssetsResponse> GetAssets();
-        Task<InstrumentsResponse> GetInstruments();
-        Task<ExchangesResponse> GetExchanges();
+        [JsonPropertyName("start_timestamp")]
+        public object StartTimestamp { get; set; }
+
+        [JsonPropertyName("end_timestamp")]
+        public object EndTimestamp { get; set; }
     }
 }

@@ -1,18 +1,15 @@
-﻿using System;
-using System.Globalization;
-using System.Linq;
-using System.Threading.Tasks;
-using CryptoCompare;
-using Microsoft.AspNetCore.Mvc;
+﻿using Microsoft.AspNetCore.Mvc;
 using Microsoft.Extensions.Logging;
+using System;
+using System.Globalization;
+using System.Threading.Tasks;
 using Trakx.Data.Market.Common.Indexes;
 using Trakx.Data.Market.Common.Pricing;
-using Trakx.Data.Market.Common.Sources.Messari.Client;
 
 namespace Trakx.Data.Market.Server.Controllers
 {
     [ApiController]
-    [Route("[controller]/[action]")]
+    [Route("[controller]")]
     public class NavController : ControllerBase
     {
         private readonly ILogger<NavController> _logger;
@@ -27,13 +24,15 @@ namespace Trakx.Data.Market.Server.Controllers
         }
 
         [HttpGet]
-        public async Task<ActionResult<string>> GetNetAssetValue([FromQuery] string indexSymbol, [FromQuery]string quoteSymbol = "USDC")
+        public async Task<ActionResult<string>> GetNetAssetValue([FromQuery] string indexSymbol)
         {
             if (!Enum.TryParse(indexSymbol, out KnownIndexes symbol))
                 return $"Known index symbols are [{string.Join(", ", Enum.GetNames(typeof(KnownIndexes)))}]";
 
-            var nav = await _navCalculator.CalculateMessariNav(symbol).ConfigureAwait(false);
-            return nav.ToString(CultureInfo.InvariantCulture);
+            var kaikoNav = await _navCalculator.CalculateKaikoNav(symbol, "usd").ConfigureAwait(false);
+            if (kaikoNav != 0) return kaikoNav.ToString(CultureInfo.InvariantCulture);
+            var messariNav = await _navCalculator.CalculateMessariNav(symbol).ConfigureAwait(false);
+            return messariNav.ToString(CultureInfo.InvariantCulture);
         }
     }
 }

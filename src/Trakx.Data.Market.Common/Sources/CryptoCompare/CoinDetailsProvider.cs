@@ -1,4 +1,5 @@
 ﻿#region LICENSE
+
 // 
 // Copyright (c) 2019 Catalyst Network
 // 
@@ -16,19 +17,27 @@
 // 
 // You should have received a copy of the GNU General Public License
 // along with Catalyst.Node. If not, see <https://www.gnu.org/licenses/>.
+
 #endregion
 
 using System.Collections.Generic;
+using System.Text.Json;
 using System.Threading.Tasks;
-using Trakx.Data.Market.Common.Sources.Kaiko.DTOs;
 
-namespace Trakx.Data.Market.Common.Sources.Kaiko.Client
+namespace Trakx.Data.Market.Common.Sources.CryptoCompare
 {
-    public interface IKaikoClient
+    public class CoinDetailsProvider
     {
-        Task<SpotDirectExchangeRateResponse> GetSpotExchangeRate(AggregatedPriceRequest request);
-        Task<AssetsResponse> GetAssets();
-        Task<InstrumentsResponse> GetInstruments();
-        Task<ExchangesResponse> GetExchanges();
+        public static IReadOnlyDictionary<string, CoinDetails> CoinDetailsBySymbol { get; } =
+            ReadCoinDetailsFromResource().GetAwaiter().GetResult().Data;
+
+        private static async Task<AllCoinsResponse> ReadCoinDetailsFromResource()
+        {
+            var assembly = typeof(CoinDetailsProvider).Assembly;
+            await using var stream = assembly.GetManifestResourceStream(
+                    $"{typeof(CoinDetailsProvider).Namespace}.coinDetails.json");
+            var response = await JsonSerializer.DeserializeAsync<AllCoinsResponse>(stream);
+            return response;
+        }
     }
 }

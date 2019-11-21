@@ -20,24 +20,14 @@
 
 #endregion
 
-using System.Collections.Generic;
-using System.Text.Json;
-using System.Threading.Tasks;
-
-namespace Trakx.Data.Market.Common.Sources.CryptoCompare
+namespace Trakx.Data.Market.Common.Sources.BitGo
 {
-    public class StaticCoinDetails
+    public class SupportedToken
     {
-        public static IReadOnlyDictionary<string, CoinDetails> CoinDetailsBySymbol { get; } =
-            ReadCoinDetailsFromResource().GetAwaiter().GetResult().Data;
-
-        private static async Task<AllCoinsResponse> ReadCoinDetailsFromResource()
-        {
-            var assembly = typeof(StaticCoinDetails).Assembly;
-            await using var stream = assembly.GetManifestResourceStream(
-                    $"{assembly.GetName().Name}.DataSources.CryptoCompare.CoinList.json");
-            var response = await JsonSerializer.DeserializeAsync<AllCoinsResponse>(stream);
-            return response;
-        }
+        public string? Identifier { get; set; }
+        public string? DigitalCurrency { get; set; }
+        public string? Family { get; set; }
+        public string? BitGoEnvironment { get; set; }
+        public string? ReleaseStatus { get; set; }
     }
 }

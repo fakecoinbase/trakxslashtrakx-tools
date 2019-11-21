@@ -10,6 +10,8 @@
     <None Remove="Indexes\L1INF003.json" />
     <None Remove="Indexes\L1SCA004.json" />
     <None Remove="Indexes\L1STR004.json" />
+    <None Remove="Sources\BitGo\supported.tokens.csv" />
+    <None Remove="Sources\CryptoCompare\coinDetails.json" />
   </ItemGroup>
 
   <ItemGroup>
@@ -18,9 +20,12 @@
     <EmbeddedResource Include="Indexes\L1INF003.json" />
     <EmbeddedResource Include="Indexes\L1SCA004.json" />
     <EmbeddedResource Include="Indexes\L1STR004.json" />
+    <EmbeddedResource Include="Sources\BitGo\supported.tokens.csv" />
+    <EmbeddedResource Include="Sources\CryptoCompare\coinDetails.json" />
   </ItemGroup>
 
   <ItemGroup>
+    <PackageReference Include="CsvHelper" Version="12.2.1" />
     <PackageReference Include="Microsoft.AspNetCore.Http.Extensions" Version="2.2.0" />
     <PackageReference Include="Microsoft.Extensions.Http" Version="3.0.0" />
   </ItemGroup>

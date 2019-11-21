@@ -70,7 +70,7 @@ namespace Trakx.Data.Market.Common.Sources.Kaiko.Client
             }
         }
 
-        public async Task<Response> GetAggregatedPrice(AggregatedPriceRequest query, bool direct = true)
+        public async Task<SpotDirectExchangeRateResponse> GetSpotExchangeRate(AggregatedPriceRequest query, bool direct = true)
         {
             //todo:  build the URL from a HttpQuery, not manually like that
             var apiPath = direct ? "spot_direct_exchange_rate" : "spot_exchange_rate";
@@ -92,7 +92,7 @@ namespace Trakx.Data.Market.Common.Sources.Kaiko.Client
             {
                 var response = await _httpClient.SendAsync(request).ConfigureAwait(false);
                 await using var content = await response.Content.ReadAsStreamAsync().ConfigureAwait(false);
-                var result = await JsonSerializer.DeserializeAsync<Response>(content).ConfigureAwait(false);
+                var result = await JsonSerializer.DeserializeAsync<SpotDirectExchangeRateResponse>(content).ConfigureAwait(false);
                 return result;
             }
             catch (Exception exception)

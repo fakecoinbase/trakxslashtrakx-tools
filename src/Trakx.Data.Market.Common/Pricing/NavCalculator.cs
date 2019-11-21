@@ -41,9 +41,13 @@ namespace Trakx.Data.Market.Common.Pricing
             var getPricesTasks = components.Select(c => CreateKaikoCoinQuery(c))
                 .Select(async q =>
                 {
-                    var aggregatedPrice = await _kaikoClient.GetAggregatedPrices(q)
+                    var response = await _kaikoClient.GetSpotExchangeRate(q)
                         .ConfigureAwait(false);
-                    return new { Price = aggregatedPrice, Symbol = q.BaseAsset };
+                    if (response.Result != Constants.SuccessResponse || !response.Data.Any())
+                    {
+                        _logger.LogWarning("Failed to retrieve data for {q}", q.BaseAsset);
+                    }
+                    return response;
                 }).ToArray();
 
             await Task.WhenAll(getPricesTasks).ConfigureAwait(false);
@@ -52,9 +56,8 @@ namespace Trakx.Data.Market.Common.Pricing
             {
                 var scaledQuantity = (decimal)Math.Pow(10, 18 - c.Decimals) * (decimal)c.Quantity;
                 var prices = getPricesTasks.Select(t => t.Result)
-                    .Single(r => r.Symbol.Equals(c.Symbol, StringComparison.InvariantCultureIgnoreCase)).Price;
-                var summedVolume = prices.Sum(p => decimal.Parse(p.Volume));
-                var averagedPrice = prices.Sum(p => decimal.Parse(p.Price) * decimal.Parse(p.Volume)) / summedVolume;
+                    .Single(r => r.Query.BaseAsset.Equals(c.Symbol, StringComparison.InvariantCultureIgnoreCase)).Data;
+                var averagedPrice = prices.Average(p => decimal.Parse(p.Price));
                 var componentValue = scaledQuantity * averagedPrice;
                 var indexValue = a + componentValue / (decimal)details.NaturalUnit;
                 return indexValue;
