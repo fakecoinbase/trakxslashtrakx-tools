@@ -7,10 +7,10 @@
   </PropertyGroup>
 
   <Import Project="../Common.Projects.props" />
-  <ItemGroup>
+  <!--<ItemGroup>
     <Content Remove="wwwroot\npm-libs\.gitignore" />
     <Content Remove="wwwroot\npm-libs\src\index.ts" />
-  </ItemGroup>
+  </ItemGroup>-->
 
   <ItemGroup>
     <PackageReference Include="CryptoCompare" Version="1.4.0" />
@@ -32,13 +32,13 @@
     <ProjectReference Include="..\Trakx.Data.Market.Common\Trakx.Data.Market.Common.csproj" />
   </ItemGroup>
 
-  <ItemGroup>
+  <!--<ItemGroup>
     <TypeScriptCompile Include="wwwroot\npm-libs\.gitignore" />
     <TypeScriptCompile Include="wwwroot\npm-libs\src\index.ts" />
-  </ItemGroup>
+  </ItemGroup>-->
 
-  <ItemGroup>
+  <!--<ItemGroup>
     <Folder Include="wwwroot\npm-libs\public\" />
-  </ItemGroup>
+  </ItemGroup>-->
 
 </Project>
