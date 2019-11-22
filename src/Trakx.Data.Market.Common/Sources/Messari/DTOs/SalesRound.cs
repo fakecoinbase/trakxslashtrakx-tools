@@ -39,12 +39,13 @@ namespace Trakx.Data.Market.Common.Sources.Messari.DTOs
         [JsonPropertyName("pricePerUnit")]
         public double? PricePerUnit { get; set; }
 
-        [JsonPropertyName("unit")]
-        [JsonConverter(typeof(JsonStringEnumConverter))]
+        [JsonIgnore]
+        //[JsonPropertyName("unit")]
+        //[JsonConverter(typeof(JsonStringEnumConverter))]
         public Unit Unit { get; set; }
 
         [JsonPropertyName("amountCollected")]
-        public double AmountCollected { get; set; }
+        public double? AmountCollected { get; set; }
 
         [JsonPropertyName("restriction")]
         public object Restriction { get; set; }
