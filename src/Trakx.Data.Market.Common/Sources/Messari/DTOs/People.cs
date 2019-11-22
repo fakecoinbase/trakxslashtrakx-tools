@@ -30,12 +30,15 @@ namespace Trakx.Data.Market.Common.Sources.Messari.DTOs
         [JsonPropertyName("founding_team")]
         public object FoundingTeam { get; set; }
 
+        [JsonIgnore]
         [JsonPropertyName("contributors")]
         public List<Advisor> Contributors { get; set; }
 
+        [JsonIgnore]
         [JsonPropertyName("investors")]
         public List<Advisor> Investors { get; set; }
 
+        [JsonIgnore]
         [JsonPropertyName("advisors")]
         public List<Advisor> Advisors { get; set; }
     }

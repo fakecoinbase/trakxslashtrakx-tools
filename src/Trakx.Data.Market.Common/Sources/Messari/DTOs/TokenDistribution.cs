@@ -33,6 +33,7 @@ namespace Trakx.Data.Market.Common.Sources.Messari.DTOs
         [JsonPropertyName("sale_end")]
         public DateTimeOffset? SaleEnd { get; set; }
 
+        [JsonIgnore]
         [JsonPropertyName("initial_distribution")]
         public long? InitialDistribution { get; set; }
 
@@ -42,6 +43,7 @@ namespace Trakx.Data.Market.Common.Sources.Messari.DTOs
         [JsonPropertyName("max_supply")]
         public long? MaxSupply { get; set; }
 
+        [JsonIgnore]
         [JsonPropertyName("description")]
         public string Description { get; set; }
     }

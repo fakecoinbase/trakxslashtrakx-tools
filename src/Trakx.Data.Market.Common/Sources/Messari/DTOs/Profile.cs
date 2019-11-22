@@ -33,12 +33,15 @@ namespace Trakx.Data.Market.Common.Sources.Messari.DTOs
         [JsonPropertyName("tagline")]
         public string Tagline { get; set; }
 
+        [JsonIgnore]
         [JsonPropertyName("overview")]
         public string Overview { get; set; }
 
+        [JsonIgnore]
         [JsonPropertyName("background")]
         public string Background { get; set; }
 
+        [JsonIgnore]
         [JsonPropertyName("technology")]
         public string Technology { get; set; }
 
