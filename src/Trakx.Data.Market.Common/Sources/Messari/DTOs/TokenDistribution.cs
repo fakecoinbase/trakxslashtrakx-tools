@@ -38,10 +38,10 @@ namespace Trakx.Data.Market.Common.Sources.Messari.DTOs
         public long? InitialDistribution { get; set; }
 
         [JsonPropertyName("current_supply")]
-        public long? CurrentSupply { get; set; }
+        public decimal? CurrentSupply { get; set; }
 
         [JsonPropertyName("max_supply")]
-        public long? MaxSupply { get; set; }
+        public decimal? MaxSupply { get; set; }
 
         [JsonIgnore]
         [JsonPropertyName("description")]

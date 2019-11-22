@@ -88,6 +88,6 @@ namespace Trakx.Data.Market.Common.Sources.Messari.DTOs
         public bool? IsCappedSupply { get; set; }
 
         [JsonPropertyName("max_supply")]
-        public long? MaxSupply { get; set; }
+        public decimal? MaxSupply { get; set; }
     }
 }

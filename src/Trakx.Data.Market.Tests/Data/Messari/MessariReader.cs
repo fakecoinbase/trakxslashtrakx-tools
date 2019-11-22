@@ -48,14 +48,14 @@ namespace Trakx.Data.Market.Tests.Data.Messari
     public class MessariReaderTests
     {
         [Fact]
-        public async Task GetAllAssets_can_serialise_json()
+        public async Task GetAllAssets_can_deserialise_json()
         {
             var reader = new MessariReader();
             var prices = await reader.GetAllAssets().ConfigureAwait(false);
             prices.Count.Should().Be(20);
 
             prices.First().Symbol.Should().Be("BTC");
-            prices.First().Metrics.MarketData.PriceUsd.Should().Be(8041.124483003255m);
+            prices.First().Metrics.MarketData.PriceUsd.Should().Be(7368.463261793677m);
         }
 
         [Theory]
@@ -63,7 +63,7 @@ namespace Trakx.Data.Market.Tests.Data.Messari
         [InlineData("ETH", "173.78629700493275")]
         [InlineData("SYM1", "0.05")]
         [InlineData("SYM2", "0.15")]
-        public async Task GetAssetMetrics_can_serialise_json(string symbol, string expectedPrice)
+        public async Task GetAssetMetrics_can_deserialise_json(string symbol, string expectedPrice)
         {
             var reader = new MessariReader();
             var metrics = await reader.GetAssetMetrics(symbol).ConfigureAwait(false);
@@ -75,7 +75,7 @@ namespace Trakx.Data.Market.Tests.Data.Messari
         [Theory]
         [InlineData("BTC", "Native")]
         [InlineData("ETH", "Native")]
-        public async Task GetAssetProfile_can_serialise_json(string symbol, string expectedTokenType)
+        public async Task GetAssetProfile_can_deserialise_json(string symbol, string expectedTokenType)
         {
             var reader = new MessariReader();
             var metrics = await reader.GetAssetProfile(symbol).ConfigureAwait(false);
