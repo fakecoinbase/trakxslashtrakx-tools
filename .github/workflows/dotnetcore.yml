@@ -16,4 +16,4 @@ jobs:
     - name: Build with dotnet
       run: dotnet build src/Trakx.Data.Market.sln --configuration Release 
     - name: Test with dotnet
-      run: dotnet test src/Trakx.Data.Market.sln --no-build
+      run: dotnet test src/Trakx.Data.Market.sln
