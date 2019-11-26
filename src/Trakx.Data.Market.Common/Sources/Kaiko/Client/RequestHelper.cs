@@ -70,10 +70,10 @@ namespace Trakx.Data.Market.Common.Sources.Kaiko.Client
             }
         }
 
-        public async Task<SpotDirectExchangeRateResponse> GetSpotExchangeRate(AggregatedPriceRequest query, bool direct = true)
+        public async Task<SpotDirectExchangeRateResponse> GetSpotExchangeRate(AggregatedPriceRequest query)
         {
             //todo:  build the URL from a HttpQuery, not manually like that
-            var apiPath = direct ? "spot_direct_exchange_rate" : "spot_exchange_rate";
+            var apiPath = query.DirectExchangeRate ? "spot_direct_exchange_rate" : "spot_exchange_rate";
 
             var startTimeIso8601 = query.StartTime.ToIso8601();
             var endTimeIso8601 = query.StartTime.AddDays(1).ToIso8601();

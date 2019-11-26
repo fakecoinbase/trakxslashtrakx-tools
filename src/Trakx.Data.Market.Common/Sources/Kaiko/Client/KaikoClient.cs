@@ -21,6 +21,7 @@ namespace Trakx.Data.Market.Common.Sources.Kaiko.Client
             return response;
         }
 
+        [Obsolete("broken")]
         public async Task<AssetsResponse> GetAssets()
         {
             var marketDataClient = _clientFactory.Create();

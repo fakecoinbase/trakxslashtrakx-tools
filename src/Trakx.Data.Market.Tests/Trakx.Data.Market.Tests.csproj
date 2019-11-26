@@ -8,9 +8,6 @@
   <Import Project="../Common.Projects.props" />
 
   <ItemGroup>
-    <None Remove="Data\Kaiko\AggregatedPrice\detailed.sym1.json" />
-    <None Remove="Data\Kaiko\AggregatedPrice\detailed.sym2.json" />
-    <None Remove="Data\Kaiko\AggregatedPrice\direct.btg.json" />
     <None Remove="Data\Messari\allAssets.json" />
     <None Remove="Data\Messari\assetMetrics.btc.json" />
     <None Remove="Data\Messari\assetMetrics.eth.json" />
@@ -22,9 +19,9 @@
   </ItemGroup>
 
   <ItemGroup>
-    <EmbeddedResource Include="Data\Kaiko\AggregatedPrice\detailed.sym1.json" />
-    <EmbeddedResource Include="Data\Kaiko\AggregatedPrice\detailed.sym2.json" />
-    <EmbeddedResource Include="Data\Kaiko\AggregatedPrice\direct.btg.json" />
+    <EmbeddedResource Include="Data\Kaiko\spot.detailed.sym1.json" />
+    <EmbeddedResource Include="Data\Kaiko\spot.detailed.sym2.json" />
+    <EmbeddedResource Include="Data\Kaiko\spot.direct.btg.json" />
     <EmbeddedResource Include="Data\Messari\allAssets.json" />
     <EmbeddedResource Include="Data\Messari\assetMetrics.sym1.json" />
     <EmbeddedResource Include="Data\Messari\assetMetrics.sym2.json" />

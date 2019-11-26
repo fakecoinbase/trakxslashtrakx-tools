@@ -20,12 +20,12 @@ namespace Trakx.Data.Market.Server.Controllers
             _kaikoClient = kaikoClient;
         }
 
-        [HttpGet]
-        public async Task<ActionResult<string>> Assets()
-        {
-            var instruments = await _kaikoClient.GetAssets().ConfigureAwait(false);
-            return JsonConvert.SerializeObject(instruments);
-        }
+        //[HttpGet]
+        //public async Task<ActionResult<string>> Assets()
+        //{
+        //    var instruments = await _kaikoClient.GetAssets().ConfigureAwait(false);
+        //    return JsonConvert.SerializeObject(instruments);
+        //}
 
         [HttpGet]
         public async Task<ActionResult<string>> Exchanges()

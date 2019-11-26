@@ -18,7 +18,7 @@
 // along with Catalyst.Node. If not, see <https://www.gnu.org/licenses/>.
 #endregion
 
-using System.Collections.Generic;
+using System;
 using System.Threading.Tasks;
 using Trakx.Data.Market.Common.Sources.Kaiko.DTOs;
 
@@ -27,6 +27,7 @@ namespace Trakx.Data.Market.Common.Sources.Kaiko.Client
     public interface IKaikoClient
     {
         Task<SpotDirectExchangeRateResponse> GetSpotExchangeRate(AggregatedPriceRequest request);
+        [Obsolete("broken")]
         Task<AssetsResponse> GetAssets();
         Task<InstrumentsResponse> GetInstruments();
         Task<ExchangesResponse> GetExchanges();

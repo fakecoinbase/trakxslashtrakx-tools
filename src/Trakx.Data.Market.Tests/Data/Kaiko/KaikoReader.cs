@@ -1,15 +1,13 @@
 ﻿using System;
-using System.Collections.Generic;
 using System.Linq;
 using System.Reflection;
 using System.Text.Json;
 using System.Threading.Tasks;
 using FluentAssertions;
-using NSubstitute.Extensions;
 using Trakx.Data.Market.Common.Sources.Kaiko.DTOs;
 using Xunit;
 
-namespace Trakx.Data.Market.Tests.Data.Kaiko.AggregatedPrice
+namespace Trakx.Data.Market.Tests.Data.Kaiko
 {
     public class KaikoReader
     {
@@ -20,11 +18,18 @@ namespace Trakx.Data.Market.Tests.Data.Kaiko.AggregatedPrice
         {
             var directPrefix = direct ? "direct" : "detailed";
             var stream = Assembly.GetManifestResourceStream(
-                $"{Namespace}.{directPrefix}.{symbol.ToLower()}.json");
+                $"{Namespace}.spot.{directPrefix}.{symbol.ToLower()}.json");
             var response = await JsonSerializer.DeserializeAsync<SpotDirectExchangeRateResponse>(stream);
             return response;
         }
 
+        public async Task<AssetsResponse> GetAllAssets()
+        {
+            var stream = Assembly.GetManifestResourceStream(
+                $"{Namespace}.assets.json");
+            var response = await JsonSerializer.DeserializeAsync<AssetsResponse>(stream);
+            return response;
+        }
     }
 
     public class KaikoReaderTests
@@ -58,6 +63,14 @@ namespace Trakx.Data.Market.Tests.Data.Kaiko.AggregatedPrice
             response.Data.Count.Should().Be(1);
 
             response.Data.First().Price.Should().Be("7.6735451346133718492896844116483257495112942051604");
+        }
+
+        [Fact(Skip = "Something going wrong with the charset")]
+        public async Task GetAllAssets()
+        {
+            var reader = new KaikoReader();
+            var response = await reader.GetAllAssets().ConfigureAwait(false);
+            response.Assets.Count.Should().Be(1);
         }
     }
 }

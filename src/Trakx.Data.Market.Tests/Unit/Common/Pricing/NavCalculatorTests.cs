@@ -4,13 +4,12 @@ using System.Threading.Tasks;
 using FluentAssertions;
 using Microsoft.Extensions.Logging;
 using NSubstitute;
-using NSubstitute.Core;
 using Trakx.Data.Market.Common.Indexes;
 using Trakx.Data.Market.Common.Pricing;
 using Trakx.Data.Market.Common.Sources.Kaiko.Client;
 using Trakx.Data.Market.Common.Sources.Kaiko.DTOs;
 using Trakx.Data.Market.Common.Sources.Messari.Client;
-using Trakx.Data.Market.Tests.Data.Kaiko.AggregatedPrice;
+using Trakx.Data.Market.Tests.Data.Kaiko;
 using Trakx.Data.Market.Tests.Data.Messari;
 using Xunit;
 

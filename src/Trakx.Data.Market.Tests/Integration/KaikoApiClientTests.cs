@@ -5,6 +5,7 @@ using System.Linq;
 using System.Text.Json;
 using System.Threading.Tasks;
 using Microsoft.Extensions.DependencyInjection;
+using Trakx.Data.Market.Common.Indexes;
 using Trakx.Data.Market.Common.Sources.BitGo;
 using Trakx.Data.Market.Common.Sources.CryptoCompare;
 using Trakx.Data.Market.Common.Sources.Kaiko.Client;
@@ -20,7 +21,7 @@ namespace Trakx.Data.Market.Tests.Integration
     {
         private readonly ITestOutputHelper _output;
         //private readonly ICacheLogger<KaikoApiClient> _logger;
-        private readonly RequestHelper _requestHelper;
+        private readonly IKaikoClient _kaikoClient;
 
         public KaikoApiClientTests(ITestOutputHelper output)
         {
@@ -30,7 +31,7 @@ namespace Trakx.Data.Market.Tests.Integration
             serviceCollection.AddKaikoClient();
             serviceCollection.AddMessariClient();
             _serviceProvider = serviceCollection.BuildServiceProvider();
-            _requestHelper = _serviceProvider.GetRequiredService<RequestHelper>();
+            _kaikoClient = _serviceProvider.GetRequiredService<IKaikoClient>();
             _messariClient = _serviceProvider.GetRequiredService<Common.Sources.Messari.Client.RequestHelper>();
         }
 
@@ -38,7 +39,7 @@ namespace Trakx.Data.Market.Tests.Integration
         [Fact]
         public async Task GetExchanges_should_return_exchanges()
         {
-            var exchanges = await _requestHelper.GetExchanges();
+            var exchanges = await _kaikoClient.GetExchanges();
 
             _output.WriteLine(exchanges.ToString());
 
@@ -46,19 +47,9 @@ namespace Trakx.Data.Market.Tests.Integration
         }
 
         [Fact]
-        public async Task GetAssets_should_return_assets()
-        {
-            var assets = await _requestHelper.GetAssets();
-
-            _output.WriteLine(assets.ToString());
-
-            assets.Assets.ForEach(a => _output.WriteLine($"{a.Code}, {a.Name}, {a.AssetClass}"));
-        }
-
-        [Fact]
         public async Task GetInstruments_should_return_instruments()
         {
-            var instruments = await _requestHelper.GetInstruments();
+            var instruments = await _kaikoClient.GetInstruments();
 
             _output.WriteLine(instruments.ToString());
 
@@ -68,10 +59,11 @@ namespace Trakx.Data.Market.Tests.Integration
         [Fact]
         public async Task GetAggregatedPrice_for_one_token_should_return_aggregated_prices()
         {
-            var coinSymbol = "eth";
-            var query = CreateCoinQuery(coinSymbol, coinSymbol);
+            var coinSymbol = "btc";
+            var quoteSymbol = "usd";
+            var query = CreateCoinQuery(coinSymbol, quoteSymbol, false);
 
-            var price = await _requestHelper.GetSpotExchangeRate(query, false).ConfigureAwait(false);
+            var price = await _kaikoClient.GetSpotExchangeRate(query).ConfigureAwait(false);
             var profile = (await _messariClient.GetProfileForSymbol(coinSymbol).ConfigureAwait(false)).Data;
 
             var results = price.Data;
@@ -80,30 +72,29 @@ namespace Trakx.Data.Market.Tests.Integration
         }
 
 
-        [Fact]
+        [Fact(Skip = "This is a long running one, actually not for tests")]
         public async Task GetAggregatedPrice_should_return_aggregated_prices()
         {
-            var bitGoTokens = new SupportedTokenProvider().SupportedTokensBySymbol;
-            var kaikoInstruments = await _requestHelper.GetInstruments().ConfigureAwait(false);
-            var kaikoErc20Symbols = kaikoInstruments.Instruments.Select(i => i.Code.Split("-")[0].ToLower())
-                .Distinct()
-                .OrderBy(s => s)
-                .Intersect(bitGoTokens.Keys)
-                .Take(20)
-                .ToList();
+            //todo: usd eur bnb btc eth 
 
-            var assetNameByCode = (await _requestHelper.GetAssets().ConfigureAwait(false))
-                .Assets.ToDictionary(a => a.Code, a => a.Name);
+            var bitGoTokens = new SupportedTokenProvider().SupportedTokensBySymbol;
+            var indexTokens = new IndexDetailsProvider().IndexDetails
+                .SelectMany(i => i.Value.Components.Select(c => c.Symbol.ToLower())).Distinct().ToList();
+
+            var kaikoInstruments = await _kaikoClient.GetInstruments().ConfigureAwait(false);
+            var symbols = kaikoInstruments.Instruments.Select(i => i.Code.Split("-")[0].ToLower())
+                .Distinct()
+                .OrderBy(s => s);
 
             var quoteAsset = "usd";
             
-            var queries = kaikoErc20Symbols.Select(e => CreateCoinQuery(e, quoteAsset)).ToList();
+            var queries = symbols.Select(e => CreateCoinQuery(e, quoteAsset, false)).ToList();
 
             var tempPath = "kaikoData." + DateTime.Now.ToString("yyyyMMdd.hhmmss");
             Directory.CreateDirectory(tempPath);
             var priceTasks = queries.AsParallel().Select(async q =>
                 {
-                    var aggregatedPrice = await _requestHelper.GetSpotExchangeRate(q).ConfigureAwait(false);
+                    var aggregatedPrice = await _kaikoClient.GetSpotExchangeRate(q).ConfigureAwait(false);
                     var profile = await _messariClient.GetProfileForSymbol(q.BaseAsset).ConfigureAwait(false);
                     if (aggregatedPrice?.Result == "success" && aggregatedPrice.Data.Any())
                     {
@@ -113,7 +104,9 @@ namespace Trakx.Data.Market.Tests.Integration
                             Query = q, 
                             Prices = aggregatedPrice, 
                             Sector = profile?.Data?.Sector ?? "", 
-                            BitGoCustody = bitGoTokens.ContainsKey(q.BaseAsset.ToLower())
+                            BitGoCustody = bitGoTokens.ContainsKey(q.BaseAsset.ToLower()),
+                            UsedByTrakx = indexTokens.Contains(q.BaseAsset.ToLower()),
+                            AssetName = profile?.Data?.Name ?? "",
                         };
                     }
                     return null;
@@ -126,14 +119,13 @@ namespace Trakx.Data.Market.Tests.Integration
             results.ForEach(r =>
                {
                    var summedVolume = r.Prices.Data.Sum(a => decimal.Parse(a.Volume));
-                   var averagePrice = r.Prices.Data.Average(a => decimal.Parse(a.Price) * decimal.Parse(a.Volume)) / summedVolume;
+                   var averagePrice = r.Prices.Data.Average(a => decimal.Parse(a.Price));
                    var symbol = r.Query.BaseAsset;
-                   var assetName = assetNameByCode[symbol];
-                   _output.WriteLine($"{symbol}, {assetName}, {r.Sector}, {summedVolume}, {averagePrice}, {r.BitGoCustody}");
+                   _output.WriteLine($"{symbol}, {r.AssetName}, {r.Sector}, {summedVolume}, {averagePrice}, {r.BitGoCustody}");
                });
         }
 
-        private AggregatedPriceRequest CreateCoinQuery(string coinSymbol, string quoteSymbol)
+        private AggregatedPriceRequest CreateCoinQuery(string coinSymbol, string quoteSymbol, bool direct)
         {
             var query = new AggregatedPriceRequest
             {
@@ -145,7 +137,8 @@ namespace Trakx.Data.Market.Tests.Integration
                 PageSize = 1000,
                 QuoteAsset = quoteSymbol,
                 StartTime = new DateTimeOffset(2019, 10, 01, 00, 00, 00, TimeSpan.Zero),
-                Sources = true
+                Sources = false,
+                DirectExchangeRate = direct
             };
             return query;
         }

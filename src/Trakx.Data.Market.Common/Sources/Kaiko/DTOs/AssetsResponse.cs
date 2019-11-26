@@ -28,5 +28,5 @@ namespace Trakx.Data.Market.Common.Sources.Kaiko.DTOs
     }
 
     [JsonConverter(typeof(JsonStringEnumConverter))]
-    public enum AssetClass { Commodity, CryptoCurrency, Fiat };
+    public enum AssetClass { commodity, cryptoCurrency, fiat };
 }

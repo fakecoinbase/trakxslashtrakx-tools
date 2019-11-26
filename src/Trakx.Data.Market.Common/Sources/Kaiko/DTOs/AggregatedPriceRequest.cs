@@ -16,5 +16,6 @@ namespace Trakx.Data.Market.Common.Sources.Kaiko.DTOs
         public List<string> Exchanges { get; set; }
         public bool Sources { get; set; }
         public List<string> Instruments { get; set; }
+        public bool DirectExchangeRate { get; set; }
     }
 }
