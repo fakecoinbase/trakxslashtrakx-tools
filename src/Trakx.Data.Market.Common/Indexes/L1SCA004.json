@@ -1,0 +1,65 @@
+{
+  "name": "Top 4 Scalability Services",
+  "symbol": "L1SCA004",
+  "description": "This index is composed of the top 4 erc20 tokens for Scalability Services. Created on the 1st of October as a POC.",
+  "components": [
+    {
+      "address": "0xd26114cd6EE289AccF82350c8d8487fedB8A0C07",
+      "name": "OMGToken",
+      "symbol": "OMG",
+      "decimals": 18,
+      "usdBidAsk": {
+        "bid": 0.95308636098822,
+        "ask": 0.95308636098822
+      },
+      "quantity": "3",
+      "usdWeightAtCreation": 0.25,
+      "usdValueAtCreation": 1.049
+    },
+    {
+      "address": "0x7D1AfA7B718fb893dB30A3aBc0Cfc608AaCfeBB0",
+      "name": "Matic Token",
+      "symbol": "MATIC",
+      "decimals": 18,
+      "usdBidAsk": {
+        "bid": 0.014790084861439,
+        "ask": 0.014790084861439
+      },
+      "quantity": "193",
+      "usdWeightAtCreation": 0.25,
+      "usdValueAtCreation": 0.01297
+    },
+    {
+      "address": "0x4F9254C83EB525f9FCf346490bbb3ed28a81C667",
+      "name": "CelerToken",
+      "symbol": "CELR",
+      "decimals": 18,
+      "usdBidAsk": {
+        "bid": 0.0040773032007686,
+        "ask": 0.0040773032007686
+      },
+      "quantity": "467",
+      "usdWeightAtCreation": 0.25,
+      "usdValueAtCreation": 0.005354
+    },
+    {
+      "address": "0x4E15361FD6b4BB609Fa63C81A2be19d873717870",
+      "name": "Fantom Token",
+      "symbol": "FTM",
+      "decimals": 18,
+      "usdBidAsk": {
+        "bid": 0.013050138092941,
+        "ask": 0.013050138092941
+      },
+      "quantity": "159",
+      "usdWeightAtCreation": 0.25,
+      "usdValueAtCreation": 0.01575
+    }
+  ],
+  "targetUsdPrice": 0.1,
+  "naturalUnit": "100",
+  "usdBidAsk": {
+    "bid": 0.096928180127589,
+    "ask": 0.096928180127589
+  }
+}

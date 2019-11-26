@@ -1,0 +1,58 @@
+﻿<Project Sdk="Microsoft.NET.Sdk">
+
+  <PropertyGroup>
+    <TargetFramework>netcoreapp3.0</TargetFramework>
+    <IsPackable>false</IsPackable>
+  </PropertyGroup>
+
+  <Import Project="../Common.Projects.props" />
+
+  <ItemGroup>
+    <None Remove="Data\Messari\allAssets.json" />
+    <None Remove="Data\Messari\assetMetrics.btc.json" />
+    <None Remove="Data\Messari\assetMetrics.eth.json" />
+    <None Remove="Data\Messari\assetMetrics.sym1.json" />
+    <None Remove="Data\Messari\assetMetrics.sym2.json" />
+    <None Remove="Data\Messari\assetProfile.btc.json" />
+    <None Remove="Data\Messari\assetProfile.eth.json" />
+    <None Remove="Unit\Common\Pricing\TestIndexDetails.json" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <EmbeddedResource Include="Data\Kaiko\spot.detailed.sym1.json" />
+    <EmbeddedResource Include="Data\Kaiko\spot.detailed.sym2.json" />
+    <EmbeddedResource Include="Data\Kaiko\spot.direct.btg.json" />
+    <EmbeddedResource Include="Data\Messari\allAssets.json" />
+    <EmbeddedResource Include="Data\Messari\assetMetrics.sym1.json" />
+    <EmbeddedResource Include="Data\Messari\assetMetrics.sym2.json" />
+    <EmbeddedResource Include="Data\Messari\assetMetrics.btc.json" />
+    <EmbeddedResource Include="Data\Messari\assetMetrics.eth.json" />
+    <EmbeddedResource Include="Data\Messari\assetProfile.btc.json" />
+    <EmbeddedResource Include="Data\Messari\assetProfile.eth.json" />
+    <EmbeddedResource Include="Unit\Common\Pricing\TestIndexDetails.json" />
+  </ItemGroup>
+  <ItemGroup>
+    <PackageReference Include="FluentAssertions" Version="5.9.0" />
+    <PackageReference Include="Microsoft.NET.Test.Sdk" Version="16.2.0" />
+    <PackageReference Include="NSubstitute" Version="4.2.1" />
+    <PackageReference Include="xunit" Version="2.4.1" />
+    <PackageReference Include="xunit.runner.visualstudio" Version="2.4.1" />
+    <PackageReference Include="coverlet.collector" Version="1.0.1" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <Folder Include="Unit\Sources\Kaiko\Responses\" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <ProjectReference Include="..\Trakx.Data.Market.Common\Trakx.Data.Market.Common.csproj" />
+    <ProjectReference Include="..\Trakx.Data.Market.Server\Trakx.Data.Market.Server.csproj" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <Reference Include="Microsoft.Extensions.DependencyInjection">
+      <HintPath>..\..\..\..\..\..\..\Program Files\dotnet\packs\Microsoft.AspNetCore.App.Ref\3.0.0\ref\netcoreapp3.0\Microsoft.Extensions.DependencyInjection.dll</HintPath>
+    </Reference>
+  </ItemGroup>
+
+</Project>

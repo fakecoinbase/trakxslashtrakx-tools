@@ -1,0 +1,148 @@
+{
+  "status": {
+    "elapsed": "0",
+    "timestamp": "2019-11-22T09:07:48.148057818Z"
+  },
+  "data": {
+    "id": "21c795f5-1bfd-40c3-858e-e9d7e820c6d0",
+    "symbol": "ETH",
+    "name": "Ethereum",
+    "slug": "ethereum",
+    "_internal_temp_agora_id": "263d8b01-5a96-41f0-85d5-09687bbbf7ca",
+    "is_verified": false,
+    "tagline": "A decentralized computing platform",
+    "overview": "Ethereum is a distributed blockchain computing platform for smart contracts and decentralized applications. Its native token is ether ($ETH), which primarily serves as a means of payment for transaction fees and as collateral for borrowing specific \u003ca href=\"https://messari.io/article/erc-20\"\u003eERC-20\u003c/a\u003e tokens within the \u003ca href=\"https://messari.io/article/decentralized-finance-defi\"\u003edecentralized finance (DeFi\u003c/a\u003e) sector.",
+    "background": "Conception to token sale\n\u003ca href=\"https://messari.io/person/vitalik-buterin\"\u003eVitalik Buterin\u003c/a\u003e conceived Ethereum in 2013, after what he perceived as limitations in the functionality of Bitcoin’s scripting language, namely the lack of Turing completeness. Buterin published the first Ethereum white paper later that year, describing a distributed computing platform for executing smart contracts and building \u003ca href=\"https://messari.io/article/decentralized-applications-dapps\"\u003edecentralized applications (dApps)\u003c/a\u003e. In 2014, Buterin and some other early contributors founded the \u003ca href=\"https://messari.io/organization/ethereum-foundation\"\u003eEthereum Foundation\u003c/a\u003e, a non-profit organization dedicated to Ethereum’s research, core protocol development, and ecosystem growth. The foundation's first task was to host the Ethereum crowdsale, which raised 31,529 \u003ca href=\"https://messari.io/asset/bitcoin\"\u003e$BTC\u003c/a\u003e (~$18 million at the time) in exchange for about 60 million ether, and use the proceeds to fund the network's initial development. The Ethereum Foundation continues to be the primary funding organization, issuing grants to research teams and projects focused on Ethereum.\n\nThe rise of initial coin offerings (ICOs)\nEthereum's mainnet launched in July 2015, with the first live release known as Frontier. Shortly after, Augur (\u003ca href=\"https://messari.io/asset/augur\"\u003e$REP\u003c/a\u003e) conducted the first \u003ca href=\"https://messari.io/article/initial-coin-offering-ico\"\u003eInitial Coin Offering (ICO)\u003c/a\u003e, in which the startup sold its Ethereum-based REP tokens (created via the \u003ca href=\"https://messari.io/article/erc-20\"\u003eERC-20\u003c/a\u003e standard) to help fund the project. The ability to develop and sell a newly generated token to help raise capital became an attractive method of fundraising because projects could circumvent the legal policies and costs required from traditional companies (until more recently). Ethereum-focused startups created thousands of new tokens since Augur's ICO, raising billions of dollars in the process.\n\nThe DAO hack\nOf course, raising large sums of money on experimental technology comes with a high level of risk, and The DAO hack is an example of the potential consequences. In April 2016, a decentralized venture fund known as \u003ca href=\"https://messari.io/asset/the-dao\"\u003eThe DAO\u003c/a\u003e raised ~$150 million in ETH. A few months later (July 2016), an attacker exploited a bug in one of The DAO's smart contracts, enabling the guilty party to siphon 3.6 million ETH. A significant portion of the Ethereum community opted to reverse the transactions to remove The DAO and its subsequent hack from the network's history. The remaining stakeholders held the preservation of immutability in higher regard and refused to accept a ledger rewrite. The divide in the community led to a contentious hard fork a few weeks post-hack, causing a permanent split in the network. The legacy chain that did not reverse its transaction history is now known as Ethereum Classic (\u003ca href=\"https://messari.io/asset/ethereum-classic\"\u003e$ETC\u003c/a\u003e).\n\nThe path to scalability: Ethereum 2.0\nScalability is a known limitation for the current state of Ethereum, and the community needs to address it if Ethereum intends to execute on its \"world computer\" vision. Periods of high user activity, as seen during the CryptoKitties launch in Nov. 2017, tend to cripple the Ethereum network, causing transaction times and fees to skyrocket and posing an existential threat to a project seeking mainstream adoption. To address this issue, Vitalik Buterin and other community members promoted a future switch to a Proof-of-Stake consensus mechanism featuring sharding, a theoretical scaling solution for blockchain networks. The proposed roadmap for the next version of Ethereum (dubbed Ethereum 2.0) includes these critical architectural changes, among others, to help provide a more suitable user and developer experience. Ethereum 2.0 is still in development with an anticipated launch in 2020.",
+    "technology": "Ethereum is an account-based blockchain consisting of external accounts, which are controlled by a user’s private keys, and contract accounts, which are managed by contract code. External contracts can create and sign messages to send to both types of accounts, while contract accounts can only execute transactions automatically in response to a message they have received. The latter are what are known as \u003ca href=\"https://messari.io/resource/smart-contracts\"\u003esmart contracts\u003c/a\u003e and enable the programmability of \u003ca href=\"https://messari.io/resource/decentralized-applications-dapps\"\u003edecentralized applications (dApps)\u003c/a\u003e.\n\nThe heart of the Ethereum blockchain is known as the \u003ca href=\"https://messari.io/article/ethereum-virtual-machine\"\u003eEthereum Virtual Machine (EVM)\u003c/a\u003e, which is the part of the protocol that executes transactions. It is a Turing complete virtual machine featuring a specific language “EVM bytecode,” typically written in a higher-level language called Solidity. Every operation on the EVM requires computational effort and memory. Ethereum node operators and miners provide these scarce resources to application developers and network users in exchange for gas. Different operations require different amounts of gas, and the user can specify how much they are willing to pay in ETH for each unit of gas. The amount of gas required for the transaction, along with the price paid, becomes the transaction cost. Every transaction also had a gas limit to prevent attacks from overloading blocks, which could slow down block production.\n\nEthereum adopted \u003ca href=\"https://messari.io/article/erc-20\"\u003eEthereum Request for Comment (ERC) 20\u003c/a\u003e in late 2015 as a standard for Ethereum smart contracts to issue tokens on the platform. The majority of tokens built on Ethereum are ERC-20 compliant, meaning they follow a standard set of rules defining how they are created and used. Another more popular token rule set is ERC-721 with standardizes the issuance of non-fungible tokens (NFTs) where any given token is distinguishable from another making them popular for gaming.\n\nAs Ethereum transitions to Eth 2.0, it will undergo significant changes to its design. It will transition from \u003ca href=\"https://messari.io/resource/proof-of-work\"\u003eProof-of-Work\u003c/a\u003e to \u003ca href=\"https://messari.io/article/proof-of-stake\"\u003eProof-of-Stake\u003c/a\u003e and feature a sharding architecture. Currently, nodes must validate every transaction to maintain an updated global state. However, the sharding model segments the network various groups (called shards) and randomly assigns nodes to each shard. Rather than validate the entire chain, nodes only have to validate their respective shard(s). A beacon chain then performs operations to maintain consensus throughout the network, while also randomizing validators and slashing nodes stake for dishonest behavior. Eth 2.0 will also replace the EVM with Ethereum WebAssembly (eWASM), which intends to translate coding logic more efficiently and help improve Ethereum’s scalability.",
+    "category": "Infrastructure",
+    "sector": "Smart Contract Platforms",
+    "tag": null,
+    "sfarScore": 2,
+    "token_distribution": {
+      "sale_start": "2014-07-22",
+      "sale_end": "2014-09-02",
+      "initial_distribution": 72003680.24,
+      "current_supply": null,
+      "max_supply": null,
+      "description": "Ethereum’s original token distribution event, managed by the \u003ca href=\"https://messari.io/asset/ethereum\"\u003eEthereum Foundation\u003c/a\u003e, sold roughly 60 million ethers (80% of the initial 72 million ETH supply) to the public. The sale took place between July 22, 2014, and September 02, 2014. However, the Ether purchased by crowdsale investors were not usable or transferable before the launch of the Genesis Block on July 31, 2015. The price of ether was initially set to a discounted price of 2000 ETH per BTC until August 05, 2019, before linearly declining to a final rate of 1337 ETH per BTC, reached on August 28, 2014. \n3,700 BTC were raised in the first 12 hours of the sale \nOver 25,000 BTC were raised in the first 2 weeks. \nThe sale eventually allowed the Ethereum Foundation to raise over 31,000 BTC, equivalent to $18.3 million. \n\nThe remaining 12 million ETH (20% of the initial supply) were allocated to the Foundation and early Ethereum contributors. Of the ether sent to the Foundation:\n3 million were allocated to a long-term endowment\n6 million were distributed among 85 developers who contributed prior to the crowdsale\n3 million were designed as a “developer purchase program” which gave Ethereum developers the right to purchase ether at crowdsale prices."
+    },
+    "token_details": {
+      "usage": "Payments",
+      "type": "Native",
+      "sales_rounds": [
+        {
+          "roundName": "Public Token Sale",
+          "startDate": "2014-07-22",
+          "endDate": "2014-09-02",
+          "pricePerUnit": 0.00057227,
+          "unit": "BTC",
+          "amountCollected": 18300000,
+          "restriction": null
+        }
+      ],
+      "block_reward": 2,
+      "targeted_block_time_in_sec": 15,
+      "on_chain_governance_structure": "No On-Chain Governance",
+      "is_treasury_decentralized": false,
+      "launch_style": "Crowdsale",
+      "initial_supply": 72003680.24,
+      "percentage_allocated_to_investors_from_initial_supply": 83.47,
+      "percentage_allocated_to_premined_or_airdrops_from_initial_supply": null,
+      "percentage_allocated_to_organizations_or_founders_supply": 16.53,
+      "mining_algorithm": "Ethash",
+      "next_halving_date": null,
+      "genesis_block_date": "2015-07-30",
+      "is_victim_of_51_percent_attack": false,
+      "emission_type_general": "Inflationary",
+      "emission_type_precise": "Fixed Issuance",
+      "is_capped_supply": false,
+      "max_supply": null
+    },
+    "organizations": [
+      {
+        "name": "Ethereum Foundation",
+        "founded_date": null,
+        "governance": null,
+        "legal_structure": null,
+        "jurisdiction": null,
+        "org_charter": null,
+        "description": "Ethereum is a decentralized platform that runs smart contracts: applications that run exactly as programmed without any possibility of downtime, censorship, fraud or third-party interference.",
+        "people_count_estimate": null
+      }
+    ],
+    "people": {
+      "founding_team": null,
+      "contributors": [
+        {
+          "first_name": "Vlad",
+          "last_name": "Zamfir",
+          "description": null,
+          "avatar_url": "https://messari.s3.amazonaws.com/images/agora-images/0%3Fe%3D1555545600%26v%3Dbeta%26t%3DQ_pAqP8ibCvrTtjrC-GzdmjzvdMV1yOORdsPGKPqmfE",
+          "twitter": null,
+          "github": null,
+          "medium": null,
+          "linkedin": null
+        },
+        {
+          "first_name": "Vitalik",
+          "last_name": "Buterin",
+          "description": "Vitalik is the creator of Ethereum. He first discovered blockchain and cryptocurrency technologies through Bitcoin in 2011, and was immediately excited by the technology and its potential. He cofounded Bitcoin Magazine in September 2011, and after two and a half years looking at what the existing blockchain technology and applications had to offer, wrote the Ethereum white paper in November 2013. He now leads Ethereum's research team, working on future versions of the Ethereum protocol.",
+          "avatar_url": "https://pbs.twimg.com/profile_images/977496875887558661/L86xyLF4_400x400.jpg",
+          "twitter": null,
+          "github": null,
+          "medium": null,
+          "linkedin": null
+        },
+        {
+          "first_name": "Anthony",
+          "last_name": "Di Iorio",
+          "description": null,
+          "avatar_url": "https://messari.s3.amazonaws.com/images/agora-images/anthony-di-iorio-d8783abcb47d9058f8046c6679b11d14-233b9.webp",
+          "twitter": null,
+          "github": null,
+          "medium": null,
+          "linkedin": null
+        },
+        {
+          "first_name": "Joe",
+          "last_name": "Lubin",
+          "description": "Joseph Lubin is a co-founder of blockchain computing platform Ethereum and the founder of Consensus Systems (ConsenSys), a blockchain venture studio. ConsenSys is one of the largest and fastest-growing companies in the blockchain technology space, building developer tools, decentralized applications, and solutions for enterprises and governments that harness the power of Ethereum. Headquartered in New York, ConsenSys also has a global presence, employing top entrepreneurs, computer scientists, software developers, and experts in enterprise delivery worldwide.\n\nLubin graduated from Princeton University with a degree in Electrical Engineering and Computer Science. He worked in the Princeton Robotics Lab, at tomandandy music developing an autonomous music composition tool, and at private research firm Vision Applications Inc. building autonomous mobile robots.\n \nAs a software engineer and consultant, Lubin worked with eMagine on the Identrus project and was involved in the founding and operation of a hedge fund with a partner. He held positions as Director of the New York office of Blacksmith Software Consulting, and VP of Technology in Private Wealth Management at Goldman Sachs. Through these posts, Lubin focused on the intersection of cryptography, engineering, and finance.\n \nSwitching gears, Lubin moved to Kingston, Jamaica to work on projects in the music industry. Two years into his musical endeavors, Lubin co-founded the Ethereum Project and has been working on Ethereum and ConsenSys since January 2014.",
+          "avatar_url": "https://pbs.twimg.com/profile_images/968150222760132608/Dzi20Mri_400x400.jpg",
+          "twitter": null,
+          "github": null,
+          "medium": null,
+          "linkedin": null
+        }
+      ],
+      "investors": null,
+      "advisors": null
+    },
+    "relevant_resources": [
+      {
+        "name": "Whitepaper",
+        "url": "https://github.com/ethereum/wiki/wiki/White-Paper"
+      },
+      {
+        "name": "Github",
+        "url": "https://github.com/ethereum"
+      },
+      {
+        "name": "Website",
+        "url": "https://www.ethereum.org/"
+      },
+      {
+        "name": "Twitter",
+        "url": "https://twitter.com/ethereum"
+      },
+      {
+        "name": "Reddit",
+        "url": "https://www.reddit.com/r/ethereum/"
+      },
+      {
+        "name": "Yellow Paper",
+        "url": "https://ethereum.github.io/yellowpaper/paper.pdf"
+      }
+    ],
+    "consensus_algorithm": "Proof-of-Work"
+  }
+}

@@ -1,0 +1,173 @@
+{
+  "status": {
+    "elapsed": "0",
+    "timestamp": "2019-11-19T17:30:08.404723753Z"
+  },
+  "data": {
+    "id": "21c795f5-1bfd-40c3-858e-e9d7e820c6d0",
+    "symbol": "ETH",
+    "name": "Ethereum",
+    "slug": "ethereum",
+    "_internal_temp_agora_id": "263d8b01-5a96-41f0-85d5-09687bbbf7ca",
+    "market_data": {
+      "price_usd": 173.78629700493275,
+      "price_btc": 0.021508117470167402,
+      "volume_last_24_hours": 2284690813.951277,
+      "real_volume_last_24_hours": 75685328.58329217,
+      "volume_last_24_hours_overstatement_multiple": 29.216244482390977,
+      "percent_change_usd_last_24_hours": -2.658063321480163,
+      "percent_change_btc_last_24_hours": -1.1112010355990325,
+      "ohlcv_last_1_hour": {
+        "open": 175.54561414951937,
+        "high": 175.724582781107,
+        "low": 172.73056346841523,
+        "close": 173.78629700493283,
+        "volume": 7635465.449694796
+      },
+      "ohlcv_last_24_hour": {
+        "open": 181.15913700317495,
+        "high": 181.1860090350003,
+        "low": 172.77655466558818,
+        "close": 173.78629700493278,
+        "volume": 153606798.86919457
+      },
+      "last_trade_at": "2019-11-19T17:29:58.196Z"
+    },
+    "marketcap": {
+      "current_marketcap_usd": 18870655887.694393,
+      "y_2050_marketcap_usd": 23478487200.253696,
+      "y_plus10_marketcap_usd": 21057897841.322334,
+      "liquid_marketcap_usd": 18774780312.574165,
+      "volume_turnover_last_24_hours_percent": 0.40312231260891457
+    },
+    "supply": {
+      "y_2050": 135135633.79999998,
+      "y_plus10": 121203395.55999999,
+      "liquid": 108062406.89,
+      "circulating": 108614240,
+      "y_2050_issued_percent": 79.96588601488472,
+      "annual_inflation_percent": 4.461832054979119,
+      "stock_to_flow": 22.41231825129016,
+      "y_plus10_issued_percent": 89.15790386128684
+    },
+    "blockchain_stats_24_hours": {
+      "transaction_volume": 169257108.9223848,
+      "adjusted_transaction_volume": 141443571.5632262,
+      "nvt": 75.39330596076083,
+      "adjusted_nvt": 89.88218631902632,
+      "sum_of_fees": 66548.47827815724,
+      "median_tx_value": 739.123695553362,
+      "median_tx_fee": 0.0551722268024626,
+      "count_of_active_addresses": 233167,
+      "count_of_tx": 596661,
+      "count_of_payments": 228997,
+      "new_issuance": 2209735.2584018055,
+      "average_difficulty": 2454342093908714,
+      "kilobytes_added": 117808.777,
+      "count_of_blocks_added": 6014
+    },
+    "all_time_high": {
+      "price": 1431.77,
+      "at": "2018-01-13",
+      "days_since": 674,
+      "percent_down": 87.76689507693108,
+      "breakeven_multiple": 8.174539548943299
+    },
+    "cycle_low": {
+      "price": 81.1505982131599,
+      "at": "2018-12-15",
+      "percent_up": 115.83319188474042,
+      "days_since": 339
+    },
+    "token_sale_stats": {
+      "sale_proceeds_usd": 16000000,
+      "sale_start_date": "2014-07-25",
+      "sale_end_date": "2014-08-22",
+      "roi_since_sale_usd_percent": 56218.30429486306,
+      "roi_since_sale_btc_percent": 718.410038246003,
+      "roi_since_sale_eth_percent": null
+    },
+    "staking_stats": {
+      "staking_yield_percent": null,
+      "staking_type": null,
+      "staking_minimum": null,
+      "tokens_staked": null,
+      "tokens_staked_percent": 0,
+      "real_staking_yield_percent": null
+    },
+    "mining_stats": {
+      "mining_algo": "Ethash",
+      "network_hash_rate": "164 TH/s",
+      "available_on_nicehash_percent": 3.7994542547469394,
+      "1_hour_attack_cost": 101553.85015563632,
+      "24_hours_attack_cost": 2437292.4037352717,
+      "attack_appeal": 7679.06661520949
+    },
+    "developer_activity": {
+      "stars": 24833,
+      "watchers": 2003,
+      "commits_last_3_months": 121,
+      "commits_last_1_year": 874,
+      "lines_added_last_3_months": 35919,
+      "lines_added_last_1_year": 758750,
+      "lines_deleted_last_3_months": 75242,
+      "lines_deleted_last_1_year": 454191
+    },
+    "roi_data": {
+      "percent_change_last_1_week": -7.066198972731207,
+      "percent_change_last_1_month": -1.1505600217823295,
+      "percent_change_last_3_months": -7.245876169312279,
+      "percent_change_last_1_year": 18.168616847743902,
+      "percent_change_btc_last_1_week": 1.4944503389510941,
+      "percent_change_btc_last_1_month": 1.051143681497786,
+      "percent_change_btc_last_3_months": 16.491589406559484,
+      "percent_change_btc_last_1_year": -30.051922102935073,
+      "percent_change_month_to_date": -5.281802111036152,
+      "percent_change_quarter_to_date": -1.4759493269445372,
+      "percent_change_year_to_date": 21.785491158812402
+    },
+    "roi_by_year": {
+      "2018_usd_percent": -82.367373689558,
+      "2017_usd_percent": 9180.697368936988,
+      "2016_usd_percent": 756.781547037168,
+      "2015_usd_percent": null,
+      "2014_usd_percent": null,
+      "2013_usd_percent": null,
+      "2012_usd_percent": null,
+      "2011_usd_percent": null
+    },
+    "risk_metrics": {
+      "sharpe_ratios": {
+        "last_30_days": 0.2997870777361735,
+        "last_90_days": -0.364891577796107,
+        "last_1_year": 0.6967384397667269,
+        "last_3_years": 1.420587976108314
+      },
+      "volatility_stats": {
+        "volatility_last_30_days": 0.4448893679976148,
+        "volatility_last_90_days": 0.5203124302078714,
+        "volatility_last_1_year": 0.7481207910665064,
+        "volatility_last_3_years": 1.0458687784434928
+      }
+    },
+    "misc_data": {
+      "private_market_price_usd": null,
+      "vladimir_club_cost": 2172762.6152372044,
+      "btc_current_normalized_supply_price_usd": 1053.5796258277442,
+      "btc_y2050_normalized_supply_price_usd": 1035.4626691027822,
+      "asset_created_at": "2015-07-30",
+      "asset_age_days": 1573,
+      "categories": [ "infrastructure" ],
+      "sectors": [ "smart_contract_platform", "currency" ]
+    },
+    "lend_rates": null,
+    "borrow_rates": null,
+    "loan_data": {
+      "originated_last_24_hours_usd": 0,
+      "outstanding_debt_usd": 0,
+      "repaid_last_24_hours_usd": 0,
+      "collateralized_last_24_hours_usd": 0,
+      "collateral_liquidated_last_24_hours_usd": 0
+    }
+  }
+}

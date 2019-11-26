@@ -1,0 +1,474 @@
+{
+  "status": {
+    "elapsed": "0",
+    "timestamp": "2019-11-19T17:19:03.083960241Z"
+  },
+  "data": {
+    "id": "1e31218a-e44e-4285-820c-8282ee222035",
+    "symbol": "BTC",
+    "name": "Bitcoin",
+    "slug": "bitcoin",
+    "_internal_temp_agora_id": "9793eae6-f374-46b4-8764-c2d224429791",
+    "is_verified": false,
+    "tagline": "A peer-to-peer electronic cash system",
+    "overview": "Bitcoin is the first successfully distributed consensus-based, censorship-resistant, peer-to-peer payment settlement network with a provably scarce, programmable, native currency.",
+    "background": "Bitcoin is a decentralized network for peer-to-peer value transfer created by Satoshi Nakamoto in 2009. Nakamoto first introduced the white paper for Bitcoin to a mailing list on October 31, 2008. Bitcoin borrows from nearly three decades of research by academics, cypherpunk practitioners, and hobbyists who tried to create similar payment protocols. Some of the most prominent projects that preceded Bitcoin include: Digicash, b-money, Hashcash, and e-gold.\n\nBitcoin is often associated with Austrian economic theories, anarcho-capitalist principles, and general libertarian politicking by virtue of the exclusive developer community to whom Nakamoto first released their white paper, certain protocol design characteristics, and the central tendency of political affiliations among early Bitcoin investors. Nakamoto included a now-famous The Times headline in Bitcoin’s genesis block coinbase to prove the network’s fair launch. Many bitcoiners misinterpret The Times headline as a signal of support to anyone seeking alternatives to legacy financial services and sovereign monies.",
+    "technology": null,
+    "category": "Payments",
+    "sector": "Currencies",
+    "tag": null,
+    "sfarScore": 1,
+    "token_distribution": {
+      "sale_start": "2009-01-03",
+      "sale_end": "2009-01-03",
+      "initial_distribution": 50,
+      "current_supply": 17350000,
+      "max_supply": 21000000,
+      "description": "Mining blocks is the only way to mint new bitcoins. Block rewards (initially 50 BTC + transaction fees) are claimed every 10 minutes, on average. Block rewards are halved every 210,000 blocks (approximately 4 years).\n\nNakamoto created the first bitcoins on January 3, 2009 by mining the genesis block. The genesis block mining reward reward (50 BTC) is unspendable due to the original client's block database and transaction database configuration.\n\nBitcoin currently has a supply cap of 21 million coins. Bitcoin Improvement Protocol (BIP) 42 introduced this finite supply monetary design as an adjustment to Nakamoto’s original supply modeled after 4 gold mines being discovered per mibillenium (1024 years), according to the BIP.\n\nAn inflation bug (CVE-2010-5139) created 184 billion bitcoins on August 15, 2010 at block height 74638. \n\n\n"
+    },
+    "token_details": {
+      "usage": "Payments",
+      "type": "Native",
+      "sales_rounds": null,
+      "block_reward": 12.5,
+      "targeted_block_time_in_sec": 600,
+      "on_chain_governance_structure": "No On-Chain Governance",
+      "is_treasury_decentralized": false,
+      "launch_style": "Fair Launch",
+      "initial_supply": null,
+      "percentage_allocated_to_investors_from_initial_supply": null,
+      "percentage_allocated_to_premined_or_airdrops_from_initial_supply": null,
+      "percentage_allocated_to_organizations_or_founders_supply": null,
+      "mining_algorithm": "SHA-256",
+      "next_halving_date": "2020-05-01",
+      "genesis_block_date": "2009-01-03",
+      "is_victim_of_51_percent_attack": false,
+      "emission_type_general": "Inflationary",
+      "emission_type_precise": "Decreasing Issuance",
+      "is_capped_supply": true,
+      "max_supply": 21000000
+    },
+    "organizations": [
+      {
+        "name": "MIT Digital Currency Initiative",
+        "founded_date": "2018-01-09",
+        "governance": null,
+        "legal_structure": "Foundation",
+        "jurisdiction": "Cambridge, Massachusetts",
+        "org_charter": null,
+        "description": "DCI is an orgnization created to bring together the brightest minds at MIT and elsewhere to conduct the research necessary to support the development of digital currency and blockchain technology.",
+        "people_count_estimate": "100-1000"
+      },
+      {
+        "name": "Blockstream",
+        "founded_date": "2014-01-01",
+        "governance": null,
+        "legal_structure": "Corporation",
+        "jurisdiction": "Victoria, British Colombia",
+        "org_charter": null,
+        "description": "A technology company building products and serves for the foundation of bitcoin and blockchain financial infrastructure",
+        "people_count_estimate": "10-100"
+      },
+      {
+        "name": "Chaincode Labs",
+        "founded_date": "2017-01-01",
+        "governance": null,
+        "legal_structure": "Corporation",
+        "jurisdiction": "Manhattan, NY",
+        "org_charter": null,
+        "description": "A Bitcoin and cryptocurrency research and development group",
+        "people_count_estimate": "1-10"
+      },
+      {
+        "name": "Square Crypto",
+        "founded_date": "2019-03-01",
+        "governance": null,
+        "legal_structure": null,
+        "jurisdiction": "San Francisco",
+        "org_charter": null,
+        "description": "A Square venture focused on open source Bitcoin and crypto ecosystem development",
+        "people_count_estimate": "1-10"
+      }
+    ],
+    "people": {
+      "founding_team": null,
+      "contributors": [
+        {
+          "first_name": "Giel",
+          "last_name": "van Schijndel",
+          "description": null,
+          "avatar_url": "https://messari.s3.amazonaws.com/images/agora-images/0%3Fe%3D1557964800%26v%3Dbeta%26t%3DtKR24B5xQbPX3icnZ8koVy8w7TjazfdTcV2uOHQRBhE",
+          "twitter": "https://twitter.com/muggenhor",
+          "github": "https://github.com/muggenhor",
+          "medium": null,
+          "linkedin": "https://www.linkedin.com/in/gielvanschijndel/"
+        },
+        {
+          "first_name": "Pablo",
+          "last_name": "Castellano",
+          "description": null,
+          "avatar_url": "https://messari.s3.amazonaws.com/images/agora-images/Qopp6xM8_400x400.jpg",
+          "twitter": "https://twitter.com/pablo_gonzalez",
+          "github": "https://github.com/PabloCastellano",
+          "medium": null,
+          "linkedin": null
+        },
+        {
+          "first_name": "Johnson",
+          "last_name": "Lau",
+          "description": null,
+          "avatar_url": "https://3.bp.blogspot.com/-RAbxU6Wlvlk/WLbcdJk_s7I/AAAAAAAAHfs/H9AFjGM1yPIA9JxZApxsWimzC5qzY7mUwCLcB/s1600/20.Johnson%2BLau%2BBitcoin%2Bdeveloper.jpg",
+          "twitter": "https://twitter.com/johnsonlau01",
+          "github": "https://github.com/jl2012",
+          "medium": null,
+          "linkedin": null
+        },
+        {
+          "first_name": "Daniel",
+          "last_name": "Folkinshteyn",
+          "description": null,
+          "avatar_url": null,
+          "twitter": null,
+          "github": "https://github.com/nanotube",
+          "medium": null,
+          "linkedin": null
+        },
+        {
+          "first_name": "João",
+          "last_name": "Barbosa",
+          "description": null,
+          "avatar_url": "https://messari.s3.amazonaws.com/images/agora-images/0%3Fe%3D1557964800%26v%3Dbeta%26t%3DL9kSumZexntjywUtDdXAVVaAFEq_kiIXN8scHyLvkQg",
+          "twitter": "https://twitter.com/barbosaracing",
+          "github": "https://github.com/promag",
+          "medium": "https://medium.com/@joobarbosajnior",
+          "linkedin": "https://www.linkedin.com/in/jo%C3%A3o-barbosa-48167a6/"
+        },
+        {
+          "first_name": "Pavel",
+          "last_name": "Janik",
+          "description": null,
+          "avatar_url": null,
+          "twitter": null,
+          "github": "https://github.com/paveljanik",
+          "medium": null,
+          "linkedin": null
+        },
+        {
+          "first_name": "Martti",
+          "last_name": "Malmi",
+          "description": "Martti Malmi is a software developer with a passionate focus on world-changing technology. Malmi volunteered as a core developer of Bitcoin from 2009 to 2011 and maintains an extensive understanding of web technologies, from databases and servers to UI design.",
+          "avatar_url": "https://messari.s3.amazonaws.com/images/agora-images/Fmh3pV8s_400x400.jpg",
+          "twitter": "https://twitter.com/marttimalmi",
+          "github": "https://github.com/mmalmi",
+          "medium": null,
+          "linkedin": "https://www.linkedin.com/in/marttimalmi/"
+        },
+        {
+          "first_name": "William",
+          "last_name": "Swanson",
+          "description": null,
+          "avatar_url": "https://messari.s3.amazonaws.com/images/agora-images/0%3Fe%3D1557964800%26v%3Dbeta%26t%3D1UFNSgGyQXAj9ESmWEMWaBA7JiBGmF-Gku01HlGRDlQ",
+          "twitter": "https://twitter.com/s_tec",
+          "github": "https://github.com/swansontec",
+          "medium": null,
+          "linkedin": "https://www.linkedin.com/in/william-swanson-834089a6/"
+        },
+        {
+          "first_name": "Michael",
+          "last_name": "Ford",
+          "description": "Michael Ford is the founder of Hectare.ag and a Bitcoin Core contributor.",
+          "avatar_url": "https://messari.s3.amazonaws.com/images/agora-images/tWuYGE9E_400x400.jpg",
+          "twitter": "https://twitter.com/fanquake",
+          "github": "https://github.com/fanquake",
+          "medium": null,
+          "linkedin": null
+        },
+        {
+          "first_name": "Bryan",
+          "last_name": "Bishop",
+          "description": "Bryan Bishop is a Bitcoin Core contributor formerly a senior blockchain engineer at LedgerX.",
+          "avatar_url": "https://messari.s3.amazonaws.com/images/agora-images/zFJ-h6jT_400x400.jpg",
+          "twitter": "https://twitter.com/kanzure",
+          "github": "https://github.com/kanzure",
+          "medium": null,
+          "linkedin": "https://www.linkedin.com/in/bryan-bishop-3a63978"
+        },
+        {
+          "first_name": "Nils",
+          "last_name": "Schneider",
+          "description": "Nils Schneider is an early core Bitcoin developer and a co-founder of Bitcoin Charts.",
+          "avatar_url": null,
+          "twitter": null,
+          "github": "https://github.com/tcatm",
+          "medium": null,
+          "linkedin": null
+        },
+        {
+          "first_name": "Noel",
+          "last_name": "Maersk",
+          "description": null,
+          "avatar_url": null,
+          "twitter": "https://twitter.com/veoxwmt",
+          "github": "https://github.com/veox",
+          "medium": null,
+          "linkedin": null
+        },
+        {
+          "first_name": "Jonas",
+          "last_name": "Schnelli",
+          "description": null,
+          "avatar_url": "https://messari.s3.amazonaws.com/images/agora-images/jonasSchnelli2.jpg",
+          "twitter": "https://twitter.com/_jonasschnelli_",
+          "github": "https://github.com/jonasschnelli",
+          "medium": "https://medium.com/@_jonasschnelli_",
+          "linkedin": null
+        },
+        {
+          "first_name": "Laszlo",
+          "last_name": "Hanyecz",
+          "description": "Laszlo Hanyecz is a software developer and an early Bitcoin contributor who famously purchased 2 pizzas for 10,000 bitcoin on May 22, 2010. ",
+          "avatar_url": "https://messari.s3.amazonaws.com/images/agora-images/f1f5bf544bab3b1f31630150a8a0932b.jpg",
+          "twitter": null,
+          "github": null,
+          "medium": null,
+          "linkedin": null
+        },
+        {
+          "first_name": "Mike",
+          "last_name": "Hearn",
+          "description": null,
+          "avatar_url": "https://messari.s3.amazonaws.com/images/agora-images/0%3Fe%3D1557964800%26v%3Dbeta%26t%3DOHYQcc7CJ3wKwr9d2sX747gZPjf-Hx0Ovlx3KwOw8gY",
+          "twitter": null,
+          "github": "https://github.com/mikehearn",
+          "medium": null,
+          "linkedin": "https://www.linkedin.com/in/mike-hearn-2523962/"
+        },
+        {
+          "first_name": "Wladimir",
+          "last_name": "J. van der Laan",
+          "description": null,
+          "avatar_url": "https://messari.s3.amazonaws.com/images/agora-images/download-1-19.jpg",
+          "twitter": "https://twitter.com/orionwl",
+          "github": "https://github.com/laanwj/",
+          "medium": null,
+          "linkedin": null
+        },
+        {
+          "first_name": "Jorge",
+          "last_name": "Timon",
+          "description": null,
+          "avatar_url": "https://messari.s3.amazonaws.com/images/agora-images/0%3Fe%3D1555545600%26v%3Dbeta%26t%3DDUHWwCzZALQPlYXVTUc4TB5h9_r_N57QfRbGxH76lDs",
+          "twitter": "https://twitter.com/timoncc",
+          "github": "https://github.com/jtimon",
+          "medium": null,
+          "linkedin": "https://www.linkedin.com/in/jorgetimon/"
+        },
+        {
+          "first_name": "Patrick",
+          "last_name": "Strateman",
+          "description": null,
+          "avatar_url": null,
+          "twitter": "https://twitter.com/pstrateman",
+          "github": "https://github.com/pstratem",
+          "medium": null,
+          "linkedin": null
+        },
+        {
+          "first_name": "Cory",
+          "last_name": "Fields",
+          "description": "Cory Fields is a Bitcoin Core developer for the Digital Currency Initiative at the MIT Media Lab.",
+          "avatar_url": "https://messari.s3.amazonaws.com/images/agora-images/d54nyb0t9z6j3kljbjru.png",
+          "twitter": null,
+          "github": "https://github.com/theuni",
+          "medium": "https://medium.com/@coryfields",
+          "linkedin": null
+        },
+        {
+          "first_name": "Andreas",
+          "last_name": "Schildbach",
+          "description": null,
+          "avatar_url": "https://messari.s3.amazonaws.com/images/agora-images/743306%3Fs%3D400%26v%3D4",
+          "twitter": "https://twitter.com/schildbach",
+          "github": "https://github.com/schildbach",
+          "medium": null,
+          "linkedin": null
+        },
+        {
+          "first_name": "Eric",
+          "last_name": "Lombrozo",
+          "description": null,
+          "avatar_url": "https://messari.s3.amazonaws.com/images/agora-images/0%3Fe%3D1555545600%26v%3Dbeta%26t%3D3D7znaGk3r_5LmB2AdmVcG05xcdAzp5Lq5JTmzFfBYw",
+          "twitter": "https://twitter.com/eric_lombrozo",
+          "github": "https://github.com/CodeShark",
+          "medium": "https://medium.com/@elombrozo",
+          "linkedin": "https://www.linkedin.com/in/ericlombrozo"
+        },
+        {
+          "first_name": "Jeff",
+          "last_name": "Garzik",
+          "description": null,
+          "avatar_url": "https://messari.s3.amazonaws.com/images/agora-images/0%3Fe%3D1542240000%26v%3Dbeta%26t%3D6uAq00HG-HoGjP5_qr6r5a_6gUJxYxguLhoHQVN9fLs",
+          "twitter": "https://twitter.com/jgarzik?ref_src=twsrc%5Egoogle%7Ctwcamp%5Eserp%7Ctwgr%5Eauthor",
+          "github": null,
+          "medium": null,
+          "linkedin": "https://www.linkedin.com/in/jeffgarzik/"
+        },
+        {
+          "first_name": "Satoshi",
+          "last_name": "Nakamoto",
+          "description": "Satoshi Nakamoto is the name used by the pseudonymous person or persons who developed Bitcoin, authored the bitcoin white paper, and created and deployed Bitcoin's original reference implementation. As part of the implementation, Nakamoto also devised the first blockchain database. In the process, Nakamoto was the first to solve the double-spending problem for digital currency using a peer-to-peer network. Nakamoto was active in the development of bitcoin up until December 2010.",
+          "avatar_url": null,
+          "twitter": null,
+          "github": null,
+          "medium": null,
+          "linkedin": null
+        },
+        {
+          "first_name": "Gregory",
+          "last_name": "Maxwell",
+          "description": "Gregory Maxwell is a core developer for Bitcoin and a co-founder and former CTO of Blockstream. ",
+          "avatar_url": "https://messari.s3.amazonaws.com/images/agora-images/858454%3Fs%3D460%26v%3D4",
+          "twitter": null,
+          "github": "https://github.com/gmaxwell",
+          "medium": null,
+          "linkedin": null
+        },
+        {
+          "first_name": "Amir",
+          "last_name": "Taaki",
+          "description": null,
+          "avatar_url": "https://messari.s3.amazonaws.com/images/agora-images/eIslHLnt_400x400.jpg",
+          "twitter": "https://twitter.com/Narodism",
+          "github": null,
+          "medium": null,
+          "linkedin": "https://www.linkedin.com/in/amir-taaki-607183144/"
+        },
+        {
+          "first_name": "Kalle",
+          "last_name": "Alm",
+          "description": null,
+          "avatar_url": "https://messari.s3.amazonaws.com/images/agora-images/Photo_on_2010-01-19_at_10.21_400x400.jpg",
+          "twitter": "https://twitter.com/kallewoof",
+          "github": "https://github.com/kallewoof",
+          "medium": "https://medium.com/@kallewoof",
+          "linkedin": "https://www.linkedin.com/in/kjalm/"
+        },
+        {
+          "first_name": "Hal",
+          "last_name": "Finney",
+          "description": null,
+          "avatar_url": "https://messari.s3.amazonaws.com/images/agora-images/0%3Fe%3D1555545600%26v%3Dbeta%26t%3DRleFab_s0uEL2Z-PUWtecsU67s4aZLoOgBSNy_5__BY",
+          "twitter": "https://twitter.com/halfin",
+          "github": "https://github.com/halfinney",
+          "medium": null,
+          "linkedin": "https://www.linkedin.com/in/hal-finney-541342/"
+        },
+        {
+          "first_name": "Gavin ",
+          "last_name": "Andresen\t",
+          "description": "Chief Scientist Bitcoin Foundation, previously Lead Core Bitcoin Developer, TruCoin, researcher University of Massachusetts Amherst. ",
+          "avatar_url": "https://messari.s3.amazonaws.com/images/agora-images/331997%3Fs%3D460%26v%3D4",
+          "twitter": "https://twitter.com/gavinandresen",
+          "github": "https://github.com/gavinandresen",
+          "medium": "https://medium.com/@gavinandresen",
+          "linkedin": "https://www.linkedin.com/in/gavin-andresen-6987971/"
+        },
+        {
+          "first_name": "Pieter",
+          "last_name": "Wuille",
+          "description": "Pieter Wuille is an early Bitcoin core contributor and a co-founder and core tech engineer at Blockstream.",
+          "avatar_url": "https://messari.s3.amazonaws.com/images/agora-images/Iq3_6BeN_400x400.jpg",
+          "twitter": "https://twitter.com/pwuille",
+          "github": "https://github.com/sipa",
+          "medium": null,
+          "linkedin": "https://www.linkedin.com/in/pieterwuille"
+        },
+        {
+          "first_name": "Samuel",
+          "last_name": "Dobson",
+          "description": null,
+          "avatar_url": "https://messari.s3.amazonaws.com/images/agora-images/0%3Fe%3D1555545600%26v%3Dbeta%26t%3D_1hewHU8GK7PBe12DMuGe7lSVakbo142YkAx-m_lAAI",
+          "twitter": "https://twitter.com/meshcollider",
+          "github": "https://github.com/MeshCollider",
+          "medium": null,
+          "linkedin": "https://nz.linkedin.com/in/samuel-dobson"
+        },
+        {
+          "first_name": "Anthony",
+          "last_name": "Towns",
+          "description": null,
+          "avatar_url": "https://messari.s3.amazonaws.com/images/agora-images/0%3Fe%3D1555545600%26v%3Dbeta%26t%3DoNy9le-voFKxJNmgHv8BpqiC2qIItX3swICJDXO69H8",
+          "twitter": "https://twitter.com/ajtowns",
+          "github": "https://github.com/ajtowns",
+          "medium": null,
+          "linkedin": "https://www.linkedin.com/in/ajtowns/"
+        },
+        {
+          "first_name": "Andrew",
+          "last_name": "Chow",
+          "description": null,
+          "avatar_url": "https://messari.s3.amazonaws.com/images/agora-images/c7d40949d8e18c0007c2e45eb0264505_200_200.jpeg",
+          "twitter": "https://twitter.com/achow101",
+          "github": "https://github.com/achow101",
+          "medium": null,
+          "linkedin": null
+        },
+        {
+          "first_name": "Luke",
+          "last_name": "Dashjr",
+          "description": null,
+          "avatar_url": "https://messari.s3.amazonaws.com/images/agora-images/6nljnZCf.jpg",
+          "twitter": "https://twitter.com/LukeDashjr",
+          "github": "https://github.com/luke-jr",
+          "medium": "https://medium.com/@lukedashjr",
+          "linkedin": "https://www.linkedin.com/in/lukedashjr"
+        },
+        {
+          "first_name": "Marco",
+          "last_name": "Falke",
+          "description": null,
+          "avatar_url": "https://messari.s3.amazonaws.com/images/agora-images/marco.png",
+          "twitter": "https://twitter.com/MarcoFalke",
+          "github": "https://github.com/MarcoFalke",
+          "medium": null,
+          "linkedin": null
+        },
+        {
+          "first_name": "Chris",
+          "last_name": "Moore",
+          "description": "Chris Moore is a software developer and and early Bitcoin core contributor. He also created Betco-in, the first-ever bitcoin poker room.",
+          "avatar_url": "https://messari.s3.amazonaws.com/images/agora-images/573356%3Fs%3D460%26v%3D4",
+          "twitter": "https://twitter.com/dooglus",
+          "github": "https://github.com/dooglus",
+          "medium": null,
+          "linkedin": null
+        }
+      ],
+      "investors": null,
+      "advisors": null
+    },
+    "relevant_resources": [
+      {
+        "name": "Whitepaper",
+        "url": "https://nakamotoinstitute.org/bitcoin/"
+      },
+      {
+        "name": "Github",
+        "url": "https://github.com/bitcoin/bitcoin"
+      },
+      {
+        "name": "Twitter",
+        "url": "https://twitter.com/bitcoin"
+      },
+      {
+        "name": "Telegram",
+        "url": "http://t.me/bitcoin"
+      },
+      {
+        "name": "Block Explorer",
+        "url": "https://blockchair.com/bitcoin"
+      }
+    ],
+    "consensus_algorithm": "Proof-of-Work"
+  }
+}

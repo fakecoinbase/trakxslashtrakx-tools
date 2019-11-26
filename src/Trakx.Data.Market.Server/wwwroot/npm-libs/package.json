@@ -1,0 +1,43 @@
+{
+  "name": "trakx-data-market-npm-libs",
+  "version": "0.0.1",
+  "description": "npm libraries needed by the Trakx's market data server",
+  "main": "public/index.js",
+  "types": "public/index.d.ts",
+  "repository": "https://github.com/trakx/data-market",
+  "author": "https://github.com/monsieurleberre",
+  "license": "LGPL-3.0+",
+  "private": true,
+  "scripts": {
+    "lint": "tsc --noEmit && eslint ./src --ext .ts,.js --quiet --fix",
+    "build": "yarn lint && tsc",
+    "test": "jest"
+  },
+  "husky": {
+    "hooks": {
+      "pre-commit": "tsc --noEmit && lint-staged"
+    }
+  },
+  "lint-staged": {
+    "*.{js,ts,tsx}": [
+      "eslint . --fix",
+      "git add"
+    ]
+  },
+  "devDependencies": {
+    "@types/jest": "^24.0.22",
+    "@types/lodash": "^4.14.146",
+    "@typescript-eslint/eslint-plugin": "^2.6.1",
+    "@typescript-eslint/parser": "^2.6.1",
+    "eslint": "^6.6.0",
+    "eslint-config-prettier": "^6.5.0",
+    "eslint-plugin-prettier": "^3.1.1",
+    "jest": "^24.9.0",
+    "prettier": "^1.19.0",
+    "ts-jest": "^24.1.0",
+    "typescript": "^3.7.2"
+  },
+  "dependencies": {
+    "lodash": "^4.17.15"
+  }
+}
