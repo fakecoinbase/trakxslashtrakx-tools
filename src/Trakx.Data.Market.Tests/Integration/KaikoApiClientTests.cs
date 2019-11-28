@@ -4,23 +4,21 @@ using System.IO;
 using System.Linq;
 using System.Text.Json;
 using System.Threading.Tasks;
+using FluentAssertions;
 using Microsoft.Extensions.DependencyInjection;
 using Trakx.Data.Market.Common.Indexes;
 using Trakx.Data.Market.Common.Sources.BitGo;
-using Trakx.Data.Market.Common.Sources.CryptoCompare;
 using Trakx.Data.Market.Common.Sources.Kaiko.Client;
 using Trakx.Data.Market.Common.Sources.Kaiko.DTOs;
 using Trakx.Data.Market.Common.Sources.Messari.Client;
 using Xunit;
 using Xunit.Abstractions;
-using RequestHelper = Trakx.Data.Market.Common.Sources.Kaiko.Client.RequestHelper;
 
 namespace Trakx.Data.Market.Tests.Integration
 {
     public class KaikoApiClientTests : IDisposable
     {
         private readonly ITestOutputHelper _output;
-        //private readonly ICacheLogger<KaikoApiClient> _logger;
         private readonly IKaikoClient _kaikoClient;
 
         public KaikoApiClientTests(ITestOutputHelper output)
@@ -56,76 +54,84 @@ namespace Trakx.Data.Market.Tests.Integration
             instruments.Instruments.ForEach(i => _output.WriteLine($"{i.Code}, {i.ExchangeCode}, {i.ExchangePairCode}, {i.Class}, {i.BaseAsset}, {i.QuoteAsset}"));
         }
 
-        [Fact]
-        public async Task GetAggregatedPrice_for_one_token_should_return_aggregated_prices()
+        [Theory]
+        [InlineData(true)]
+        [InlineData(false)]
+        public async Task GetSpotExchangeRate_for_one_token_should_return_aggregated_prices(bool direct)
         {
-            var coinSymbol = "btc";
+            var coinSymbol = "eth";
             var quoteSymbol = "usd";
-            var query = CreateCoinQuery(coinSymbol, quoteSymbol, false);
+            var query = CreateCoinQuery(coinSymbol, quoteSymbol, direct);
 
-            var price = await _kaikoClient.GetSpotExchangeRate(query).ConfigureAwait(false);
-            var profile = (await _messariClient.GetProfileForSymbol(coinSymbol).ConfigureAwait(false)).Data;
-
-            var results = price.Data;
-
-            results.ForEach(r => _output.WriteLine($"{r.Price}, {profile.Sector}, {r.Volume}"));
-        }
-
-
-        [Fact(Skip = "This is a long running one, actually not for tests")]
-        public async Task GetAggregatedPrice_should_return_aggregated_prices()
-        {
-            //todo: usd eur bnb btc eth 
-
-            var bitGoTokens = new SupportedTokenProvider().SupportedTokensBySymbol;
-            var indexTokens = new IndexDetailsProvider().IndexDetails
-                .SelectMany(i => i.Value.Components.Select(c => c.Symbol.ToLower())).Distinct().ToList();
-
-            var kaikoInstruments = await _kaikoClient.GetInstruments().ConfigureAwait(false);
-            var symbols = kaikoInstruments.Instruments.Select(i => i.Code.Split("-")[0].ToLower())
-                .Distinct()
-                .OrderBy(s => s);
-
-            var quoteAsset = "usd";
+            var response = await _kaikoClient.GetSpotExchangeRate(query).ConfigureAwait(false);
             
-            var queries = symbols.Select(e => CreateCoinQuery(e, quoteAsset, false)).ToList();
-
-            var tempPath = "kaikoData." + DateTime.Now.ToString("yyyyMMdd.hhmmss");
-            Directory.CreateDirectory(tempPath);
-            var priceTasks = queries.AsParallel().Select(async q =>
-                {
-                    var aggregatedPrice = await _kaikoClient.GetSpotExchangeRate(q).ConfigureAwait(false);
-                    var profile = await _messariClient.GetProfileForSymbol(q.BaseAsset).ConfigureAwait(false);
-                    if (aggregatedPrice?.Result == "success" && aggregatedPrice.Data.Any())
-                    {
-                        File.WriteAllText(Path.Combine(tempPath, q.BaseAsset + ".json"), 
-                            JsonSerializer.Serialize(aggregatedPrice));
-                        return new { 
-                            Query = q, 
-                            Prices = aggregatedPrice, 
-                            Sector = profile?.Data?.Sector ?? "", 
-                            BitGoCustody = bitGoTokens.ContainsKey(q.BaseAsset.ToLower()),
-                            UsedByTrakx = indexTokens.Contains(q.BaseAsset.ToLower()),
-                            AssetName = profile?.Data?.Name ?? "",
-                        };
-                    }
-                    return null;
-                })
-                .Where(r => r?.Result != null)
-                .ToArray();
-
-            var results = priceTasks.Select(p => p.Result).Where(r => r != null).OrderBy(r => r.Query.BaseAsset).ToList();
-            _output.WriteLine($"symbol, name, sector, volume ({quoteAsset}), price ({quoteAsset}), bitgoCustody");
-            results.ForEach(r =>
-               {
-                   var summedVolume = r.Prices.Data.Sum(a => decimal.Parse(a.Volume));
-                   var averagePrice = r.Prices.Data.Average(a => decimal.Parse(a.Price));
-                   var symbol = r.Query.BaseAsset;
-                   _output.WriteLine($"{symbol}, {r.AssetName}, {r.Sector}, {summedVolume}, {averagePrice}, {r.BitGoCustody}");
-               });
+            CheckExchangeRateResponse(query, response);
         }
 
-        private AggregatedPriceRequest CreateCoinQuery(string coinSymbol, string quoteSymbol, bool direct)
+        private void CheckExchangeRateResponse(AggregatedPriceRequest request, SpotDirectExchangeRateResponse response)
+        {
+            var results = response.Data;
+            results.Count.Should().BeGreaterOrEqualTo(1);
+
+            decimal.TryParse(results[0].Price, out decimal price).Should().BeTrue();
+            price.Should().BeGreaterThan(0);
+
+            DateTimeOffset.FromUnixTimeMilliseconds(results[0].Timestamp).UtcDateTime
+                .Should().BeCloseTo(request.StartTime.UtcDateTime, TimeSpan.FromMinutes(1));
+
+            if (!request.DirectExchangeRate) return;
+
+            decimal.TryParse(response.Data[0].Volume, out decimal volume).Should().BeTrue();
+            volume.Should().BeGreaterThan(0);
+
+            _output.WriteLine(JsonSerializer.Serialize(results[0]));
+        }
+
+        private class AllTokensUsedAsComponents : TheoryData
+        {
+            public AllTokensUsedAsComponents()
+            {
+                new IndexDetailsProvider().IndexDetails
+                    .SelectMany(i => i.Value.Components.Select(c => c.Symbol.ToLower()))
+                    .Distinct()
+                    .ToList()
+                    .ForEach(s => AddRow(s));
+            }
+        }
+
+        [Theory]
+        [ClassData(typeof(AllTokensUsedAsComponents))]
+        public async Task GetSpotExchangeRate_for_trakx_tokens_should_return_aggregated_prices(string tokenSymbol)
+        {
+            var quoteSymbol = "usd";
+            var query = CreateCoinQuery(tokenSymbol, quoteSymbol, false);
+
+            var response = await _kaikoClient.GetSpotExchangeRate(query).ConfigureAwait(false);
+
+            CheckExchangeRateResponse(query, response);
+        }
+
+        public static decimal TryFindUsdExchangeRate(IKaikoClient kaikoClient, string baseSymbol)
+        {
+            try
+            {
+                if (baseSymbol == "usd") return 1m;
+                if (baseSymbol == "jpy") return 1/108.905m;
+                if (baseSymbol == "eur") return 1/0.907934m;
+                if (baseSymbol == "gbp") return 1/0.776741m;
+                if (baseSymbol == "krw") return 1/1177.23m;
+                var request = CreateCoinQuery(baseSymbol, "usd", true);
+                var result = kaikoClient.GetSpotExchangeRate(request).GetAwaiter().GetResult();
+                var exchangeRate = result.Data.Average(d => decimal.Parse(d.Price));
+                return exchangeRate;
+            }
+            catch (Exception e)
+            {
+                throw new InvalidDataException($"Failed to find exchange rate for {baseSymbol}", e);
+            }
+        }
+
+        public static AggregatedPriceRequest CreateCoinQuery(string coinSymbol, string quoteSymbol, bool direct)
         {
             var query = new AggregatedPriceRequest
             {
@@ -134,9 +140,9 @@ namespace Trakx.Data.Market.Tests.Integration
                 Commodity = "trades",
                 Exchanges = new List<string>(),
                 Interval = "1d",
-                PageSize = 1000,
+                PageSize = 100,
                 QuoteAsset = quoteSymbol,
-                StartTime = new DateTimeOffset(2019, 10, 01, 00, 00, 00, TimeSpan.Zero),
+                StartTime = new DateTimeOffset(2019, 11, 26, 00, 00, 00, TimeSpan.Zero),
                 Sources = false,
                 DirectExchangeRate = direct
             };

@@ -1,9 +1,11 @@
 ﻿using System;
+using System.Collections.Generic;
 using System.Linq;
 using System.Net.Http;
 using System.Text.Encodings.Web;
 using System.Text.Json;
 using System.Threading.Tasks;
+using Microsoft.AspNetCore.WebUtilities;
 using Microsoft.Extensions.Logging;
 using Trakx.Data.Market.Common.Extensions;
 using Trakx.Data.Market.Common.Sources.Kaiko.DTOs;
@@ -77,16 +79,23 @@ namespace Trakx.Data.Market.Common.Sources.Kaiko.Client
 
             var startTimeIso8601 = query.StartTime.ToIso8601();
             var endTimeIso8601 = query.StartTime.AddDays(1).ToIso8601();
-            var path = $"data/{query.Commodity}.{query.DataVersion}/"
-                + $"{apiPath}/{query.BaseAsset}/{query.QuoteAsset}"
-                + $"?start_time={UrlEncoder.Default.Encode(startTimeIso8601)}"
-                + $"&end_time={UrlEncoder.Default.Encode(endTimeIso8601)}"
-                + $"&interval={query.Interval}"
-                + $"&page_size={query.PageSize}"
-                + (query.Exchanges?.Any() ?? false ? $"&exchanges={string.Join(",", query.Exchanges)}" : "")
-                + (query.Sources ? $"&sources={query.Sources.ToString().ToLower()}" : "");
 
-            var request = new HttpRequestMessage(HttpMethod.Get, new Uri(Constants.MarketDataEndpoint + path));
+            var path = $"data/{query.Commodity.UrlEncode()}.{query.DataVersion.UrlEncode()}/"
+                       + $"{apiPath.UrlEncode()}/{query.BaseAsset.UrlEncode()}/{query.QuoteAsset.UrlEncode()}";
+
+            var queryParams = new Dictionary<string, string>
+            {
+                {"start_time", startTimeIso8601},
+                {"end_time", endTimeIso8601},
+                {"interval", query.Interval},
+                {"page_size", query.PageSize.ToString()},
+            };
+            if (query.Exchanges?.Any() ?? false) queryParams.Add("exchanges", string.Join(",", query.Exchanges));
+            if (query.Sources) queryParams.Add("sources", query.Sources.ToString().ToLower());
+
+            var queryString = QueryHelpers.AddQueryString(path, queryParams);
+
+            var request = new HttpRequestMessage(HttpMethod.Get, new Uri(Constants.MarketDataEndpoint + queryString));
 
             try
             {
