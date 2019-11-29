@@ -23,6 +23,7 @@
     public void AddSymbol()
     {
         Hub.RegisterToNavUpdates(_symbol);
+        _update = "...";
     }
 
     public void RemoveSymbol()
@@ -38,7 +39,7 @@
     protected override async Task OnInitializedAsync()
     {
         var connection = new HubConnectionBuilder()
-            .WithUrl("/hubs/nav")
+            .WithUrl("https://localhost:5001/hubs/nav")
             .AddJsonProtocol()
             .Build();
 
