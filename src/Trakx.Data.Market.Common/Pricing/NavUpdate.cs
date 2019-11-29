@@ -24,8 +24,9 @@ using System;
 
 namespace Trakx.Data.Market.Common.Pricing
 {
-    public struct NavUpdate
+    public class NavUpdate
     {
+        public NavUpdate() { }
         public NavUpdate(string symbol, decimal value)
         {
             Symbol = symbol;
@@ -33,8 +34,8 @@ namespace Trakx.Data.Market.Common.Pricing
             TimeStamp = DateTimeOffset.UtcNow;
         }
 
-        public DateTimeOffset TimeStamp { get; }
-        public string Symbol { get; }
-        public decimal Value { get; }
+        public DateTimeOffset TimeStamp { get; set; }
+        public string Symbol { get; set; }
+        public decimal Value { get; set; }
     }
 }

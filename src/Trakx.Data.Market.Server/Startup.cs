@@ -40,11 +40,10 @@ namespace Trakx.Data.Market.Server
             
             services.AddRazorPages();
             services.AddServerSideBlazor();
-            services.AddSignalR();
+            services.AddSignalR().AddJsonProtocol();
 
             services.AddScoped<AuthenticationStateProvider, RevalidatingIdentityAuthenticationStateProvider<IdentityUser>>();
-            services.AddSingleton<WeatherForecastService>();
-            
+
             services.AddSwaggerGen(c =>
             {
                 c.SwaggerDoc(Version, new OpenApiInfo { Title = ApiName, Version = Version });
@@ -90,7 +89,7 @@ namespace Trakx.Data.Market.Server
             app.UseEndpoints(endpoints =>
             {
                 endpoints.MapControllers();
-                endpoints.MapHub<NavHub>("/hub/nav");
+                endpoints.MapHub<NavHub>("/hubs/nav");
                 endpoints.MapBlazorHub();
                 endpoints.MapFallbackToPage("/_Host");
             });

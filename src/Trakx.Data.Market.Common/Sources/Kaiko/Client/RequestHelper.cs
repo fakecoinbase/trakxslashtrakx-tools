@@ -72,13 +72,12 @@ namespace Trakx.Data.Market.Common.Sources.Kaiko.Client
             }
         }
 
-        public async Task<SpotDirectExchangeRateResponse> GetSpotExchangeRate(AggregatedPriceRequest query)
+        public async Task<SpotDirectExchangeRateResponse> GetSpotExchangeRate(SpotExchangeRateRequest query)
         {
-            //todo:  build the URL from a HttpQuery, not manually like that
             var apiPath = query.DirectExchangeRate ? "spot_direct_exchange_rate" : "spot_exchange_rate";
 
             var startTimeIso8601 = query.StartTime.ToIso8601();
-            var endTimeIso8601 = query.StartTime.AddDays(1).ToIso8601();
+            //var endTimeIso8601 = query.StartTime.AddMinutes(1).ToIso8601();
 
             var path = $"data/{query.Commodity.UrlEncode()}.{query.DataVersion.UrlEncode()}/"
                        + $"{apiPath.UrlEncode()}/{query.BaseAsset.UrlEncode()}/{query.QuoteAsset.UrlEncode()}";
@@ -86,7 +85,7 @@ namespace Trakx.Data.Market.Common.Sources.Kaiko.Client
             var queryParams = new Dictionary<string, string>
             {
                 {"start_time", startTimeIso8601},
-                {"end_time", endTimeIso8601},
+                //{"end_time", endTimeIso8601},
                 {"interval", query.Interval},
                 {"page_size", query.PageSize.ToString()},
             };

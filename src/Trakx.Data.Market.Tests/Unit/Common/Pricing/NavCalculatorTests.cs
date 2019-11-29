@@ -25,10 +25,10 @@ namespace Trakx.Data.Market.Tests.Unit.Common.Pricing
 
             var aggregatedPriceReader = new KaikoReader();
             var kaikoClient = Substitute.For<IKaikoClient>();
-            kaikoClient.GetSpotExchangeRate(Arg.Any<AggregatedPriceRequest>())
+            kaikoClient.GetSpotExchangeRate(Arg.Any<SpotExchangeRateRequest>())
                 .Returns(async callInfo =>
                 {
-                    var symbol = ((AggregatedPriceRequest) callInfo[0]).BaseAsset;
+                    var symbol = ((SpotExchangeRateRequest) callInfo[0]).BaseAsset;
                     var prices = await aggregatedPriceReader.GetSpotExchangeRateForSymbol(symbol, false)
                         .ConfigureAwait(false);
                     return prices;

@@ -1,4 +1,5 @@
 ﻿using System;
+using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
 using Microsoft.Extensions.Logging;
@@ -38,12 +39,12 @@ namespace Trakx.Data.Market.Common.Pricing
             }
             var components = details.Components.Select(c => c.Symbol);
 
-            var getPricesTasks = components.Select(c => CreateKaikoCoinQuery(c))
+            var getPricesTasks = components.Select(c => _kaikoClient.CreateSpotExchangeRateRequest(c, "usd"))
                 .Select(async q =>
                 {
                     var response = await _kaikoClient.GetSpotExchangeRate(q)
                         .ConfigureAwait(false);
-                    if (response.Result != Constants.SuccessResponse || !response.Data.Any())
+                    if (response == null || response.Result != Constants.SuccessResponse || !response.Data.Any())
                     {
                         _logger.LogWarning("Failed to retrieve data for {q}", q.BaseAsset);
                     }
@@ -55,34 +56,18 @@ namespace Trakx.Data.Market.Common.Pricing
             var nav = details.Components.Aggregate(0m, (a, c) =>
             {
                 var scaledQuantity = (decimal)Math.Pow(10, 18 - c.Decimals) * (decimal)c.Quantity;
-                var prices = getPricesTasks.Select(t => t.Result)
-                    .Single(r => r.Query.BaseAsset.Equals(c.Symbol, StringComparison.InvariantCultureIgnoreCase)).Data;
-                var averagedPrice = prices.Average(p => decimal.Parse(p.Price));
+                var prices = getPricesTasks
+                    .Select(t => t.Result)
+                    .Single(r => r.Query.BaseAsset.Equals(c.Symbol, StringComparison.InvariantCultureIgnoreCase))
+                    .Data
+                    .OrderByDescending(d => d.Timestamp);
+                var averagedPrice = decimal.Parse(prices.First().Price);
                 var componentValue = scaledQuantity * averagedPrice;
                 var indexValue = a + componentValue / (decimal)details.NaturalUnit;
                 return indexValue;
             });
 
             return nav;
-        }
-            
-        private AggregatedPriceRequest CreateKaikoCoinQuery(string coinSymbol, DateTime? dateTime = null)
-        {
-            var queryTime = dateTime.HasValue ? DateTime.MinValue : DateTime.UtcNow;
-            var query = new AggregatedPriceRequest
-            {
-                DataVersion = "latest",
-                BaseAsset = coinSymbol.ToLower(),
-                Commodity = "trades",
-                Exchanges = Constants.TrustedExchanges,
-                Interval = "1d",
-                PageSize = 1000,
-                QuoteAsset = "usd",
-                StartTime = queryTime.AddDays(-1),
-                EndTime = queryTime,
-                Sources = true
-            };
-            return query;
         }
         #endregion
 

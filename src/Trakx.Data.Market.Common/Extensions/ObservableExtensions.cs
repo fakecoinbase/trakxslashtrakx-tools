@@ -19,7 +19,8 @@ namespace Trakx.Data.Market.Common.Extensions
 
             // The other alternative is to use a bounded channel, and when the limit is reached
             // block on WaitToWriteAsync. This will block a thread pool thread and isn't recommended and isn't shown here.
-            var channel = maxBufferSize != null ? Channel.CreateBounded<T>(maxBufferSize.Value) : Channel.CreateUnbounded<T>();
+            var channel = maxBufferSize != null ? Channel.CreateBounded<T>(maxBufferSize.Value) 
+                : Channel.CreateUnbounded<T>();
 
             var disposable = observable.Subscribe(
                 value => channel.Writer.TryWrite(value),

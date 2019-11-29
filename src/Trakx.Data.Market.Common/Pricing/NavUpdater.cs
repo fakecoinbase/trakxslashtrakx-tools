@@ -39,14 +39,26 @@ namespace Trakx.Data.Market.Common.Pricing
             var updateStream = Observable.Interval(TimeSpan.FromSeconds(2))
                 .Select(async t =>
                 {
-                    var nav = await _navCalculator.CalculateKaikoNav(indexSymbol, "usd");
+                    decimal nav;
+                    try
+                    {
+                        nav = await _navCalculator.CalculateKaikoNav(indexSymbol, "usd");
+                    }
+                    catch (Exception)
+                    {
+                        nav = new Random().Next(1,100) / 100m;
+                    }
                     var update = new NavUpdate(symbol, nav);
+                    _logger.LogDebug("Nav Updated: {0} - {1}", symbol, nav);
+                    
                     return update;
                 })
                 .Select(calculationTask => calculationTask.ToObservable())
                 .Concat();
             
-            var subscription = updateStream.Subscribe(_subject);
+            var subscription = updateStream
+                .Do(n => _logger.LogDebug("Pushing {0}: {1} - {2}", n.TimeStamp, n.Symbol, n.Value))
+                .Subscribe(_subject);
 
             if (_updateSubscriptions.TryAdd(symbol, subscription)) return;
             subscription.Dispose();

@@ -51,7 +51,8 @@ namespace Trakx.Data.Market.Tests.Integration
 
             _output.WriteLine(instruments.ToString());
 
-            instruments.Instruments.ForEach(i => _output.WriteLine($"{i.Code}, {i.ExchangeCode}, {i.ExchangePairCode}, {i.Class}, {i.BaseAsset}, {i.QuoteAsset}"));
+            instruments.Instruments.ForEach(i => 
+                _output.WriteLine($"{i.Code}, {i.ExchangeCode}, {i.ExchangePairCode}, {i.Class}, {i.BaseAsset}, {i.QuoteAsset}"));
         }
 
         [Theory]
@@ -61,23 +62,30 @@ namespace Trakx.Data.Market.Tests.Integration
         {
             var coinSymbol = "eth";
             var quoteSymbol = "usd";
-            var query = CreateCoinQuery(coinSymbol, quoteSymbol, direct);
+            var query = _kaikoClient
+                .CreateSpotExchangeRateRequest(coinSymbol, quoteSymbol, direct);
 
-            var response = await _kaikoClient.GetSpotExchangeRate(query).ConfigureAwait(false);
+            var response = await _kaikoClient.GetSpotExchangeRate(query)
+                .ConfigureAwait(false);
             
             CheckExchangeRateResponse(query, response);
         }
 
-        private void CheckExchangeRateResponse(AggregatedPriceRequest request, SpotDirectExchangeRateResponse response)
+        private void CheckExchangeRateResponse(SpotExchangeRateRequest request, SpotDirectExchangeRateResponse response)
         {
-            var results = response.Data;
+            var results = response.Data.OrderByDescending(d => d.Timestamp).ToList();
             results.Count.Should().BeGreaterOrEqualTo(1);
 
             decimal.TryParse(results[0].Price, out decimal price).Should().BeTrue();
             price.Should().BeGreaterThan(0);
 
-            DateTimeOffset.FromUnixTimeMilliseconds(results[0].Timestamp).UtcDateTime
-                .Should().BeCloseTo(request.StartTime.UtcDateTime, TimeSpan.FromMinutes(1));
+            DateTimeOffset.FromUnixTimeMilliseconds(results.Last().Timestamp).UtcDateTime
+                .Should().BeCloseTo(request.StartTime.UtcDateTime, TimeSpan.FromHours(1));
+
+
+            DateTimeOffset.FromUnixTimeMilliseconds(results.First().Timestamp).UtcDateTime
+                .Should().BeCloseTo(DateTime.UtcNow, TimeSpan.FromHours(1));
+
 
             if (!request.DirectExchangeRate) return;
 
@@ -104,7 +112,7 @@ namespace Trakx.Data.Market.Tests.Integration
         public async Task GetSpotExchangeRate_for_trakx_tokens_should_return_aggregated_prices(string tokenSymbol)
         {
             var quoteSymbol = "usd";
-            var query = CreateCoinQuery(tokenSymbol, quoteSymbol, false);
+            var query = _kaikoClient.CreateSpotExchangeRateRequest(tokenSymbol, quoteSymbol, false);
 
             var response = await _kaikoClient.GetSpotExchangeRate(query).ConfigureAwait(false);
 
@@ -120,7 +128,7 @@ namespace Trakx.Data.Market.Tests.Integration
                 if (baseSymbol == "eur") return 1/0.907934m;
                 if (baseSymbol == "gbp") return 1/0.776741m;
                 if (baseSymbol == "krw") return 1/1177.23m;
-                var request = CreateCoinQuery(baseSymbol, "usd", true);
+                var request = kaikoClient.CreateSpotExchangeRateRequest(baseSymbol, "usd", true);
                 var result = kaikoClient.GetSpotExchangeRate(request).GetAwaiter().GetResult();
                 var exchangeRate = result.Data.Average(d => decimal.Parse(d.Price));
                 return exchangeRate;
@@ -129,24 +137,6 @@ namespace Trakx.Data.Market.Tests.Integration
             {
                 throw new InvalidDataException($"Failed to find exchange rate for {baseSymbol}", e);
             }
-        }
-
-        public static AggregatedPriceRequest CreateCoinQuery(string coinSymbol, string quoteSymbol, bool direct)
-        {
-            var query = new AggregatedPriceRequest
-            {
-                DataVersion = "latest",
-                BaseAsset = coinSymbol.ToLower(),
-                Commodity = "trades",
-                Exchanges = new List<string>(),
-                Interval = "1d",
-                PageSize = 100,
-                QuoteAsset = quoteSymbol,
-                StartTime = new DateTimeOffset(2019, 11, 26, 00, 00, 00, TimeSpan.Zero),
-                Sources = false,
-                DirectExchangeRate = direct
-            };
-            return query;
         }
 
         private readonly ServiceProvider _serviceProvider;

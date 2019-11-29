@@ -3,7 +3,7 @@ using System.Collections.Generic;
 
 namespace Trakx.Data.Market.Common.Sources.Kaiko.DTOs
 {
-    public class AggregatedPriceRequest
+    public class SpotExchangeRateRequest
     {
         public string DataVersion { get; set; }
         public string Commodity { get; set; }

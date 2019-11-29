@@ -13,10 +13,10 @@ namespace Trakx.Data.Market.Server.Controllers
     public class NavController : ControllerBase
     {
         private readonly ILogger<NavController> _logger;
-        private readonly NavCalculator _navCalculator;
+        private readonly INavCalculator _navCalculator;
 
         public NavController(IIndexDetailsProvider indexDetailsProvider, 
-            NavCalculator navCalculator,
+            INavCalculator navCalculator,
             ILogger<NavController> logger)
         {
             _logger = logger;

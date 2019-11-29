@@ -1,0 +1,59 @@
+﻿@page "/livenav"
+@using System.Threading
+@using Microsoft.AspNetCore.Components
+@using Trakx.Data.Market.Server.Hubs
+@using Microsoft.AspNetCore.SignalR.Client;
+@using Microsoft.Extensions.DependencyInjection
+@using Trakx.Data.Market.Common.Pricing
+@inject NavHub Hub
+
+<h1>Live Index NAV</h1>
+
+<input id="symbol" @onchange="ChangeSymbol" />
+<button class="btn btn-primary" id="addSymbol" @onclick="AddSymbol">Add</button>
+<button class="btn btn-primary" id="removeSymbol" @onclick="RemoveSymbol">Remove</button>
+
+<p>@_update</p>
+
+@code {
+
+    private string _symbol = string.Empty;
+    private string _update = "Register for updates using by adding and index above";
+
+    public void AddSymbol()
+    {
+        Hub.RegisterToNavUpdates(_symbol);
+    }
+
+    public void RemoveSymbol()
+    {
+        Hub.DeregisterFromNavUpdates(_symbol);
+    }
+
+    public void ChangeSymbol(ChangeEventArgs change)
+    {
+        _symbol = change.Value?.ToString() ?? string.Empty;
+    }
+
+    protected override async Task OnInitializedAsync()
+    {
+        var connection = new HubConnectionBuilder()
+            .WithUrl("/hubs/nav")
+            .AddJsonProtocol()
+            .Build();
+
+        await connection.StartAsync();
+
+        var channel = await connection.StreamAsChannelAsync<NavUpdate>("NavUpdatesStream", CancellationToken.None);
+        while (await channel.WaitToReadAsync())
+        {
+            while (channel.TryRead(out var update))
+            {
+                var newUpdate = $"{update.TimeStamp} - {update.Symbol} - {update.Value}";
+                if(newUpdate == _update) return;
+                _update = newUpdate;
+                StateHasChanged();
+            }
+        }
+    }
+}

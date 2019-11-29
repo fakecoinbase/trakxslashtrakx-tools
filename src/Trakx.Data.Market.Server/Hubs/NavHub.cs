@@ -1,5 +1,6 @@
-﻿using System.Threading.Channels;
-using Microsoft.AspNetCore.SignalR;
+﻿using System;
+using System.Threading.Channels;
+ using Microsoft.AspNetCore.SignalR;
 using Trakx.Data.Market.Common.Extensions;
 using Trakx.Data.Market.Common.Pricing;
 
@@ -24,7 +25,7 @@ namespace Trakx.Data.Market.Server.Hubs
             _navUpdater.DeregisterFromNavUpdates(symbol);
         }
 
-        public ChannelReader<NavUpdate> NavUpdateStream()
+        public ChannelReader<NavUpdate> NavUpdatesStream()
         {
             return _navUpdater.NavUpdates.AsChannelReader(10);
         }
