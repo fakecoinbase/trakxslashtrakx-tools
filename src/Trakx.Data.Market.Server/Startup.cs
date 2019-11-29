@@ -12,6 +12,7 @@ using Trakx.Data.Market.Common.Sources.Kaiko.Client;
 using Trakx.Data.Market.Common.Sources.Messari.Client;
 using Trakx.Data.Market.Server.Areas.Identity;
 using Trakx.Data.Market.Server.Data;
+using Trakx.Data.Market.Server.Hubs;
 
 namespace Trakx.Data.Market.Server
 {
@@ -39,6 +40,7 @@ namespace Trakx.Data.Market.Server
             
             services.AddRazorPages();
             services.AddServerSideBlazor();
+            services.AddSignalR();
 
             services.AddScoped<AuthenticationStateProvider, RevalidatingIdentityAuthenticationStateProvider<IdentityUser>>();
             services.AddSingleton<WeatherForecastService>();
@@ -51,6 +53,8 @@ namespace Trakx.Data.Market.Server
             services.AddPricing();
             services.AddKaikoClient();
             services.AddMessariClient();
+
+            services.AddSingleton<NavHub>();
         }
 
         // This method gets called by the runtime. Use this method to configure the HTTP request pipeline.
@@ -75,7 +79,6 @@ namespace Trakx.Data.Market.Server
                 c.InjectJavascript($"public/index.js");
             });
 
-
             app.UseHttpsRedirection();
             app.UseStaticFiles();
 
@@ -87,6 +90,7 @@ namespace Trakx.Data.Market.Server
             app.UseEndpoints(endpoints =>
             {
                 endpoints.MapControllers();
+                endpoints.MapHub<NavHub>("/hub/nav");
                 endpoints.MapBlazorHub();
                 endpoints.MapFallbackToPage("/_Host");
             });

@@ -10,7 +10,7 @@ using Trakx.Data.Market.Common.Sources.Messari.Client;
 
 namespace Trakx.Data.Market.Common.Pricing
 {
-    public class NavCalculator
+    public class NavCalculator : INavCalculator
     {
         private readonly IKaikoClient _kaikoClient;
         private readonly IMessariClient _messariClient;
@@ -65,7 +65,7 @@ namespace Trakx.Data.Market.Common.Pricing
 
             return nav;
         }
-
+            
         private AggregatedPriceRequest CreateKaikoCoinQuery(string coinSymbol, DateTime? dateTime = null)
         {
             var queryTime = dateTime.HasValue ? DateTime.MinValue : DateTime.UtcNow;
