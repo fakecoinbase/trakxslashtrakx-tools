@@ -6,25 +6,32 @@
 @using Microsoft.Extensions.DependencyInjection
 @using Trakx.Data.Market.Common.Pricing
 @inject NavHub Hub
+@inject NavigationManager NavigationManager
 
 <h1>Live Index NAV</h1>
 
 <input id="symbol" @onchange="ChangeSymbol" />
 <button class="btn btn-primary" id="addSymbol" @onclick="AddSymbol">Add</button>
 <button class="btn btn-primary" id="removeSymbol" @onclick="RemoveSymbol">Remove</button>
-
+<br />
+<p>NavHub Uri: @_liveNavUri</p>
+<br />
 <p>@_update</p>
+<br />
 
 @code {
 
     private string _symbol = string.Empty;
     private string _update = "Register for updates using by adding and index above";
 
+    private Dictionary<string, bool> _registrations;
+    private Uri _liveNavUri;
+
     public void AddSymbol()
     {
         Hub.RegisterToNavUpdates(_symbol);
         _update = "...";
-    }
+    }get tut
 
     public void RemoveSymbol()
     {
@@ -38,8 +45,10 @@
 
     protected override async Task OnInitializedAsync()
     {
+        if (!Uri.TryCreate(new Uri(NavigationManager.BaseUri), "/hubs/nav", out var liveNavUri)) return;
+        _liveNavUri = liveNavUri;
         var connection = new HubConnectionBuilder()
-            .WithUrl("https://localhost:5001/hubs/nav")
+            .WithUrl(_liveNavUri)
             .AddJsonProtocol()
             .Build();
 
@@ -51,7 +60,7 @@
             while (channel.TryRead(out var update))
             {
                 var newUpdate = $"{update.TimeStamp} - {update.Symbol} - {update.Value}";
-                if(newUpdate == _update) return;
+                if (newUpdate == _update) return;
                 _update = newUpdate;
                 StateHasChanged();
             }
