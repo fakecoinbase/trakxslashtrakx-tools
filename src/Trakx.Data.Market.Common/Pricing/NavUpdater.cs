@@ -48,6 +48,7 @@ namespace Trakx.Data.Market.Common.Pricing
                     }
                     catch (Exception ex)
                     {
+                        _logger.LogError(ex, "Failed to calculate NAV for {0}", indexSymbol);
                         nav = 0;
                     }
                     var update = new NavUpdate(symbol, nav);

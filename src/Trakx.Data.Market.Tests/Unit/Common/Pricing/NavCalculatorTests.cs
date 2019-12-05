@@ -102,7 +102,7 @@ namespace Trakx.Data.Market.Tests.Unit.Common.Pricing
         [Fact]
         public async Task CalculateKaikoNav_should_get_aggregated_prices_from_KaikoClient()
         {
-            var nav = await _navCalculator.CalculateKaikoNav(KnownIndexes.L1CPU003, "usdc")
+            var nav = await _navCalculator.CalculateKaikoNav(KnownIndexes.L1CPU003, "USD")
                 .ConfigureAwait(false);
             nav.Should().Be(1m);
         }

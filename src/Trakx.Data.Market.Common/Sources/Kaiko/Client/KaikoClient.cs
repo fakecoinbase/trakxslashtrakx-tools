@@ -47,7 +47,7 @@ namespace Trakx.Data.Market.Common.Sources.Kaiko.Client
             DateTime? dateTime = null)
         {
             var queryTime = dateTime?.ToUniversalTime() ?? DateTime.UtcNow;
-            var startTime = queryTime.AddHours(-3);
+            var startTime = queryTime.AddHours(-6);
             var query = new SpotExchangeRateRequest
             {
                 DataVersion = "latest",

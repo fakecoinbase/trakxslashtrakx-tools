@@ -118,7 +118,7 @@ namespace Trakx.Data.Market.Common.Pricing
 
             var getPricesTasks = details.Components.Select(async c =>
             {
-                var price = await _cryptoCompareClient.Prices.SingleSymbolPriceAsync(c.Symbol, new [] {"usd"})
+                var price = await _cryptoCompareClient.Prices.SingleSymbolPriceAsync(c.Symbol, new [] {"USD"})
                     .ConfigureAwait(false);
                 return new {Price = price, c.Symbol};
             }).ToArray();
