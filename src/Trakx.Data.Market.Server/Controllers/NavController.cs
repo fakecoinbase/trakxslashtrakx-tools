@@ -9,14 +9,14 @@ using Trakx.Data.Market.Common.Pricing;
 namespace Trakx.Data.Market.Server.Controllers
 {
     [ApiController]
-    [Route("[controller]")]
+    [Route("[controller]/[action]")]
     public class NavController : ControllerBase
     {
         private readonly ILogger<NavController> _logger;
-        private readonly NavCalculator _navCalculator;
+        private readonly INavCalculator _navCalculator;
 
         public NavController(IIndexDetailsProvider indexDetailsProvider, 
-            NavCalculator navCalculator,
+            INavCalculator navCalculator,
             ILogger<NavController> logger)
         {
             _logger = logger;
@@ -24,7 +24,7 @@ namespace Trakx.Data.Market.Server.Controllers
         }
 
         [HttpGet]
-        public async Task<ActionResult<string>> GetNetAssetValue([FromQuery] string indexSymbol)
+        public async Task<ActionResult<string>> GetUsdNetAssetValue([FromQuery] string indexSymbol)
         {
             if (!Enum.TryParse(indexSymbol, out KnownIndexes symbol))
                 return $"Known index symbols are [{string.Join(", ", Enum.GetNames(typeof(KnownIndexes)))}]";

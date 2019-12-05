@@ -8,10 +8,12 @@ using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Hosting;
 using Microsoft.OpenApi.Models;
 using Trakx.Data.Market.Common.Pricing;
+using Trakx.Data.Market.Common.Sources.CryptoCompare;
 using Trakx.Data.Market.Common.Sources.Kaiko.Client;
 using Trakx.Data.Market.Common.Sources.Messari.Client;
 using Trakx.Data.Market.Server.Areas.Identity;
 using Trakx.Data.Market.Server.Data;
+using Trakx.Data.Market.Server.Hubs;
 
 namespace Trakx.Data.Market.Server
 {
@@ -39,10 +41,10 @@ namespace Trakx.Data.Market.Server
             
             services.AddRazorPages();
             services.AddServerSideBlazor();
+            services.AddSignalR().AddJsonProtocol();
 
             services.AddScoped<AuthenticationStateProvider, RevalidatingIdentityAuthenticationStateProvider<IdentityUser>>();
-            services.AddSingleton<WeatherForecastService>();
-            
+
             services.AddSwaggerGen(c =>
             {
                 c.SwaggerDoc(Version, new OpenApiInfo { Title = ApiName, Version = Version });
@@ -51,6 +53,9 @@ namespace Trakx.Data.Market.Server
             services.AddPricing();
             services.AddKaikoClient();
             services.AddMessariClient();
+            services.AddCryptoCompareClient();
+
+            services.AddSingleton<NavHub>();
         }
 
         // This method gets called by the runtime. Use this method to configure the HTTP request pipeline.
@@ -75,7 +80,6 @@ namespace Trakx.Data.Market.Server
                 c.InjectJavascript($"public/index.js");
             });
 
-
             app.UseHttpsRedirection();
             app.UseStaticFiles();
 
@@ -87,6 +91,7 @@ namespace Trakx.Data.Market.Server
             app.UseEndpoints(endpoints =>
             {
                 endpoints.MapControllers();
+                endpoints.MapHub<NavHub>("/hubs/nav");
                 endpoints.MapBlazorHub();
                 endpoints.MapFallbackToPage("/_Host");
             });

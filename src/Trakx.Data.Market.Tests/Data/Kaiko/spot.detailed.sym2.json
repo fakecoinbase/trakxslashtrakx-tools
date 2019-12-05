@@ -17,16 +17,16 @@
   "timestamp": 1574265297178,
   "data": [
     {
-      "timestamp": 1569888000000,
+      "timestamp": 1569888000001,
       "count": 11,
       "volume": "2",
-      "price": "0.14",
+      "price": "0.15",
       "sources": [
         {
-          "timestamp": 1569888000000,
+          "timestamp": 1569888000001,
           "count": 11,
           "volume": "2",
-          "price": "0.14",
+          "price": "0.15",
           "exchange_code": null,
           "class": "spot",
           "code": "yoyow-usd"

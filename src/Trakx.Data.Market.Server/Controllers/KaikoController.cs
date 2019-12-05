@@ -42,7 +42,7 @@ namespace Trakx.Data.Market.Server.Controllers
         }
 
         [HttpGet]
-        public async Task<ActionResult<string>> SpotExchangeRate(AggregatedPriceRequest request)
+        public async Task<ActionResult<string>> SpotExchangeRate(SpotExchangeRateRequest request)
         {
             var prices = _kaikoClient.GetSpotExchangeRate(request);
             return JsonConvert.SerializeObject(prices);

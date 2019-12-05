@@ -1,4 +1,5 @@
 ﻿#region LICENSE
+
 // 
 // Copyright (c) 2019 Catalyst Network
 // 
@@ -16,22 +17,17 @@
 // 
 // You should have received a copy of the GNU General Public License
 // along with Catalyst.Node. If not, see <https://www.gnu.org/licenses/>.
+
 #endregion
 
 using System;
-using System.Threading.Tasks;
-using Trakx.Data.Market.Common.Sources.Kaiko.DTOs;
 
-namespace Trakx.Data.Market.Common.Sources.Kaiko.Client
+namespace Trakx.Data.Market.Common.Pricing
 {
-    public interface IKaikoClient
+    public interface INavUpdater
     {
-        Task<SpotDirectExchangeRateResponse> GetSpotExchangeRate(SpotExchangeRateRequest request);
-        [Obsolete("broken")]
-        Task<AssetsResponse> GetAssets();
-        Task<InstrumentsResponse> GetInstruments();
-        Task<ExchangesResponse> GetExchanges();
-        SpotExchangeRateRequest CreateSpotExchangeRateRequest(string coinSymbol, string quoteSymbol,
-            bool direct = false, DateTime? dateTime = null);
+        IObservable<NavUpdate> NavUpdates { get; }
+        void RegisterToNavUpdates(string symbol);
+        void DeregisterFromNavUpdates(string symbol);
     }
 }

@@ -49,7 +49,7 @@ namespace Trakx.Data.Market.Tests.Tools
                 .Take(10) 
                 .OrderBy(s => s[0]);
 
-            var queries = symbols.Select(e => KaikoApiClientTests.CreateCoinQuery(e[0], e[1], true)).ToList();
+            var queries = symbols.Select(e => _kaikoClient.CreateSpotExchangeRateRequest(e[0], e[1], true)).ToList();
 
             var tempPath = "kaikoData." + DateTime.Now.ToString("yyyyMMdd.hhmmss");
             Directory.CreateDirectory(tempPath);
