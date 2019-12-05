@@ -107,7 +107,7 @@ namespace Trakx.Data.Market.Tests.Integration
             }
         }
 
-        [Theory]
+        [Theory(Skip = "Moving away from Kaiko")]
         [ClassData(typeof(AllTokensUsedAsComponents))]
         public async Task GetSpotExchangeRate_for_trakx_tokens_should_return_aggregated_prices(string tokenSymbol)
         {

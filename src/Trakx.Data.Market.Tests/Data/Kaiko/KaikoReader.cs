@@ -41,7 +41,7 @@ namespace Trakx.Data.Market.Tests.Data.Kaiko
             var response = await reader.GetSpotExchangeRateForSymbol("SYM1", false).ConfigureAwait(false);
             response.Data.Count.Should().Be(3);
 
-            response.Data.First().Price.Should().Be("0.045");
+            response.Data.First().Price.Should().Be("0.05");
         }
 
         [Theory]

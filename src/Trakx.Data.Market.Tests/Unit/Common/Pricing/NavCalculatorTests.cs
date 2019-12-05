@@ -37,6 +37,8 @@ namespace Trakx.Data.Market.Tests.Unit.Common.Pricing
                         .ConfigureAwait(false);
                     return prices;
                 });
+            kaikoClient.CreateSpotExchangeRateRequest(Arg.Any<string>(), "usd")
+                .Returns(ci => new SpotExchangeRateRequest() {BaseAsset = (string)ci[0]});
 
             var messariReader = new MessariReader();
             var messariClient = Substitute.For<IMessariClient>();
@@ -104,7 +106,7 @@ namespace Trakx.Data.Market.Tests.Unit.Common.Pricing
         {
             var nav = await _navCalculator.CalculateKaikoNav(KnownIndexes.L1CPU003, "USD")
                 .ConfigureAwait(false);
-            nav.Should().Be(1m);
+            nav.Should().Be(1.075m);
         }
 
         [Fact]

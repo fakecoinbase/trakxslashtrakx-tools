@@ -43,6 +43,8 @@ namespace Trakx.Data.Market.Common.Sources.Kaiko.Client
             return response;
         }
 
+
+
         public SpotExchangeRateRequest CreateSpotExchangeRateRequest(string coinSymbol, string quoteSymbol, bool direct = false,
             DateTime? dateTime = null)
         {
