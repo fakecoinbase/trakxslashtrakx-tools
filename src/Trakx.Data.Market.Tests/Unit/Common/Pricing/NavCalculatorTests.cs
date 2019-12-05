@@ -1,6 +1,10 @@
 ﻿using System.Collections.Generic;
+using System.Net;
+using System.Net.Http;
 using System.Numerics;
+using System.Threading;
 using System.Threading.Tasks;
+using CryptoCompare;
 using FluentAssertions;
 using Microsoft.Extensions.Logging;
 using NSubstitute;
@@ -28,7 +32,7 @@ namespace Trakx.Data.Market.Tests.Unit.Common.Pricing
             kaikoClient.GetSpotExchangeRate(Arg.Any<SpotExchangeRateRequest>())
                 .Returns(async callInfo =>
                 {
-                    var symbol = ((SpotExchangeRateRequest) callInfo[0]).BaseAsset;
+                    var symbol = ((SpotExchangeRateRequest)callInfo[0]).BaseAsset;
                     var prices = await aggregatedPriceReader.GetSpotExchangeRateForSymbol(symbol, false)
                         .ConfigureAwait(false);
                     return prices;
@@ -45,9 +49,11 @@ namespace Trakx.Data.Market.Tests.Unit.Common.Pricing
                     return price;
                 });
 
+            var cryptoCompareClient = new CryptoCompareClient(new MockedCryptoCompareHttpHandler());
+
             var logger = Substitute.For<ILogger<NavCalculator>>();
 
-            _navCalculator = new NavCalculator(kaikoClient, messariClient, indexProvider, logger);
+            _navCalculator = new NavCalculator(kaikoClient, messariClient, cryptoCompareClient, indexProvider, logger);
         }
 
         private IIndexDetailsProvider PrepareIndexDetailsProvider()
@@ -107,6 +113,25 @@ namespace Trakx.Data.Market.Tests.Unit.Common.Pricing
             var nav = await _navCalculator.CalculateMessariNav(KnownIndexes.L1CPU003)
                 .ConfigureAwait(false);
             nav.Should().Be(1m);
+        }
+
+        [Fact]
+        public async Task CalculateCryptoCompareNav_should_get_prices_from_CryptoCompareClient()
+        {
+            var nav = await _navCalculator.CalculateCryptoCompareNav(KnownIndexes.L1CPU003)
+                .ConfigureAwait(false);
+            nav.Should().Be(1m);
+        }
+    }
+
+    public class MockedCryptoCompareHttpHandler : HttpClientHandler
+    {
+        protected override Task<HttpResponseMessage> SendAsync(HttpRequestMessage request, CancellationToken cancellationToken)
+        {
+            var price = request.RequestUri.AbsoluteUri.Contains("SYM1") ? 0.05m : 0.15m;
+            var response = new HttpResponseMessage(HttpStatusCode.OK);
+            response.Content = new StringContent($"{{\"USD\":{price}}}");
+            return Task.FromResult(response);
         }
     }
 }

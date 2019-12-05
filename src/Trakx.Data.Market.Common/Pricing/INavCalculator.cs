@@ -29,5 +29,6 @@ namespace Trakx.Data.Market.Common.Pricing
     {
         Task<decimal> CalculateKaikoNav(KnownIndexes index, string quoteSymbol);
         Task<decimal> CalculateMessariNav(KnownIndexes index);
+        Task<decimal> CalculateCryptoCompareNav(KnownIndexes index);
     }
 }

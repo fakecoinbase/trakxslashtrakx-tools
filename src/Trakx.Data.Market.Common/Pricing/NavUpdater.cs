@@ -32,7 +32,8 @@ namespace Trakx.Data.Market.Common.Pricing
         {
             if (!Enum.TryParse(symbol, out KnownIndexes indexSymbol))
             {
-                _logger.LogWarning("Known index symbols are [{0}]", string.Join(", ", Enum.GetNames(typeof(KnownIndexes))));
+                _logger.LogWarning("Known index symbols are [{0}]", 
+                    string.Join(", ", Enum.GetNames(typeof(KnownIndexes))));
                 return;
             }
 
@@ -42,11 +43,12 @@ namespace Trakx.Data.Market.Common.Pricing
                     decimal nav;
                     try
                     {
-                        nav = await _navCalculator.CalculateKaikoNav(indexSymbol, "usd");
+                        nav = await _navCalculator.CalculateCryptoCompareNav(indexSymbol);
+                        //nav = await _navCalculator.CalculateCryptoCompareNav(indexSymbol);
                     }
-                    catch (Exception)
+                    catch (Exception ex)
                     {
-                        nav = new Random().Next(1,100) / 100m;
+                        nav = 0;
                     }
                     var update = new NavUpdate(symbol, nav);
                     _logger.LogDebug("Nav Updated: {0} - {1}", symbol, nav);

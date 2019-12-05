@@ -8,6 +8,7 @@ using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Hosting;
 using Microsoft.OpenApi.Models;
 using Trakx.Data.Market.Common.Pricing;
+using Trakx.Data.Market.Common.Sources.CryptoCompare;
 using Trakx.Data.Market.Common.Sources.Kaiko.Client;
 using Trakx.Data.Market.Common.Sources.Messari.Client;
 using Trakx.Data.Market.Server.Areas.Identity;
@@ -52,6 +53,7 @@ namespace Trakx.Data.Market.Server
             services.AddPricing();
             services.AddKaikoClient();
             services.AddMessariClient();
+            services.AddCryptoCompareClient();
 
             services.AddSingleton<NavHub>();
         }
