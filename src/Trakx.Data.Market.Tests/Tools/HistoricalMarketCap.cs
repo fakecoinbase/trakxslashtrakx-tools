@@ -30,7 +30,7 @@ namespace Trakx.Data.Market.Tests.Tools
             _retryPolicy = Policy.Handle<Exception>().WaitAndRetryAsync(50, c => TimeSpan.FromSeconds(c));
         }
 
-        private class HistoricalData
+        public class HistoricalData
         {
             public string Symbol { get; set; }
             public double? Price { get; set; }
@@ -38,6 +38,7 @@ namespace Trakx.Data.Market.Tests.Tools
             //public string CirculatingSupply { get; set; }
             //public long? TotalSupply { get; set; }
             public double? TotalVolume { get; set; }
+            public DateTime Date { get; set; }
         }
 
         [Fact(Skip = "not a test")]
@@ -60,18 +61,7 @@ namespace Trakx.Data.Market.Tests.Tools
                     DateTime.Today.AddYears(-2),
                     DateTime.Today))
                 {
-                    if(historicalData?.MarketData == null) continue;
-
-                    var data = new HistoricalData
-                    {
-                        Symbol = historicalData.Symbol,
-                        MarketCap = historicalData.MarketData.MarketCap["usd"],
-                        Price = historicalData.MarketData.CurrentPrice["usd"],
-                        //CirculatingSupply = historicalData.MarketData.CirculatingSupply,
-                        //TotalSupply = historicalData.MarketData.TotalSupply,
-                        TotalVolume = historicalData.MarketData.TotalVolume["usd"]
-                    };
-                    csvWriter.WriteRecord(data);
+                    csvWriter.WriteRecord(historicalData);
                     csvWriter.NextRecord();
                 }
             }
@@ -79,14 +69,28 @@ namespace Trakx.Data.Market.Tests.Tools
 
 
 
-        public async IAsyncEnumerable<CoinFullData> GetHistoryByCoinId(string coinId, DateTime startDate, DateTime endDate)
+        public async IAsyncEnumerable<HistoricalData> GetHistoryByCoinId(string coinId, DateTime startDate, DateTime endDate)
         {
             var currentDate = endDate.Date;
             while (currentDate >= startDate)
             {
                 var history = await  _retryPolicy.ExecuteAsync(() =>
                     _coinsClient.GetHistoryByCoinId(coinId, currentDate.ToString("dd-MM-yyyy"), "false"));
-                yield return history;
+                
+                if (history?.MarketData == null) continue;
+
+                var historicalData = new HistoricalData
+                {
+
+                    Symbol = history.Symbol,
+                    MarketCap = history.MarketData.MarketCap["usd"],
+                    Price = history.MarketData.CurrentPrice["usd"],
+                    //CirculatingSupply = historicalData.MarketData.CirculatingSupply,
+                    //TotalSupply = historicalData.MarketData.TotalSupply,
+                    TotalVolume = history.MarketData.TotalVolume["usd"],
+                    Date = currentDate
+                };
+                yield return historicalData;
                 currentDate = currentDate.AddDays(-1);
             }
         }
