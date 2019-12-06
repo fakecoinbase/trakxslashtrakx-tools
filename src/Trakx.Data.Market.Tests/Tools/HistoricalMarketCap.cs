@@ -40,7 +40,7 @@ namespace Trakx.Data.Market.Tests.Tools
             public double? TotalVolume { get; set; }
         }
 
-        [Fact]
+        [Fact(Skip = "not a test")]
         public async Task RetrieveHistoricalMarketCapsForTokens()
         {
             var coinData = await _coinsClient.GetCoinList();
