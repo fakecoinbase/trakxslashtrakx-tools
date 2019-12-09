@@ -3,10 +3,12 @@ using System.Collections.Generic;
 using System.IO;
 using System.Linq;
 using System.Net.Http;
+using System.Threading;
 using System.Threading.Tasks;
 using CoinGecko.Clients;
 using CoinGecko.Entities.Response.Coins;
 using CsvHelper;
+using CsvHelper.Configuration;
 using Polly;
 using Polly.Retry;
 using Xunit;
@@ -30,7 +32,7 @@ namespace Trakx.Data.Market.Tests.Tools
             _retryPolicy = Policy.Handle<Exception>().WaitAndRetryAsync(50, c => TimeSpan.FromSeconds(c));
         }
 
-        private class HistoricalData
+        public class HistoricalData
         {
             public string Symbol { get; set; }
             public double? Price { get; set; }
@@ -38,6 +40,16 @@ namespace Trakx.Data.Market.Tests.Tools
             //public string CirculatingSupply { get; set; }
             //public long? TotalSupply { get; set; }
             public double? TotalVolume { get; set; }
+            public DateTime Date { get; set; }
+        }
+
+        public sealed class HistoricalDataMap : ClassMap<HistoricalData>
+        {
+            public HistoricalDataMap()
+            {
+                AutoMap();
+                Map(m => m.Date).TypeConverterOption.Format("yyyyMMdd");
+            }
         }
 
         [Fact(Skip = "not a test")]
@@ -49,6 +61,8 @@ namespace Trakx.Data.Market.Tests.Tools
             await using var csvOutput = File.Create(Path.Combine($"historical.{DateTime.Today:yyyyMMdd}.csv"));
             await using var writer = new StreamWriter(csvOutput);
             using var csvWriter = new CsvWriter(writer);
+            csvWriter.Configuration.RegisterClassMap<HistoricalDataMap>();
+
 
             csvWriter.WriteHeader<HistoricalData>();
             csvWriter.NextRecord();
@@ -60,34 +74,37 @@ namespace Trakx.Data.Market.Tests.Tools
                     DateTime.Today.AddYears(-2),
                     DateTime.Today))
                 {
-                    if(historicalData?.MarketData == null) continue;
-
-                    var data = new HistoricalData
-                    {
-                        Symbol = historicalData.Symbol,
-                        MarketCap = historicalData.MarketData.MarketCap["usd"],
-                        Price = historicalData.MarketData.CurrentPrice["usd"],
-                        //CirculatingSupply = historicalData.MarketData.CirculatingSupply,
-                        //TotalSupply = historicalData.MarketData.TotalSupply,
-                        TotalVolume = historicalData.MarketData.TotalVolume["usd"]
-                    };
-                    csvWriter.WriteRecord(data);
+                    csvWriter.WriteRecord(historicalData);
                     csvWriter.NextRecord();
                 }
             }
         }
-
-
-
-        public async IAsyncEnumerable<CoinFullData> GetHistoryByCoinId(string coinId, DateTime startDate, DateTime endDate)
+        
+        public async IAsyncEnumerable<HistoricalData> GetHistoryByCoinId(string coinId, DateTime startDate, DateTime endDate)
         {
             var currentDate = endDate.Date;
             while (currentDate >= startDate)
             {
-                var history = await  _retryPolicy.ExecuteAsync(() =>
-                    _coinsClient.GetHistoryByCoinId(coinId, currentDate.ToString("dd-MM-yyyy"), "false"));
-                yield return history;
+                var queryDate = currentDate;
                 currentDate = currentDate.AddDays(-1);
+
+                var history = await  _retryPolicy.ExecuteAsync(() =>
+                    _coinsClient.GetHistoryByCoinId(coinId, queryDate.ToString("dd-MM-yyyy"), "false"));
+
+                if (history?.MarketData == null) continue;
+
+                var historicalData = new HistoricalData
+                {
+
+                    Symbol = history.Symbol,
+                    MarketCap = history.MarketData.MarketCap["usd"],
+                    Price = history.MarketData.CurrentPrice["usd"],
+                    //CirculatingSupply = historicalData.MarketData.CirculatingSupply,
+                    //TotalSupply = historicalData.MarketData.TotalSupply,
+                    TotalVolume = history.MarketData.TotalVolume["usd"],
+                    Date = currentDate
+                };
+                yield return historicalData;
             }
         }
 
