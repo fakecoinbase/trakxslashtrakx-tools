@@ -3,10 +3,12 @@ using System.Collections.Generic;
 using System.IO;
 using System.Linq;
 using System.Net.Http;
+using System.Threading;
 using System.Threading.Tasks;
 using CoinGecko.Clients;
 using CoinGecko.Entities.Response.Coins;
 using CsvHelper;
+using CsvHelper.Configuration;
 using Polly;
 using Polly.Retry;
 using Xunit;
@@ -41,6 +43,15 @@ namespace Trakx.Data.Market.Tests.Tools
             public DateTime Date { get; set; }
         }
 
+        public sealed class HistoricalDataMap : ClassMap<HistoricalData>
+        {
+            public HistoricalDataMap()
+            {
+                AutoMap();
+                Map(m => m.Date).TypeConverterOption.Format("yyyyMMdd");
+            }
+        }
+
         [Fact(Skip = "not a test")]
         public async Task RetrieveHistoricalMarketCapsForTokens()
         {
@@ -50,6 +61,8 @@ namespace Trakx.Data.Market.Tests.Tools
             await using var csvOutput = File.Create(Path.Combine($"historical.{DateTime.Today:yyyyMMdd}.csv"));
             await using var writer = new StreamWriter(csvOutput);
             using var csvWriter = new CsvWriter(writer);
+            csvWriter.Configuration.RegisterClassMap<HistoricalDataMap>();
+
 
             csvWriter.WriteHeader<HistoricalData>();
             csvWriter.NextRecord();
@@ -66,17 +79,18 @@ namespace Trakx.Data.Market.Tests.Tools
                 }
             }
         }
-
-
-
+        
         public async IAsyncEnumerable<HistoricalData> GetHistoryByCoinId(string coinId, DateTime startDate, DateTime endDate)
         {
             var currentDate = endDate.Date;
             while (currentDate >= startDate)
             {
+                var queryDate = currentDate;
+                currentDate = currentDate.AddDays(-1);
+
                 var history = await  _retryPolicy.ExecuteAsync(() =>
-                    _coinsClient.GetHistoryByCoinId(coinId, currentDate.ToString("dd-MM-yyyy"), "false"));
-                
+                    _coinsClient.GetHistoryByCoinId(coinId, queryDate.ToString("dd-MM-yyyy"), "false"));
+
                 if (history?.MarketData == null) continue;
 
                 var historicalData = new HistoricalData
@@ -91,7 +105,6 @@ namespace Trakx.Data.Market.Tests.Tools
                     Date = currentDate
                 };
                 yield return historicalData;
-                currentDate = currentDate.AddDays(-1);
             }
         }
 
