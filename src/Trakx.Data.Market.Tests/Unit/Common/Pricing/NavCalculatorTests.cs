@@ -1,4 +1,5 @@
 ﻿using System.Collections.Generic;
+using System.Linq;
 using System.Net;
 using System.Net.Http;
 using System.Numerics;
@@ -81,18 +82,18 @@ namespace Trakx.Data.Market.Tests.Unit.Common.Pricing
                                 Symbol = "SYM1",
                                 Decimals = minDecimals,
                                 Quantity = 5,
-                                UsdBidAsk = new BidAsk {Ask = 0.04m, Bid = 0.06m},
-                                UsdValueAtCreation = 0.05m,
-                                UsdWeightAtCreation = 0.5m
+                                //UsdBidAsk = new BidAsk {Ask = 0.04m, Bid = 0.06m},
+                                UsdPriceAtCreation = 0.05m,
+                                UsdWeightAtCreation = 0.25
                             },
                             new Component()
                             {
                                 Symbol = "SYM2",
                                 Decimals = maxDecimals,
                                 Quantity = BigInteger.Multiply(5, BigInteger.Pow(10, decimalDiff)),
-                                UsdBidAsk = new BidAsk {Ask = 0.16m, Bid = 0.14m},
-                                UsdValueAtCreation = 0.15m,
-                                UsdWeightAtCreation = 0.5m
+                                //UsdBidAsk = new BidAsk {Ask = 0.16m, Bid = 0.14m},
+                                UsdPriceAtCreation = 0.15m,
+                                UsdWeightAtCreation = 0.75
                             }
                         }
                     };
@@ -122,7 +123,26 @@ namespace Trakx.Data.Market.Tests.Unit.Common.Pricing
         {
             var nav = await _navCalculator.CalculateCryptoCompareNav(KnownIndexes.L1CPU003)
                 .ConfigureAwait(false);
-            nav.Should().Be(1m);
+            nav.Should().Be(1.25m);
+        }
+
+        [Fact]
+        public async Task GetCryptoCompareIndexDetailsPriced_should_populate_details_with_current_prices()
+        {
+            var priced = await _navCalculator.GetCryptoCompareIndexDetailsPriced(KnownIndexes.L1CPU003)
+                .ConfigureAwait(false);
+
+            priced.BidAskNav.Ask.Should().Be(1.25m);
+            
+            var sym1 = priced.Components.Single(c => c.Symbol == "SYM1");
+            sym1.UsdWeight.Should().Be(0.4);
+            sym1.UsdValue.Should().Be(0.5m);
+            sym1.UsdPriceAtCreation.Should().Be(0.05m);
+
+            var sym2 = priced.Components.Single(c => c.Symbol == "SYM2");
+            sym2.UsdWeight.Should().Be(0.6);
+            sym2.UsdValue.Should().Be(0.75m);
+            sym2.UsdPriceAtCreation.Should().Be(0.15m);
         }
     }
 
@@ -130,7 +150,7 @@ namespace Trakx.Data.Market.Tests.Unit.Common.Pricing
     {
         protected override Task<HttpResponseMessage> SendAsync(HttpRequestMessage request, CancellationToken cancellationToken)
         {
-            var price = request.RequestUri.AbsoluteUri.Contains("SYM1") ? 0.05m : 0.15m;
+            var price = request.RequestUri.AbsoluteUri.Contains("SYM1") ? 0.10m : 0.15m;
             var response = new HttpResponseMessage(HttpStatusCode.OK);
             response.Content = new StringContent($"{{\"USD\":{price}}}");
             return Task.FromResult(response);

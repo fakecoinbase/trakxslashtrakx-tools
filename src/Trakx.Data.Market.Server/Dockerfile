@@ -9,7 +9,7 @@ COPY ["Trakx.Data.Market.Server/Trakx.Data.Market.Server.csproj", "Trakx.Data.Ma
 RUN dotnet restore "Trakx.Data.Market.Server/Trakx.Data.Market.Server.csproj"
 COPY . .
 WORKDIR "/src/Trakx.Data.Market.Server"
-RUN dotnet build "Trakx.Data.Market.Server.csproj" -c Release -o /app/build
+RUN dotnet build "Trakx.Data.Market.Server.csproj" -c Release -o /app/build -v d
 
 FROM build AS publish
 RUN dotnet publish "Trakx.Data.Market.Server.csproj" -c Release -o /app/publish

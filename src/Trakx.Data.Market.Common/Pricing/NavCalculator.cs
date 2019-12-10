@@ -136,6 +136,41 @@ namespace Trakx.Data.Market.Common.Pricing
 
             return nav;
         }
+
+        public async Task<IndexDetails> GetCryptoCompareIndexDetailsPriced(KnownIndexes index)
+        {
+            if (!_indexDetailsProvider.IndexDetails.TryGetValue(index, out var details))
+            {
+                _logger.LogWarning($"Failed to retrieve {index}");
+                return IndexDetails.Default;
+            }
+
+            var getPricesTasks = details.Components.Select(async c =>
+            {
+                var price = await _cryptoCompareClient.Prices.SingleSymbolPriceAsync(c.Symbol, new[] { "USD" })
+                    .ConfigureAwait(false);
+                return new { Price = price, c.Symbol };
+            }).ToArray();
+
+            await Task.WhenAll(getPricesTasks).ConfigureAwait(false);
+
+            var nav = details.Components.Aggregate(0m, (a, c) =>
+            {
+                var scaledQuantity = (decimal)Math.Pow(10, 18 - c.Decimals) * (decimal)c.Quantity;
+                var price = getPricesTasks.Single(t => t.Result.Symbol == c.Symbol).Result.Price;
+                var priceUsd = price["USD"];
+                var componentValue = scaledQuantity * priceUsd;
+                c.UsdBidAsk = new BidAsk() {Bid = priceUsd, Ask = priceUsd };
+                c.UsdValue = componentValue / (decimal) details.NaturalUnit;
+                var indexValue = a + componentValue / (decimal)details.NaturalUnit;
+                return indexValue;
+            });
+
+            details.BidAskNav = new BidAsk() {Ask = nav, Bid = nav};
+
+            details.Components.ToList().ForEach(c => c.UsdWeight = (double)(c.UsdValue / nav));
+            return details;
+        }
         #endregion
     }
 }

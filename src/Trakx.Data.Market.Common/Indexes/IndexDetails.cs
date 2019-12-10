@@ -8,40 +8,49 @@ namespace Trakx.Data.Market.Common.Indexes
 {
     public partial class IndexDetails
     {
-        [JsonPropertyName("name")] public string Name { get; set; }
-        [JsonPropertyName("symbol")] public string Symbol { get; set; }
-        [JsonPropertyName("description")] public string Description { get; set; }
-        [JsonPropertyName("components")] public List<Component> Components { get; set; }
+        public static readonly IndexDetails Default = new IndexDetails();
+
+        [JsonPropertyName("name")] public string? Name { get; set; }
+        [JsonPropertyName("symbol")] public string? Symbol { get; set; }
+        [JsonPropertyName("description")] public string? Description { get; set; }
+        [JsonPropertyName("components")] public List<Component>? Components { get; set; }
         [JsonPropertyName("targetUsdPrice")] public double TargetUsdPrice { get; set; }
         
         [JsonPropertyName("naturalUnit")]
         [JsonConverter(typeof(JsonStringBigIntegerConverter))]
         public BigInteger NaturalUnit { get; set; }
         
-        [JsonPropertyName("usdBidAsk")] public BidAsk BidAsk { get; set; }
+        [JsonPropertyName("usdBidAskNav")] 
+        public BidAsk? BidAskNav { get; set; }
     }
 
     public partial class Component
     {
-        [JsonPropertyName("address")] public string Address { get; set; }
+        [JsonPropertyName("address")] public string? Address { get; set; }
 
-        [JsonPropertyName("name")] public string Name { get; set; }
+        [JsonPropertyName("name")] public string? Name { get; set; }
 
-        [JsonPropertyName("symbol")] public string Symbol { get; set; }
+        [JsonPropertyName("symbol")] public string? Symbol { get; set; }
 
         [JsonPropertyName("decimals")] public int Decimals { get; set; }
 
-        [JsonPropertyName("usdBidAsk")] public BidAsk UsdBidAsk { get; set; }
+        [JsonPropertyName("usdBidAsk")] public BidAsk? UsdBidAsk { get; set; }
 
         [JsonPropertyName("quantity")]
         [JsonConverter(typeof(JsonStringBigIntegerConverter))]
         public BigInteger Quantity { get; set; }
 
         [JsonPropertyName("usdWeightAtCreation")]
-        public decimal UsdWeightAtCreation { get; set; }
+        public double UsdWeightAtCreation { get; set; }
 
-        [JsonPropertyName("usdValueAtCreation")]
-        public decimal UsdValueAtCreation { get; set; }
+        [JsonPropertyName("usdWeight")]
+        public double? UsdWeight { get; set; }
+
+        [JsonPropertyName("usdPriceAtCreation")]
+        public decimal UsdPriceAtCreation { get; set; }
+
+        [JsonPropertyName("usdValue")]
+        public decimal UsdValue { get; set; }
     }
 
     public partial class BidAsk

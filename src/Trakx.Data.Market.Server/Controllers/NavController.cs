@@ -29,7 +29,7 @@ namespace Trakx.Data.Market.Server.Controllers
             if (!Enum.TryParse(indexSymbol, out KnownIndexes symbol))
                 return $"Known index symbols are [{string.Join(", ", Enum.GetNames(typeof(KnownIndexes)))}]";
 
-            var kaikoNav = await _navCalculator.CalculateKaikoNav(symbol, "usd").ConfigureAwait(false);
+            var kaikoNav = await _navCalculator.CalculateCryptoCompareNav(symbol).ConfigureAwait(false);
             if (kaikoNav != 0) return kaikoNav.ToString(CultureInfo.InvariantCulture);
             var messariNav = await _navCalculator.CalculateMessariNav(symbol).ConfigureAwait(false);
             return messariNav.ToString(CultureInfo.InvariantCulture);

@@ -14,7 +14,7 @@
       },
       "quantity": "4128989636237",
       "usdWeightAtCreation": 0.33333333333334,
-      "usdValueAtCreation": 0.0008073
+      "usdPriceAtCreation": 0.0008073
     },
     {
       "address": "0x744d70FDBE2Ba4CF95131626614a1763DF805B9E",
@@ -27,7 +27,7 @@
       },
       "quantity": "229568411387",
       "usdWeightAtCreation": 0.33333333333333,
-      "usdValueAtCreation": 0.01452
+      "usdPriceAtCreation": 0.01452
     },
     {
       "address": "0x08f5a9235B08173b7569F83645d2c7fB55e8cCD8",
@@ -40,7 +40,7 @@
       },
       "quantity": "12",
       "usdWeightAtCreation": 0.33333333333333,
-      "usdValueAtCreation": 0.02852
+      "usdPriceAtCreation": 0.02852
     }
   ],
   "targetUsdPrice": 0.1,
