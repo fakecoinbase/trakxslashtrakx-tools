@@ -20,12 +20,12 @@
 
 #endregion
 
-using System.Collections.Generic;
+using System.Threading.Tasks;
 
-namespace Trakx.Data.Market.Common.Indexes
+namespace Trakx.Data.Models.Index
 {
-    public interface IIndexDetailsProvider
+    public interface IIndexDefinitionProvider
     {
-        IDictionary<KnownIndexes, IndexDetails> IndexDetails { get; }
+        Task<IndexDefinition> GetDefinitionFromSymbol(string indexSymbol);
     }
 }

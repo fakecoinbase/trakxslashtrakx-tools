@@ -1,4 +1,3 @@
-using System.Collections.Generic;
 using System.Threading.Tasks;
 using CryptoCompare;
 using Trakx.Data.Market.Common.Sources.CryptoCompare;

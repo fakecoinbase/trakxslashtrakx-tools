@@ -3,173 +3,69 @@ using System.Linq;
 using System.Threading.Tasks;
 using CryptoCompare;
 using Microsoft.Extensions.Logging;
-using Trakx.Data.Market.Common.Indexes;
-using Trakx.Data.Market.Common.Sources.Kaiko;
-using Trakx.Data.Market.Common.Sources.Kaiko.Client;
-using Trakx.Data.Market.Common.Sources.Messari.Client;
+using Trakx.Data.Models.Index;
 
 namespace Trakx.Data.Market.Common.Pricing
 {
     public class NavCalculator : INavCalculator
     {
-        private readonly IKaikoClient _kaikoClient;
-        private readonly IMessariClient _messariClient;
+        private const string Usd = "USD";
         private readonly CryptoCompareClient _cryptoCompareClient;
-        private readonly IIndexDetailsProvider _indexDetailsProvider;
+        private readonly IIndexDefinitionProvider _indexProvider;
 
-        public NavCalculator(IKaikoClient kaikoClient,
-            IMessariClient messariClient,
+        public NavCalculator(
             CryptoCompareClient cryptoCompareClient,
-            IIndexDetailsProvider indexDetailsProvider, 
+            IIndexDefinitionProvider indexDetailsProvider, 
             ILogger<NavCalculator> logger)
         {
-            _kaikoClient = kaikoClient;
-            _messariClient = messariClient;
             _cryptoCompareClient = cryptoCompareClient;
-            _indexDetailsProvider = indexDetailsProvider;
+            _indexProvider = indexDetailsProvider;
             _logger = logger;
         }
 
         private readonly ILogger<NavCalculator> _logger;
 
-        #region Kaiko
-        public async Task<decimal> CalculateKaikoNav(KnownIndexes index, string quoteSymbol)
-        {
-            if (!_indexDetailsProvider.IndexDetails.TryGetValue(index, out var details))
-            {
-                _logger.LogWarning($"Failed to retrieve {index}");
-                return 0;
-            }
-            var components = details.Components.Select(c => c.Symbol);
-
-            var getPricesTasks = components.Select(c => _kaikoClient.CreateSpotExchangeRateRequest(c, "usd"))
-                .Select(async q =>
-                {
-                    var response = await _kaikoClient.GetSpotExchangeRate(q)
-                        .ConfigureAwait(false);
-                    if (response == null || response.Result != Constants.SuccessResponse || !response.Data.Any())
-                    {
-                        _logger.LogWarning("Failed to retrieve data for {q}", q.BaseAsset);
-                    }
-                    return response;
-                }).ToArray();
-
-            await Task.WhenAll(getPricesTasks).ConfigureAwait(false);
-
-            var nav = details.Components.Aggregate(0m, (a, c) =>
-            {
-                var scaledQuantity = (decimal)Math.Pow(10, 18 - c.Decimals) * (decimal)c.Quantity;
-                var prices = getPricesTasks
-                    .Select(t => t.Result)
-                    .Single(r => r.Query.BaseAsset.Equals(c.Symbol, StringComparison.InvariantCultureIgnoreCase))
-                    .Data
-                    .OrderByDescending(d => d.Timestamp);
-                var averagedPrice = decimal.Parse(prices.First().Price);
-                var componentValue = scaledQuantity * averagedPrice;
-                var indexValue = a + componentValue / (decimal)details.NaturalUnit;
-                return indexValue;
-            });
-
-            return nav;
-        }
-        #endregion
-
-        #region Messari
-        public async Task<decimal> CalculateMessariNav(KnownIndexes index)
-        {
-            if (!_indexDetailsProvider.IndexDetails.TryGetValue(index, out var details))
-            {
-                _logger.LogWarning($"Failed to retrieve {index}");
-                return 0;
-            }
-
-            var getPricesTasks = details.Components.Select(async c =>
-                {
-                    var metrics = await _messariClient.GetMetricsForSymbol(c.Symbol)
-                        .ConfigureAwait(false);
-                    return metrics;
-                }).ToArray();
-
-            await Task.WhenAll(getPricesTasks).ConfigureAwait(false);
-
-            var nav = details.Components.Aggregate(0m, (a, c) =>
-            {
-                var scaledQuantity = (decimal)Math.Pow(10, 18 - c.Decimals) * (decimal)c.Quantity;
-                var metrics = getPricesTasks.Select(t => t.Result)
-                    .Single(r => r.Symbol.Equals(c.Symbol, StringComparison.InvariantCultureIgnoreCase));
-                var componentValue = scaledQuantity * metrics.MarketData.PriceUsd;
-                var indexValue = a + componentValue / (decimal)details.NaturalUnit;
-                return indexValue;
-            });
-
-            return nav;
-        }
-        #endregion
-
         #region CryptoCompare
 
-        public async Task<decimal> CalculateCryptoCompareNav(KnownIndexes index)
+        public async Task<decimal> CalculateCryptoCompareNav(string indexSymbol)
         {
-            if (!_indexDetailsProvider.IndexDetails.TryGetValue(index, out var details))
-            {
-                _logger.LogWarning($"Failed to retrieve {index}");
-                return 0;
-            }
-
-            var getPricesTasks = details.Components.Select(async c =>
-            {
-                var price = await _cryptoCompareClient.Prices.SingleSymbolPriceAsync(c.Symbol, new [] {"USD"})
-                    .ConfigureAwait(false);
-                return new {Price = price, c.Symbol};
-            }).ToArray();
-
-            await Task.WhenAll(getPricesTasks).ConfigureAwait(false);
-
-            var nav = details.Components.Aggregate(0m, (a, c) =>
-            {
-                var scaledQuantity = (decimal)Math.Pow(10, 18 - c.Decimals) * (decimal)c.Quantity;
-                var price = getPricesTasks.Single(t => t.Result.Symbol == c.Symbol).Result.Price;
-                var componentValue = scaledQuantity * price["USD"];
-                var indexValue = a + componentValue / (decimal)details.NaturalUnit;
-                return indexValue;
-            });
-
-            return nav;
+            var priced = await GetIndexPricedByCryptoCompare(indexSymbol).ConfigureAwait(false);
+            return priced.CurrentValuation.NetAssetValue;
         }
 
-        public async Task<IndexDetails> GetCryptoCompareIndexDetailsPriced(KnownIndexes index)
+        public async Task<IndexPriced> GetIndexPricedByCryptoCompare(string indexSymbol)
         {
-            if (!_indexDetailsProvider.IndexDetails.TryGetValue(index, out var details))
-            {
-                _logger.LogWarning($"Failed to retrieve {index}");
-                return IndexDetails.Default;
-            }
+            var definition = await _indexProvider.GetDefinitionFromSymbol(indexSymbol)
+                .ConfigureAwait(false);
+            if (definition == IndexDefinition.Default) return IndexPriced.Default;
 
-            var getPricesTasks = details.Components.Select(async c =>
+            var getPricesTasks = definition.ComponentDefinitions.Select(async c =>
             {
-                var price = await _cryptoCompareClient.Prices.SingleSymbolPriceAsync(c.Symbol, new[] { "USD" })
+                var price = await _cryptoCompareClient.Prices.SingleSymbolPriceAsync(c.Symbol, new[] { Usd })
                     .ConfigureAwait(false);
                 return new { Price = price, c.Symbol };
             }).ToArray();
 
             await Task.WhenAll(getPricesTasks).ConfigureAwait(false);
 
-            var nav = details.Components.Aggregate(0m, (a, c) =>
-            {
-                var scaledQuantity = (decimal)Math.Pow(10, 18 - c.Decimals) * (decimal)c.Quantity;
-                var price = getPricesTasks.Single(t => t.Result.Symbol == c.Symbol).Result.Price;
-                var priceUsd = price["USD"];
-                var componentValue = scaledQuantity * priceUsd;
-                c.UsdBidAsk = new BidAsk() {Bid = priceUsd, Ask = priceUsd };
-                c.UsdValue = componentValue / (decimal) details.NaturalUnit;
-                var indexValue = a + componentValue / (decimal)details.NaturalUnit;
-                return indexValue;
-            });
+            var componentsPriced = definition.ComponentDefinitions.ToDictionary(
+                c => c.Symbol,
+                c =>
+                {
+                    var price = getPricesTasks.Single(t => t.Result.Symbol == c.Symbol).Result.Price;
+                    var priceUsd = price[Usd];
 
-            details.BidAskNav = new BidAsk() {Ask = nav, Bid = nav};
+                    var valuation = new ComponentValuation(Usd, c.Quantity, c.Decimals, priceUsd)
+                    {
+                        TimeStamp = DateTime.UtcNow,
+                    };
 
-            details.Components.ToList().ForEach(c => c.UsdWeight = (double)(c.UsdValue / nav));
-            return details;
+                    return valuation;
+                });
+
+            var indexPriced = new IndexPriced(definition, componentsPriced);
+
+            return indexPriced;
         }
         #endregion
     }

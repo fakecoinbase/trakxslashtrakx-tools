@@ -1,9 +1,8 @@
-﻿using System;
-using System.Threading.Tasks;
+﻿using System.Threading.Tasks;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.Extensions.Logging;
-using Trakx.Data.Market.Common.Indexes;
 using Trakx.Data.Market.Common.Pricing;
+using Trakx.Data.Models.Index;
 
 namespace Trakx.Data.Market.Server.Controllers
 {
@@ -11,42 +10,41 @@ namespace Trakx.Data.Market.Server.Controllers
     [Route("[controller]/[action]")]
     public class IndexDataController : ControllerBase
     {
-        private readonly IIndexDetailsProvider _indexDetailsProvider;
+        private readonly IIndexDefinitionProvider _indexProvider;
         private readonly INavCalculator _navCalculator;
 
         private readonly ILogger<IndexDataController> _logger;
 
-        public IndexDataController(IIndexDetailsProvider indexDetailsProvider,
+        public IndexDataController(IIndexDefinitionProvider indexProvider,
             INavCalculator navCalculator,
             ILogger<IndexDataController> logger)
         {
-            _indexDetailsProvider = indexDetailsProvider;
+            _indexProvider = indexProvider;
             _navCalculator = navCalculator;
             _logger = logger;
+            _logger.LogDebug("Instantiated");
         }
 
         [HttpGet]
-        public ActionResult<string> IndexDetails([FromQuery] string indexSymbol)
+        public async Task<ActionResult<string>> IndexDetails([FromQuery] string indexSymbol)
         {
-            if (!Enum.TryParse(indexSymbol, out KnownIndexes symbol))
-                return $"Known index symbols are [{string.Join(", ", Enum.GetNames(typeof(KnownIndexes)))}]";
+            var definition = await _indexProvider.GetDefinitionFromSymbol(indexSymbol);
 
-            if (!_indexDetailsProvider.IndexDetails.TryGetValue(symbol, out var details))
+            if (definition == IndexDefinition.Default)
                 return $"failed to retrieve details for index {indexSymbol}";
 
-            return new JsonResult(details);
+            return new JsonResult(definition);
         }
 
         [HttpGet]
         public async Task<ActionResult<string>> IndexDetailsPriced([FromQuery] string indexSymbol)
         {
-            if (!Enum.TryParse(indexSymbol, out KnownIndexes symbol))
-                return $"Known index symbols are [{string.Join(", ", Enum.GetNames(typeof(KnownIndexes)))}]";
+            var definition = await _indexProvider.GetDefinitionFromSymbol(indexSymbol);
 
-            if (!_indexDetailsProvider.IndexDetails.TryGetValue(symbol, out var details))
+            if (definition == IndexDefinition.Default)
                 return $"failed to retrieve details for index {indexSymbol}";
 
-            var pricedDetails = await _navCalculator.GetCryptoCompareIndexDetailsPriced(symbol)
+            var pricedDetails = await _navCalculator.GetIndexPricedByCryptoCompare(indexSymbol)
                 .ConfigureAwait(false);
 
             return new JsonResult(pricedDetails);

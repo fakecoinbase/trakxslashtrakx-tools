@@ -55,7 +55,7 @@ namespace Trakx.Data.Market.Server
             services.AddMessariClient();
             services.AddCryptoCompareClient();
 
-            services.AddSingleton<NavHub>();
+            services.AddScoped<NavHub>();
         }
 
         // This method gets called by the runtime. Use this method to configure the HTTP request pipeline.

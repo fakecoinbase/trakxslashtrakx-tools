@@ -1,5 +1,4 @@
-﻿using System;
-using System.Threading.Channels;
+﻿using System.Threading.Channels;
  using Microsoft.AspNetCore.SignalR;
 using Trakx.Data.Market.Common.Extensions;
 using Trakx.Data.Market.Common.Pricing;

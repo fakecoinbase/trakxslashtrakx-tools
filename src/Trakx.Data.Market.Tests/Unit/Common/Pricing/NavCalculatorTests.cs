@@ -1,5 +1,4 @@
 ﻿using System.Collections.Generic;
-using System.Linq;
 using System.Net;
 using System.Net.Http;
 using System.Numerics;
@@ -9,13 +8,13 @@ using CryptoCompare;
 using FluentAssertions;
 using Microsoft.Extensions.Logging;
 using NSubstitute;
-using Trakx.Data.Market.Common.Indexes;
 using Trakx.Data.Market.Common.Pricing;
 using Trakx.Data.Market.Common.Sources.Kaiko.Client;
 using Trakx.Data.Market.Common.Sources.Kaiko.DTOs;
 using Trakx.Data.Market.Common.Sources.Messari.Client;
 using Trakx.Data.Market.Tests.Data.Kaiko;
 using Trakx.Data.Market.Tests.Data.Messari;
+using Trakx.Data.Models.Index;
 using Xunit;
 
 namespace Trakx.Data.Market.Tests.Unit.Common.Pricing
@@ -26,7 +25,7 @@ namespace Trakx.Data.Market.Tests.Unit.Common.Pricing
 
         public NavCalculatorTests()
         {
-            var indexProvider = PrepareIndexDetailsProvider();
+            var indexProvider = PrepareIndexDefinitionProvider();
 
             var aggregatedPriceReader = new KaikoReader();
             var kaikoClient = Substitute.For<IKaikoClient>();
@@ -56,93 +55,77 @@ namespace Trakx.Data.Market.Tests.Unit.Common.Pricing
 
             var logger = Substitute.For<ILogger<NavCalculator>>();
 
-            _navCalculator = new NavCalculator(kaikoClient, messariClient, cryptoCompareClient, indexProvider, logger);
+            _navCalculator = new NavCalculator(cryptoCompareClient, indexProvider, logger);
         }
 
-        private IIndexDetailsProvider PrepareIndexDetailsProvider()
+        private IIndexDefinitionProvider PrepareIndexDefinitionProvider()
         {
-            var indexProvider = Substitute.For<IIndexDetailsProvider>();
-            var indexDetails = Substitute.For<IDictionary<KnownIndexes, IndexDetails>>();
-            indexProvider.IndexDetails.Returns(indexDetails);
-            indexProvider.IndexDetails
-                .TryGetValue(KnownIndexes.L1CPU003, out Arg.Any<IndexDetails>())
-                .Returns(callInfo =>
+            var indexProvider = Substitute.For<IIndexDefinitionProvider>();
+            indexProvider.GetDefinitionFromSymbol("IDX")
+                .Returns(_ =>
                 {
-                    var maxDecimals = 18;
                     var minDecimals = 8;
-                    var decimalDiff = maxDecimals - minDecimals;
-                    callInfo[1] = new IndexDetails()
+                    var maxDecimals = 18;
+                    var firstQuantity = BigInteger.Multiply(5,
+                        BigInteger.Pow(10, minDecimals - 1));
+                    var secondQuantity = BigInteger.Multiply(5,
+                        BigInteger.Pow(10, maxDecimals - 1));
+
+                    return new IndexDefinition(new List<ComponentDefinition>
                     {
-                        TargetUsdPrice = 1,
-                        NaturalUnit = BigInteger.Pow(10, decimalDiff),
-                        Components = new List<Component>()
+                        new ComponentDefinition
                         {
-                            new Component()
-                            {
-                                Symbol = "SYM1",
-                                Decimals = minDecimals,
-                                Quantity = 5,
-                                //UsdBidAsk = new BidAsk {Ask = 0.04m, Bid = 0.06m},
-                                UsdPriceAtCreation = 0.05m,
-                                UsdWeightAtCreation = 0.25
-                            },
-                            new Component()
-                            {
-                                Symbol = "SYM2",
-                                Decimals = maxDecimals,
-                                Quantity = BigInteger.Multiply(5, BigInteger.Pow(10, decimalDiff)),
-                                //UsdBidAsk = new BidAsk {Ask = 0.16m, Bid = 0.14m},
-                                UsdPriceAtCreation = 0.15m,
-                                UsdWeightAtCreation = 0.75
-                            }
+                            Symbol = "SYM1",
+                            Decimals = minDecimals,
+                            Quantity = firstQuantity,
+                            InitialValuation = new ComponentValuation(
+                                "USD", firstQuantity, minDecimals, 0.05m)
+                        },
+                        new ComponentDefinition
+                        {
+                            Symbol = "SYM2",
+                            Decimals = maxDecimals,
+                            Quantity = secondQuantity,
+                            InitialValuation = new ComponentValuation(
+                                "USD", secondQuantity, maxDecimals, 0.15m)
                         }
-                    };
-                    return true;
+                    });
                 });
+
             return indexProvider;
-        }
-
-        [Fact]
-        public async Task CalculateKaikoNav_should_get_aggregated_prices_from_KaikoClient()
-        {
-            var nav = await _navCalculator.CalculateKaikoNav(KnownIndexes.L1CPU003, "USD")
-                .ConfigureAwait(false);
-            nav.Should().Be(1.075m);
-        }
-
-        [Fact]
-        public async Task CalculateMessariNav_should_get_prices_from_MessariClient()
-        {
-            var nav = await _navCalculator.CalculateMessariNav(KnownIndexes.L1CPU003)
-                .ConfigureAwait(false);
-            nav.Should().Be(1m);
         }
 
         [Fact]
         public async Task CalculateCryptoCompareNav_should_get_prices_from_CryptoCompareClient()
         {
-            var nav = await _navCalculator.CalculateCryptoCompareNav(KnownIndexes.L1CPU003)
+            var nav = await _navCalculator.CalculateCryptoCompareNav("IDX")
                 .ConfigureAwait(false);
-            nav.Should().Be(1.25m);
+            nav.Should().Be(0.125m);
         }
 
         [Fact]
         public async Task GetCryptoCompareIndexDetailsPriced_should_populate_details_with_current_prices()
         {
-            var priced = await _navCalculator.GetCryptoCompareIndexDetailsPriced(KnownIndexes.L1CPU003)
+            var priced = await _navCalculator.GetIndexPricedByCryptoCompare("IDX")
                 .ConfigureAwait(false);
 
-            priced.BidAskNav.Ask.Should().Be(1.25m);
-            
-            var sym1 = priced.Components.Single(c => c.Symbol == "SYM1");
-            sym1.UsdWeight.Should().Be(0.4);
-            sym1.UsdValue.Should().Be(0.5m);
-            sym1.UsdPriceAtCreation.Should().Be(0.05m);
+            var price1i = priced.InitialValuation.ComponentValuations["SYM1"];
+            price1i.Price.Should().Be(0.1m);
+            price1i.Value.Should().Be(0.05m);
 
-            var sym2 = priced.Components.Single(c => c.Symbol == "SYM2");
-            sym2.UsdWeight.Should().Be(0.6);
-            sym2.UsdValue.Should().Be(0.75m);
-            sym2.UsdPriceAtCreation.Should().Be(0.15m);
+            var price2i = priced.InitialValuation.ComponentValuations["SYM2"];
+            price2i.Price.Should().Be(0.15m);
+            price2i.Value.Should().Be(0.075m);
+
+            var price1 = priced.CurrentValuation.ComponentValuations["SYM1"];
+            price1.Price.Should().Be(0.1m);
+            price1.Value.Should().Be(0.05m);
+
+            var price2 = priced.CurrentValuation.ComponentValuations["SYM2"];
+            price2.Price.Should().Be(0.15m);
+            price2.Value.Should().Be(0.075m);
+
+            priced.CurrentValuation.NetAssetValue.Should().Be(0.125m);
         }
     }
 
@@ -151,8 +134,10 @@ namespace Trakx.Data.Market.Tests.Unit.Common.Pricing
         protected override Task<HttpResponseMessage> SendAsync(HttpRequestMessage request, CancellationToken cancellationToken)
         {
             var price = request.RequestUri.AbsoluteUri.Contains("SYM1") ? 0.10m : 0.15m;
-            var response = new HttpResponseMessage(HttpStatusCode.OK);
-            response.Content = new StringContent($"{{\"USD\":{price}}}");
+            var response = new HttpResponseMessage(HttpStatusCode.OK)
+            {
+                Content = new StringContent($"{{\"USD\":{price}}}")
+            };
             return Task.FromResult(response);
         }
     }

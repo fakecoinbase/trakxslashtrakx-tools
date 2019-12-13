@@ -6,8 +6,6 @@ using System.Text.Json;
 using System.Threading.Tasks;
 using FluentAssertions;
 using Microsoft.Extensions.DependencyInjection;
-using Trakx.Data.Market.Common.Indexes;
-using Trakx.Data.Market.Common.Sources.BitGo;
 using Trakx.Data.Market.Common.Sources.Kaiko.Client;
 using Trakx.Data.Market.Common.Sources.Kaiko.DTOs;
 using Trakx.Data.Market.Common.Sources.Messari.Client;
@@ -99,11 +97,7 @@ namespace Trakx.Data.Market.Tests.Integration
         {
             public AllTokensUsedAsComponents()
             {
-                new IndexDetailsProvider().IndexDetails
-                    .SelectMany(i => i.Value.Components.Select(c => c.Symbol.ToLower()))
-                    .Distinct()
-                    .ToList()
-                    .ForEach(s => AddRow(s));
+                new List<string> { "IDX1", "IDX2" }.ForEach(s => AddRow(s));
             }
         }
 

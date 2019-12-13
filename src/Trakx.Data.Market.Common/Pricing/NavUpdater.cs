@@ -3,14 +3,16 @@ using System.Collections.Concurrent;
 using System.Reactive.Linq;
 using System.Reactive.Subjects;
 using System.Reactive.Threading.Tasks;
+using System.Threading.Tasks;
 using Microsoft.Extensions.Logging;
-using Trakx.Data.Market.Common.Indexes;
+using Trakx.Data.Models.Index;
 
 namespace Trakx.Data.Market.Common.Pricing
 {
     public class NavUpdater : INavUpdater
     {
         private readonly INavCalculator _navCalculator;
+        private readonly IIndexDefinitionProvider _indexProvider;
         private readonly ILogger<NavUpdater> _logger;
 
         private readonly Subject<NavUpdate> _subject;
@@ -18,9 +20,10 @@ namespace Trakx.Data.Market.Common.Pricing
 
         public IObservable<NavUpdate> NavUpdates { get; }
 
-        public NavUpdater(INavCalculator navCalculator, ILogger<NavUpdater> logger)
+        public NavUpdater(INavCalculator navCalculator, IIndexDefinitionProvider indexProvider, ILogger<NavUpdater> logger)
         {
             _navCalculator = navCalculator;
+            _indexProvider = indexProvider;
             _logger = logger;
 
             _subject = new Subject<NavUpdate>();
@@ -28,14 +31,10 @@ namespace Trakx.Data.Market.Common.Pricing
             _updateSubscriptions = new ConcurrentDictionary<string, IDisposable>();
         }
 
-        public void RegisterToNavUpdates(string symbol)
+        public async Task RegisterToNavUpdates(string symbol)
         {
-            if (!Enum.TryParse(symbol, out KnownIndexes indexSymbol))
-            {
-                _logger.LogWarning("Known index symbols are [{0}]", 
-                    string.Join(", ", Enum.GetNames(typeof(KnownIndexes))));
-                return;
-            }
+            var definitionFromSymbol = await _indexProvider.GetDefinitionFromSymbol(symbol);
+            if(definitionFromSymbol == IndexDefinition.Default) return;
 
             var updateStream = Observable.Interval(TimeSpan.FromSeconds(2))
                 .Select(async t =>
@@ -43,12 +42,11 @@ namespace Trakx.Data.Market.Common.Pricing
                     decimal nav;
                     try
                     {
-                        nav = await _navCalculator.CalculateCryptoCompareNav(indexSymbol);
-                        //nav = await _navCalculator.CalculateCryptoCompareNav(indexSymbol);
+                        nav = await _navCalculator.CalculateCryptoCompareNav(symbol);
                     }
                     catch (Exception ex)
                     {
-                        _logger.LogError(ex, "Failed to calculate NAV for {0}", indexSymbol);
+                        _logger.LogError(ex, "Failed to calculate NAV for {0}", symbol);
                         nav = 0;
                     }
                     var update = new NavUpdate(symbol, nav);
