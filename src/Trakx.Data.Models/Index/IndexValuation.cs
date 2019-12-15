@@ -50,6 +50,7 @@ namespace Trakx.Data.Models.Index
         /// <summary>
         /// Sum of the individual values of all the components included in the basket.
         /// </summary>
+        [Column(TypeName = "decimal(38, 18)")]
         public decimal NetAssetValue { get; set; }
 
         /// <summary>

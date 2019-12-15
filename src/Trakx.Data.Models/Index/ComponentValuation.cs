@@ -42,6 +42,7 @@ namespace Trakx.Data.Models.Index
         /// <summary>
         /// Price at which 1 unit of the token can currently be purchased.
         /// </summary>
+        [Column(TypeName = "decimal(38, 18)")]
         public decimal Price { get; set; }
 
         /// <summary>
@@ -49,6 +50,7 @@ namespace Trakx.Data.Models.Index
         /// Basically <see cref="Price"/> times <see cref="ComponentDefinition.Quantity"/> adjusted to
         /// the correct number of decimals.
         /// </summary>
+        [Column(TypeName = "decimal(38, 18)")]
         public decimal Value { get; set; }
     }
 }

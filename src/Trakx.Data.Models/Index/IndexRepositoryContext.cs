@@ -1,5 +1,4 @@
 ﻿using Microsoft.EntityFrameworkCore;
-using Microsoft.Win32.SafeHandles;
 
 
 namespace Trakx.Data.Models.Index
@@ -12,18 +11,5 @@ namespace Trakx.Data.Models.Index
         {}
 
         public DbSet<IndexDefinition> IndexDefinitions { get; set; }
-
-        protected override void OnModelCreating(ModelBuilder modelBuilder)
-        {
-            //base.OnModelCreating(modelBuilder);
-            //modelBuilder.Entity<IndexDefinition>()
-            //    .HasKey(e => e.Symbol);
-
-            //modelBuilder.Entity<ComponentDefinition>()
-            //    .HasKey(c => c.ComponentDefinitionId);
-
-            //modelBuilder.Entity<ComponentValuation>()
-            //    .HasKey(c => c.C);
-        }
     }
 }

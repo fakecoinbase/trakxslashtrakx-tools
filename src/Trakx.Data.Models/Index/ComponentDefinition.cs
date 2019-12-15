@@ -35,7 +35,6 @@ namespace Trakx.Data.Models.Index
         /// Units of the component contained in each unit of the index containing it. This is
         /// always expressed in the smallest unit of the component's currency.
         /// </summary>
-        [JsonConverter(typeof(JsonStringBigIntegerConverter))]
         public ulong Quantity { get; set; }
 
         /// <summary>

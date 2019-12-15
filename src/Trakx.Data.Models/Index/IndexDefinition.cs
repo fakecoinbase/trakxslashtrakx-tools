@@ -16,11 +16,13 @@ namespace Trakx.Data.Models.Index
         /// <summary>
         /// Name (long) given to the index (ex: Top 5 Market Cap)
         /// </summary>
+        [Required]
         public string Name { get; set; }
 
         /// <summary>
         /// A brief explanation of the index and the choice of components it contains.
         /// </summary>
+        [Required]
         public string Description { get; set; }
 
         /// <summary>
@@ -32,11 +34,13 @@ namespace Trakx.Data.Models.Index
         /// <summary>
         /// List of the components contained in the index.
         /// </summary>
+        [Required]
         public List<T> ComponentDefinitions { get; set; }
 
         /// <summary>
         /// Net Asset Value of the index at creation time.
         /// </summary>
+        [Required]
         public IndexValuation InitialValuation { get; set; }
 
         /// <summary>
@@ -48,6 +52,7 @@ namespace Trakx.Data.Models.Index
         /// <summary>
         /// Date at which the index was created.
         /// </summary>
+        [Required]
         public DateTime? CreationDate { get; set; }
     }
 

@@ -78,7 +78,9 @@ namespace Trakx.Data.Market.Server
                 // The default HSTS value is 30 days. You may want to change this for production scenarios, see https://aka.ms/aspnetcore-hsts.
                 app.UseHsts();
             }
-            
+
+            SeedDatabase(app);
+
             app.UseSwagger();
             app.UseSwaggerUI(c =>
             {
@@ -88,9 +90,7 @@ namespace Trakx.Data.Market.Server
 
             app.UseHttpsRedirection();
             app.UseStaticFiles();
-
             app.UseRouting();
-
             app.UseAuthentication();
             app.UseAuthorization();
 
@@ -101,8 +101,6 @@ namespace Trakx.Data.Market.Server
                 endpoints.MapBlazorHub();
                 endpoints.MapFallbackToPage("/_Host");
             });
-
-            SeedDatabase(app);
         }
 
         private static void SeedDatabase(IApplicationBuilder app)

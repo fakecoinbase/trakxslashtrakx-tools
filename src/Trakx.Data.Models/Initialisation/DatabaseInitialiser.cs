@@ -29,13 +29,6 @@ namespace Trakx.Data.Models.Initialisation
 
         private async Task Migrate()
         {
-            var databaseExists = await _dbContext.Database.EnsureCreatedAsync().ConfigureAwait(false);
-            if (!databaseExists)
-            {
-                var createScript = _dbContext.Database.GenerateCreateScript();
-                await _dbContext.Database.ExecuteSqlRawAsync(createScript).ConfigureAwait(false);
-            }
-
             await _dbContext.Database.MigrateAsync().ConfigureAwait(false);
         }
 
@@ -84,7 +77,7 @@ namespace Trakx.Data.Models.Initialisation
                     "0x7210cc724480c85b893a9febbecc24a8dc4ff1de",
                     firstOctober);
 
-            _logger.LogDebug(JsonSerializer.Serialize(computationServices));
+            //_logger.LogDebug(JsonSerializer.Serialize(computationServices));
             #endregion
 
             #region Financial Services
@@ -125,7 +118,7 @@ namespace Trakx.Data.Models.Initialisation
                 "0xa308dde45d2520108d16078457dbd489c3947e8a",
                 firstOctober);
 
-            _logger.LogDebug(JsonSerializer.Serialize(financialServices));
+            //_logger.LogDebug(JsonSerializer.Serialize(financialServices));
             #endregion
 
             #region Infrastructure Services
@@ -166,7 +159,7 @@ namespace Trakx.Data.Models.Initialisation
                 "0x5a3996551e34ee9f3c0496af727dd07e8be127f2",
                 firstOctober);
 
-            _logger.LogDebug(JsonSerializer.Serialize(infrastructureServices));
+            //_logger.LogDebug(JsonSerializer.Serialize(infrastructureServices));
             #endregion
 
             #region Scalability Services
@@ -216,7 +209,7 @@ namespace Trakx.Data.Models.Initialisation
                 "0xb2fc2d89e09e0d903c33f28608aecbe9b402ba59",
                 firstOctober);
 
-            _logger.LogDebug(JsonSerializer.Serialize(scalabilityServices));
+            //_logger.LogDebug(JsonSerializer.Serialize(scalabilityServices));
             #endregion
 
             #region Storage Services
@@ -266,7 +259,7 @@ namespace Trakx.Data.Models.Initialisation
                 "0xe05168c3fa30e93d3f1667b35e9456aac9b5519a",
                 firstOctober);
 
-            _logger.LogDebug(JsonSerializer.Serialize(scalabilityServices));
+            //_logger.LogDebug(JsonSerializer.Serialize(scalabilityServices));
             #endregion
 
             await _dbContext.IndexDefinitions.AddRangeAsync(new[]

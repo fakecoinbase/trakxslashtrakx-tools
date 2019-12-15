@@ -6,21 +6,11 @@
   </PropertyGroup>
   <Import Project="../Common.Projects.props" />
   <ItemGroup>
-    <None Remove="Indexes\L1CPU003.json" />
-    <None Remove="Indexes\L1FIN003.json" />
-    <None Remove="Indexes\L1INF003.json" />
-    <None Remove="Indexes\L1SCA004.json" />
-    <None Remove="Indexes\L1STR004.json" />
     <None Remove="Sources\BitGo\supported.tokens.csv" />
     <None Remove="Sources\CryptoCompare\coinDetails.json" />
   </ItemGroup>
 
   <ItemGroup>
-    <EmbeddedResource Include="Indexes\L1CPU003.json" />
-    <EmbeddedResource Include="Indexes\L1FIN003.json" />
-    <EmbeddedResource Include="Indexes\L1INF003.json" />
-    <EmbeddedResource Include="Indexes\L1SCA004.json" />
-    <EmbeddedResource Include="Indexes\L1STR004.json" />
     <EmbeddedResource Include="Sources\BitGo\supported.tokens.csv" />
     <EmbeddedResource Include="Sources\CryptoCompare\coinDetails.json" />
   </ItemGroup>
