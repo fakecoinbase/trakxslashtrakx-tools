@@ -65,15 +65,17 @@ namespace Trakx.Data.Models.Index
             string description,
             List<ComponentDefinition> componentDefinitions,
             string address,
+            int? naturalUnit = default,
             DateTime creationDate = default)
         {
             Symbol = symbol;
             Name = name;
             Description = description;
             ComponentDefinitions = componentDefinitions;
-            NaturalUnit = 18 - componentDefinitions.Min(c => c.Decimals);
+            NaturalUnit = naturalUnit ?? 18 - componentDefinitions.Min(c => c.Decimals);
             Address = address;
             CreationDate = creationDate;
+            InitialValuation = new IndexValuation(componentDefinitions, NaturalUnit);
         }
 
         public static readonly IndexDefinition Default = new IndexDefinition();

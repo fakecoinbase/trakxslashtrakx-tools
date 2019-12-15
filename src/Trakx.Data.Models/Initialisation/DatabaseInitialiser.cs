@@ -75,6 +75,7 @@ namespace Trakx.Data.Models.Initialisation
                             firstOctober)
                     },
                     "0x7210cc724480c85b893a9febbecc24a8dc4ff1de",
+                    2,
                     firstOctober);
 
             //_logger.LogDebug(JsonSerializer.Serialize(computationServices));
@@ -116,6 +117,7 @@ namespace Trakx.Data.Models.Initialisation
                         firstOctober)
                 },
                 "0xa308dde45d2520108d16078457dbd489c3947e8a",
+                13,
                 firstOctober);
 
             //_logger.LogDebug(JsonSerializer.Serialize(financialServices));
@@ -157,6 +159,7 @@ namespace Trakx.Data.Models.Initialisation
                         firstOctober)
                 },
                 "0x5a3996551e34ee9f3c0496af727dd07e8be127f2",
+                11,
                 firstOctober);
 
             //_logger.LogDebug(JsonSerializer.Serialize(infrastructureServices));
@@ -207,6 +210,7 @@ namespace Trakx.Data.Models.Initialisation
                         firstOctober)
                 },
                 "0xb2fc2d89e09e0d903c33f28608aecbe9b402ba59",
+                2,
                 firstOctober);
 
             //_logger.LogDebug(JsonSerializer.Serialize(scalabilityServices));
@@ -257,6 +261,7 @@ namespace Trakx.Data.Models.Initialisation
                         firstOctober)
                 },
                 "0xe05168c3fa30e93d3f1667b35e9456aac9b5519a",
+                11,
                 firstOctober);
 
             //_logger.LogDebug(JsonSerializer.Serialize(scalabilityServices));
@@ -270,6 +275,8 @@ namespace Trakx.Data.Models.Initialisation
                 scalabilityServices,
                 storageServices
             }).ConfigureAwait(false);
+
+            await _dbContext.SaveChangesAsync();
         }
     }
 }

@@ -25,7 +25,6 @@ using System.Collections.Generic;
 using System.ComponentModel.DataAnnotations;
 using System.ComponentModel.DataAnnotations.Schema;
 using System.Linq;
-using System.Security.Cryptography.X509Certificates;
 
 namespace Trakx.Data.Models.Index
 {
@@ -33,6 +32,22 @@ namespace Trakx.Data.Models.Index
     {
         private Dictionary<string, decimal> _componentWeights;
         private Dictionary<string, ComponentValuation> _valuationsBySymbol;
+
+        public IndexValuation()
+        {
+            
+        }
+
+        public IndexValuation(List<ComponentValuation> componentValuations, int naturalUnit)
+        {
+            NetAssetValue = componentValuations.Sum(v => v.Value) * (decimal)Math.Pow(10, 18 - naturalUnit);
+            QuoteCurrency = componentValuations.First().QuoteCurrency;
+            TimeStamp = componentValuations.Max(c => c.TimeStamp);
+            Valuations = componentValuations;
+        }
+
+        public IndexValuation(List<ComponentDefinition> componentDefinitions, int naturalUnit)
+            : this(componentDefinitions.Select(d => d.InitialValuation).ToList(), naturalUnit) {}
 
         [Key, DatabaseGenerated(DatabaseGeneratedOption.Identity)]
         public Guid IndexValuationId { get; set; }

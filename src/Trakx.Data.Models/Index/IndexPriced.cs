@@ -31,15 +31,7 @@ namespace Trakx.Data.Models.Index
             NaturalUnit = definition.NaturalUnit;
             ComponentDefinitions = definition.ComponentDefinitions;
 
-            var naturalUnitScalingFactor = (decimal)Math.Pow(10, definition.NaturalUnit);
-            var netAssetValue = componentValuations.Sum(v => v.Value) / naturalUnitScalingFactor;
-            CurrentValuation = new IndexValuation()
-            {
-                NetAssetValue = netAssetValue,
-                QuoteCurrency = componentValuations.First().QuoteCurrency,
-                TimeStamp = componentValuations.Max(c => c.TimeStamp),
-                Valuations = componentValuations
-            };
+            CurrentValuation = new IndexValuation(componentValuations, definition.NaturalUnit);
         }
 
         public IndexValuation CurrentValuation { get; set; }

@@ -53,7 +53,6 @@ namespace Trakx.Data.Market.Common.Pricing
                 {
                     var price = getPricesTasks.Single(t => t.Result.Symbol == c.Symbol).Result.Price;
                     var priceUsd = price[Usd];
-
                     var valuation = new ComponentValuation(c, Usd, priceUsd);
 
                     return valuation;

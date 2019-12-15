@@ -96,6 +96,7 @@ namespace Trakx.Data.Market.Tests.Unit.Common.Pricing
                                 DateTime.UtcNow)
                         },
                         "erc20address",
+                        naturalUnit: 1,
                         DateTime.MinValue);
                 });
 

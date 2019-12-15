@@ -11,13 +11,13 @@ namespace Trakx.Data.Models.Index
         public ComponentValuation(
             ComponentDefinition definition,
             string quoteCurrency,
-            decimal price, 
+            decimal price,
             DateTime? timeStamp = default)
         {
             Definition = definition;
             QuoteCurrency = quoteCurrency;
             Price = price;
-            Value = price * (decimal)definition.Quantity * (decimal)Math.Pow(10, -definition.Decimals);
+            Value = price * (decimal)definition.Quantity * (decimal)Math.Pow(10, - definition.Decimals);
             TimeStamp = timeStamp ?? DateTime.UtcNow;
         }
 
