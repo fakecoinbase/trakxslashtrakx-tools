@@ -1,5 +1,6 @@
 ﻿using System;
-using System.Numerics;
+using System.ComponentModel.DataAnnotations;
+using System.ComponentModel.DataAnnotations.Schema;
 
 namespace Trakx.Data.Models.Index
 {
@@ -7,17 +8,31 @@ namespace Trakx.Data.Models.Index
     {
         public ComponentValuation() { }
 
-        public ComponentValuation(string quoteCurrency, BigInteger quantity, int decimals, decimal price)
+        public ComponentValuation(
+            ComponentDefinition definition,
+            string quoteCurrency,
+            decimal price, 
+            DateTime? timeStamp = default)
         {
+            Definition = definition;
             QuoteCurrency = quoteCurrency;
             Price = price;
-            Value = price * (decimal)quantity * (decimal)Math.Pow(10, -decimals);
+            Value = price * (decimal)definition.Quantity * (decimal)Math.Pow(10, -definition.Decimals);
+            TimeStamp = timeStamp ?? DateTime.UtcNow;
         }
+
+        [Key, DatabaseGenerated(DatabaseGeneratedOption.Identity)]
+        public Guid ComponentValuationId { get; set; }
 
         /// <summary>
         /// Date at which the valuation calculation was performed
         /// </summary>
         public DateTime TimeStamp { get; set; }
+
+        /// <summary>
+        /// Component definition to which the valuation is linked.
+        /// </summary>
+        public ComponentDefinition Definition { get; }
 
         /// <summary>
         /// Currency in which the valuation is expressed.

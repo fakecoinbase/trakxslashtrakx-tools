@@ -7,9 +7,9 @@ namespace Trakx.Data.Market.Common.Pricing
     {
         public static IServiceCollection AddPricing(this IServiceCollection serviceCollection)
         {
-            serviceCollection.AddSingleton<IIndexDefinitionProvider, IndexDefinitionProvider>();
-            serviceCollection.AddSingleton<INavCalculator, NavCalculator>();
-            serviceCollection.AddSingleton<INavUpdater, NavUpdater>();
+            serviceCollection.AddScoped<IIndexDefinitionProvider, IndexDefinitionProvider>();
+            serviceCollection.AddScoped<INavCalculator, NavCalculator>();
+            serviceCollection.AddScoped<INavUpdater, NavUpdater>();
             return serviceCollection;
         }
     }

@@ -57,7 +57,7 @@
     }
   ],
   "targetUsdPrice": 0.1,
-  "naturalUnit": "100000000000",
+  "naturalUnit": "100 000 000 000",
   "usdBidAsk": {
     "bid": 0.15567325752536,
     "ask": 0.15567325752536

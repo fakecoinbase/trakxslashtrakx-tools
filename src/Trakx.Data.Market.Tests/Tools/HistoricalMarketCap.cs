@@ -24,8 +24,8 @@ namespace Trakx.Data.Market.Tests.Tools
         public HistoricalMarketCap()
         {
             //_tokens = new[] { "chsb", "cnd", "gvt", "mln", "nmr", "omg", "poly", "snx", "tct", "tnb" };
-            //_tokens = new[] { "bnb", "edo", "ht", "kcs", "leo" };
-            _tokens = new[] { "ast", "bnt", "bts", "dgtx", "knc", "lrc", "xin", "zrx" };
+            _tokens = new[] { "bnb", "edo", "ht", "kcs", "leo" };
+            //_tokens = new[] { "ast", "bnt", "bts", "dgtx", "knc", "lrc", "xin", "zrx" };
             _httpClientHandler = _httpClientHandler = new HttpClientHandler();
             _httpClient = new HttpClient(_httpClientHandler);
             _coinsClient = new CoinGecko.Clients.CoinsClient(_httpClient);
@@ -52,7 +52,7 @@ namespace Trakx.Data.Market.Tests.Tools
             }
         }
 
-        [Fact]
+        [Fact(Skip = "not a test")]
         public async Task RetrieveHistoricalMarketCapsForTokens()
         {
             var coinData = await _coinsClient.GetCoinList();

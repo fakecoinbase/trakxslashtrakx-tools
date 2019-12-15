@@ -14,7 +14,9 @@ Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "SolutionItems", "SolutionIt
 		Common.Projects.props = Common.Projects.props
 	EndProjectSection
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Trakx.Data.Models", "Trakx.Data.Models\Trakx.Data.Models.csproj", "{A57885BA-BF6E-49E6-A7C8-45CDCCC4DA2C}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Trakx.Data.Models", "Trakx.Data.Models\Trakx.Data.Models.csproj", "{A57885BA-BF6E-49E6-A7C8-45CDCCC4DA2C}"
+EndProject
+Project("{E53339B2-1760-4266-BCC7-CA923CBCF16C}") = "docker-compose", "docker-compose.dcproj", "{43D0A8C8-FC43-4DE5-BCDE-48EE46ED2511}"
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
@@ -38,6 +40,10 @@ Global
 		{A57885BA-BF6E-49E6-A7C8-45CDCCC4DA2C}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{A57885BA-BF6E-49E6-A7C8-45CDCCC4DA2C}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{A57885BA-BF6E-49E6-A7C8-45CDCCC4DA2C}.Release|Any CPU.Build.0 = Release|Any CPU
+		{43D0A8C8-FC43-4DE5-BCDE-48EE46ED2511}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{43D0A8C8-FC43-4DE5-BCDE-48EE46ED2511}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{43D0A8C8-FC43-4DE5-BCDE-48EE46ED2511}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{43D0A8C8-FC43-4DE5-BCDE-48EE46ED2511}.Release|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE

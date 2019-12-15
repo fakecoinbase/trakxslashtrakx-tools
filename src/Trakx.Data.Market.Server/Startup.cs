@@ -14,6 +14,8 @@ using Trakx.Data.Market.Common.Sources.Messari.Client;
 using Trakx.Data.Market.Server.Areas.Identity;
 using Trakx.Data.Market.Server.Data;
 using Trakx.Data.Market.Server.Hubs;
+using Trakx.Data.Models.Index;
+using Trakx.Data.Models.Initialisation;
 
 namespace Trakx.Data.Market.Server
 {
@@ -34,10 +36,11 @@ namespace Trakx.Data.Market.Server
         public void ConfigureServices(IServiceCollection services)
         {
             services.AddDbContext<ApplicationDbContext>(options =>
-                options.UseSqlServer(
-                    Configuration.GetConnectionString("DefaultConnection")));
-            services.AddDefaultIdentity<IdentityUser>()
-                .AddEntityFrameworkStores<ApplicationDbContext>();
+                options.UseSqlServer(Configuration.GetConnectionString("DefaultConnection")));
+            
+            services.AddDefaultIdentity<IdentityUser>().AddEntityFrameworkStores<ApplicationDbContext>();
+            services.AddDbContext<IndexRepositoryContext>(options =>
+                options.UseSqlServer(Configuration.GetConnectionString("ContainerConnection")));
             
             services.AddRazorPages();
             services.AddServerSideBlazor();
@@ -56,6 +59,9 @@ namespace Trakx.Data.Market.Server
             services.AddCryptoCompareClient();
 
             services.AddScoped<NavHub>();
+
+            // DB Creation and Seeding
+            services.AddTransient<IDatabaseInitialiser, DatabaseInitialiser>();
         }
 
         // This method gets called by the runtime. Use this method to configure the HTTP request pipeline.
@@ -72,7 +78,7 @@ namespace Trakx.Data.Market.Server
                 // The default HSTS value is 30 days. You may want to change this for production scenarios, see https://aka.ms/aspnetcore-hsts.
                 app.UseHsts();
             }
-
+            
             app.UseSwagger();
             app.UseSwaggerUI(c =>
             {
@@ -95,6 +101,15 @@ namespace Trakx.Data.Market.Server
                 endpoints.MapBlazorHub();
                 endpoints.MapFallbackToPage("/_Host");
             });
+
+            SeedDatabase(app);
+        }
+
+        private static void SeedDatabase(IApplicationBuilder app)
+        {
+            using var serviceScope = app.ApplicationServices.GetRequiredService<IServiceScopeFactory>().CreateScope();
+            var databaseInitializer = serviceScope.ServiceProvider.GetService<IDatabaseInitialiser>();
+            databaseInitializer.SeedDatabase().Wait();
         }
     }
 }

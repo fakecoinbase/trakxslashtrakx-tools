@@ -48,20 +48,16 @@ namespace Trakx.Data.Market.Common.Pricing
 
             await Task.WhenAll(getPricesTasks).ConfigureAwait(false);
 
-            var componentsPriced = definition.ComponentDefinitions.ToDictionary(
-                c => c.Symbol,
+            var componentsPriced = definition.ComponentDefinitions.Select(
                 c =>
                 {
                     var price = getPricesTasks.Single(t => t.Result.Symbol == c.Symbol).Result.Price;
                     var priceUsd = price[Usd];
 
-                    var valuation = new ComponentValuation(Usd, c.Quantity, c.Decimals, priceUsd)
-                    {
-                        TimeStamp = DateTime.UtcNow,
-                    };
+                    var valuation = new ComponentValuation(c, Usd, priceUsd);
 
                     return valuation;
-                });
+                }).ToList();
 
             var indexPriced = new IndexPriced(definition, componentsPriced);
 

@@ -24,6 +24,12 @@ namespace Trakx.Data.Models.Index
         public string Description { get; set; }
 
         /// <summary>
+        /// If the index was created, the address at which the corresponding smart contract
+        /// can be found on chain.
+        /// </summary>
+        public string Address { get; set; }
+
+        /// <summary>
         /// List of the components contained in the index.
         /// </summary>
         public List<T> ComponentDefinitions { get; set; }
@@ -42,17 +48,27 @@ namespace Trakx.Data.Models.Index
         /// <summary>
         /// Date at which the index was created.
         /// </summary>
-        public DateTime CreationDate { get; set; }
+        public DateTime? CreationDate { get; set; }
     }
 
     public class IndexDefinition : AbstractIndex<ComponentDefinition>
     {
         public IndexDefinition() { }
 
-        public IndexDefinition(List<ComponentDefinition> componentDefinitions)
+        public IndexDefinition(string symbol, 
+            string name, 
+            string description,
+            List<ComponentDefinition> componentDefinitions,
+            string address,
+            DateTime creationDate = default)
         {
+            Symbol = symbol;
+            Name = name;
+            Description = description;
             ComponentDefinitions = componentDefinitions;
             NaturalUnit = 18 - componentDefinitions.Min(c => c.Decimals);
+            Address = address;
+            CreationDate = creationDate;
         }
 
         public static readonly IndexDefinition Default = new IndexDefinition();

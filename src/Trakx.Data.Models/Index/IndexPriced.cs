@@ -10,14 +10,16 @@ namespace Trakx.Data.Models.Index
         public IndexPriced() { }
 
         public IndexPriced(IndexDefinition definition, 
-            Dictionary<string, ComponentValuation> componentValuations)
+            List<ComponentValuation> componentValuations)
         {
-            if (definition.ComponentDefinitions.Any(c => !componentValuations.ContainsKey(c.Symbol)))
+            if (definition.ComponentDefinitions.Any(c =>
+            !componentValuations.Any(v => c.Symbol.Equals(v.Definition.Symbol))))
             {
-                throw new InvalidDataException($"{nameof(componentValuations)} should contain valuations for all components of {definition.Symbol}.");
+                throw new InvalidDataException(
+                    $"{nameof(componentValuations)} should contain valuations for all components of {definition.Symbol}.");
             }
 
-            if (componentValuations.Select(c => c.Value.QuoteCurrency).Distinct().Count() > 1)
+            if (componentValuations.Select(c => c.QuoteCurrency).Distinct().Count() > 1)
             {
                 throw new InvalidDataException($"{nameof(componentValuations)} should all be quoted in the same currency.");
             }
@@ -30,14 +32,13 @@ namespace Trakx.Data.Models.Index
             ComponentDefinitions = definition.ComponentDefinitions;
 
             var naturalUnitScalingFactor = (decimal)Math.Pow(10, definition.NaturalUnit);
-            var netAssetValue = componentValuations.Values.Sum(v => v.Value) / naturalUnitScalingFactor;
-            CurrentValuation = new IndexValuation 
+            var netAssetValue = componentValuations.Sum(v => v.Value) / naturalUnitScalingFactor;
+            CurrentValuation = new IndexValuation()
             {
                 NetAssetValue = netAssetValue,
-                ComponentWeights = componentValuations.ToDictionary(c => c.Key, c => c.Value.Value / netAssetValue),
-                QuoteCurrency = componentValuations.First().Value.QuoteCurrency,
-                TimeStamp = componentValuations.Max(c => c.Value.TimeStamp),
-                ComponentValuations = componentValuations
+                QuoteCurrency = componentValuations.First().QuoteCurrency,
+                TimeStamp = componentValuations.Max(c => c.TimeStamp),
+                Valuations = componentValuations
             };
         }
 
