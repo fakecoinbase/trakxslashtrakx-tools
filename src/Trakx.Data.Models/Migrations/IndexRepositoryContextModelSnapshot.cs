@@ -27,27 +27,27 @@ namespace Trakx.Data.Models.Migrations
 
                     b.Property<string>("Address")
                         .IsRequired()
-                        .HasColumnType("nvarchar(max)");
+                        .HasColumnType("NVARCHAR(256)");
 
                     b.Property<int>("Decimals")
                         .HasColumnType("int");
 
                     b.Property<string>("IndexDefinitionSymbol")
-                        .HasColumnType("nvarchar(450)");
+                        .HasColumnType("NVARCHAR(50)");
 
                     b.Property<Guid>("InitialValuationComponentValuationId")
                         .HasColumnType("uniqueidentifier");
 
                     b.Property<string>("Name")
                         .IsRequired()
-                        .HasColumnType("nvarchar(max)");
+                        .HasColumnType("NVARCHAR(512)");
 
                     b.Property<decimal>("Quantity")
                         .HasColumnType("decimal(20,0)");
 
                     b.Property<string>("Symbol")
                         .IsRequired()
-                        .HasColumnType("nvarchar(max)");
+                        .HasColumnType("NVARCHAR(50)");
 
                     b.HasKey("ComponentDefinitionId");
 
@@ -72,7 +72,7 @@ namespace Trakx.Data.Models.Migrations
 
                     b.Property<string>("QuoteCurrency")
                         .IsRequired()
-                        .HasColumnType("nvarchar(max)");
+                        .HasColumnType("NVARCHAR(50)");
 
                     b.Property<DateTime>("TimeStamp")
                         .HasColumnType("datetime2");
@@ -90,26 +90,25 @@ namespace Trakx.Data.Models.Migrations
             modelBuilder.Entity("Trakx.Data.Models.Index.IndexDefinition", b =>
                 {
                     b.Property<string>("Symbol")
-                        .HasColumnType("nvarchar(450)");
+                        .HasColumnType("NVARCHAR(50)");
 
                     b.Property<string>("Address")
                         .IsRequired()
-                        .HasColumnType("nvarchar(max)");
+                        .HasColumnType("NVARCHAR(256)");
 
                     b.Property<DateTime?>("CreationDate")
-                        .IsRequired()
                         .HasColumnType("datetime2");
 
                     b.Property<string>("Description")
                         .IsRequired()
-                        .HasColumnType("nvarchar(max)");
+                        .HasColumnType("NVARCHAR(MAX)");
 
                     b.Property<Guid>("InitialValuationIndexValuationId")
                         .HasColumnType("uniqueidentifier");
 
                     b.Property<string>("Name")
                         .IsRequired()
-                        .HasColumnType("nvarchar(max)");
+                        .HasColumnType("NVARCHAR(512)");
 
                     b.Property<int>("NaturalUnit")
                         .HasColumnType("int");

@@ -8,6 +8,7 @@ using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Hosting;
 using Microsoft.OpenApi.Models;
 using Trakx.Data.Market.Common.Pricing;
+using Trakx.Data.Market.Common.Sources.CoinGecko;
 using Trakx.Data.Market.Common.Sources.CryptoCompare;
 using Trakx.Data.Market.Common.Sources.Kaiko.Client;
 using Trakx.Data.Market.Common.Sources.Messari.Client;
@@ -54,11 +55,11 @@ namespace Trakx.Data.Market.Server
             });
 
             services.AddPricing();
-            services.AddKaikoClient();
-            services.AddMessariClient();
+            services.AddCoinGeckoClient();
             services.AddCryptoCompareClient();
 
             services.AddScoped<NavHub>();
+            services.AddMemoryCache();
 
             // DB Creation and Seeding
             services.AddTransient<IDatabaseInitialiser, DatabaseInitialiser>();
@@ -80,7 +81,7 @@ namespace Trakx.Data.Market.Server
             }
 
             SeedDatabase(app);
-
+            
             app.UseSwagger();
             app.UseSwaggerUI(c =>
             {

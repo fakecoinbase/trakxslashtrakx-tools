@@ -1,5 +1,7 @@
 ﻿using System;
 using System.Threading.Tasks;
+using Microsoft.EntityFrameworkCore;
+using Microsoft.Extensions.Caching.Memory;
 using Microsoft.Extensions.Logging;
 
 namespace Trakx.Data.Models.Index
@@ -7,11 +9,15 @@ namespace Trakx.Data.Models.Index
     public class IndexDefinitionProvider : IIndexDefinitionProvider
     {
         private readonly IndexRepositoryContext _dbContext;
+        private readonly IMemoryCache _memoryCache;
         private readonly ILogger<IndexDefinitionProvider> _logger;
 
-        public IndexDefinitionProvider(IndexRepositoryContext dbContext, ILogger<IndexDefinitionProvider> logger)
+        public IndexDefinitionProvider(IndexRepositoryContext dbContext, 
+            IMemoryCache memoryCache,
+            ILogger<IndexDefinitionProvider> logger)
         {
             _dbContext = dbContext;
+            _memoryCache = memoryCache;
             _logger = logger;
         }
 
@@ -19,8 +25,17 @@ namespace Trakx.Data.Models.Index
         {
             try
             {
-                var definition = await _dbContext.IndexDefinitions.FindAsync(indexSymbol.ToLower());
-                return definition;
+                var def = await _memoryCache.GetOrCreateAsync(indexSymbol, async entry =>
+                {
+                    var definitions = _dbContext.IndexDefinitions
+                        .Include(d => d.ComponentDefinitions)
+                        .Include(d => d.InitialValuation)
+                        .ThenInclude(d => d.Valuations);
+                    var result = await definitions.FirstAsync(d => d.Symbol.Equals(indexSymbol));
+                    return result;
+                });
+                
+                return def;
             }
             catch (Exception ex)
             {

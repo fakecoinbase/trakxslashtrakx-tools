@@ -3,7 +3,7 @@ using Microsoft.EntityFrameworkCore.Migrations;
 
 namespace Trakx.Data.Models.Migrations
 {
-    public partial class AddIndexDefintions : Migration
+    public partial class CreateIndexRepository : Migration
     {
         protected override void Up(MigrationBuilder migrationBuilder)
         {
@@ -27,7 +27,7 @@ namespace Trakx.Data.Models.Migrations
                 {
                     ComponentValuationId = table.Column<Guid>(nullable: false),
                     TimeStamp = table.Column<DateTime>(nullable: false),
-                    QuoteCurrency = table.Column<string>(nullable: false),
+                    QuoteCurrency = table.Column<string>(type: "NVARCHAR(50)", nullable: false),
                     Price = table.Column<decimal>(type: "decimal(38, 18)", nullable: false),
                     Value = table.Column<decimal>(type: "decimal(38, 18)", nullable: false),
                     IndexValuationId = table.Column<Guid>(nullable: true)
@@ -47,13 +47,13 @@ namespace Trakx.Data.Models.Migrations
                 name: "IndexDefinitions",
                 columns: table => new
                 {
-                    Symbol = table.Column<string>(nullable: false),
-                    Name = table.Column<string>(nullable: false),
-                    Description = table.Column<string>(nullable: false),
-                    Address = table.Column<string>(nullable: false),
+                    Symbol = table.Column<string>(type: "NVARCHAR(50)", nullable: false),
+                    Name = table.Column<string>(type: "NVARCHAR(512)", nullable: false),
+                    Description = table.Column<string>(type: "NVARCHAR(MAX)", nullable: false),
+                    Address = table.Column<string>(type: "NVARCHAR(256)", nullable: false),
                     InitialValuationIndexValuationId = table.Column<Guid>(nullable: false),
                     NaturalUnit = table.Column<int>(nullable: false),
-                    CreationDate = table.Column<DateTime>(nullable: false)
+                    CreationDate = table.Column<DateTime>(nullable: true)
                 },
                 constraints: table =>
                 {
@@ -71,9 +71,9 @@ namespace Trakx.Data.Models.Migrations
                 columns: table => new
                 {
                     ComponentDefinitionId = table.Column<Guid>(nullable: false),
-                    Address = table.Column<string>(nullable: false),
-                    Name = table.Column<string>(nullable: false),
-                    Symbol = table.Column<string>(nullable: false),
+                    Address = table.Column<string>(type: "NVARCHAR(256)", nullable: false),
+                    Name = table.Column<string>(type: "NVARCHAR(512)", nullable: false),
+                    Symbol = table.Column<string>(type: "NVARCHAR(50)", nullable: false),
                     Decimals = table.Column<int>(nullable: false),
                     Quantity = table.Column<decimal>(nullable: false),
                     InitialValuationComponentValuationId = table.Column<Guid>(nullable: false),

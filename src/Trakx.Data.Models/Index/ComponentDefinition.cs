@@ -1,8 +1,6 @@
 ﻿using System;
 using System.ComponentModel.DataAnnotations;
 using System.ComponentModel.DataAnnotations.Schema;
-using System.Text.Json.Serialization;
-using Trakx.Data.Models.Converters;
 
 namespace Trakx.Data.Models.Index
 {
@@ -10,20 +8,23 @@ namespace Trakx.Data.Models.Index
     {
         [Key, DatabaseGenerated(DatabaseGeneratedOption.Identity)]
         public Guid ComponentDefinitionId { get; set; }
-        
+
         /// <summary>
         /// Address of the smart contract defining the ERC20 contract of the component.
         /// </summary>
+        [Column(TypeName = "NVARCHAR(256)")]
         public string Address { get; set; }
 
         /// <summary>
         /// Common (longer) name for the component (ex: Bitcoin, Ethereum, Litecoin).
         /// </summary>
+        [Column(TypeName = "NVARCHAR(512)")]
         public string Name { get; set; }
 
         /// <summary>
         /// Symbol of the token associated with this component (ex: ETH, BTC, LTC).
         /// </summary>
+        [Column(TypeName = "NVARCHAR(50)")]
         public string Symbol { get; set; }
 
         /// <summary>
@@ -51,7 +52,8 @@ namespace Trakx.Data.Models.Index
             ulong quantity,
             decimal initialPrice,
             string quoteCurrency,
-            DateTime valuationDateTime)
+            DateTime valuationDateTime,
+            int? naturalUnit = default)
         {
             Address = address;
             Name = name;

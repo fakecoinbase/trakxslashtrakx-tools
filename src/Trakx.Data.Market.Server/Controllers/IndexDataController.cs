@@ -44,7 +44,7 @@ namespace Trakx.Data.Market.Server.Controllers
             if (definition == IndexDefinition.Default)
                 return $"failed to retrieve details for index {indexSymbol}";
 
-            var pricedDetails = await _navCalculator.GetIndexPricedByCryptoCompare(indexSymbol)
+            var pricedDetails = await _navCalculator.GetIndexPriced(indexSymbol)
                 .ConfigureAwait(false);
 
             return new JsonResult(pricedDetails);

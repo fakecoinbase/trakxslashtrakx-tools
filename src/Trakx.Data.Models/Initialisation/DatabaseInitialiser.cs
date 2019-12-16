@@ -1,10 +1,11 @@
 ﻿using System;
 using System.Collections.Generic;
-using System.Text.Json;
+using System.Runtime.CompilerServices;
 using System.Threading.Tasks;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Logging;
 using Trakx.Data.Models.Index;
+[assembly:InternalsVisibleTo("Trakx.Data.Market.Tests")]
 
 namespace Trakx.Data.Models.Initialisation
 {
@@ -37,6 +38,13 @@ namespace Trakx.Data.Models.Initialisation
             if (await _dbContext.IndexDefinitions.AnyAsync()
                 .ConfigureAwait(false)) return;
 
+            var knownIndexes = GetKnownIndexes();
+
+            _dbContext.IndexDefinitions.AddRange(knownIndexes);
+        }
+
+        internal static IndexDefinition[] GetKnownIndexes()
+        {
             var firstOctober = new DateTime(2019, 10, 1);
 
             #region Computation Services
@@ -70,15 +78,13 @@ namespace Trakx.Data.Models.Initialisation
                             "ANKR",
                             18,
                             1010,
-                            0.080104855165688m,
+                            0.003302m,
                             Usd,
                             firstOctober)
                     },
                     "0x7210cc724480c85b893a9febbecc24a8dc4ff1de",
                     2,
                     firstOctober);
-
-            //_logger.LogDebug(JsonSerializer.Serialize(computationServices));
             #endregion
 
             #region Financial Services
@@ -119,8 +125,6 @@ namespace Trakx.Data.Models.Initialisation
                 "0xa308dde45d2520108d16078457dbd489c3947e8a",
                 13,
                 firstOctober);
-
-            //_logger.LogDebug(JsonSerializer.Serialize(financialServices));
             #endregion
 
             #region Infrastructure Services
@@ -134,7 +138,7 @@ namespace Trakx.Data.Models.Initialisation
                         "0x6c6EE5e31d828De241282B9606C8e98Ea48526E2",
                         "HoloToken",
                         "HOT",
-                        8,
+                        18,
                         4128989636237,
                         0.0008073m,
                         Usd,
@@ -161,8 +165,6 @@ namespace Trakx.Data.Models.Initialisation
                 "0x5a3996551e34ee9f3c0496af727dd07e8be127f2",
                 11,
                 firstOctober);
-
-            //_logger.LogDebug(JsonSerializer.Serialize(infrastructureServices));
             #endregion
 
             #region Scalability Services
@@ -212,8 +214,6 @@ namespace Trakx.Data.Models.Initialisation
                 "0xb2fc2d89e09e0d903c33f28608aecbe9b402ba59",
                 2,
                 firstOctober);
-
-            //_logger.LogDebug(JsonSerializer.Serialize(scalabilityServices));
             #endregion
 
             #region Storage Services
@@ -263,20 +263,17 @@ namespace Trakx.Data.Models.Initialisation
                 "0xe05168c3fa30e93d3f1667b35e9456aac9b5519a",
                 11,
                 firstOctober);
-
-            //_logger.LogDebug(JsonSerializer.Serialize(scalabilityServices));
             #endregion
 
-            await _dbContext.IndexDefinitions.AddRangeAsync(new[]
+            return new[]
             {
                 computationServices,
                 financialServices,
                 infrastructureServices,
                 scalabilityServices,
                 storageServices
-            }).ConfigureAwait(false);
-
-            await _dbContext.SaveChangesAsync();
+            };
         }
+
     }
 }

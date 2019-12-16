@@ -42,7 +42,7 @@ namespace Trakx.Data.Market.Common.Pricing
                     decimal nav;
                     try
                     {
-                        nav = await _navCalculator.CalculateCryptoCompareNav(symbol);
+                        nav = await _navCalculator.CalculateNav(symbol);
                     }
                     catch (Exception ex)
                     {

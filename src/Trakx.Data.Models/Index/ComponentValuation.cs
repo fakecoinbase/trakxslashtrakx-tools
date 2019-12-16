@@ -37,6 +37,7 @@ namespace Trakx.Data.Models.Index
         /// <summary>
         /// Currency in which the valuation is expressed.
         /// </summary>
+        [Column(TypeName = "NVARCHAR(50)")]
         public string QuoteCurrency { get; set; }
 
         /// <summary>
