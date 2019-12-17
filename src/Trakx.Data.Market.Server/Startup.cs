@@ -42,7 +42,7 @@ namespace Trakx.Data.Market.Server
             services.AddDefaultIdentity<IdentityUser>().AddEntityFrameworkStores<ApplicationDbContext>();
             services.AddDbContext<IndexRepositoryContext>(options =>
                 options.UseSqlServer(Configuration.GetConnectionString("ContainerConnection")));
-            
+
             services.AddRazorPages();
             services.AddServerSideBlazor();
             services.AddSignalR().AddJsonProtocol();
@@ -54,11 +54,12 @@ namespace Trakx.Data.Market.Server
                 c.SwaggerDoc(Version, new OpenApiInfo { Title = ApiName, Version = Version });
             });
 
+            services.AddScoped<IIndexDefinitionProvider, IndexDefinitionProvider>();
+            services.AddScoped<NavHub>();
             services.AddPricing();
             services.AddCoinGeckoClient();
             services.AddCryptoCompareClient();
 
-            services.AddScoped<NavHub>();
             services.AddMemoryCache();
 
             // DB Creation and Seeding

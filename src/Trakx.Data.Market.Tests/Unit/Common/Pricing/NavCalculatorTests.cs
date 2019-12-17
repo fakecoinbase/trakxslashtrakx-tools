@@ -39,7 +39,7 @@ namespace Trakx.Data.Market.Tests.Unit.Common.Pricing
 
             _logger = Substitute.For<ILogger<NavCalculator>>();
 
-            _navCalculator = new NavCalculator(cryptoCompareClient, _coinGeckoClient, indexProvider, _logger);
+            _navCalculator = new NavCalculator(cryptoCompareClient, _coinGeckoClient, _logger);
         }
 
         private IIndexDefinitionProvider PrepareIndexDefinitionProvider()
@@ -86,7 +86,8 @@ namespace Trakx.Data.Market.Tests.Unit.Common.Pricing
         [Fact]
         public async Task CalculateCryptoCompareNav_should_get_prices_from_CryptoCompareClient()
         {
-            var nav = await _navCalculator.CalculateNav("IDX")
+            var idx = await PrepareIndexDefinitionProvider().GetDefinitionFromSymbol("IDX");
+            var nav = await _navCalculator.CalculateNav(idx)
                 .ConfigureAwait(false);
             nav.Should().Be(1.25m);
         }
@@ -94,7 +95,8 @@ namespace Trakx.Data.Market.Tests.Unit.Common.Pricing
         [Fact]
         public async Task GetCryptoCompareIndexDetailsPriced_should_populate_details_with_current_prices()
         {
-            var priced = await _navCalculator.GetIndexPriced("IDX")
+            var idx = await PrepareIndexDefinitionProvider().GetDefinitionFromSymbol("IDX");
+            var priced = await _navCalculator.GetIndexPriced(idx)
                 .ConfigureAwait(false);
 
             var price1i = priced.InitialValuation.ValuationsBySymbol["SYM1"];
@@ -126,9 +128,9 @@ namespace Trakx.Data.Market.Tests.Unit.Common.Pricing
                 new CryptoCompareClient(
                 new PriceDoublingCryptoCompareHttpHandler(strIndex.InitialValuation.Valuations.ToArray()));
 
-             var navCalculator = new NavCalculator(cryptoCompareClient, _coinGeckoClient, indexProvider, _logger);
+             var navCalculator = new NavCalculator(cryptoCompareClient, _coinGeckoClient, _logger);
 
-            var nav = await navCalculator.CalculateNav("L1STR004")
+            var nav = await navCalculator.CalculateNav(strIndex)
                 .ConfigureAwait(false);
 
             nav.Should().Be(strIndex.InitialValuation.NetAssetValue * 2);

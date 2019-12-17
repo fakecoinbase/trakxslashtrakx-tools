@@ -1,7 +1,10 @@
-﻿using System.Threading.Channels;
- using Microsoft.AspNetCore.SignalR;
+﻿using System;
+using System.Threading.Channels;
+using System.Threading.Tasks;
+using Microsoft.AspNetCore.SignalR;
 using Trakx.Data.Market.Common.Extensions;
 using Trakx.Data.Market.Common.Pricing;
+using Trakx.Data.Models.Index;
 
 namespace Trakx.Data.Market.Server.Hubs
 {
@@ -14,14 +17,15 @@ namespace Trakx.Data.Market.Server.Hubs
             _navUpdater = navUpdater;
         }
 
-        public void RegisterToNavUpdates(string symbol)
+        public async Task RegisterClientToNavUpdates(Guid clientId, IndexDefinition index)
         {
-            _navUpdater.RegisterToNavUpdates(symbol);
+            await _navUpdater.RegisterToNavUpdates(clientId, index)
+                .ConfigureAwait(false);
         }
 
-        public void DeregisterFromNavUpdates(string symbol)
+        public bool DeregisterClientFromNavUpdates(Guid clientId, string symbol)
         {
-            _navUpdater.DeregisterFromNavUpdates(symbol);
+            return _navUpdater.DeregisterFromNavUpdates(clientId, symbol);
         }
 
         public ChannelReader<NavUpdate> NavUpdatesStream()

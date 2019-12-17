@@ -14,17 +14,14 @@ namespace Trakx.Data.Market.Common.Pricing
         private const string Usd = "USD";
         private readonly CryptoCompareClient _cryptoCompareClient;
         private readonly ICoinGeckoClient _coinGeckoClient;
-        private readonly IIndexDefinitionProvider _indexProvider;
 
         public NavCalculator(
             CryptoCompareClient cryptoCompareClient,
             ICoinGeckoClient coinGeckoClient,
-            IIndexDefinitionProvider indexDetailsProvider, 
             ILogger<NavCalculator> logger)
         {
             _cryptoCompareClient = cryptoCompareClient;
             _coinGeckoClient = coinGeckoClient;
-            _indexProvider = indexDetailsProvider;
             _logger = logger;
         }
 
@@ -32,23 +29,19 @@ namespace Trakx.Data.Market.Common.Pricing
 
         #region CryptoCompare
 
-        public async Task<decimal> CalculateNav(string indexSymbol)
+        public async Task<decimal> CalculateNav(IndexDefinition index)
         {
-            var priced = await GetIndexPriced(indexSymbol).ConfigureAwait(false);
+            var priced = await GetIndexPriced(index).ConfigureAwait(false);
             return priced.CurrentValuation.NetAssetValue;
         }
 
-        public async Task<IndexPriced> GetIndexPriced(string indexSymbol)
+        public async Task<IndexPriced> GetIndexPriced(IndexDefinition index)
         {
-            var definition = await _indexProvider.GetDefinitionFromSymbol(indexSymbol)
-                .ConfigureAwait(false);
-            if (definition == IndexDefinition.Default) return IndexPriced.Default;
-
-            var getPricesTasks = definition.ComponentDefinitions.Select(GetUsdPrice).ToArray();
+            var getPricesTasks = index.ComponentDefinitions.Select(GetUsdPrice).ToArray();
 
             await Task.WhenAll(getPricesTasks).ConfigureAwait(false);
 
-            var componentsPriced = definition.ComponentDefinitions.Select(
+            var componentsPriced = index.ComponentDefinitions.Select(
                 c =>
                 {
                     var price = getPricesTasks.Single(t => t.Result.Key.Equals(c.Symbol)).Result.Value;
@@ -56,7 +49,7 @@ namespace Trakx.Data.Market.Common.Pricing
                     return valuation;
                 }).ToList();
 
-            var indexPriced = new IndexPriced(definition, componentsPriced);
+            var indexPriced = new IndexPriced(index, componentsPriced);
 
             return indexPriced;
         }
@@ -68,11 +61,21 @@ namespace Trakx.Data.Market.Common.Pricing
                 var result = await GetCoinGeckoUsdPrice(c);
                 return result;
             }
-            catch
+            catch (Exception e)
+            {
+                _logger.LogWarning(e, "Failed to retrieve price from CoinGecko");
+            }
+
+            try
             {
                 var fallback = await GetCryptoCompareUsdPrice(c);
                 return fallback;
             }
+            catch (Exception e)
+            {
+                _logger.LogWarning(e, "Failed to retrieve price from CryptoCompare");
+            }
+
             throw new FailedToRetrievePriceException($"Failed to retrieve USD price for component {c.Symbol}");
         }
 

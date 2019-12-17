@@ -1,73 +1,126 @@
 ﻿using System;
 using System.Collections.Concurrent;
+using System.Linq;
 using System.Reactive.Linq;
 using System.Reactive.Subjects;
 using System.Reactive.Threading.Tasks;
+using System.Threading;
 using System.Threading.Tasks;
 using Microsoft.Extensions.Logging;
 using Trakx.Data.Models.Index;
+using Guid = System.Guid;
 
 namespace Trakx.Data.Market.Common.Pricing
 {
     public class NavUpdater : INavUpdater
     {
+        private class UpdatesWithListeners : IDisposable
+        {
+            public UpdatesWithListeners(IObservable<NavUpdate> updates, 
+                ConcurrentDictionary<Guid, bool> listeners,
+                CancellationTokenSource cancellationTokenSource)
+            {
+                Updates = updates;
+                CancellationTokenSource = cancellationTokenSource;
+                Listeners = listeners;
+            }
+
+            public IObservable<NavUpdate> Updates { get; }
+            public CancellationTokenSource CancellationTokenSource { get; }
+            public ConcurrentDictionary<Guid, bool> Listeners { get; }
+
+            public void Dispose()
+            {
+                CancellationTokenSource?.Dispose();
+            }
+        }
+
         private readonly INavCalculator _navCalculator;
-        private readonly IIndexDefinitionProvider _indexProvider;
         private readonly ILogger<NavUpdater> _logger;
 
         private readonly Subject<NavUpdate> _subject;
-        private readonly ConcurrentDictionary<string, IDisposable> _updateSubscriptions;
+        private readonly ConcurrentDictionary<string, UpdatesWithListeners> _priceUpdatesBySymbol;
 
         public IObservable<NavUpdate> NavUpdates { get; }
 
-        public NavUpdater(INavCalculator navCalculator, IIndexDefinitionProvider indexProvider, ILogger<NavUpdater> logger)
+        public NavUpdater(INavCalculator navCalculator, 
+            ILogger<NavUpdater> logger)
         {
             _navCalculator = navCalculator;
-            _indexProvider = indexProvider;
             _logger = logger;
 
             _subject = new Subject<NavUpdate>();
             NavUpdates = _subject.AsObservable();
-            _updateSubscriptions = new ConcurrentDictionary<string, IDisposable>();
+            
+            _priceUpdatesBySymbol = new ConcurrentDictionary<string, UpdatesWithListeners>();
         }
 
-        public async Task RegisterToNavUpdates(string symbol)
+        public async Task<bool> RegisterToNavUpdates(Guid clientId, IndexDefinition index)
         {
-            var definitionFromSymbol = await _indexProvider.GetDefinitionFromSymbol(symbol);
-            if(definitionFromSymbol == IndexDefinition.Default) return;
+            var updates = _priceUpdatesBySymbol.GetOrAdd(index.Symbol,
+                s => AddUpdatesToMainStream(index));
 
+            return updates.Listeners.TryAdd(clientId, true);
+        }
+
+        private UpdatesWithListeners AddUpdatesToMainStream(IndexDefinition index)
+        {
+            var updates = CreateUpdateStreamForSymbol(index);
+            updates.UpdateStream.Subscribe(_subject);
+            var updatesWithListeners = 
+                new UpdatesWithListeners(updates.UpdateStream, 
+                    new ConcurrentDictionary<Guid, bool>(),
+                    updates.CancellationTokenSource);
+
+            return updatesWithListeners;
+        }
+
+        private (CancellationTokenSource CancellationTokenSource, IObservable<NavUpdate> UpdateStream)
+            CreateUpdateStreamForSymbol(IndexDefinition index)
+        {
+            var cts = new CancellationTokenSource();
             var updateStream = Observable.Interval(TimeSpan.FromSeconds(2))
                 .Select(async t =>
                 {
                     decimal nav;
                     try
                     {
-                        nav = await _navCalculator.CalculateNav(symbol);
+                        nav = await _navCalculator.CalculateNav(index);
                     }
                     catch (Exception ex)
                     {
-                        _logger.LogError(ex, "Failed to calculate NAV for {0}", symbol);
+                        _logger.LogError(ex, "Failed to calculate NAV for {0}", index?.Symbol ?? "N/A");
                         nav = 0;
                     }
-                    var update = new NavUpdate(symbol, nav);
-                    _logger.LogDebug("Nav Updated: {0} - {1}", symbol, nav);
-                    
+
+                    var update = new NavUpdate(index.Symbol, nav);
+                    _logger.LogDebug("Nav Updated: {0} - {1}", index.Symbol, nav);
+
                     return update;
                 })
                 .Select(calculationTask => calculationTask.ToObservable())
-                .Concat();
-            
-            var subscription = updateStream
+                .Concat()
                 .Do(n => _logger.LogDebug("Pushing {0}: {1} - {2}", n.TimeStamp, n.Symbol, n.Value))
-                .Subscribe(_subject);
+                .TakeUntil(_ => cts.Token.IsCancellationRequested);
 
-            if (_updateSubscriptions.TryAdd(symbol, subscription)) return;
-            subscription.Dispose();
+            return (cts, updateStream);
         }
 
-        public void DeregisterFromNavUpdates(string symbol)
+        public bool DeregisterFromNavUpdates(Guid clientId, string symbol)
         {
-            if(_updateSubscriptions.TryRemove(symbol, out var subscription)) subscription?.Dispose();
+            if (!_priceUpdatesBySymbol.TryGetValue(symbol, out var subscriptions))
+                return false;
+
+            lock (subscriptions)
+            {
+                var removed = subscriptions.Listeners.TryRemove(clientId, out var _);
+                if (subscriptions.Listeners.Any()) return removed;
+
+                _priceUpdatesBySymbol.TryRemove(symbol, out var _);
+                subscriptions.CancellationTokenSource.Cancel();
+                subscriptions.Dispose();
+                return removed;
+            }
         }
     }
 }

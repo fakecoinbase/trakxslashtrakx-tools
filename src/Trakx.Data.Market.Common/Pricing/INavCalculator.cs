@@ -5,7 +5,7 @@ namespace Trakx.Data.Market.Common.Pricing
 {
     public interface INavCalculator
     {
-        Task<decimal> CalculateNav(string index);
-        Task<IndexPriced> GetIndexPriced(string indexSymbol);
+        Task<decimal> CalculateNav(IndexDefinition index);
+        Task<IndexPriced> GetIndexPriced(IndexDefinition index);
     }
 }
