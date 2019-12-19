@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Threading.Channels;
+using Microsoft.Extensions.Logging;
 
 namespace Trakx.Data.Market.Common.Extensions
 {
@@ -8,7 +9,10 @@ namespace Trakx.Data.Market.Common.Extensions
     /// </summary>
     public static class ObservableExtensions
     {
-        public static ChannelReader<T> AsChannelReader<T>(this IObservable<T> observable, int? maxBufferSize = null)
+        public static ChannelReader<T> AsChannelReader<T, U>(
+            this IObservable<T> observable, 
+            int? maxBufferSize = null,
+            ILogger<U> logger = null)
         {
             // This sample shows adapting an observable to a ChannelReader without 
             // back pressure, if the connection is slower than the producer, memory will

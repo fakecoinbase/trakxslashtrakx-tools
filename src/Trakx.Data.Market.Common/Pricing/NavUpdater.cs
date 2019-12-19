@@ -66,7 +66,12 @@ namespace Trakx.Data.Market.Common.Pricing
         private UpdatesWithListeners AddUpdatesToMainStream(IndexDefinition index)
         {
             var updates = CreateUpdateStreamForSymbol(index);
-            updates.UpdateStream.Subscribe(_subject);
+            updates.UpdateStream.Subscribe(_subject.OnNext, 
+                _subject.OnError,
+                () =>
+                {
+                    _logger.LogDebug($"Updates for {index.Symbol} have stopped.");
+                });
             var updatesWithListeners = 
                 new UpdatesWithListeners(updates.UpdateStream, 
                     new ConcurrentDictionary<Guid, bool>(),
