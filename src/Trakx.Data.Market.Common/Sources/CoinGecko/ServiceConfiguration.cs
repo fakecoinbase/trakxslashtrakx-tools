@@ -6,8 +6,10 @@ namespace Trakx.Data.Market.Common.Sources.CoinGecko
     {
         public static IServiceCollection AddCoinGeckoClient(this IServiceCollection services)
         {
+            services.AddSingleton<ClientFactory>();
             services.AddSingleton<ICoinGeckoClient, CoinGeckoClient>();
-            services.AddHttpClient<ICoinGeckoClient>("CoinGeckoClients");
+            services.AddHttpClient<global::CoinGecko.Clients.CoinsClient>("CoinsClient");
+            services.AddHttpClient<global::CoinGecko.Clients.SimpleClient>("SimpleClient");
 
             return services;
         }

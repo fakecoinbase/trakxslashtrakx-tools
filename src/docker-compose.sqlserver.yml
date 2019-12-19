@@ -1,0 +1,23 @@
+version: '3.5'
+
+services:
+  sqlserver:
+    image: mcr.microsoft.com/mssql/server
+    volumes:
+      - dbdata:/var/opt/mssql
+    environment:
+      - SA_PASSWORD=yourVeryStrong(!)Password
+      - ACCEPT_EULA=Y
+    ports:
+      - 1533:1433 #expose port, so can connect to it using host: 'localhost,1533' | user: sa, password: yourVeryStrong(!)Password
+    networks:
+      - bb
+
+volumes:
+  dbdata:
+
+networks:
+  bb:
+    name: bb_network
+    ipam:
+      driver: default

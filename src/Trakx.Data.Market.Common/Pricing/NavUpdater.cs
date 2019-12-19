@@ -1,75 +1,130 @@
 ﻿using System;
 using System.Collections.Concurrent;
+using System.Linq;
 using System.Reactive.Linq;
 using System.Reactive.Subjects;
 using System.Reactive.Threading.Tasks;
+using System.Threading;
 using Microsoft.Extensions.Logging;
-using Trakx.Data.Market.Common.Indexes;
+using Trakx.Data.Models.Index;
+using Guid = System.Guid;
 
 namespace Trakx.Data.Market.Common.Pricing
 {
     public class NavUpdater : INavUpdater
     {
+        private sealed class UpdatesWithListeners : IDisposable
+        {
+            public UpdatesWithListeners(IObservable<NavUpdate> updates, 
+                ConcurrentDictionary<Guid, bool> listeners,
+                CancellationTokenSource cancellationTokenSource)
+            {
+                _updates = updates;
+                CancellationTokenSource = cancellationTokenSource;
+                Listeners = listeners;
+            }
+
+            private readonly IObservable<NavUpdate> _updates;
+            public CancellationTokenSource CancellationTokenSource { get; }
+            public ConcurrentDictionary<Guid, bool> Listeners { get; }
+
+            public void Dispose()
+            {
+                CancellationTokenSource?.Dispose();
+            }
+        }
+
         private readonly INavCalculator _navCalculator;
         private readonly ILogger<NavUpdater> _logger;
 
         private readonly Subject<NavUpdate> _subject;
-        private readonly ConcurrentDictionary<string, IDisposable> _updateSubscriptions;
+        private readonly ConcurrentDictionary<string, UpdatesWithListeners> _priceUpdatesBySymbol;
 
         public IObservable<NavUpdate> NavUpdates { get; }
 
-        public NavUpdater(INavCalculator navCalculator, ILogger<NavUpdater> logger)
+        public NavUpdater(INavCalculator navCalculator, 
+            ILogger<NavUpdater> logger)
         {
             _navCalculator = navCalculator;
             _logger = logger;
 
             _subject = new Subject<NavUpdate>();
             NavUpdates = _subject.AsObservable();
-            _updateSubscriptions = new ConcurrentDictionary<string, IDisposable>();
+            
+            _priceUpdatesBySymbol = new ConcurrentDictionary<string, UpdatesWithListeners>();
         }
 
-        public void RegisterToNavUpdates(string symbol)
+        public bool RegisterToNavUpdates(Guid clientId, IndexDefinition index)
         {
-            if (!Enum.TryParse(symbol, out KnownIndexes indexSymbol))
-            {
-                _logger.LogWarning("Known index symbols are [{0}]", 
-                    string.Join(", ", Enum.GetNames(typeof(KnownIndexes))));
-                return;
-            }
+            var updates = _priceUpdatesBySymbol.GetOrAdd(index.Symbol,
+                s => AddUpdatesToMainStream(index));
 
+            return updates.Listeners.TryAdd(clientId, true);
+        }
+
+        private UpdatesWithListeners AddUpdatesToMainStream(IndexDefinition index)
+        {
+            var updates = CreateUpdateStreamForSymbol(index);
+            updates.UpdateStream.Subscribe(_subject.OnNext, 
+                _subject.OnError,
+                () =>
+                {
+                    _logger.LogDebug($"Updates for {index.Symbol} have stopped.");
+                });
+            var updatesWithListeners = 
+                new UpdatesWithListeners(updates.UpdateStream, 
+                    new ConcurrentDictionary<Guid, bool>(),
+                    updates.CancellationTokenSource);
+
+            return updatesWithListeners;
+        }
+
+        private (CancellationTokenSource CancellationTokenSource, IObservable<NavUpdate> UpdateStream)
+            CreateUpdateStreamForSymbol(IndexDefinition index)
+        {
+            var cts = new CancellationTokenSource();
             var updateStream = Observable.Interval(TimeSpan.FromSeconds(2))
                 .Select(async t =>
                 {
                     decimal nav;
                     try
                     {
-                        nav = await _navCalculator.CalculateCryptoCompareNav(indexSymbol);
-                        //nav = await _navCalculator.CalculateCryptoCompareNav(indexSymbol);
+                        nav = await _navCalculator.CalculateNav(index);
                     }
                     catch (Exception ex)
                     {
-                        _logger.LogError(ex, "Failed to calculate NAV for {0}", indexSymbol);
+                        _logger.LogError(ex, "Failed to calculate NAV for {0}", index?.Symbol ?? "N/A");
                         nav = 0;
                     }
-                    var update = new NavUpdate(symbol, nav);
-                    _logger.LogDebug("Nav Updated: {0} - {1}", symbol, nav);
-                    
+
+                    var update = new NavUpdate(index.Symbol, nav);
+                    _logger.LogDebug("Nav Updated: {0} - {1}", index.Symbol, nav);
+
                     return update;
                 })
                 .Select(calculationTask => calculationTask.ToObservable())
-                .Concat();
-            
-            var subscription = updateStream
-                .Do(n => _logger.LogDebug("Pushing {0}: {1} - {2}", n.TimeStamp, n.Symbol, n.Value))
-                .Subscribe(_subject);
+                .Concat()
+                .Do(n => _logger.LogTrace( "Pushing {0}: {1} - {2}", n.TimeStamp, n.Symbol, n.Value))
+                .TakeUntil(_ => cts.IsCancellationRequested);
 
-            if (_updateSubscriptions.TryAdd(symbol, subscription)) return;
-            subscription.Dispose();
+            return (cts, updateStream);
         }
 
-        public void DeregisterFromNavUpdates(string symbol)
+        public bool DeregisterFromNavUpdates(Guid clientId, string symbol)
         {
-            if(_updateSubscriptions.TryRemove(symbol, out var subscription)) subscription?.Dispose();
+            if (!_priceUpdatesBySymbol.TryGetValue(symbol, out var subscriptions))
+                return false;
+
+            lock (subscriptions)
+            {
+                var removed = subscriptions.Listeners.TryRemove(clientId, out var _);
+                if (subscriptions.Listeners.Any()) return removed;
+
+                _priceUpdatesBySymbol.TryRemove(symbol, out var _);
+                subscriptions.CancellationTokenSource.Cancel();
+                subscriptions.Dispose();
+                return removed;
+            }
         }
     }
 }

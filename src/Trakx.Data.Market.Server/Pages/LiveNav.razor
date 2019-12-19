@@ -1,22 +1,31 @@
 ﻿@page "/livenav"
 @using System.Collections.Concurrent
+@using System.Text.Json
 @using System.Threading
-@using Microsoft.AspNetCore.Components
-@using Trakx.Data.Market.Server.Hubs
 @using Microsoft.AspNetCore.SignalR.Client;
 @using Microsoft.Extensions.DependencyInjection
+@using Microsoft.Extensions.Logging
 @using Trakx.Data.Market.Common.Pricing
-@inject NavHub Hub
+@using Trakx.Data.Market.Server.Hubs
+@using Trakx.Data.Models.Index
 @inject NavigationManager NavigationManager
+@inject IIndexDefinitionProvider IndexDefinitionProvider
+@implements IDisposable
+@implements INavHubClient
 
 <h1>Live Index NAV</h1>
 
 <input id="symbol" @onchange="ChangeSymbol" />
 <button class="btn btn-primary" id="addSymbol" @onclick="AddSymbol">Add</button>
-<button class="btn btn-primary" id="removeSymbol" @onclick="RemoveSymbol">Remove</button>
+<button class="btn btn-primary" id="removeSymbol" @onclick="RemoveCurrentSymbol">Remove</button>
 <br />
+
 <p>NavHub Uri: @_liveNavUri</p>
 <br />
+
+<p>@_message</p>
+<br />
+
 <table class="table small">
     @if (_updatesBySymbol.Any())
     {
@@ -38,23 +47,50 @@
 <br />
 
 @code {
+    private Uri _liveNavUri;
+    private HubConnection _connection;
 
     private string _symbol = string.Empty;
-    private string _update = "Register for updates using by adding and index above";
+    private string _message = "Register for updates by adding and index symbol above";
 
-    private ConcurrentDictionary<string, NavUpdate> _updatesBySymbol = new ConcurrentDictionary<string, NavUpdate>();
-    private Uri _liveNavUri;
+    private readonly ConcurrentDictionary<string, NavUpdate> _updatesBySymbol = new ConcurrentDictionary<string, NavUpdate>();
+    private readonly Guid _clientId = Guid.NewGuid();
 
-    public void AddSymbol()
+    public async Task AddSymbol()
     {
-        var newSymbol = _symbol;
-        Hub.RegisterToNavUpdates(newSymbol);
-        _updatesBySymbol.TryAdd(_symbol, new NavUpdate(newSymbol, 0));
+        var addMe = _symbol;
+
+        var index = await IndexDefinitionProvider.GetDefinitionFromSymbol(addMe).ConfigureAwait(false);
+        if (index == IndexDefinition.Default)
+        {
+            _message = $"Unable to retrieve definition for index {addMe}";
+            return;
+        }
+
+        try
+        {
+            await _connection.InvokeAsync<bool>(nameof(NavHub.RegisterClientToNavUpdates),
+                _clientId, index.Id).ConfigureAwait(false);
+        }
+        catch (Exception e)
+        {
+            _message = $"Failed to add symbol {addMe}";
+        }
+
+        _updatesBySymbol.TryAdd(_symbol, new NavUpdate(addMe, 0));
     }
 
-    public void RemoveSymbol()
+    public async Task RemoveCurrentSymbol()
     {
-        Hub.DeregisterFromNavUpdates(_symbol);
+        var deleteMe = _symbol;
+
+        await RemoveSymbol(deleteMe);
+    }
+
+    private async Task RemoveSymbol(string deleteMe)
+    {
+        await _connection.InvokeAsync<bool>(nameof(NavHub.DeregisterClientFromNavUpdates),
+            _clientId, deleteMe).ConfigureAwait(false);
         _updatesBySymbol.TryRemove(_symbol, out var _);
     }
 
@@ -63,29 +99,40 @@
         _symbol = change.Value?.ToString() ?? string.Empty;
     }
 
-    protected override async Task OnInitializedAsync()
+    public async Task ReceiveNavUpdate(NavUpdate update)
     {
-        _updatesBySymbol = new ConcurrentDictionary<string, NavUpdate>();
-
-        if (!Uri.TryCreate(new Uri(NavigationManager.BaseUri), "/hubs/nav", out var liveNavUri)) return;
-        _liveNavUri = liveNavUri;
-        var connection = new HubConnectionBuilder()
-            .WithUrl(_liveNavUri)
-            .AddJsonProtocol()
-            .Build();
-
-        await connection.StartAsync();
-
-        var channel = await connection.StreamAsChannelAsync<NavUpdate>("NavUpdatesStream", CancellationToken.None);
-        while (await channel.WaitToReadAsync())
+        try
         {
-            while (channel.TryRead(out var update))
-            {
-                var updateResult = _updatesBySymbol.AddOrUpdate(update.Symbol, _ => update,
-                    (s, oldValue) => (oldValue.TimeStamp < update.TimeStamp) ? update : oldValue);
-                
-                if(updateResult == update) StateHasChanged();
-            }
+            if (!_updatesBySymbol.ContainsKey(update.Symbol)) return;
+            var updateResult = _updatesBySymbol.AddOrUpdate(update.Symbol, _ => update,
+                (s, oldValue) => (oldValue.TimeStamp < update.TimeStamp) ? update : oldValue);
+            if (updateResult == update) await InvokeAsync(StateHasChanged);
+        }
+        catch (Exception e)
+        {
+            _message = $"Failed to process NavUpdate for {JsonSerializer.Serialize(update)}";
         }
     }
+
+    protected override async Task OnInitializedAsync()
+    {
+        if (!Uri.TryCreate(new Uri(NavigationManager.BaseUri), "/hubs/nav", out var liveNavUri)) return;
+        _liveNavUri = liveNavUri;
+        _connection = new HubConnectionBuilder()
+            .WithUrl(_liveNavUri)
+            .AddMessagePackProtocol()
+            .Build();
+
+        await _connection.StartAsync();
+        _connection.On<NavUpdate>(nameof(INavHubClient.ReceiveNavUpdate), ReceiveNavUpdate);
+    }
+
+    public void Dispose()
+    {
+        foreach (var symbol in _updatesBySymbol.Keys)
+        {
+            RemoveSymbol(symbol).GetAwaiter().GetResult();
+        }
+    }
+
 }

@@ -1,5 +1,4 @@
 ﻿using FluentAssertions;
-using Microsoft.Extensions.ObjectPool;
 using Trakx.Data.Market.Common.Sources.BitGo;
 using Xunit;
 

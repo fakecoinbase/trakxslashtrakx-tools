@@ -3,10 +3,8 @@ using System.Collections.Generic;
 using System.IO;
 using System.Linq;
 using System.Net.Http;
-using System.Threading;
 using System.Threading.Tasks;
 using CoinGecko.Clients;
-using CoinGecko.Entities.Response.Coins;
 using CsvHelper;
 using CsvHelper.Configuration;
 using Polly;
@@ -25,7 +23,10 @@ namespace Trakx.Data.Market.Tests.Tools
 
         public HistoricalMarketCap()
         {
-            _tokens = new[] { "chsb", "cnd", "gvt", "mln", "nmr", "omg", "poly", "snx", "tct", "tnb" };
+            //_tokens = new[] { "chsb", "cnd", "gvt", "mln", "nmr", "omg", "poly", "snx", "tct", "tnb" };
+            //_tokens = new[] { "bnb", "edo", "ht", "kcs", "leo" };
+            _tokens = new[] { "btc" };
+            //_tokens = new[] { "ast", "bnt", "bts", "dgtx", "knc", "lrc", "xin", "zrx" };
             _httpClientHandler = _httpClientHandler = new HttpClientHandler();
             _httpClient = new HttpClient(_httpClientHandler);
             _coinsClient = new CoinGecko.Clients.CoinsClient(_httpClient);
@@ -71,7 +72,7 @@ namespace Trakx.Data.Market.Tests.Tools
             foreach (var coinId in coinIds)
             {
                 await foreach (var historicalData in GetHistoryByCoinId(coinId, 
-                    DateTime.Today.AddYears(-2),
+                    DateTime.Today.AddDays(-5).AddYears(-2),
                     DateTime.Today))
                 {
                     csvWriter.WriteRecord(historicalData);

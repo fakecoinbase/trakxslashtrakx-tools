@@ -1,10 +1,8 @@
 ﻿using Microsoft.AspNetCore.Mvc;
 using Microsoft.Extensions.Logging;
-using System;
-using System.Globalization;
 using System.Threading.Tasks;
-using Trakx.Data.Market.Common.Indexes;
 using Trakx.Data.Market.Common.Pricing;
+using Trakx.Data.Models.Index;
 
 namespace Trakx.Data.Market.Server.Controllers
 {
@@ -12,13 +10,15 @@ namespace Trakx.Data.Market.Server.Controllers
     [Route("[controller]/[action]")]
     public class NavController : ControllerBase
     {
+        private readonly IIndexDefinitionProvider _indexProvider;
         private readonly ILogger<NavController> _logger;
         private readonly INavCalculator _navCalculator;
 
-        public NavController(IIndexDetailsProvider indexDetailsProvider, 
+        public NavController(IIndexDefinitionProvider indexProvider, 
             INavCalculator navCalculator,
             ILogger<NavController> logger)
         {
+            _indexProvider = indexProvider;
             _logger = logger;
             _navCalculator = navCalculator;
         }
@@ -26,13 +26,15 @@ namespace Trakx.Data.Market.Server.Controllers
         [HttpGet]
         public async Task<ActionResult<string>> GetUsdNetAssetValue([FromQuery] string indexSymbol)
         {
-            if (!Enum.TryParse(indexSymbol, out KnownIndexes symbol))
-                return $"Known index symbols are [{string.Join(", ", Enum.GetNames(typeof(KnownIndexes)))}]";
+            var definition = await _indexProvider.GetDefinitionFromSymbol(indexSymbol);
 
-            var kaikoNav = await _navCalculator.CalculateCryptoCompareNav(symbol).ConfigureAwait(false);
-            if (kaikoNav != 0) return kaikoNav.ToString(CultureInfo.InvariantCulture);
-            var messariNav = await _navCalculator.CalculateMessariNav(symbol).ConfigureAwait(false);
-            return messariNav.ToString(CultureInfo.InvariantCulture);
+            if (definition == IndexDefinition.Default)
+                return $"failed to retrieve details for index {indexSymbol}";
+
+            var pricedDetails = await _navCalculator.GetIndexPriced(definition)
+                .ConfigureAwait(false);
+
+            return new JsonResult(pricedDetails.CurrentValuation.NetAssetValue);
         }
     }
 }

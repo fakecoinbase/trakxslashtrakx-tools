@@ -1,33 +1,78 @@
 ﻿using System;
-using System.Threading.Channels;
- using Microsoft.AspNetCore.SignalR;
-using Trakx.Data.Market.Common.Extensions;
+using System.Text.Json;
+using System.Threading.Tasks;
+using Microsoft.AspNetCore.SignalR;
+using Microsoft.Extensions.Caching.Memory;
+using Microsoft.Extensions.Logging;
 using Trakx.Data.Market.Common.Pricing;
+using Trakx.Data.Models.Index;
 
 namespace Trakx.Data.Market.Server.Hubs
 {
     public sealed class NavHub : Hub
     {
         private readonly INavUpdater _navUpdater;
+        private readonly IMemoryCache _memoryCache;
+        private readonly IHubContext<NavHub> _hubContext;
+        private readonly ILogger<NavHub> _logger;
 
-        public NavHub(INavUpdater navUpdater)
+        public NavHub(INavUpdater navUpdater, 
+            IMemoryCache memoryCache, 
+            IHubContext<NavHub> hubContext,
+            ILogger<NavHub> logger)
         {
             _navUpdater = navUpdater;
+            _memoryCache = memoryCache;
+            _hubContext = hubContext;
+            _logger = logger;
+
+            _navUpdater.NavUpdates.Subscribe(async update => 
+                await SendNavUpdate(update).ConfigureAwait(false));
         }
 
-        public void RegisterToNavUpdates(string symbol)
+        private async Task SendNavUpdate(NavUpdate navUpdate)
         {
-            _navUpdater.RegisterToNavUpdates(symbol);
+            try
+            {
+                await _hubContext.Clients.All.SendCoreAsync(nameof(INavHubClient.ReceiveNavUpdate),
+            new object[] { navUpdate });
+            }
+            catch (Exception e)
+            {
+                _logger.LogError(e, "Failed to update clients with NavUpdate {0}", 
+                    JsonSerializer.Serialize(navUpdate));
+            }
         }
 
-        public void DeregisterFromNavUpdates(string symbol)
+        public bool RegisterClientToNavUpdates(Guid clientId, Guid indexId)
         {
-            _navUpdater.DeregisterFromNavUpdates(symbol);
+            try
+            {
+                if (!_memoryCache.TryGetValue<IndexDefinition>(indexId, out var index))
+                    return false;
+                var registerToNavUpdates = _navUpdater.RegisterToNavUpdates(clientId, index);
+                return registerToNavUpdates;
+            }
+            catch (Exception e)
+            {
+                _logger.LogError(e, "Failed to register client {0} for NavUpdate of {1}",
+                    clientId, indexId);
+                return false;
+            }
         }
 
-        public ChannelReader<NavUpdate> NavUpdatesStream()
+        public bool DeregisterClientFromNavUpdates(Guid clientId, string symbol)
         {
-            return _navUpdater.NavUpdates.AsChannelReader(10);
+            try
+            {
+                return _navUpdater.DeregisterFromNavUpdates(clientId, symbol);
+            }
+            catch (Exception e)
+            {
+                _logger.LogError(e, "Failed to deregister client {0} for NavUpdates of {1}",
+                    clientId, symbol);
+                return false;
+            }
         }
     }
 }

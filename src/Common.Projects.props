@@ -13,6 +13,7 @@
         <DebugSymbols>True</DebugSymbols>
         <Optimize>False</Optimize>
         <Nullable>Enable</Nullable>
+        <LangVersion>Latest</LangVersion>
     </PropertyGroup>
     <PropertyGroup Condition=" '$(Version)' == '' ">
         <VersionPrefix Condition=" '$(VersionPrefix)' == '' ">0.1.0</VersionPrefix>
