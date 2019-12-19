@@ -34,7 +34,7 @@ namespace Trakx.Data.Market.Server.Hubs
         {
             try
             {
-                await _hubContext.Clients.All.SendCoreAsync("ReceiveNavUpdate",
+                await _hubContext.Clients.All.SendCoreAsync(nameof(INavHubClient.ReceiveNavUpdate),
             new object[] { navUpdate });
             }
             catch (Exception e)
@@ -44,14 +44,13 @@ namespace Trakx.Data.Market.Server.Hubs
             }
         }
 
-        public async Task<bool> RegisterClientToNavUpdates(Guid clientId, Guid indexId)
+        public bool RegisterClientToNavUpdates(Guid clientId, Guid indexId)
         {
             try
             {
                 if (!_memoryCache.TryGetValue<IndexDefinition>(indexId, out var index))
                     return false;
-                var registerToNavUpdates = await _navUpdater.RegisterToNavUpdates(clientId, index)
-                    .ConfigureAwait(false);
+                var registerToNavUpdates = _navUpdater.RegisterToNavUpdates(clientId, index);
                 return registerToNavUpdates;
             }
             catch (Exception e)

@@ -5,7 +5,6 @@ using System.Reactive.Linq;
 using System.Reactive.Subjects;
 using System.Reactive.Threading.Tasks;
 using System.Threading;
-using System.Threading.Tasks;
 using Microsoft.Extensions.Logging;
 using Trakx.Data.Models.Index;
 using Guid = System.Guid;
@@ -14,18 +13,18 @@ namespace Trakx.Data.Market.Common.Pricing
 {
     public class NavUpdater : INavUpdater
     {
-        private class UpdatesWithListeners : IDisposable
+        private sealed class UpdatesWithListeners : IDisposable
         {
             public UpdatesWithListeners(IObservable<NavUpdate> updates, 
                 ConcurrentDictionary<Guid, bool> listeners,
                 CancellationTokenSource cancellationTokenSource)
             {
-                Updates = updates;
+                _updates = updates;
                 CancellationTokenSource = cancellationTokenSource;
                 Listeners = listeners;
             }
 
-            public IObservable<NavUpdate> Updates { get; }
+            private readonly IObservable<NavUpdate> _updates;
             public CancellationTokenSource CancellationTokenSource { get; }
             public ConcurrentDictionary<Guid, bool> Listeners { get; }
 
@@ -55,7 +54,7 @@ namespace Trakx.Data.Market.Common.Pricing
             _priceUpdatesBySymbol = new ConcurrentDictionary<string, UpdatesWithListeners>();
         }
 
-        public async Task<bool> RegisterToNavUpdates(Guid clientId, IndexDefinition index)
+        public bool RegisterToNavUpdates(Guid clientId, IndexDefinition index)
         {
             var updates = _priceUpdatesBySymbol.GetOrAdd(index.Symbol,
                 s => AddUpdatesToMainStream(index));
@@ -105,7 +104,7 @@ namespace Trakx.Data.Market.Common.Pricing
                 })
                 .Select(calculationTask => calculationTask.ToObservable())
                 .Concat()
-                .Do(n => _logger.LogDebug("Pushing {0}: {1} - {2}", n.TimeStamp, n.Symbol, n.Value))
+                .Do(n => _logger.LogTrace( "Pushing {0}: {1} - {2}", n.TimeStamp, n.Symbol, n.Value))
                 .TakeUntil(_ => cts.IsCancellationRequested);
 
             return (cts, updateStream);
