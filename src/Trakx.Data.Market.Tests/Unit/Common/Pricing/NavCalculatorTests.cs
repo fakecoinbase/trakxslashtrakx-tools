@@ -4,6 +4,7 @@ using System.Linq;
 using System.Net;
 using System.Net.Http;
 using System.Numerics;
+using System.Runtime.CompilerServices;
 using System.Threading;
 using System.Threading.Tasks;
 using CryptoCompare;
@@ -11,6 +12,7 @@ using FluentAssertions;
 using Microsoft.AspNetCore.WebUtilities;
 using Microsoft.Extensions.Logging;
 using NSubstitute;
+using NSubstitute.ExceptionExtensions;
 using Trakx.Data.Market.Common.Pricing;
 using Trakx.Data.Market.Common.Sources.CoinGecko;
 using Trakx.Data.Models.Index;
@@ -36,6 +38,8 @@ namespace Trakx.Data.Market.Tests.Unit.Common.Pricing
                 new MockedCryptoCompareHttpHandler());
 
             _coinGeckoClient = Substitute.For<ICoinGeckoClient>();
+            _coinGeckoClient.GetLatestUsdPrice(Arg.Any<string>())
+                .Throws(new Exception("failed"));
 
             _logger = Substitute.For<ILogger<NavCalculator>>();
 
@@ -126,7 +130,7 @@ namespace Trakx.Data.Market.Tests.Unit.Common.Pricing
             var strIndex = _knownIndexes.Single(i => i.Symbol.Equals("L1STR004"));
             var cryptoCompareClient =
                 new CryptoCompareClient(
-                new PriceDoublingCryptoCompareHttpHandler(strIndex.InitialValuation.Valuations.ToArray()));
+                new PriceDoublingCryptoCompareHttpHandler(strIndex.InitialValuation.ComponentValuations.ToArray()));
 
              var navCalculator = new NavCalculator(cryptoCompareClient, _coinGeckoClient, _logger);
 
@@ -182,7 +186,7 @@ namespace Trakx.Data.Market.Tests.Unit.Common.Pricing
             var parsed = QueryHelpers.ParseQuery(request.RequestUri.AbsoluteUri);
             var componentSymbol = parsed.First().Value;
             price = _initialValuations
-                                .SingleOrDefault(i => i.Definition.Symbol.Equals(componentSymbol))?.Price * 2 ?? 0;
+                                .SingleOrDefault(i => i.ComponentDefinition.Symbol.Equals(componentSymbol))?.Price * 2 ?? 0;
 
             var response = new HttpResponseMessage(HttpStatusCode.OK)
             {

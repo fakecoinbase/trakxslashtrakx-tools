@@ -6,25 +6,28 @@ namespace Trakx.Data.Models.Index
 {
     public class ComponentDefinition
     {
+        /// <summary>
+        /// Unique identifier generated and used as a primary key on the database object.
+        /// </summary>
         [Key, DatabaseGenerated(DatabaseGeneratedOption.Identity)]
-        public Guid ComponentDefinitionId { get; set; }
+        public Guid Id { get; set; }
 
         /// <summary>
         /// Address of the smart contract defining the ERC20 contract of the component.
         /// </summary>
-        [Column(TypeName = "NVARCHAR(256)")]
+        [MaxLength(256)]
         public string Address { get; set; }
 
         /// <summary>
         /// Common (longer) name for the component (ex: Bitcoin, Ethereum, Litecoin).
         /// </summary>
-        [Column(TypeName = "NVARCHAR(512)")]
+        [MaxLength(512)]
         public string Name { get; set; }
 
         /// <summary>
         /// Symbol of the token associated with this component (ex: ETH, BTC, LTC).
         /// </summary>
-        [Column(TypeName = "NVARCHAR(50)")]
+        [MaxLength(50)]
         public string Symbol { get; set; }
 
         /// <summary>
@@ -41,6 +44,7 @@ namespace Trakx.Data.Models.Index
         /// <summary>
         /// Valuation of the component at the time of creation
         /// </summary>
+        [ForeignKey(nameof(ComponentValuation.ComponentDefinition))]
         public ComponentValuation InitialValuation { get; set; }
 
         public ComponentDefinition() { }

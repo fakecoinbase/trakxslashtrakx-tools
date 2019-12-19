@@ -45,7 +45,7 @@ namespace Trakx.Data.Market.Server
 
             services.AddRazorPages();
             services.AddServerSideBlazor();
-            services.AddSignalR().AddJsonProtocol();
+            services.AddSignalR().AddMessagePackProtocol();
 
             services.AddScoped<AuthenticationStateProvider, RevalidatingIdentityAuthenticationStateProvider<IdentityUser>>();
 

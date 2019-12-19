@@ -101,7 +101,7 @@ namespace Trakx.Data.Market.Common.Pricing
                 .Select(calculationTask => calculationTask.ToObservable())
                 .Concat()
                 .Do(n => _logger.LogDebug("Pushing {0}: {1} - {2}", n.TimeStamp, n.Symbol, n.Value))
-                .TakeUntil(_ => cts.Token.IsCancellationRequested);
+                .TakeUntil(_ => cts.IsCancellationRequested);
 
             return (cts, updateStream);
         }

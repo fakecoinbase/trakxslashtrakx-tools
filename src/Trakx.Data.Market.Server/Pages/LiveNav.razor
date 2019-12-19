@@ -7,14 +7,14 @@
 @using Trakx.Data.Market.Server.Hubs
 @using Trakx.Data.Models.Index
 @inject NavigationManager NavigationManager
-@inject NavHub NavHub
 @inject IIndexDefinitionProvider IndexDefinitionProvider
+@implements IDisposable
 
 <h1>Live Index NAV</h1>
 
 <input id="symbol" @onchange="ChangeSymbol" />
 <button class="btn btn-primary" id="addSymbol" @onclick="AddSymbol">Add</button>
-<button class="btn btn-primary" id="removeSymbol" @onclick="RemoveSymbol">Remove</button>
+<button class="btn btn-primary" id="removeSymbol" @onclick="RemoveCurrentSymbol">Remove</button>
 <br />
 
 <p>NavHub Uri: @_liveNavUri</p>
@@ -66,18 +66,23 @@
             return;
         }
 
-        await _connection.InvokeCoreAsync<bool>(nameof(NavHub.RegisterClientToNavUpdates),
-            new object[] { _clientId, addMe }).ConfigureAwait(false);
+        await _connection.InvokeAsync<bool>(nameof(NavHub.RegisterClientToNavUpdates),
+            _clientId, index.Id).ConfigureAwait(false);
 
         _updatesBySymbol.TryAdd(_symbol, new NavUpdate(addMe, 0));
     }
 
-    public async Task RemoveSymbol()
+    public async Task RemoveCurrentSymbol()
     {
         var deleteMe = _symbol;
 
-        await _connection.InvokeCoreAsync<bool>(nameof(NavHub.DeregisterClientFromNavUpdates),
-            new object[] { deleteMe }).ConfigureAwait(false);
+        await RemoveSymbol(deleteMe);
+    }
+
+    private async Task RemoveSymbol(string deleteMe)
+    {
+        await _connection.InvokeAsync<bool>(nameof(NavHub.DeregisterClientFromNavUpdates),
+            _clientId, deleteMe).ConfigureAwait(false);
         _updatesBySymbol.TryRemove(_symbol, out var _);
     }
 
@@ -94,7 +99,7 @@
         _liveNavUri = liveNavUri;
         _connection = new HubConnectionBuilder()
             .WithUrl(_liveNavUri)
-            .AddJsonProtocol()
+            .AddMessagePackProtocol()
             .Build();
 
         await _connection.StartAsync();
@@ -111,4 +116,13 @@
             }
         }
     }
+
+    public void Dispose()
+    {
+        foreach (var symbol in _updatesBySymbol)
+        {
+            _updatesBySymbol.Keys.ToList().ForEach(s => RemoveSymbol(s));
+        }
+    }
+
 }

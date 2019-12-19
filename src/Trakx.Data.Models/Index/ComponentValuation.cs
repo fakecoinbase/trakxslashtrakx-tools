@@ -9,20 +9,23 @@ namespace Trakx.Data.Models.Index
         public ComponentValuation() { }
 
         public ComponentValuation(
-            ComponentDefinition definition,
+            ComponentDefinition componentDefinition,
             string quoteCurrency,
             decimal price,
             DateTime? timeStamp = default)
         {
-            Definition = definition;
+            ComponentDefinition = componentDefinition;
             QuoteCurrency = quoteCurrency;
             Price = price;
-            Value = price * (decimal)definition.Quantity * (decimal)Math.Pow(10, - definition.Decimals);
+            Value = price * (decimal)componentDefinition.Quantity * (decimal)Math.Pow(10, - componentDefinition.Decimals);
             TimeStamp = timeStamp ?? DateTime.UtcNow;
         }
 
+        /// <summary>
+        /// Unique identifier generated and used as a primary key on the database object.
+        /// </summary>
         [Key, DatabaseGenerated(DatabaseGeneratedOption.Identity)]
-        public Guid ComponentValuationId { get; set; }
+        public Guid Id { get; set; }
 
         /// <summary>
         /// Date at which the valuation calculation was performed
@@ -32,12 +35,13 @@ namespace Trakx.Data.Models.Index
         /// <summary>
         /// Component definition to which the valuation is linked.
         /// </summary>
-        public ComponentDefinition Definition { get; }
+        [Required]
+        public ComponentDefinition ComponentDefinition { get; set; }
 
         /// <summary>
         /// Currency in which the valuation is expressed.
         /// </summary>
-        [Column(TypeName = "NVARCHAR(50)")]
+        [MaxLength(50)]
         public string QuoteCurrency { get; set; }
 
         /// <summary>

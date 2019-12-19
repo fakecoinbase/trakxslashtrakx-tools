@@ -16,15 +16,17 @@
   </ItemGroup>
 
   <ItemGroup>
+    <PackageReference Include="AutoMapper" Version="9.0.0" />
+    <PackageReference Include="AutoMapper.Extensions.Microsoft.DependencyInjection" Version="7.0.0" />
     <PackageReference Include="CoinGeckoAsyncApi" Version="1.2.6" />
     <PackageReference Include="CryptoCompare" Version="1.4.0" />
-    <PackageReference Include="CsvHelper" Version="12.2.1" />
+    <PackageReference Include="CsvHelper" Version="12.2.2" />
     <PackageReference Include="Microsoft.AspNetCore.Http.Extensions" Version="2.2.0" />
     <PackageReference Include="Microsoft.AspNetCore.WebUtilities" Version="2.2.0" />
     <PackageReference Include="Microsoft.Extensions.DependencyInjection.Abstractions" Version="3.1.0" />
     <PackageReference Include="Microsoft.Extensions.Http" Version="3.1.0" />
     <PackageReference Include="Polly" Version="7.2.0" />
-    <PackageReference Include="System.Reactive" Version="4.2.0" />
+    <PackageReference Include="System.Reactive" Version="4.3.1" />
   </ItemGroup>
 
   <ItemGroup>

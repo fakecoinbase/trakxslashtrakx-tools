@@ -41,6 +41,7 @@ namespace Trakx.Data.Models.Initialisation
             var knownIndexes = GetKnownIndexes();
 
             _dbContext.IndexDefinitions.AddRange(knownIndexes);
+            await _dbContext.SaveChangesAsync().ConfigureAwait(false);
         }
 
         internal static IndexDefinition[] GetKnownIndexes()

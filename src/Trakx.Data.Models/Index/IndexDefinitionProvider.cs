@@ -30,12 +30,15 @@ namespace Trakx.Data.Models.Index
                     var definitions = _dbContext.IndexDefinitions
                         .Include(d => d.ComponentDefinitions)
                         .Include(d => d.InitialValuation)
-                        .ThenInclude(d => d.Valuations);
+                            .ThenInclude(d => d.ComponentValuations);
+                            
                     var result = await definitions.FirstAsync(d => d.Symbol.Equals(indexSymbol));
                     return result;
                 });
-                
-                return def;
+                if (def != null && def != IndexDefinition.Default) 
+                    _memoryCache.GetOrCreate(def.Id, _ => def);
+
+                return def ?? IndexDefinition.Default;
             }
             catch (Exception ex)
             {

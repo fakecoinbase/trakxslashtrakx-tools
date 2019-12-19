@@ -13,7 +13,7 @@ namespace Trakx.Data.Models.Index
             List<ComponentValuation> componentValuations)
         {
             if (definition.ComponentDefinitions.Any(c =>
-            !componentValuations.Any(v => c.Symbol.Equals(v.Definition.Symbol))))
+            !componentValuations.Any(v => c.Id.Equals(v.ComponentDefinition.Id))))
             {
                 throw new InvalidDataException(
                     $"{nameof(componentValuations)} should contain valuations for all components of {definition.Symbol}.");

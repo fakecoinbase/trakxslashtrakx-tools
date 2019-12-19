@@ -11,35 +11,35 @@ namespace Trakx.Data.Models.Migrations
                 name: "IndexValuation",
                 columns: table => new
                 {
-                    IndexValuationId = table.Column<Guid>(nullable: false),
+                    Id = table.Column<Guid>(nullable: false),
                     TimeStamp = table.Column<DateTime>(nullable: false),
                     QuoteCurrency = table.Column<string>(nullable: false),
                     NetAssetValue = table.Column<decimal>(type: "decimal(38, 18)", nullable: false)
                 },
                 constraints: table =>
                 {
-                    table.PrimaryKey("PK_IndexValuation", x => x.IndexValuationId);
+                    table.PrimaryKey("PK_IndexValuation", x => x.Id);
                 });
 
             migrationBuilder.CreateTable(
                 name: "ComponentValuation",
                 columns: table => new
                 {
-                    ComponentValuationId = table.Column<Guid>(nullable: false),
+                    Id = table.Column<Guid>(nullable: false),
                     TimeStamp = table.Column<DateTime>(nullable: false),
-                    QuoteCurrency = table.Column<string>(type: "NVARCHAR(50)", nullable: false),
+                    QuoteCurrency = table.Column<string>(maxLength: 50, nullable: false),
                     Price = table.Column<decimal>(type: "decimal(38, 18)", nullable: false),
                     Value = table.Column<decimal>(type: "decimal(38, 18)", nullable: false),
                     IndexValuationId = table.Column<Guid>(nullable: true)
                 },
                 constraints: table =>
                 {
-                    table.PrimaryKey("PK_ComponentValuation", x => x.ComponentValuationId);
+                    table.PrimaryKey("PK_ComponentValuation", x => x.Id);
                     table.ForeignKey(
                         name: "FK_ComponentValuation_IndexValuation_IndexValuationId",
                         column: x => x.IndexValuationId,
                         principalTable: "IndexValuation",
-                        principalColumn: "IndexValuationId",
+                        principalColumn: "Id",
                         onDelete: ReferentialAction.Restrict);
                 });
 
@@ -47,22 +47,23 @@ namespace Trakx.Data.Models.Migrations
                 name: "IndexDefinitions",
                 columns: table => new
                 {
-                    Symbol = table.Column<string>(type: "NVARCHAR(50)", nullable: false),
-                    Name = table.Column<string>(type: "NVARCHAR(512)", nullable: false),
-                    Description = table.Column<string>(type: "NVARCHAR(MAX)", nullable: false),
-                    Address = table.Column<string>(type: "NVARCHAR(256)", nullable: false),
-                    InitialValuationIndexValuationId = table.Column<Guid>(nullable: false),
+                    Id = table.Column<Guid>(nullable: false),
+                    Symbol = table.Column<string>(maxLength: 50, nullable: false),
+                    Name = table.Column<string>(maxLength: 512, nullable: false),
+                    Description = table.Column<string>(nullable: false),
+                    Address = table.Column<string>(maxLength: 256, nullable: false),
+                    InitialValuationId = table.Column<Guid>(nullable: false),
                     NaturalUnit = table.Column<int>(nullable: false),
                     CreationDate = table.Column<DateTime>(nullable: true)
                 },
                 constraints: table =>
                 {
-                    table.PrimaryKey("PK_IndexDefinitions", x => x.Symbol);
+                    table.PrimaryKey("PK_IndexDefinitions", x => x.Id);
                     table.ForeignKey(
-                        name: "FK_IndexDefinitions_IndexValuation_InitialValuationIndexValuationId",
-                        column: x => x.InitialValuationIndexValuationId,
+                        name: "FK_IndexDefinitions_IndexValuation_InitialValuationId",
+                        column: x => x.InitialValuationId,
                         principalTable: "IndexValuation",
-                        principalColumn: "IndexValuationId",
+                        principalColumn: "Id",
                         onDelete: ReferentialAction.Cascade);
                 });
 
@@ -70,41 +71,43 @@ namespace Trakx.Data.Models.Migrations
                 name: "ComponentDefinition",
                 columns: table => new
                 {
-                    ComponentDefinitionId = table.Column<Guid>(nullable: false),
-                    Address = table.Column<string>(type: "NVARCHAR(256)", nullable: false),
-                    Name = table.Column<string>(type: "NVARCHAR(512)", nullable: false),
-                    Symbol = table.Column<string>(type: "NVARCHAR(50)", nullable: false),
+                    Id = table.Column<Guid>(nullable: false),
+                    Address = table.Column<string>(maxLength: 256, nullable: false),
+                    Name = table.Column<string>(maxLength: 512, nullable: false),
+                    Symbol = table.Column<string>(maxLength: 50, nullable: false),
                     Decimals = table.Column<int>(nullable: false),
                     Quantity = table.Column<decimal>(nullable: false),
-                    InitialValuationComponentValuationId = table.Column<Guid>(nullable: false),
-                    IndexDefinitionSymbol = table.Column<string>(nullable: true)
+                    ComponentDefinition = table.Column<Guid>(nullable: true),
+                    IndexDefinitionId = table.Column<Guid>(nullable: true)
                 },
                 constraints: table =>
                 {
-                    table.PrimaryKey("PK_ComponentDefinition", x => x.ComponentDefinitionId);
+                    table.PrimaryKey("PK_ComponentDefinition", x => x.Id);
                     table.ForeignKey(
-                        name: "FK_ComponentDefinition_IndexDefinitions_IndexDefinitionSymbol",
-                        column: x => x.IndexDefinitionSymbol,
-                        principalTable: "IndexDefinitions",
-                        principalColumn: "Symbol",
+                        name: "FK_ComponentDefinition_ComponentValuation_ComponentDefinition",
+                        column: x => x.ComponentDefinition,
+                        principalTable: "ComponentValuation",
+                        principalColumn: "Id",
                         onDelete: ReferentialAction.Restrict);
                     table.ForeignKey(
-                        name: "FK_ComponentDefinition_ComponentValuation_InitialValuationComponentValuationId",
-                        column: x => x.InitialValuationComponentValuationId,
-                        principalTable: "ComponentValuation",
-                        principalColumn: "ComponentValuationId",
-                        onDelete: ReferentialAction.Cascade);
+                        name: "FK_ComponentDefinition_IndexDefinitions_IndexDefinitionId",
+                        column: x => x.IndexDefinitionId,
+                        principalTable: "IndexDefinitions",
+                        principalColumn: "Id",
+                        onDelete: ReferentialAction.Restrict);
                 });
 
             migrationBuilder.CreateIndex(
-                name: "IX_ComponentDefinition_IndexDefinitionSymbol",
+                name: "IX_ComponentDefinition_ComponentDefinition",
                 table: "ComponentDefinition",
-                column: "IndexDefinitionSymbol");
+                column: "ComponentDefinition",
+                unique: true,
+                filter: "[ComponentDefinition] IS NOT NULL");
 
             migrationBuilder.CreateIndex(
-                name: "IX_ComponentDefinition_InitialValuationComponentValuationId",
+                name: "IX_ComponentDefinition_IndexDefinitionId",
                 table: "ComponentDefinition",
-                column: "InitialValuationComponentValuationId");
+                column: "IndexDefinitionId");
 
             migrationBuilder.CreateIndex(
                 name: "IX_ComponentValuation_IndexValuationId",
@@ -112,9 +115,9 @@ namespace Trakx.Data.Models.Migrations
                 column: "IndexValuationId");
 
             migrationBuilder.CreateIndex(
-                name: "IX_IndexDefinitions_InitialValuationIndexValuationId",
+                name: "IX_IndexDefinitions_InitialValuationId",
                 table: "IndexDefinitions",
-                column: "InitialValuationIndexValuationId");
+                column: "InitialValuationId");
         }
 
         protected override void Down(MigrationBuilder migrationBuilder)
@@ -123,10 +126,10 @@ namespace Trakx.Data.Models.Migrations
                 name: "ComponentDefinition");
 
             migrationBuilder.DropTable(
-                name: "IndexDefinitions");
+                name: "ComponentValuation");
 
             migrationBuilder.DropTable(
-                name: "ComponentValuation");
+                name: "IndexDefinitions");
 
             migrationBuilder.DropTable(
                 name: "IndexValuation");

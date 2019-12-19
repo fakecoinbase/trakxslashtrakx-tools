@@ -53,7 +53,7 @@ namespace Trakx.Data.Market.Tests.Tools
             }
         }
 
-        [Fact]
+        [Fact(Skip = "not a test")]
         public async Task RetrieveHistoricalMarketCapsForTokens()
         {
             var coinData = await _coinsClient.GetCoinList();

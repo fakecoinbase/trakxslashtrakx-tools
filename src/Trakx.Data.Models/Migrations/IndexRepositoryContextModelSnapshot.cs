@@ -21,46 +21,51 @@ namespace Trakx.Data.Models.Migrations
 
             modelBuilder.Entity("Trakx.Data.Models.Index.ComponentDefinition", b =>
                 {
-                    b.Property<Guid>("ComponentDefinitionId")
+                    b.Property<Guid>("Id")
                         .ValueGeneratedOnAdd()
                         .HasColumnType("uniqueidentifier");
 
                     b.Property<string>("Address")
                         .IsRequired()
-                        .HasColumnType("NVARCHAR(256)");
+                        .HasColumnType("nvarchar(256)")
+                        .HasMaxLength(256);
+
+                    b.Property<Guid?>("ComponentDefinition")
+                        .HasColumnType("uniqueidentifier");
 
                     b.Property<int>("Decimals")
                         .HasColumnType("int");
 
-                    b.Property<string>("IndexDefinitionSymbol")
-                        .HasColumnType("NVARCHAR(50)");
-
-                    b.Property<Guid>("InitialValuationComponentValuationId")
+                    b.Property<Guid?>("IndexDefinitionId")
                         .HasColumnType("uniqueidentifier");
 
                     b.Property<string>("Name")
                         .IsRequired()
-                        .HasColumnType("NVARCHAR(512)");
+                        .HasColumnType("nvarchar(512)")
+                        .HasMaxLength(512);
 
                     b.Property<decimal>("Quantity")
                         .HasColumnType("decimal(20,0)");
 
                     b.Property<string>("Symbol")
                         .IsRequired()
-                        .HasColumnType("NVARCHAR(50)");
+                        .HasColumnType("nvarchar(50)")
+                        .HasMaxLength(50);
 
-                    b.HasKey("ComponentDefinitionId");
+                    b.HasKey("Id");
 
-                    b.HasIndex("IndexDefinitionSymbol");
+                    b.HasIndex("ComponentDefinition")
+                        .IsUnique()
+                        .HasFilter("[ComponentDefinition] IS NOT NULL");
 
-                    b.HasIndex("InitialValuationComponentValuationId");
+                    b.HasIndex("IndexDefinitionId");
 
                     b.ToTable("ComponentDefinition");
                 });
 
             modelBuilder.Entity("Trakx.Data.Models.Index.ComponentValuation", b =>
                 {
-                    b.Property<Guid>("ComponentValuationId")
+                    b.Property<Guid>("Id")
                         .ValueGeneratedOnAdd()
                         .HasColumnType("uniqueidentifier");
 
@@ -72,7 +77,8 @@ namespace Trakx.Data.Models.Migrations
 
                     b.Property<string>("QuoteCurrency")
                         .IsRequired()
-                        .HasColumnType("NVARCHAR(50)");
+                        .HasColumnType("nvarchar(50)")
+                        .HasMaxLength(50);
 
                     b.Property<DateTime>("TimeStamp")
                         .HasColumnType("datetime2");
@@ -80,7 +86,7 @@ namespace Trakx.Data.Models.Migrations
                     b.Property<decimal>("Value")
                         .HasColumnType("decimal(38, 18)");
 
-                    b.HasKey("ComponentValuationId");
+                    b.HasKey("Id");
 
                     b.HasIndex("IndexValuationId");
 
@@ -89,40 +95,48 @@ namespace Trakx.Data.Models.Migrations
 
             modelBuilder.Entity("Trakx.Data.Models.Index.IndexDefinition", b =>
                 {
-                    b.Property<string>("Symbol")
-                        .HasColumnType("NVARCHAR(50)");
+                    b.Property<Guid>("Id")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("uniqueidentifier");
 
                     b.Property<string>("Address")
                         .IsRequired()
-                        .HasColumnType("NVARCHAR(256)");
+                        .HasColumnType("nvarchar(256)")
+                        .HasMaxLength(256);
 
                     b.Property<DateTime?>("CreationDate")
                         .HasColumnType("datetime2");
 
                     b.Property<string>("Description")
                         .IsRequired()
-                        .HasColumnType("NVARCHAR(MAX)");
+                        .HasColumnType("nvarchar(max)");
 
-                    b.Property<Guid>("InitialValuationIndexValuationId")
+                    b.Property<Guid>("InitialValuationId")
                         .HasColumnType("uniqueidentifier");
 
                     b.Property<string>("Name")
                         .IsRequired()
-                        .HasColumnType("NVARCHAR(512)");
+                        .HasColumnType("nvarchar(512)")
+                        .HasMaxLength(512);
 
                     b.Property<int>("NaturalUnit")
                         .HasColumnType("int");
 
-                    b.HasKey("Symbol");
+                    b.Property<string>("Symbol")
+                        .IsRequired()
+                        .HasColumnType("nvarchar(50)")
+                        .HasMaxLength(50);
 
-                    b.HasIndex("InitialValuationIndexValuationId");
+                    b.HasKey("Id");
+
+                    b.HasIndex("InitialValuationId");
 
                     b.ToTable("IndexDefinitions");
                 });
 
             modelBuilder.Entity("Trakx.Data.Models.Index.IndexValuation", b =>
                 {
-                    b.Property<Guid>("IndexValuationId")
+                    b.Property<Guid>("Id")
                         .ValueGeneratedOnAdd()
                         .HasColumnType("uniqueidentifier");
 
@@ -136,28 +150,26 @@ namespace Trakx.Data.Models.Migrations
                     b.Property<DateTime>("TimeStamp")
                         .HasColumnType("datetime2");
 
-                    b.HasKey("IndexValuationId");
+                    b.HasKey("Id");
 
                     b.ToTable("IndexValuation");
                 });
 
             modelBuilder.Entity("Trakx.Data.Models.Index.ComponentDefinition", b =>
                 {
+                    b.HasOne("Trakx.Data.Models.Index.ComponentValuation", "InitialValuation")
+                        .WithOne("ComponentDefinition")
+                        .HasForeignKey("Trakx.Data.Models.Index.ComponentDefinition", "ComponentDefinition");
+
                     b.HasOne("Trakx.Data.Models.Index.IndexDefinition", null)
                         .WithMany("ComponentDefinitions")
-                        .HasForeignKey("IndexDefinitionSymbol");
-
-                    b.HasOne("Trakx.Data.Models.Index.ComponentValuation", "InitialValuation")
-                        .WithMany()
-                        .HasForeignKey("InitialValuationComponentValuationId")
-                        .OnDelete(DeleteBehavior.Cascade)
-                        .IsRequired();
+                        .HasForeignKey("IndexDefinitionId");
                 });
 
             modelBuilder.Entity("Trakx.Data.Models.Index.ComponentValuation", b =>
                 {
                     b.HasOne("Trakx.Data.Models.Index.IndexValuation", null)
-                        .WithMany("Valuations")
+                        .WithMany("ComponentValuations")
                         .HasForeignKey("IndexValuationId");
                 });
 
@@ -165,7 +177,7 @@ namespace Trakx.Data.Models.Migrations
                 {
                     b.HasOne("Trakx.Data.Models.Index.IndexValuation", "InitialValuation")
                         .WithMany()
-                        .HasForeignKey("InitialValuationIndexValuationId")
+                        .HasForeignKey("InitialValuationId")
                         .OnDelete(DeleteBehavior.Cascade)
                         .IsRequired();
                 });
