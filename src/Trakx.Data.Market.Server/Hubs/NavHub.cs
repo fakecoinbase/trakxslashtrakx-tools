@@ -1,77 +1,79 @@
 ﻿using System;
-using System.Reactive.Concurrency;
-using System.Reactive.Linq;
-using System.Threading;
-using System.Threading.Channels;
+using System.Text.Json;
 using System.Threading.Tasks;
 using Microsoft.AspNetCore.SignalR;
 using Microsoft.Extensions.Caching.Memory;
 using Microsoft.Extensions.Logging;
-using Trakx.Data.Market.Common.Extensions;
 using Trakx.Data.Market.Common.Pricing;
-using Trakx.Data.Market.Server.Pages;
 using Trakx.Data.Models.Index;
 
 namespace Trakx.Data.Market.Server.Hubs
 {
-    public sealed class NavHubClient
-    {
-        private readonly IIndexDefinitionProvider _indexDefinitionProvider;
-
-        public NavHubClient(IIndexDefinitionProvider indexDefinitionProvider)
-        {
-            _indexDefinitionProvider = indexDefinitionProvider;
-        }
-    }
-
     public sealed class NavHub : Hub
     {
         private readonly INavUpdater _navUpdater;
         private readonly IMemoryCache _memoryCache;
+        private readonly IHubContext<NavHub> _hubContext;
         private readonly ILogger<NavHub> _logger;
-        private IDisposable _updatesSubscription;
-        private readonly CancellationTokenSource _cancellationTokenSource;
 
         public NavHub(INavUpdater navUpdater, 
             IMemoryCache memoryCache, 
+            IHubContext<NavHub> hubContext,
             ILogger<NavHub> logger)
         {
             _navUpdater = navUpdater;
             _memoryCache = memoryCache;
+            _hubContext = hubContext;
             _logger = logger;
 
-            _cancellationTokenSource = new CancellationTokenSource();
+            _navUpdater.NavUpdates.Subscribe(async update => 
+                await SendNavUpdate(update).ConfigureAwait(false));
+        }
 
+        private async Task SendNavUpdate(NavUpdate navUpdate)
+        {
+            try
+            {
+                await _hubContext.Clients.All.SendCoreAsync("ReceiveNavUpdate",
+            new object[] { navUpdate });
+            }
+            catch (Exception e)
+            {
+                _logger.LogError(e, "Failed to update clients with NavUpdate {0}", 
+                    JsonSerializer.Serialize(navUpdate));
+            }
         }
 
         public async Task<bool> RegisterClientToNavUpdates(Guid clientId, Guid indexId)
         {
-            if (!_memoryCache.TryGetValue<IndexDefinition>(indexId, out var index))
-                return false;
-            var registerToNavUpdates = await _navUpdater.RegisterToNavUpdates(clientId, index)
-                .ConfigureAwait(false);
-            
-            _logger.LogDebug("Subscribed");
-            _navUpdater.NavUpdates.ToEvent().OnNext += update =>
+            try
             {
-                _logger.LogDebug("UPDAAAATE");
-                Clients.All.SendCoreAsync(nameof(INavHubClient.ReceiveNavUpdate), new object[] {update});
-            };
-            
-            return registerToNavUpdates;
+                if (!_memoryCache.TryGetValue<IndexDefinition>(indexId, out var index))
+                    return false;
+                var registerToNavUpdates = await _navUpdater.RegisterToNavUpdates(clientId, index)
+                    .ConfigureAwait(false);
+                return registerToNavUpdates;
+            }
+            catch (Exception e)
+            {
+                _logger.LogError(e, "Failed to register client {0} for NavUpdate of {1}",
+                    clientId, indexId);
+                return false;
+            }
         }
 
         public bool DeregisterClientFromNavUpdates(Guid clientId, string symbol)
         {
-            return _navUpdater.DeregisterFromNavUpdates(clientId, symbol);
-        }
-        
-        protected override void Dispose(bool disposing)
-        {
-            base.Dispose(disposing);
-            _cancellationTokenSource?.Cancel();
-            _updatesSubscription?.Dispose();
-            _cancellationTokenSource?.Dispose();
+            try
+            {
+                return _navUpdater.DeregisterFromNavUpdates(clientId, symbol);
+            }
+            catch (Exception e)
+            {
+                _logger.LogError(e, "Failed to deregister client {0} for NavUpdates of {1}",
+                    clientId, symbol);
+                return false;
+            }
         }
     }
 }
