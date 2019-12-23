@@ -63,7 +63,8 @@ namespace Trakx.Data.Models.Initialisation
                             42,
                             0.08069m,
                             Usd,
-                            firstOctober),
+                            firstOctober,
+                            2),
                         new ComponentDefinition(
                             "0xB98d4C97425d9908E66E53A6fDf673ACcA0BE986",
                             "ArcBlock",
@@ -72,7 +73,8 @@ namespace Trakx.Data.Models.Initialisation
                             17,
                             0.202m,
                             Usd,
-                            firstOctober),
+                            firstOctober,
+                            2),
                         new ComponentDefinition(
                             "0x8290333ceF9e6D528dD5618Fb97a76f268f3EDD4",
                             "Ankr Network",
@@ -81,7 +83,8 @@ namespace Trakx.Data.Models.Initialisation
                             1010,
                             0.003302m,
                             Usd,
-                            firstOctober)
+                            firstOctober,
+                            2),
                     },
                     "0x7210cc724480c85b893a9febbecc24a8dc4ff1de",
                     2,
@@ -103,7 +106,8 @@ namespace Trakx.Data.Models.Initialisation
                         11,
                         3.299m,
                         Usd,
-                        firstOctober),
+                        firstOctober,
+                        13),
                     new ComponentDefinition(
                         "0xd26114cd6EE289AccF82350c8d8487fedB8A0C07",
                         "OMGToken",
@@ -112,7 +116,8 @@ namespace Trakx.Data.Models.Initialisation
                         318066157761,
                         1.048m,
                         Usd,
-                        firstOctober),
+                        firstOctober,
+                        13),
                     new ComponentDefinition(
                         "0xA15C7Ebe1f07CaF6bFF097D8a589fb8AC49Ae5B3",
                         "Pundi X Token",
@@ -121,7 +126,8 @@ namespace Trakx.Data.Models.Initialisation
                         941087897609628,
                         0.0003542m,
                         Usd,
-                        firstOctober)
+                        firstOctober,
+                        13),
                 },
                 "0xa308dde45d2520108d16078457dbd489c3947e8a",
                 13,
@@ -143,7 +149,8 @@ namespace Trakx.Data.Models.Initialisation
                         4128989636237,
                         0.0008073m,
                         Usd,
-                        firstOctober),
+                        firstOctober,
+                        11),
                     new ComponentDefinition(
                         "0x744d70FDBE2Ba4CF95131626614a1763DF805B9E",
                         "Status Network Token",
@@ -152,7 +159,8 @@ namespace Trakx.Data.Models.Initialisation
                         229568411387,
                         0.01452m,
                         Usd,
-                        firstOctober),
+                        firstOctober,
+                        11),
                     new ComponentDefinition(
                         "0x08f5a9235B08173b7569F83645d2c7fB55e8cCD8",
                         "Tierion Network Token",
@@ -161,7 +169,8 @@ namespace Trakx.Data.Models.Initialisation
                         12,
                         0.02852m,
                         Usd,
-                        firstOctober)
+                        firstOctober,
+                        11),
                 },
                 "0x5a3996551e34ee9f3c0496af727dd07e8be127f2",
                 11,
@@ -183,7 +192,8 @@ namespace Trakx.Data.Models.Initialisation
                         3,
                         1.049m,
                         Usd,
-                        firstOctober),
+                        firstOctober,
+                        2),
                     new ComponentDefinition(
                         "0x7D1AfA7B718fb893dB30A3aBc0Cfc608AaCfeBB0",
                         "Matic Token",
@@ -192,7 +202,8 @@ namespace Trakx.Data.Models.Initialisation
                         193,
                         0.01297m,
                         Usd,
-                        firstOctober),
+                        firstOctober,
+                        2),
                     new ComponentDefinition(
                         "0x4F9254C83EB525f9FCf346490bbb3ed28a81C667",
                         "CelerToken",
@@ -201,7 +212,8 @@ namespace Trakx.Data.Models.Initialisation
                         467,
                         0.005354m,
                         Usd,
-                        firstOctober),
+                        firstOctober,
+                        2),
                     new ComponentDefinition(
                         "0x4E15361FD6b4BB609Fa63C81A2be19d873717870",
                         "Fantom Token",
@@ -210,7 +222,8 @@ namespace Trakx.Data.Models.Initialisation
                         159,
                         0.01575m,
                         Usd,
-                        firstOctober)
+                        firstOctober,
+                        2),
                 },
                 "0xb2fc2d89e09e0d903c33f28608aecbe9b402ba59",
                 2,
@@ -232,7 +245,8 @@ namespace Trakx.Data.Models.Initialisation
                         2,
                         0.1493m,
                         Usd,
-                        firstOctober),
+                        firstOctober,
+                        11),
                     new ComponentDefinition(
                         "0x8290333ceF9e6D528dD5618Fb97a76f268f3EDD4",
                         "Ankr Network",
@@ -241,7 +255,8 @@ namespace Trakx.Data.Models.Initialisation
                         836960160697,
                         0.002987m,
                         Usd,
-                        firstOctober),
+                        firstOctober,
+                        11),
                     new ComponentDefinition(
                         "0x5732046A883704404F284Ce41FfADd5b007FD668",
                         "Bluzelle Token",
@@ -250,7 +265,8 @@ namespace Trakx.Data.Models.Initialisation
                         75688767787,
                         0.03303m,
                         Usd,
-                        firstOctober),
+                        firstOctober,
+                        11),
                     new ComponentDefinition(
                         "0x607F4C5BB672230e8672085532f7e901544a7375",
                         "iEx.ec Network Token",
@@ -259,7 +275,8 @@ namespace Trakx.Data.Models.Initialisation
                         12,
                         0.2181m,
                         Usd,
-                        firstOctober)
+                        firstOctober,
+                        11),
                 },
                 "0xe05168c3fa30e93d3f1667b35e9456aac9b5519a",
                 11,

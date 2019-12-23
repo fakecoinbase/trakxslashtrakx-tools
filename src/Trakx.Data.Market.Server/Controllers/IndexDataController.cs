@@ -26,20 +26,9 @@ namespace Trakx.Data.Market.Server.Controllers
         }
 
         [HttpGet]
-        public async Task<ActionResult<string>> IndexDetails([FromQuery] string indexSymbol)
-        {
-            var definition = await _indexProvider.GetDefinitionFromSymbol(indexSymbol);
-
-            if (definition == IndexDefinition.Default)
-                return $"failed to retrieve details for index {indexSymbol}";
-
-            return new JsonResult(definition);
-        }
-
-        [HttpGet]
         public async Task<ActionResult<string>> IndexDetailsPriced([FromQuery] string indexSymbol)
         {
-            var definition = await _indexProvider. GetDefinitionFromSymbol(indexSymbol);
+            var definition = await _indexProvider.GetDefinitionFromSymbol(indexSymbol);
 
             if (definition == IndexDefinition.Default)
                 return $"failed to retrieve details for index {indexSymbol}";

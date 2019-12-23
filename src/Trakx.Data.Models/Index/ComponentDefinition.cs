@@ -1,6 +1,7 @@
 ﻿using System;
 using System.ComponentModel.DataAnnotations;
 using System.ComponentModel.DataAnnotations.Schema;
+using System.Text.Json.Serialization;
 
 namespace Trakx.Data.Models.Index
 {
@@ -9,6 +10,7 @@ namespace Trakx.Data.Models.Index
         /// <summary>
         /// Unique identifier generated and used as a primary key on the database object.
         /// </summary>
+        [JsonIgnore]
         [Key, DatabaseGenerated(DatabaseGeneratedOption.Identity)]
         public Guid Id { get; set; }
 
@@ -44,6 +46,7 @@ namespace Trakx.Data.Models.Index
         /// <summary>
         /// Valuation of the component at the time of creation
         /// </summary>
+        [JsonIgnore]
         [ForeignKey(nameof(ComponentValuation.ComponentDefinition))]
         public ComponentValuation InitialValuation { get; set; }
 
@@ -57,14 +60,14 @@ namespace Trakx.Data.Models.Index
             decimal initialPrice,
             string quoteCurrency,
             DateTime valuationDateTime,
-            int? naturalUnit = default)
+            int naturalUnit)
         {
             Address = address;
             Name = name;
             Symbol = symbol;
             Decimals = decimals;
             Quantity = quantity;
-            InitialValuation = new ComponentValuation(this, quoteCurrency, initialPrice, valuationDateTime);
+            InitialValuation = new ComponentValuation(this, quoteCurrency, initialPrice, naturalUnit, valuationDateTime);
         }
     }
 }

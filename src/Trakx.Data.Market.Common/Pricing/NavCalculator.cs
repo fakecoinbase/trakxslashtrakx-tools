@@ -45,7 +45,7 @@ namespace Trakx.Data.Market.Common.Pricing
                 c =>
                 {
                     var price = getPricesTasks.Single(t => t.Result.Key.Equals(c.Symbol)).Result.Value;
-                    var valuation = new ComponentValuation(c, Usd, price);
+                    var valuation = new ComponentValuation(c, Usd, price, index.NaturalUnit);
                     return valuation;
                 }).ToList();
 
@@ -59,7 +59,7 @@ namespace Trakx.Data.Market.Common.Pricing
             try
             {
                 var result = await GetCoinGeckoUsdPrice(c);
-                return result;
+                if (result.Value != 0) return result;
             }
             catch (Exception e)
             {
@@ -74,6 +74,7 @@ namespace Trakx.Data.Market.Common.Pricing
             catch (Exception e)
             {
                 _logger.LogWarning(e, "Failed to retrieve price from CryptoCompare");
+                return new KeyValuePair<string, decimal>(c.Symbol, 0);
             }
 
             throw new FailedToRetrievePriceException($"Failed to retrieve USD price for component {c.Symbol}");

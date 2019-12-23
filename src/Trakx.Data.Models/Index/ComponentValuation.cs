@@ -1,6 +1,7 @@
 ﻿using System;
 using System.ComponentModel.DataAnnotations;
 using System.ComponentModel.DataAnnotations.Schema;
+using System.Text.Json.Serialization;
 
 namespace Trakx.Data.Models.Index
 {
@@ -12,18 +13,21 @@ namespace Trakx.Data.Models.Index
             ComponentDefinition componentDefinition,
             string quoteCurrency,
             decimal price,
+            int naturalUnit,
             DateTime? timeStamp = default)
         {
             ComponentDefinition = componentDefinition;
             QuoteCurrency = quoteCurrency;
             Price = price;
-            Value = price * (decimal)componentDefinition.Quantity * (decimal)Math.Pow(10, - componentDefinition.Decimals);
+            Value = price * (decimal)componentDefinition.Quantity 
+                          * (decimal)Math.Pow(10, 18 - naturalUnit - componentDefinition.Decimals);
             TimeStamp = timeStamp ?? DateTime.UtcNow;
         }
 
         /// <summary>
         /// Unique identifier generated and used as a primary key on the database object.
         /// </summary>
+        [JsonIgnore]
         [Key, DatabaseGenerated(DatabaseGeneratedOption.Identity)]
         public Guid Id { get; set; }
 
@@ -36,6 +40,7 @@ namespace Trakx.Data.Models.Index
         /// Component definition to which the valuation is linked.
         /// </summary>
         [Required]
+        [JsonIgnore]
         public ComponentDefinition ComponentDefinition { get; set; }
 
         /// <summary>

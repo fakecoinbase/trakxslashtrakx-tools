@@ -30,8 +30,10 @@ namespace Trakx.Data.Models.Index
             Name = definition.Name;
             NaturalUnit = definition.NaturalUnit;
             ComponentDefinitions = definition.ComponentDefinitions;
+            Address = definition.Address;
+            CreationDate = definition.CreationDate;
 
-            CurrentValuation = new IndexValuation(componentValuations, definition.NaturalUnit);
+            CurrentValuation = new IndexValuation(componentValuations);
         }
 
         public IndexValuation CurrentValuation { get; set; }

@@ -4,6 +4,7 @@ using System.ComponentModel.DataAnnotations;
 using System.ComponentModel.DataAnnotations.Schema;
 using System.Diagnostics.CodeAnalysis;
 using System.Linq;
+using System.Text.Json.Serialization;
 
 namespace Trakx.Data.Models.Index
 {
@@ -27,7 +28,7 @@ namespace Trakx.Data.Models.Index
             NaturalUnit = naturalUnit ?? 18 - componentDefinitions.Min(c => c.Decimals);
             Address = address;
             CreationDate = creationDate;
-            InitialValuation = new IndexValuation(componentDefinitions, NaturalUnit);
+            InitialValuation = new IndexValuation(componentDefinitions);
         }
 
         public static readonly IndexDefinition Default = new IndexDefinition();
@@ -35,6 +36,7 @@ namespace Trakx.Data.Models.Index
         /// <summary>
         /// Unique identifier generated and used as a primary key on the database object.
         /// </summary>
+        [JsonIgnore]
         [Key, DatabaseGenerated(DatabaseGeneratedOption.Identity)]
         public Guid Id { get; set; }
 

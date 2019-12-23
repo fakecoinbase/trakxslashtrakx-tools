@@ -56,6 +56,7 @@ namespace Trakx.Data.Market.Tests.Unit.Common.Pricing
                     var firstQuantity = (ulong) 5;
                     var secondQuantity = (ulong) BigInteger.Multiply(5,
                         BigInteger.Pow(10, maxDecimals - minDecimals));
+                    var naturalUnit = 18 - minDecimals;
 
                     return new IndexDefinition("IDX",
                         "index",
@@ -69,7 +70,8 @@ namespace Trakx.Data.Market.Tests.Unit.Common.Pricing
                                 firstQuantity,
                                 0.05m,
                                 Usd,
-                                DateTime.UtcNow),
+                                DateTime.UtcNow,
+                                naturalUnit),
                             new ComponentDefinition("0xEFGH", 
                                 "Token 2", 
                                 "SYM2",
@@ -77,10 +79,11 @@ namespace Trakx.Data.Market.Tests.Unit.Common.Pricing
                                 secondQuantity, 
                                 0.15m, 
                                 Usd, 
-                                DateTime.UtcNow)
+                                DateTime.UtcNow,
+                                naturalUnit)
                         },
                         "erc20address",
-                        naturalUnit: 18 - minDecimals,
+                        naturalUnit: naturalUnit,
                         DateTime.MinValue);
                 });
 
