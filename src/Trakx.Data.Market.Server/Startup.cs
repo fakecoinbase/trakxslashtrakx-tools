@@ -10,8 +10,6 @@ using Microsoft.OpenApi.Models;
 using Trakx.Data.Market.Common.Pricing;
 using Trakx.Data.Market.Common.Sources.CoinGecko;
 using Trakx.Data.Market.Common.Sources.CryptoCompare;
-using Trakx.Data.Market.Common.Sources.Kaiko.Client;
-using Trakx.Data.Market.Common.Sources.Messari.Client;
 using Trakx.Data.Market.Server.Areas.Identity;
 using Trakx.Data.Market.Server.Data;
 using Trakx.Data.Market.Server.Hubs;
@@ -37,7 +35,7 @@ namespace Trakx.Data.Market.Server
         public void ConfigureServices(IServiceCollection services)
         {
             services.AddDbContext<ApplicationDbContext>(options =>
-                options.UseSqlServer(Configuration.GetConnectionString("DefaultConnection")));
+                options.UseSqlServer(Configuration.GetConnectionString("ContainerConnection")));
             
             services.AddDefaultIdentity<IdentityUser>().AddEntityFrameworkStores<ApplicationDbContext>();
             services.AddDbContext<IndexRepositoryContext>(options =>

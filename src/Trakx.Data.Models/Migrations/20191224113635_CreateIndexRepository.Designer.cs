@@ -10,7 +10,7 @@ using Trakx.Data.Models.Index;
 namespace Trakx.Data.Models.Migrations
 {
     [DbContext(typeof(IndexRepositoryContext))]
-    [Migration("20191218163814_CreateIndexRepository")]
+    [Migration("20191224113635_CreateIndexRepository")]
     partial class CreateIndexRepository
     {
         protected override void BuildTargetModel(ModelBuilder modelBuilder)

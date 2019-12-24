@@ -1,7 +1,7 @@
 version: '3.5'
 
 services:
-  blazorboilerplate:
+  marketdatatools:
     build:
       context: ./
       dockerfile: ./Dockerfile
@@ -11,28 +11,28 @@ services:
       - sqlserver
     environment:
       - ASPNETCORE_ENVIRONMENT=Development #Consider changing this in Production
-      - ConnectionStrings__DefaultConnection=Server=sqlserver;Database=data_market;Trusted_Connection=True;MultipleActiveResultSets=true;User=sa;Password=yourVeryStrong(!)Password;Integrated Security=false
+      - ConnectionStrings__ContainerConnection=Server=sqlserver;Database=data_market;Trusted_Connection=True;MultipleActiveResultSets=true;User=sa;Password=oh_no_this-needs_toChange4Real;Integrated Security=false
     networks:
-      - bb
+      - mdt
     restart: on-failure
 
   sqlserver:
     image: mcr.microsoft.com/mssql/server
     volumes:
-      - dbdata:/var/opt/mssql
+      - sqlvolume:/var/opt/mssql
     environment:
-      - SA_PASSWORD=yourVeryStrong(!)Password
+      - SA_PASSWORD=oh_no_this-needs_toChange4Real
       - ACCEPT_EULA=Y
     ports:
-      - 1533:1433 #expose port, so can connect to it using host: 'localhost,1533' | user: sa, password: yourVeryStrong(!)Password
+      - 1533:1433 #expose port, so can connect to it using host: 'localhost,1533' | user: sa, password: oh_no_this-needs_toChange4Real
     networks:
-      - bb
+      - mdt
 
 volumes:
-  dbdata:
+  sqlvolume:
 
 networks:
-  bb:
-    name: bb_network
+  mdt:
+    name: mdt_network
     ipam:
       driver: default
