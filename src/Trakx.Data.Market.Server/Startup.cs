@@ -1,3 +1,4 @@
+using System.IO;
 using Microsoft.AspNetCore.Builder;
 using Microsoft.AspNetCore.Components.Authorization;
 using Microsoft.AspNetCore.Identity;
@@ -5,6 +6,7 @@ using Microsoft.AspNetCore.Hosting;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
+using Microsoft.Extensions.FileProviders;
 using Microsoft.Extensions.Hosting;
 using Microsoft.OpenApi.Models;
 using Trakx.Data.Market.Common.Pricing;
@@ -90,6 +92,7 @@ namespace Trakx.Data.Market.Server
 
             app.UseHttpsRedirection();
             app.UseStaticFiles();
+            //app.UseDirectoryBrowser();
             app.UseRouting();
             app.UseAuthentication();
             app.UseAuthorization();

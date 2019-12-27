@@ -5,7 +5,7 @@ using System.Text.Json.Serialization;
 
 namespace Trakx.Data.Models.Index
 {
-    public class ComponentDefinition
+    public class ComponentDefinition : IComponentDefinition
     {
         /// <summary>
         /// Unique identifier generated and used as a primary key on the database object.
@@ -14,38 +14,31 @@ namespace Trakx.Data.Models.Index
         [Key, DatabaseGenerated(DatabaseGeneratedOption.Identity)]
         public Guid Id { get; set; }
 
-        /// <summary>
-        /// Address of the smart contract defining the ERC20 contract of the component.
-        /// </summary>
+        /// <inheritdoc />
         [MaxLength(256)]
         public string Address { get; set; }
 
-        /// <summary>
-        /// Common (longer) name for the component (ex: Bitcoin, Ethereum, Litecoin).
-        /// </summary>
+        /// <inheritdoc />
         [MaxLength(512)]
         public string Name { get; set; }
 
-        /// <summary>
-        /// Symbol of the token associated with this component (ex: ETH, BTC, LTC).
-        /// </summary>
+        /// <inheritdoc />
         [MaxLength(50)]
         public string Symbol { get; set; }
 
-        /// <summary>
-        /// Number of decimals by which 1 unit of the ERC20 can be divided.
-        /// </summary>
+        /// <inheritdoc />
         public int Decimals { get; set; }
 
-        /// <summary>
-        /// Units of the component contained in each unit of the index containing it. This is
-        /// always expressed in the smallest unit of the component's currency.
-        /// </summary>
+        /// <inheritdoc />
         public ulong Quantity { get; set; }
 
         /// <summary>
-        /// Valuation of the component at the time of creation
+        /// Url of an icon used to represent the component.
         /// </summary>
+        [NotMapped]
+        public string IconUrl { get; set; }
+
+        /// <inheritdoc />
         [JsonIgnore]
         [ForeignKey(nameof(ComponentValuation.ComponentDefinition))]
         public ComponentValuation InitialValuation { get; set; }
@@ -60,14 +53,17 @@ namespace Trakx.Data.Models.Index
             decimal initialPrice,
             string quoteCurrency,
             DateTime valuationDateTime,
-            int naturalUnit)
+            int naturalUnit,
+            string iconUrl = default)
         {
             Address = address;
             Name = name;
             Symbol = symbol;
             Decimals = decimals;
             Quantity = quantity;
-            InitialValuation = new ComponentValuation(this, quoteCurrency, initialPrice, naturalUnit, valuationDateTime);
+            InitialValuation =
+                new ComponentValuation(this, quoteCurrency, initialPrice, naturalUnit, valuationDateTime);
+            IconUrl = iconUrl;
         }
     }
 }

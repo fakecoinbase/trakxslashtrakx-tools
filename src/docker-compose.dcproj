@@ -9,7 +9,7 @@
     <DockerServiceName>blazorboilerplate.server</DockerServiceName>
   </PropertyGroup>
   <ItemGroup>
-    <None Include="sqlserver.md" />
+    <None Include="docker-compose.production.yml" />
     <None Include="docker-compose.yml" />
     <None Include=".dockerignore" />
   </ItemGroup>

@@ -6,12 +6,10 @@
   </PropertyGroup>
   <Import Project="../Common.Projects.props" />
   <ItemGroup>
-    <None Remove="Sources\BitGo\supported.tokens.csv" />
     <None Remove="Sources\CryptoCompare\coinDetails.json" />
   </ItemGroup>
 
   <ItemGroup>
-    <EmbeddedResource Include="Sources\BitGo\supported.tokens.csv" />
     <EmbeddedResource Include="Sources\CryptoCompare\coinDetails.json" />
   </ItemGroup>
 

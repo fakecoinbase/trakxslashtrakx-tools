@@ -8,7 +8,7 @@ using System.Text.Json.Serialization;
 
 namespace Trakx.Data.Models.Index
 {
-    public class IndexDefinition 
+    public class IndexDefinition : IIndexDefinition<ComponentDefinition>
     {
         public IndexDefinition() { }
 
@@ -40,53 +40,35 @@ namespace Trakx.Data.Models.Index
         [Key, DatabaseGenerated(DatabaseGeneratedOption.Identity)]
         public Guid Id { get; set; }
 
-        /// <summary>
-        /// Symbol of the token associated with this index (ex: L1MKC005).
-        /// </summary>
+        /// <inheritdoc />
         [MaxLength(50)]
         public string Symbol { get; set; }
 
-        /// <summary>
-        /// Name (long) given to the index (ex: Top 5 Market Cap)
-        /// </summary>
+        /// <inheritdoc />
         [Required]
         [MaxLength(512)]
         public string Name { get; set; }
 
-        /// <summary>
-        /// A brief explanation of the index and the choice of components it contains.
-        /// </summary>
+        /// <inheritdoc />
         [Required]
         public string Description { get; set; }
 
-        /// <summary>
-        /// If the index was created, the address at which the corresponding smart contract
-        /// can be found on chain.
-        /// </summary>
+        /// <inheritdoc />
         [MaxLength(256)]
         public string Address { get; set; }
 
-        /// <summary>
-        /// List of the components contained in the index.
-        /// </summary>
+        /// <inheritdoc />
         [Required, NotNull]
         public List<ComponentDefinition> ComponentDefinitions { get; set; }
 
-        /// <summary>
-        /// Net Asset Value of the index at creation time.
-        /// </summary>
+        /// <inheritdoc />
         [Required, NotNull]
         public IndexValuation InitialValuation { get; set; }
 
-        /// <summary>
-        /// Expressed as a power of 10, it represents the minimal amount of the token
-        /// representing the index that one can buy. 
-        /// </summary>
+        /// <inheritdoc />
         public int NaturalUnit { get; set; }
 
-        /// <summary>
-        /// Date at which the index was created.
-        /// </summary>
+        /// <inheritdoc />
         public DateTime? CreationDate { get; set; }
     }
 }

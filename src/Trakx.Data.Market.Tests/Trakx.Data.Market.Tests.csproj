@@ -20,9 +20,6 @@
   </ItemGroup>
 
   <ItemGroup>
-    <EmbeddedResource Include="Data\Kaiko\spot.detailed.sym1.json" />
-    <EmbeddedResource Include="Data\Kaiko\spot.detailed.sym2.json" />
-    <EmbeddedResource Include="Data\Kaiko\spot.direct.btg.json" />
     <EmbeddedResource Include="Data\Messari\allAssets.json" />
     <EmbeddedResource Include="Data\Messari\assetMetrics.sym1.json" />
     <EmbeddedResource Include="Data\Messari\assetMetrics.sym2.json" />
