@@ -1,0 +1,40 @@
+version: '3.5'
+
+services:
+  marketdatatools:
+    build:
+      context: ./
+      dockerfile: ./Dockerfile
+    ports:
+      - 80:80
+      - 443:443
+    depends_on:
+      - sqlserver
+    environment:
+      - ASPNETCORE_ENVIRONMENT=Production
+      - ConnectionStrings__ContainerConnection=Server=sqlserver;Database=data_market;Trusted_Connection=True;MultipleActiveResultSets=true;User=sa;Password=(@REPLACE_WITH_SQL_PASSWORD);Integrated Security=false
+      - ApiKeys__CryptoCompare=abcd1234567890
+    networks:
+      - mdt
+    restart: on-failure
+
+  sqlserver:
+    image: mcr.microsoft.com/mssql/server
+    volumes:
+      - sqlvolume:/var/opt/mssql
+    environment:
+      - SA_PASSWORD=(@REPLACE_WITH_SQL_PASSWORD)
+      - ACCEPT_EULA=Y
+    ports:
+      - 1533:1433 #expose port, so can connect to it using host: 'localhost,1533' | user: sa, password: oh_no_this-needs_toChange4Real
+    networks:
+      - mdt
+
+volumes:
+  sqlvolume:
+
+networks:
+  mdt:
+    name: mdt_network
+    ipam:
+      driver: default
