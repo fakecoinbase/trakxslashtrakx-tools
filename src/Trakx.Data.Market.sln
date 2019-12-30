@@ -11,8 +11,12 @@ Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Trakx.Data.Market.Tests", "
 EndProject
 Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "SolutionItems", "SolutionItems", "{AD1E845A-8787-487F-BDF9-95FDCF9135B4}"
 	ProjectSection(SolutionItems) = preProject
+		..\.dockerignore = ..\.dockerignore
+		..\.gitignore = ..\.gitignore
 		Common.Projects.props = Common.Projects.props
 		generate-migrations.md = generate-migrations.md
+		..\LICENSE = ..\LICENSE
+		..\README.md = ..\README.md
 	EndProjectSection
 EndProject
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Trakx.Data.Models", "Trakx.Data.Models\Trakx.Data.Models.csproj", "{A57885BA-BF6E-49E6-A7C8-45CDCCC4DA2C}"

@@ -149,7 +149,7 @@ namespace Trakx.Data.Market.Tests.Unit.Common.Pricing
         protected override Task<HttpResponseMessage> SendAsync(HttpRequestMessage request,
             CancellationToken cancellationToken)
         {
-            var price = 0m;
+            decimal price;
             var parsed = QueryHelpers.ParseQuery(request.RequestUri.AbsoluteUri);
             var componentSymbol = parsed.First().Value;
             switch (componentSymbol)
@@ -185,10 +185,9 @@ namespace Trakx.Data.Market.Tests.Unit.Common.Pricing
         protected override Task<HttpResponseMessage> SendAsync(HttpRequestMessage request,
             CancellationToken cancellationToken)
         {
-            var price = 0m;
             var parsed = QueryHelpers.ParseQuery(request.RequestUri.AbsoluteUri);
             var componentSymbol = parsed.First().Value;
-            price = _initialValuations
+            var price = _initialValuations
                                 .SingleOrDefault(i => i.ComponentDefinition.Symbol.Equals(componentSymbol))?.Price * 2 ?? 0;
 
             var response = new HttpResponseMessage(HttpStatusCode.OK)

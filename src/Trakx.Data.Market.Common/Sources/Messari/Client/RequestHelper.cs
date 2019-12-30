@@ -19,9 +19,9 @@ namespace Trakx.Data.Market.Common.Sources.Messari.Client
             _logger = logger;
         }
         
-        public async Task<GetAllAssetsResponse> GetAllAssets()
+        public async Task<GetAllAssetsResponse?> GetAllAssets()
         {
-            var path = $"assets";
+            var path = "assets";
 
             var request = new HttpRequestMessage(HttpMethod.Get, new Uri(Constants.ApiEndpoint + path));
 
@@ -39,7 +39,7 @@ namespace Trakx.Data.Market.Common.Sources.Messari.Client
             }
         }
 
-        public async Task<GetAssetProfileResponse> GetProfileForSymbol(string symbol)
+        public async Task<GetAssetProfileResponse?> GetProfileForSymbol(string symbol)
         {
             var path = $"assets/{symbol}/profile";
 
@@ -55,11 +55,11 @@ namespace Trakx.Data.Market.Common.Sources.Messari.Client
             catch (Exception exception)
             {
                 _logger.LogError("Failed to retrieve all assets", exception);
-                return null;
+                return default;
             }
         }
 
-        public async Task<GetAssetMetricsResponse> GetMetricsForSymbol(string symbol)
+        public async Task<GetAssetMetricsResponse?> GetMetricsForSymbol(string symbol)
         {
             var path = $"assets/{symbol}/metrics";
 

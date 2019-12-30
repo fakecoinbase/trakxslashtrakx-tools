@@ -46,7 +46,6 @@
   <ItemGroup>
     <Folder Include="Integration\" />
     <Folder Include="Unit\Common\Indexes\" />
-    <Folder Include="Unit\Sources\Kaiko\Responses\" />
   </ItemGroup>
 
   <ItemGroup>
