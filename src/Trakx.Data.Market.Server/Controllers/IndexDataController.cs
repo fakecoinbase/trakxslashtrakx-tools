@@ -12,7 +12,7 @@ namespace Trakx.Data.Market.Server.Controllers
     [Route("[controller]/[action]")]
     public class IndexDataController : ControllerBase
     {
-        private const string QuestionMarkIcon = "_question_mark";
+        private const string QuestionMarkIcon = "_question-mark";
         private const string IconFileTemplate = "/crypto-icons/svg/icon/{0}.svg";
 
         private readonly IIndexDefinitionProvider _indexProvider;
