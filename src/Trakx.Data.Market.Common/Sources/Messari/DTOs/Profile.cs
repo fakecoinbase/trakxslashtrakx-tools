@@ -1,12 +1,13 @@
 ﻿using System.Collections.Generic;
 using System.Text.Json.Serialization;
+using Trakx.Data.Market.Common.Serialisation.Converters;
 
 namespace Trakx.Data.Market.Common.Sources.Messari.DTOs
 {
-    public partial class Profile
+    public class Profile
     {
         [JsonPropertyName("is_verified")]
-        public bool IsVerified { get; set; }
+        public bool? IsVerified { get; set; }
 
         [JsonPropertyName("tagline")]
         public string Tagline { get; set; }
@@ -24,8 +25,8 @@ namespace Trakx.Data.Market.Common.Sources.Messari.DTOs
         public string Technology { get; set; }
 
         [JsonPropertyName("category")]
-        [JsonConverter(typeof(JsonStringEnumConverter))]
-        public ProfileCategory Category { get; set; }
+        //[JsonConverter(typeof(StringNullableEnumConverter<ProfileCategory?>))]
+        public string? Category { get; set; }
 
         [JsonPropertyName("sector")]
         public string Sector { get; set; }

@@ -14,7 +14,7 @@ namespace Trakx.Data.Market.Common.Sources.Messari.DTOs
         public double? Liquid { get; set; }
 
         [JsonPropertyName("circulating")]
-        public double Circulating { get; set; }
+        public double? Circulating { get; set; }
 
         [JsonPropertyName("y_2050_issued_percent")]
         public double? Y2050_IssuedPercent { get; set; }

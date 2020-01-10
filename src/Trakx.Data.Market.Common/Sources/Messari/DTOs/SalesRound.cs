@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Text.Json.Serialization;
+using Trakx.Data.Market.Common.Serialisation.Converters;
 
 namespace Trakx.Data.Market.Common.Sources.Messari.DTOs
 {
@@ -9,10 +10,12 @@ namespace Trakx.Data.Market.Common.Sources.Messari.DTOs
         public string RoundName { get; set; }
 
         [JsonPropertyName("startDate")]
-        public DateTimeOffset StartDate { get; set; }
+        [JsonConverter(typeof(DateTimeOffsetConverter))]
+        public DateTimeOffset? StartDate { get; set; }
 
         [JsonPropertyName("endDate")]
-        public DateTimeOffset EndDate { get; set; }
+        [JsonConverter(typeof(DateTimeOffsetConverter))]
+        public DateTimeOffset? EndDate { get; set; }
 
         [JsonPropertyName("pricePerUnit")]
         public double? PricePerUnit { get; set; }

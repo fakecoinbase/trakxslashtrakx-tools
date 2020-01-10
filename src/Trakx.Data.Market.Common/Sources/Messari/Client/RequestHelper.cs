@@ -1,8 +1,13 @@
 ﻿using System;
+using System.Collections.Generic;
 using System.Net.Http;
+using System.Runtime.CompilerServices;
 using System.Text.Json;
+using System.Threading;
 using System.Threading.Tasks;
+using Microsoft.AspNetCore.WebUtilities;
 using Microsoft.Extensions.Logging;
+using Polly;
 using Trakx.Data.Market.Common.Sources.Messari.DTOs;
 
 namespace Trakx.Data.Market.Common.Sources.Messari.Client
@@ -19,24 +24,34 @@ namespace Trakx.Data.Market.Common.Sources.Messari.Client
             _logger = logger;
         }
         
-        public async Task<GetAllAssetsResponse?> GetAllAssets()
+        public async IAsyncEnumerable<Asset> GetAllAssets(
+            [EnumeratorCancellation]CancellationToken cancellationToken = default)
         {
-            var path = "assets";
-
-            var request = new HttpRequestMessage(HttpMethod.Get, new Uri(Constants.ApiEndpoint + path));
-
-            try
+            const string path = "assets";
+            var i = 0;
+            while(!cancellationToken.IsCancellationRequested && i < 1_000_000)
             {
-                var response = await _httpClient.SendAsync(request).ConfigureAwait(false);
+                i++;
+                var queryParams = new Dictionary<string, string>
+                {
+                    {"limit", "500"},
+                    {"page", i.ToString()},
+                };
+                var queryString = QueryHelpers.AddQueryString(path, queryParams);
+                var request = new HttpRequestMessage(HttpMethod.Get, new Uri(Constants.ApiEndpoint + queryString));
+
+                var response = await _httpClient.SendAsync(request, cancellationToken).ConfigureAwait(false);
                 await using var streamedContent = await response.Content.ReadAsStreamAsync().ConfigureAwait(false);
-                var result = await JsonSerializer.DeserializeAsync<GetAllAssetsResponse>(streamedContent).ConfigureAwait(false);
-                return result;
+                var result = await JsonSerializer
+                    .DeserializeAsync<GetAllAssetsResponse>(streamedContent, cancellationToken: cancellationToken)
+                    .ConfigureAwait(false);
+                if(result?.Data == null || result.Data.Count == 0) yield break;
+
+                using (var enumerator = result.Data.GetEnumerator())
+                    while (enumerator.MoveNext()) yield return enumerator.Current;
             }
-            catch (Exception exception)
-            {
-                _logger.LogError("Failed to retrieve all assets", exception);
-                return null;
-            }
+
+
         }
 
         public async Task<GetAssetProfileResponse?> GetProfileForSymbol(string symbol)

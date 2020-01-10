@@ -5,7 +5,7 @@ namespace Trakx.Data.Market.Common.Sources.Messari.DTOs
     public partial class Marketcap
     {
         [JsonPropertyName("current_marketcap_usd")]
-        public double CurrentMarketcapUsd { get; set; }
+        public double? CurrentMarketcapUsd { get; set; }
 
         [JsonPropertyName("y_2050_marketcap_usd")]
         public double? Y2050_MarketcapUsd { get; set; }

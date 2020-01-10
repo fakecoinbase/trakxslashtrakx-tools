@@ -8,7 +8,7 @@ namespace Trakx.Data.Market.Common.Serialisation.Converters
     {
         public override long Read(ref Utf8JsonReader reader, Type typeToConvert, JsonSerializerOptions options)
         {
-            var value = long.Parse(reader.GetString());
+            var value = reader.GetInt64();
             return value;
         }
 
