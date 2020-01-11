@@ -11,5 +11,6 @@ namespace Trakx.Data.Market.Common.Sources.Messari.Client
         Task<List<Asset>> GetAllAssets(CancellationToken cancellationToken = default);
         Task<AssetMetrics> GetMetricsForSymbol(string symbol);
         Task<AssetProfile> GetProfileForSymbol(string symbol);
+        List<string> SelectedSectors { get; }
     }
 }

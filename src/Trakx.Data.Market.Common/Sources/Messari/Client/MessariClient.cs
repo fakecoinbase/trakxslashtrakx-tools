@@ -49,5 +49,11 @@ namespace Trakx.Data.Market.Common.Sources.Messari.Client
             var response = await apiClient.GetProfileForSymbol(symbol).ConfigureAwait(false);
             return response?.Data ?? new AssetProfile();
         }
+
+        public List<string> SelectedSectors { get; } = new List<string>(){
+            "Application Development", "Asset Management", "Centralized Exchanges", 
+            "Decentralized Exchanges", "Interoperability", "IoT", "Lending", 
+            "Smart Contract Platforms"
+        };
     }
 }

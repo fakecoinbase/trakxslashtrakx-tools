@@ -3,10 +3,13 @@ using System.Collections.Generic;
 using System.IO;
 using System.Linq;
 using System.Net.Http;
+using System.Security.Cryptography.X509Certificates;
 using System.Threading.Tasks;
 using CoinGecko.Clients;
 using Microsoft.Extensions.DependencyInjection;
 using Polly.Retry;
+using Trakx.Data.Market.Common.Sources.Coinbase;
+using Trakx.Data.Market.Common.Sources.CoinGecko;
 using Trakx.Data.Market.Common.Sources.Messari.Client;
 using Xunit;
 using Xunit.Abstractions;
@@ -23,29 +26,49 @@ namespace Trakx.Data.Market.Tests.Tools
         private ITestOutputHelper _output;
         private ServiceProvider _serviceProvider;
         private IMessariClient _messariClient;
+        private ICoinbaseClient _coinbaseClient;
+        private ICoinGeckoClient _coinGeckoClient;
 
         public CompositionHelper(ITestOutputHelper output)
         {
             _output = output;
             var serviceCollection = new ServiceCollection();
             serviceCollection.AddMessariClient();
+            serviceCollection.AddCoinbaseClient();
+            serviceCollection.AddCoinGeckoClient();
             _serviceProvider = serviceCollection.BuildServiceProvider();
             _messariClient = _serviceProvider.GetRequiredService<IMessariClient>();
+            _coinbaseClient = _serviceProvider.GetRequiredService<ICoinbaseClient>();
+            _coinGeckoClient = _serviceProvider.GetRequiredService<ICoinGeckoClient>();
         }
 
         [Fact]
         public async Task CheckTokensForErc20Implementation()
         {
+
             var assets = await _messariClient.GetAllAssets().ConfigureAwait(false);
             _output.WriteLine(assets.Count.ToString());
-            var allCategories = assets.Select(a => a.Profile.Sector).Distinct();
 
-            var omg = await _messariClient.GetProfileForSymbol("omg");
+            foreach (var sector in _messariClient.SelectedSectors)
+            {
+                var components = assets.Where(a =>
+                    a.Profile?.Sector != null
+                    && a.Profile.Sector.Equals(sector, StringComparison.InvariantCultureIgnoreCase));
+                _output.WriteLine($"# {sector}");
+                foreach (var component in components.OrderBy(c => c.Symbol))
+                {
+                    var componentSymbol = component.Symbol;
+                    if (string.IsNullOrWhiteSpace(componentSymbol)
+                    && _coinGeckoClient.TryRetrieveSymbol(component.Name, out var foundComponent))
+                    {
+                        componentSymbol = foundComponent;
+                    }
 
-
-            _output.WriteLine(string.Join(", ", allCategories));
-            ///var coinData = await _coinsClient.GetCoinList();
-            //var coinIds = coinData.Where(d => _tokens.Contains(d.Symbol)).Select(d => d.Id);
+                    var coinbaseCustodied = _coinbaseClient.CustodiedCoins.Contains(componentSymbol,
+                        StringComparer.InvariantCultureIgnoreCase);
+                    _output.WriteLine($"\"{componentSymbol}\", \"{component.Name}\", \"{component.Profile.TokenDetails.Type}\", \"{coinbaseCustodied}\"");
+                }
+            }
         }
         
 
