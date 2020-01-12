@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.Threading;
 using System.Threading.Tasks;
 using Trakx.Data.Market.Common.Sources.Messari.DTOs;
 
@@ -14,12 +15,26 @@ namespace Trakx.Data.Market.Common.Sources.Messari.Client
             _clientFactory = clientFactory ?? throw new ArgumentNullException(nameof(clientFactory));
         }
 
-        public async Task<IReadOnlyCollection<Asset>> GetAllAssets()
+        public IAsyncEnumerable<Asset> GetAllAssetsAsync(CancellationToken cancellationToken = default)
         {
             var apiClient = _clientFactory.Create();
-            var response = await apiClient.GetAllAssets().ConfigureAwait(false);
-            return response?.Data ?? new List<Asset>();
+            var response = apiClient.GetAllAssets();
+            return response;
         }
+
+        public async Task<List<Asset>> GetAllAssets(CancellationToken cancellationToken = default)
+        {
+            var result = new List<Asset>();
+            var apiClient = _clientFactory.Create();
+            var assets = apiClient.GetAllAssets(cancellationToken);
+            await foreach (var asset in assets.ConfigureAwait(false))
+            {
+                result.Add(asset);
+            }
+
+            return result;
+        }
+
 
         public async Task<AssetMetrics> GetMetricsForSymbol(string symbol)
         {
@@ -34,5 +49,11 @@ namespace Trakx.Data.Market.Common.Sources.Messari.Client
             var response = await apiClient.GetProfileForSymbol(symbol).ConfigureAwait(false);
             return response?.Data ?? new AssetProfile();
         }
+
+        public List<string> SelectedSectors { get; } = new List<string>(){
+            "Application Development", "Asset Management", "Centralized Exchanges", 
+            "Decentralized Exchanges", "Interoperability", "IoT", "Lending", 
+            "Smart Contract Platforms"
+        };
     }
 }

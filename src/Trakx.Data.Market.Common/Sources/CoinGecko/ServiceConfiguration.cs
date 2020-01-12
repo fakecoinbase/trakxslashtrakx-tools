@@ -10,7 +10,7 @@ namespace Trakx.Data.Market.Common.Sources.CoinGecko
             services.AddSingleton<ICoinGeckoClient, CoinGeckoClient>();
             services.AddHttpClient<global::CoinGecko.Clients.CoinsClient>("CoinsClient");
             services.AddHttpClient<global::CoinGecko.Clients.SimpleClient>("SimpleClient");
-
+            services.AddMemoryCache();
             return services;
         }
     }
