@@ -67,8 +67,9 @@ namespace Trakx.Data.Market.Common.Sources.CoinGecko
         {
             var coinList = GetCoinList().ConfigureAwait(false).GetAwaiter().GetResult();
             var symbolsByNames = coinList.ToDictionary(c => c.Name, c => c.Symbol);
-            var bestMatch = coinName.FindBestLevenshteinMatch(symbolsByNames.Keys, coinName.Length * 0.2m);
+            var bestMatch = coinName.FindBestLevenshteinMatch(symbolsByNames.Keys);
             symbol = bestMatch != null ? symbolsByNames[bestMatch] : null;
+
             return bestMatch != null;
         }
 

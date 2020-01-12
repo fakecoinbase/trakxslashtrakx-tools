@@ -11,6 +11,7 @@ using Polly.Retry;
 using Trakx.Data.Market.Common.Sources.Coinbase;
 using Trakx.Data.Market.Common.Sources.CoinGecko;
 using Trakx.Data.Market.Common.Sources.Messari.Client;
+using Trakx.Data.Market.Common.Sources.Messari.DTOs;
 using Xunit;
 using Xunit.Abstractions;
 
@@ -36,38 +37,53 @@ namespace Trakx.Data.Market.Tests.Tools
             serviceCollection.AddMessariClient();
             serviceCollection.AddCoinbaseClient();
             serviceCollection.AddCoinGeckoClient();
+            
             _serviceProvider = serviceCollection.BuildServiceProvider();
             _messariClient = _serviceProvider.GetRequiredService<IMessariClient>();
             _coinbaseClient = _serviceProvider.GetRequiredService<ICoinbaseClient>();
             _coinGeckoClient = _serviceProvider.GetRequiredService<ICoinGeckoClient>();
         }
 
-        [Fact]
+        [Fact(Skip = "not a test")]
         public async Task CheckTokensForErc20Implementation()
         {
-
             var assets = await _messariClient.GetAllAssets().ConfigureAwait(false);
-            _output.WriteLine(assets.Count.ToString());
+
+            _output.WriteLine($"\"{nameof(Asset.Symbol)}\", " +
+                              $"\"{nameof(Asset.Name)}\", " +
+                              $"\"{nameof(Asset.Metrics.Marketcap.CurrentMarketcapUsd)}\", " +
+                              $"\"{nameof(Asset.Metrics.Marketcap.LiquidMarketcapUsd)}\", " +
+                              $"\"{nameof(Asset.Metrics.MarketData.VolumeLast24_HoursOverstatementMultiple)}\", " +
+                              $"\"{nameof(Asset.Profile.TokenDetails.Type)}\", " +
+                              $"CoinbaseCustody");
 
             foreach (var sector in _messariClient.SelectedSectors)
             {
                 var components = assets.Where(a =>
                     a.Profile?.Sector != null
                     && a.Profile.Sector.Equals(sector, StringComparison.InvariantCultureIgnoreCase));
-                _output.WriteLine($"# {sector}");
+                _output.WriteLine($"\"{sector}\"");
                 foreach (var component in components.OrderBy(c => c.Symbol))
                 {
                     var componentSymbol = component.Symbol;
                     if (string.IsNullOrWhiteSpace(componentSymbol)
-                    && _coinGeckoClient.TryRetrieveSymbol(component.Name, out var foundComponent))
+                    && _coinGeckoClient.TryRetrieveSymbol(component.Name, out var symbol))
                     {
-                        componentSymbol = foundComponent;
+                        componentSymbol = symbol.ToUpper();
                     }
 
                     var coinbaseCustodied = _coinbaseClient.CustodiedCoins.Contains(componentSymbol,
                         StringComparer.InvariantCultureIgnoreCase);
-                    _output.WriteLine($"\"{componentSymbol}\", \"{component.Name}\", \"{component.Profile.TokenDetails.Type}\", \"{coinbaseCustodied}\"");
+
+                    _output.WriteLine($"\"{componentSymbol.Trim()}\", " +
+                                      $"\"{component.Name.Trim()}\", " +
+                                      $"\"{component.Metrics.Marketcap.CurrentMarketcapUsd}\", " +
+                                      $"\"{component.Metrics.Marketcap.LiquidMarketcapUsd}\", " +
+                                      $"\"{component.Metrics.MarketData.VolumeLast24_HoursOverstatementMultiple}\", " +
+                                      $"\"{component.Profile.TokenDetails.Type.Trim()}\", " +
+                                      $"\"{coinbaseCustodied}\"");
                 }
+                _output.WriteLine("");
             }
         }
         
