@@ -1,13 +1,14 @@
 version: '3.5'
 
 services:
-  marketdatatools:
+  aspnetcore_api:
+    logging:
+      driver: "json-file"
+      options:
+        max-size: "50m"
     build:
-      context: ./
-      dockerfile: ./Dockerfile
-    ports:
-      - 80:80
-      - 443:443
+      context: .
+      dockerfile: ./Trakx.Data.Market.Server/Dockerfile
     depends_on:
       - sqlserver
     environment:
@@ -15,10 +16,14 @@ services:
       - ConnectionStrings__ContainerConnection=Server=sqlserver;Database=data_market;Trusted_Connection=True;MultipleActiveResultSets=true;User=sa;Password=(@REPLACE_WITH_SQL_PASSWORD);Integrated Security=false
       - ApiKeys__CryptoCompare=abcd1234567890
     networks:
-      - mdt
-    restart: on-failure
+      - marketdata
+    restart: always
 
   sqlserver:
+    logging:
+      driver: "json-file"
+      options:
+        max-size: "50m"
     image: mcr.microsoft.com/mssql/server
     volumes:
       - sqlvolume:/var/opt/mssql
@@ -28,13 +33,33 @@ services:
     ports:
       - 1533:1433 #expose port, so can connect to it using host: 'localhost,1533' | user: sa, password: oh_no_this-needs_toChange4Real
     networks:
-      - mdt
+      - marketdata
+    restart: always
+
+  proxy:
+    logging:
+      driver: "json-file"
+      options:
+        max-size: "50m"
+    build:
+      context:  ./nginx
+      dockerfile: Dockerfile
+    ports:
+      - "80:80"
+      - "443:443"
+    networks:
+      - marketdata        
+    volumes:
+      - /etc/letsencrypt/:/etc/letsencrypt/
+    links:
+      - aspnetcore_api
+    restart: always
 
 volumes:
   sqlvolume:
 
 networks:
-  mdt:
-    name: mdt_network
+  marketdata:
+    name: marketdata_network
     ipam:
       driver: default
