@@ -1,8 +1,9 @@
 ﻿using Microsoft.AspNetCore.Mvc;
 using Microsoft.Extensions.Logging;
 using System.Threading.Tasks;
-using Trakx.Data.Market.Common.Pricing;
-using Trakx.Data.Models.Index;
+using Trakx.Data.Common.Interfaces;
+using Trakx.Data.Common.Interfaces.Index;
+using Trakx.Data.Common.Interfaces.Pricing;
 
 namespace Trakx.Data.Market.Server.Controllers
 {
@@ -10,11 +11,11 @@ namespace Trakx.Data.Market.Server.Controllers
     [Route("[controller]/[action]")]
     public class NavController : ControllerBase
     {
-        private readonly IIndexDefinitionProvider _indexProvider;
+        private readonly IIndexDataProvider _indexProvider;
         private readonly ILogger<NavController> _logger;
         private readonly INavCalculator _navCalculator;
 
-        public NavController(IIndexDefinitionProvider indexProvider, 
+        public NavController(IIndexDataProvider indexProvider, 
             INavCalculator navCalculator,
             ILogger<NavController> logger)
         {
@@ -26,15 +27,15 @@ namespace Trakx.Data.Market.Server.Controllers
         [HttpGet]
         public async Task<ActionResult<string>> GetUsdNetAssetValue([FromQuery] string indexSymbol)
         {
-            var definition = await _indexProvider.GetDefinitionFromSymbol(indexSymbol);
+            var currentComposition = await _indexProvider.GetCurrentComposition(indexSymbol);
 
-            if (definition == IndexDefinition.Default)
-                return $"failed to retrieve details for index {indexSymbol}";
+            if (currentComposition == default(IIndexDefinition))
+                return $"failed to retrieve composition for index {indexSymbol}";
 
-            var pricedDetails = await _navCalculator.GetIndexPriced(definition)
+            var currentValuation = await _navCalculator.GetIndexValuation(currentComposition)
                 .ConfigureAwait(false);
 
-            return new JsonResult(pricedDetails.CurrentValuation.NetAssetValue);
+            return new JsonResult(currentValuation.NetAssetValue);
         }
     }
 }

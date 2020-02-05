@@ -8,5 +8,5 @@ dotnet ef migrations add "CreateIndexRepository" --context IndexRepositoryContex
 
 or, from package manager console
 ```
-add-migration "CreateIndexRepository" -project Trakx.Data.Models -startupProject Trakx.Data.Market.Server -Context IndexRepositoryContext
+add-migration "CreateIndexRepository" -project Trakx.Data.Persistence -startupProject Trakx.Data.Market.Server -Context IndexRepositoryContext
 ```

@@ -1,5 +1,5 @@
 ﻿using System.Threading.Tasks;
-using Trakx.Data.Market.Common.Pricing;
+using Trakx.Data.Common.Pricing;
 
 namespace Trakx.Data.Market.Server.Hubs
 {

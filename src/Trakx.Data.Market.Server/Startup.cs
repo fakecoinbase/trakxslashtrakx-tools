@@ -1,30 +1,31 @@
-using System;
 using Microsoft.AspNetCore.Builder;
 using Microsoft.AspNetCore.Components.Authorization;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.AspNetCore.Hosting;
-using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.HttpOverrides;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Hosting;
 using Microsoft.OpenApi.Models;
-using Trakx.Data.Market.Common.Pricing;
-using Trakx.Data.Market.Common.Sources.CoinGecko;
-using Trakx.Data.Market.Common.Sources.CryptoCompare;
+using Trakx.Data.Common.Interfaces;
+using Trakx.Data.Common.Pricing;
+using Trakx.Data.Common.Sources.CoinGecko;
+using Trakx.Data.Common.Sources.CryptoCompare;
+using Trakx.Data.Common.Sources.Messari.Client;
 using Trakx.Data.Market.Server.Areas.Identity;
 using Trakx.Data.Market.Server.Data;
 using Trakx.Data.Market.Server.Hubs;
-using Trakx.Data.Models.Index;
-using Trakx.Data.Models.Initialisation;
+using Trakx.Data.Market.Server.Models;
+using Trakx.Data.Persistence;
+using Trakx.Data.Persistence.Initialisation;
 
 namespace Trakx.Data.Market.Server
 {
     public class Startup
     {
         private const string ApiName = "Trakx Market Data Api";
-        private const string Version = "v0.1";
+        private const string ApiVersion = "v0.1";
 
         public Startup(IConfiguration configuration)
         {
@@ -52,14 +53,15 @@ namespace Trakx.Data.Market.Server
 
             services.AddSwaggerGen(c =>
             {
-                c.SwaggerDoc(Version, new OpenApiInfo { Title = ApiName, Version = Version });
+                c.SwaggerDoc(ApiVersion, new OpenApiInfo { Title = ApiName, Version = ApiVersion });
             });
 
-            services.AddScoped<IIndexDefinitionProvider, IndexDefinitionProvider>();
+            services.AddScoped<IIndexDataProvider, IndexDataProvider>();
             services.AddScoped<NavHub>();
             services.AddPricing();
             services.AddCoinGeckoClient();
-            services.AddCryptoCompareClient();
+            services.AddMessariClient();
+            services.AddMappings();
 
             services.AddMemoryCache();
 
@@ -91,7 +93,7 @@ namespace Trakx.Data.Market.Server
             app.UseSwagger();
             app.UseSwaggerUI(c =>
             {
-                c.SwaggerEndpoint($"/swagger/{Version}/swagger.json", ApiName);
+                c.SwaggerEndpoint($"/swagger/{ApiVersion}/swagger.json", ApiName);
                 c.InjectJavascript($"public/index.js");
             });
 

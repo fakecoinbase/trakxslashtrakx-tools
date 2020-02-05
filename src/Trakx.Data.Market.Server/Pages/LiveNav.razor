@@ -4,12 +4,12 @@
 @using System.Threading
 @using Microsoft.AspNetCore.SignalR.Client;
 @using Microsoft.Extensions.DependencyInjection
-@using Microsoft.Extensions.Logging
-@using Trakx.Data.Market.Common.Pricing
+@using Trakx.Data.Common.Core
+@using Trakx.Data.Common.Interfaces
+@using Trakx.Data.Common.Pricing
 @using Trakx.Data.Market.Server.Hubs
-@using Trakx.Data.Models.Index
 @inject NavigationManager NavigationManager
-@inject IIndexDefinitionProvider IndexDefinitionProvider
+@inject IIndexDataProvider IndexDataProvider
 @implements IDisposable
 @implements INavHubClient
 
@@ -58,33 +58,26 @@
 
     public async Task AddSymbol()
     {
-        var addMe = _symbol;
-
-        var index = await IndexDefinitionProvider.GetDefinitionFromSymbol(addMe).ConfigureAwait(false);
-        if (index == IndexDefinition.Default)
-        {
-            _message = $"Unable to retrieve definition for index {addMe}";
-            return;
-        }
+        var addSymbol = _symbol.ToLowerInvariant();
 
         try
         {
             await _connection.InvokeAsync<bool>(nameof(NavHub.RegisterClientToNavUpdates),
-                _clientId, index.Id).ConfigureAwait(false);
+                _clientId, addSymbol).ConfigureAwait(false);
         }
         catch (Exception e)
         {
-            _message = $"Failed to add symbol {addMe}";
+            _message = $"Failed to add symbol {addSymbol}";
         }
 
-        _updatesBySymbol.TryAdd(_symbol, new NavUpdate(addMe, 0));
+        _updatesBySymbol.TryAdd(_symbol, new NavUpdate(addSymbol, 0));
     }
 
     public async Task RemoveCurrentSymbol()
     {
-        var deleteMe = _symbol;
+        var deleteSymbol = _symbol.ToLowerInvariant();
 
-        await RemoveSymbol(deleteMe);
+        await RemoveSymbol(deleteSymbol);
     }
 
     private async Task RemoveSymbol(string deleteMe)
