@@ -1,6 +1,5 @@
 ﻿using System.Collections.Generic;
 using System.Text.Json.Serialization;
-using Trakx.Data.Common.Serialisation.Converters;
 
 namespace Trakx.Data.Common.Sources.Messari.DTOs
 {

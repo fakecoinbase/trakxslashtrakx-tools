@@ -11,7 +11,6 @@ using Microsoft.OpenApi.Models;
 using Trakx.Data.Common.Interfaces;
 using Trakx.Data.Common.Pricing;
 using Trakx.Data.Common.Sources.CoinGecko;
-using Trakx.Data.Common.Sources.CryptoCompare;
 using Trakx.Data.Common.Sources.Messari.Client;
 using Trakx.Data.Market.Server.Areas.Identity;
 using Trakx.Data.Market.Server.Data;

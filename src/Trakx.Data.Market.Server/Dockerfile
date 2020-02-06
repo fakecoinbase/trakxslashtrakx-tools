@@ -17,4 +17,5 @@ FROM base AS final
 WORKDIR /app
 COPY --from=publish /app/publish .
 ENV ASPNETCORE_URLS http://+:5000
+ENV MESSARI_API_KEY "replace me"
 ENTRYPOINT ["dotnet", "Trakx.Data.Market.Server.dll"]

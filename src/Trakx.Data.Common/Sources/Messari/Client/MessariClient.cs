@@ -29,7 +29,7 @@ namespace Trakx.Data.Common.Sources.Messari.Client
         {
             Guard.Against.NullOrWhiteSpace(symbol, nameof(quoteCurrency));
             var results = await GetLatestPrices(new[] {symbol}, quoteCurrency);
-            return results.Values.SingleOrDefault();
+            return results?.Values?.SingleOrDefault();
         }
 
         public async Task<Dictionary<string, decimal?>> GetLatestPrices(IEnumerable<string> symbols, 
@@ -46,13 +46,14 @@ namespace Trakx.Data.Common.Sources.Messari.Client
             var allResponses = await Task.WhenAll(getPriceTasks).ConfigureAwait(false);
 
             var quoteCurrencyPrice = allResponses.FirstOrDefault(r =>
-                r.Data != null 
-                && r.Data.Symbol.Equals(quoteCurrency, StringComparison.InvariantCultureIgnoreCase))
-                .Data.MarketData.PriceUsd;
+                r?.Data != null 
+                && r.Data.MarketData != null
+                && (bool) (r.Data.Symbol ?? r.Data.Name)?.Equals(quoteCurrency, StringComparison.InvariantCultureIgnoreCase))
+                ?.Data?.MarketData?.PriceUsd;
 
             var result = allResponses.Where(r => r?.Data?.MarketData != null)
                 .ToDictionary(
-                    r => r.Data.Symbol.ToLower(),
+                    r => (r.Data.Symbol ?? r.Data.Name).ToLower(),
                     r => r.Data.MarketData.PriceUsd / quoteCurrencyPrice);
 
             var returnQuoteCurrency =

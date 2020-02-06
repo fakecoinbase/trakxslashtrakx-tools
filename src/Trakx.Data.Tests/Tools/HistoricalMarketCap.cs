@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.Globalization;
 using System.IO;
 using System.Linq;
 using System.Net.Http;
@@ -29,7 +30,7 @@ namespace Trakx.Data.Tests.Tools
             //_tokens = new[] { "ast", "bnt", "bts", "dgtx", "knc", "lrc", "xin", "zrx" };
             _httpClientHandler = _httpClientHandler = new HttpClientHandler();
             _httpClient = new HttpClient(_httpClientHandler);
-            _coinsClient = new CoinGecko.Clients.CoinsClient(_httpClient);
+            _coinsClient = new CoinsClient(_httpClient);
             _retryPolicy = Policy.Handle<Exception>().WaitAndRetryAsync(50, c => TimeSpan.FromSeconds(c));
         }
 
@@ -48,7 +49,7 @@ namespace Trakx.Data.Tests.Tools
         {
             public HistoricalDataMap()
             {
-                AutoMap();
+                AutoMap(CultureInfo.InvariantCulture);
                 Map(m => m.Date).TypeConverterOption.Format("yyyyMMdd");
             }
         }
@@ -61,7 +62,7 @@ namespace Trakx.Data.Tests.Tools
 
             await using var csvOutput = File.Create(Path.Combine($"historical.{DateTime.Today:yyyyMMdd}.csv"));
             await using var writer = new StreamWriter(csvOutput);
-            using var csvWriter = new CsvWriter(writer);
+            await using var csvWriter = new CsvWriter(writer, CultureInfo.InvariantCulture);
             csvWriter.Configuration.RegisterClassMap<HistoricalDataMap>();
 
 
