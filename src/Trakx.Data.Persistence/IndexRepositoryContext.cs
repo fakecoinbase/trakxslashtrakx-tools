@@ -10,6 +10,11 @@ namespace Trakx.Data.Persistence
             : base(options)
         {}
 
+        public IndexRepositoryContext(): base(new DbContextOptionsBuilder<IndexRepositoryContext>()
+            .UseSqlServer("Server=localhost,1533;Database=IndexRepository;Trusted_Connection=False;MultipleActiveResultSets=true;User Id=SA;Password=oh_no_this-needs_toChange4Real")
+            .Options)
+        {}
+
         public DbSet<ComponentQuantityDao> ComponentQuantities { get; set; }
         public DbSet<ComponentWeightDao> ComponentWeights { get; set; }
         public DbSet<ComponentDefinitionDao> ComponentDefinitions { get; set; }

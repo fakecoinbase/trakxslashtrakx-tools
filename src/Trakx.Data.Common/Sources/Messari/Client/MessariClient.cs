@@ -71,10 +71,19 @@ namespace Trakx.Data.Common.Sources.Messari.Client
             var assets = apiClient.GetAllAssets(cancellationToken);
             await foreach (var asset in assets.ConfigureAwait(false))
             {
+                var correctedAsset = CorrectName(asset);
                 result.Add(asset);
             }
 
             return result;
+        }
+
+        private Asset CorrectName(Asset asset)
+        {
+            if (asset?.Symbol == default) return asset;
+            if (NameReplacements.TryGetValue(asset.Symbol.ToLower(), out var newName))
+                asset.Name = newName;
+            return asset;
         }
 
 
@@ -96,6 +105,24 @@ namespace Trakx.Data.Common.Sources.Messari.Client
             "Application Development", "Asset Management", "Centralized Exchanges", 
             "Decentralized Exchanges", "Interoperability", "IoT", "Lending", 
             "Smart Contract Platforms"
+        };
+
+        public Dictionary<string, string> NameReplacements { get; } = new Dictionary<string, string>()
+        {
+            {"leo", "Bitfinex LEO Token"},
+            {"oax", "Token OpenANX"},
+            {"cova", "Covalent"},
+            {"cvt", "Cybervein Token"},
+            {"data", "Streamr DATAcoin"},
+            {"nu", "networks units token"},
+            {"oxt", "Orchid Protocol"},
+            {"lst", "Lendroid Support Token"},
+            {"nexo", "nexo"},
+            {"rdn", "Raiden Network"},
+            {"mln", "Melon"},
+            {"poly", "Polymath Network"},
+            {"snx", "Synthetix Network Token"},
+            {"kcs", "Kucoin Shares"},
         };
     }
 }
