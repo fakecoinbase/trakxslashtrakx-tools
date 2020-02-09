@@ -81,7 +81,9 @@ namespace Trakx.Data.Common.Sources.Messari.Client
         private Asset CorrectName(Asset asset)
         {
             if (asset?.Symbol == default) return asset;
-            if (NameReplacements.TryGetValue(asset.Symbol.ToLower(), out var newName))
+            if (asset?.Symbol == "ocean" && asset?.Name.ToLower() == "oceanex")
+                asset.Name = "Oceanex Token";
+            else if (NameReplacements.TryGetValue(asset.Symbol.ToLower(), out var newName))
                 asset.Name = newName;
             return asset;
         }
@@ -109,7 +111,7 @@ namespace Trakx.Data.Common.Sources.Messari.Client
 
         public Dictionary<string, string> NameReplacements { get; } = new Dictionary<string, string>()
         {
-            {"leo", "Bitfinex LEO Token"},
+            {"leo", "LEO Token"},
             {"oax", "Token OpenANX"},
             {"cova", "Covalent"},
             {"cvt", "Cybervein Token"},
@@ -123,6 +125,13 @@ namespace Trakx.Data.Common.Sources.Messari.Client
             {"poly", "Polymath Network"},
             {"snx", "Synthetix Network Token"},
             {"kcs", "Kucoin Shares"},
+            {"bcpt", "Blockmason Credit Protocol"},
+            {"dgtx", "Digitex Futures Exchange"},
+            {"nec", "Nectar Token"},
+            {"lend", "Aave"},
+            {"mkr", "Maker"},
+            {"bix", "Bibox Token"},
+            {"zb", "ZB Token"},
         };
     }
 }

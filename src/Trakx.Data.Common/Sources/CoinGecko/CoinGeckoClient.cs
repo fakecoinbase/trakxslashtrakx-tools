@@ -23,11 +23,19 @@ namespace Trakx.Data.Common.Sources.CoinGecko
         private readonly ISimpleClient _simpleClient;
         private Dictionary<string, string> _idsByName;
         private Dictionary<string, string> _symbolsByNames;
-        private Dictionary<string, string> _idsBySymbol;
         private Dictionary<string, string> _idsBySymbolName;
 
-        public Dictionary<string, string> IdsBySymbolName => _idsBySymbolName ??= CoinList
-            .ToDictionary(c => GetSymbolNameKey(c.Symbol, c.Name), c => c.Id);
+        public Dictionary<string, string> IdsBySymbolName
+        {
+            get
+            {
+                if (_idsBySymbolName != null) return _idsBySymbolName;
+                var idsBySymbolName = _idsBySymbolName ??= CoinList
+                    .ToDictionary(c => GetSymbolNameKey(c.Symbol, c.Name), c => c.Id);
+                //idsBySymbolName["lend|aave"] = "aave";
+                return idsBySymbolName;
+            }
+        }
 
         private readonly Dictionary<string, CoinFullDataById> _coinFullDataByIds;
         public Dictionary<string, CoinFullDataById> CoinFullDataByIds => _coinFullDataByIds;
@@ -92,25 +100,53 @@ namespace Trakx.Data.Common.Sources.CoinGecko
             {
                 var date = asOf.ToString("dd-MM-yyyy");
 
-                var conversion = 1m;
-                if (quoteCurrencyId != default)
-                {
-                    var quoteResponse = await _memoryCache.GetOrCreateAsync($"{date}|{quoteCurrencyId}",
-                        async entry => await _retryPolicy.ExecuteAsync(() =>
-                        _coinsClient.GetHistoryByCoinId(quoteCurrencyId, date, false.ToString())));
-                    conversion = (decimal?)quoteResponse.MarketData.CurrentPrice[Constants.Usd] ?? 1m;
-                }
+                var fxRate = await GetUsdFxRate(quoteCurrencyId, date);
 
                 var historicalPrice = await _retryPolicy.ExecuteAsync(() =>
                         _coinsClient.GetHistoryByCoinId(id, date, false.ToString()));
 
-                return (decimal?)historicalPrice.MarketData.CurrentPrice[Constants.Usd] / conversion;
+                return (decimal?)historicalPrice.MarketData.CurrentPrice[Constants.Usd] / fxRate;
             }
             catch (Exception e)
             {
                 _logger.LogWarning(e, "Failed to retrieve price for {0} as of {1:yyyyMMdd}", id, asOf);
                 return null;
             }
+        }
+
+        private async Task<decimal> GetUsdFxRate(string quoteCurrencyId, string date)
+        {
+            var conversion = 1m;
+            if (quoteCurrencyId != default)
+            {
+                var quoteResponse = await _memoryCache.GetOrCreateAsync($"{date}|{quoteCurrencyId}",
+                    async entry => await _retryPolicy.ExecuteAsync(() =>
+                        _coinsClient.GetHistoryByCoinId(quoteCurrencyId, date, false.ToString())));
+                conversion = (decimal?) quoteResponse.MarketData.CurrentPrice[Constants.Usd] ?? 1m;
+            }
+
+            return conversion;
+        }
+
+        /// <inheritdoc />
+        public async Task<MarketData> GetMarketDataAsOfFromId(string id, DateTime asOf, string quoteCurrencyId = "usd-coin")
+        {
+            var date = asOf.ToString("dd-MM-yyyy");
+            var fullData = await _coinsClient.GetHistoryByCoinId(id, date, false.ToString())
+                .ConfigureAwait(false);
+            var fxRate = await GetUsdFxRate(quoteCurrencyId, date);
+            var marketData = new MarketData()
+            {
+                AsOf = asOf,
+                CoinId = fullData.Id,
+                MarketCap = (decimal?) fullData.MarketData?.MarketCap[Constants.Usd] / fxRate,
+                Volume = (decimal?) fullData.MarketData?.TotalVolume[Constants.Usd] / fxRate,
+                Price = (decimal?)fullData.MarketData?.CurrentPrice[Constants.Usd] / fxRate,
+                QuoteCurrency = fullData.Symbol
+                
+            };
+            
+            return marketData;
         }
 
         public bool TryRetrieveSymbol(string coinName, out string? symbol)
@@ -160,48 +196,19 @@ namespace Trakx.Data.Common.Sources.CoinGecko
             }
         }
 
-        public bool TryRetrieveContractDetailsFromCoinName(string coinName, 
-            out string? coinGeckoId, out string? symbol, out string? etherscanLink)
-        {
-            coinGeckoId = string.Empty;
-            symbol = string.Empty;
-            etherscanLink = string.Empty;
-
-            _idsByName ??= CoinList.ToDictionary(c => c.Name, c => c.Id);
-            var bestMatch = coinName.FindBestLevenshteinMatch(_idsByName.Keys);
-            if (bestMatch == null) return false;
-            coinGeckoId = _idsByName[bestMatch];
-
-            return TryGetCoinDataWithId(ref coinGeckoId, ref symbol, ref etherscanLink);
-        }
-
         public void RetrieveContractDetailsFromCoinSymbolName(string searchSymbol, string searchName, 
-            out string? coinGeckoId, out string? symbol, out string? etherscanLink)
+            out string? coinGeckoId, out string? symbol, out string? contractAddress)
         {
             var data = RetrieveCoinFullData(searchSymbol, searchName);
             coinGeckoId = data?.Id;
             symbol = data?.Symbol;
-            etherscanLink = data?.Links?.BlockchainSite?.FirstOrDefault(b => b != null && etherscanTokenAddress.IsMatch(b));
+            var etherscanLink = data?.Links?.BlockchainSite?
+                .FirstOrDefault(b => b != null && etherscanTokenAddress.IsMatch(b));
+            contractAddress = etherscanLink != null
+                ? etherscanTokenAddress.Match(etherscanLink).Groups["address"].Value
+                : default;
         }
-
-
-
-        private bool TryGetCoinDataWithId(ref string coinGeckoId, ref string symbol, ref string etherscanLink)
-        {
-            try
-            {
-                var details = CoinFullDataByIds[coinGeckoId];
-                symbol = details.Symbol;
-                etherscanLink = details.Links.BlockchainSite.FirstOrDefault(b => etherscanTokenAddress.IsMatch(b));
-                return true;
-            }
-            catch (Exception e)
-            {
-                _logger.LogWarning(e, "Failed to retrieve contract details for {0}", coinGeckoId);
-                return false;
-            }
-        }
-
+        
         public async Task<IReadOnlyList<CoinList>> GetCoinList()
         {
             var coinList = await _memoryCache.GetOrCreateAsync("CoinGecko.CoinList", async entry =>
