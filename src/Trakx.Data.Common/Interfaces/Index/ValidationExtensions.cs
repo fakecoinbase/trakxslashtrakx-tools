@@ -1,4 +1,5 @@
-﻿using System.Linq;
+﻿using System;
+using System.Linq;
 using Ardalis.GuardClauses;
 
 namespace Trakx.Data.Common.Interfaces.Index
@@ -62,7 +63,7 @@ namespace Trakx.Data.Common.Interfaces.Index
                 summedWeights += component.Weight;
             }
 
-            return allComponentsAreValid && summedWeights == 1m;
+            return allComponentsAreValid && Math.Abs(summedWeights - 1m) < 1e-6m;
         }
 
         public static bool IsValid(this IIndexComposition composition)

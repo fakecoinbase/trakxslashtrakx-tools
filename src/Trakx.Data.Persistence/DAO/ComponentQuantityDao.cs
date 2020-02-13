@@ -14,10 +14,10 @@ namespace Trakx.Data.Persistence.DAO
             ComponentDefinitionDao componentDefinition, 
             ulong unscaledQuantity)
         {
-            Id = $"{indexComposition.Id}|{componentDefinition.Symbol}";
             IndexCompositionDao = indexComposition;
             ComponentDefinitionDao = componentDefinition;
             Quantity = unscaledQuantity * (decimal)Math.Pow(10, 18 - componentDefinition.Decimals - indexComposition.IndexDefinitionDao.NaturalUnit);
+            UpdateId();
         }
 
         /// <summary>
@@ -41,5 +41,16 @@ namespace Trakx.Data.Persistence.DAO
         public decimal Quantity { get; set; }
 
         #endregion
+
+        public void LinkToIndexComposition(IndexCompositionDao indexComposition)
+        {
+            IndexCompositionDao = indexComposition;
+            UpdateId();
+        }
+
+        private void UpdateId()
+        {
+            Id = $"{IndexCompositionDao.Id}|{ComponentDefinition.Symbol}";
+        }
     }
 }

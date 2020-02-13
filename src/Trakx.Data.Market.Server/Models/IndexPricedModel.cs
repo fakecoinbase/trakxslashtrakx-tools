@@ -23,7 +23,7 @@ namespace Trakx.Data.Market.Server.Models
             IIndexValuation currentValuation)
         {
             Guard.Against.Default(initialValuation, nameof(initialValuation));
-            Guard.Against.Default(initialValuation, nameof(currentValuation));
+            Guard.Against.Default(currentValuation, nameof(currentValuation));
 
             Debug.Assert(ValuationsAreInTheSameCurrency(initialValuation, currentValuation),
                 "All underlying component valuations should be quoted in the same currency.");

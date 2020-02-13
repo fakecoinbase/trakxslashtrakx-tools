@@ -17,4 +17,12 @@
         /// </summary>
         decimal Quantity { get; }
     }
+
+    //public static class ComponentQuantityExtensions
+    //{
+    //    public static string GetId(this IComponentQuantity componentQuantity, IIndexComposition indexComopositi)
+    //    {
+    //        return $"{indexDefinition.IndexDefinition}|{componentQuantity.ComponentDefinition.Symbol}"
+    //    }
+    //}
 }

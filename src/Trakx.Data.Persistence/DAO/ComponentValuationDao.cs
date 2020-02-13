@@ -35,9 +35,9 @@ namespace Trakx.Data.Persistence.DAO
         public DateTime TimeStamp { get; set; }
 
         /// <inheritdoc />
-        public double SetWeightFromTotalValue(decimal totalIndexValue)
+        public void SetWeightFromTotalValue(decimal totalIndexValue)
         {
-            throw new NotImplementedException("Value should be set from the database directly");
+            Weight = (double)this.GetWeightFromTotalValue(totalIndexValue);
         }
 
         /// <inheritdoc />

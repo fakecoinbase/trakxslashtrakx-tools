@@ -39,11 +39,9 @@ namespace Trakx.Data.Common.Core
         public DateTime TimeStamp { get; }
 
         /// <inheritdoc />
-        public double SetWeightFromTotalValue(decimal totalIndexValue)
+        public void SetWeightFromTotalValue(decimal totalIndexValue)
         {
-            Guard.Against.NegativeOrZero(totalIndexValue, nameof(totalIndexValue));
-            Weight = (double)(Value / totalIndexValue);
-            return Weight.Value;
+            Weight = (double)this.GetWeightFromTotalValue(totalIndexValue);
         }
 
         #endregion

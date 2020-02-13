@@ -10,7 +10,7 @@ namespace Trakx.Data.Market.Server.Models
         {
             var automapperConfig = new MapperConfiguration(configuration =>
             {
-                configuration.AddProfile(new DaoMappingProfile());
+                configuration.AddProfile(new InterfaceToDaoMappingProfile());
             });
 
             var autoMapper = automapperConfig.CreateMapper();

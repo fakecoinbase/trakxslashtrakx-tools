@@ -7,8 +7,6 @@ using System.Threading.Tasks;
 using FluentAssertions;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
-using NSubstitute.Exceptions;
-using Org.BouncyCastle.Asn1.X509.Qualified;
 using Trakx.Data.Common.Sources.Coinbase;
 using Trakx.Data.Common.Sources.CoinGecko;
 using Trakx.Data.Common.Sources.Messari.Client;
@@ -110,8 +108,8 @@ namespace Trakx.Data.Tests.Tools
                               $"\"{nameof(ComponentLine.ContractAddress)}\"," +
                               $"\"{nameof(ComponentLine.Decimals)}\"");
 
-            //foreach (var sector in sectors.Where(s => s != "Unknown"))
-            foreach (var sector in sectors.Where(s => s == "Centralized Exchanges"))
+            foreach (var sector in sectors.Where(s => s != "Unknown"))
+            //foreach (var sector in sectors.Where(s => s == "Centralized Exchanges"))
             {
                 var components = assets.Where(a =>
                     a.Profile?.Sector != null
@@ -166,7 +164,8 @@ namespace Trakx.Data.Tests.Tools
                     });
                 }
 
-                AssignComponentWeights(componentLines, 0.3m);
+                var marketCappedComponents = componentLines.Count(c => c.CoinGeckoHistoricalUsdcMarketCap != 0);
+                AssignComponentWeights(componentLines, marketCappedComponents > 3 ? 0.3m : 1m);
 
                 foreach (var component in componentLines)
                 {

@@ -20,6 +20,9 @@ namespace Trakx.Data.Persistence.DAO
             ComponentValuationDaos = componentValuations;
             var indexComposition = componentValuations.First().ComponentQuantityDao.IndexCompositionDao;
             IndexCompositionDao = indexComposition;
+
+            componentValuations.ForEach(v => v.SetWeightFromTotalValue(NetAssetValue));
+
             Id = $"{indexComposition.Id}|{quoteCurrency}|{timeStamp:yyMMddHHmmssff}";
         }
 
