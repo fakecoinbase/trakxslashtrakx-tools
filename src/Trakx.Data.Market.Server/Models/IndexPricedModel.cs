@@ -30,7 +30,7 @@ namespace Trakx.Data.Market.Server.Models
 
             var indexPriced = new IndexPricedModel()
             {
-                Symbol = initialValuation.IndexComposition.IndexDefinition.Symbol,
+                Symbol = initialValuation.IndexComposition.IndexDefinition.Symbol.ToUpper(),
                 Description = initialValuation.IndexComposition.IndexDefinition.Description,
                 NaturalUnit = initialValuation.IndexComposition.IndexDefinition.NaturalUnit,
                 Name = initialValuation.IndexComposition.IndexDefinition.Name,
@@ -69,7 +69,7 @@ namespace Trakx.Data.Market.Server.Models
                 Address = componentQuantity.ComponentDefinition.Address,
                 Decimals = componentQuantity.ComponentDefinition.Decimals,
                 Name = componentQuantity.ComponentDefinition.Name,
-                Symbol = componentQuantity.ComponentDefinition.Symbol,
+                Symbol = componentQuantity.ComponentDefinition.Symbol.ToUpper(),
                 Quantity = componentQuantity.Quantity
             };
             return result;
