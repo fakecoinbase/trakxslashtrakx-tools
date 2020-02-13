@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using System.Diagnostics;
 using System.Linq;
 using Ardalis.GuardClauses;
+using Microsoft.VisualBasic;
 using Trakx.Data.Common.Interfaces.Index;
 
 namespace Trakx.Data.Market.Server.Models
@@ -88,7 +89,7 @@ namespace Trakx.Data.Market.Server.Models
         {
             var result = new ComponentValuationModel()
             {
-                QuoteCurrency = valuation.QuoteCurrency,
+                QuoteCurrency = valuation.QuoteCurrency == "usdc" ? "USD" : valuation.QuoteCurrency,
                 TimeStamp = valuation.TimeStamp,
                 Price = valuation.Price,
                 Value = valuation.Value,
@@ -110,10 +111,10 @@ namespace Trakx.Data.Market.Server.Models
             var result = new IndexValuationModel()
             {
                 NetAssetValue = valuation.NetAssetValue,
-                QuoteCurrency = valuation.QuoteCurrency,
+                QuoteCurrency = valuation.QuoteCurrency == "usdc" ? "USD" : valuation.QuoteCurrency,
                 TimeStamp = valuation.TimeStamp,
                 ValuationsBySymbol = valuation.ComponentValuations.ToDictionary(
-                    v => v.ComponentQuantity.ComponentDefinition.Symbol,
+                    v => v.ComponentQuantity.ComponentDefinition.Symbol.ToUpper(),
                     v => ComponentValuationModel.FromIComponentValuation(v))
             };
             return result;
