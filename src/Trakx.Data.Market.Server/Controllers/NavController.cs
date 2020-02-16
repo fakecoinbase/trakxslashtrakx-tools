@@ -4,6 +4,7 @@ using System.Threading.Tasks;
 using Trakx.Data.Common.Interfaces;
 using Trakx.Data.Common.Interfaces.Index;
 using Trakx.Data.Common.Interfaces.Pricing;
+using Trakx.Data.Common.Utils;
 
 namespace Trakx.Data.Market.Server.Controllers
 {
@@ -24,8 +25,16 @@ namespace Trakx.Data.Market.Server.Controllers
             _navCalculator = navCalculator;
         }
 
+        /// <summary>
+        /// Returns the USDc Net Asset Value of a given index.
+        /// </summary>
+        /// <param name="indexSymbol"></param>
+        /// <param name="maxRandomVariation">Adds a random variation to the NAV.
+        /// ******** ONLY SET THIS IN DEVELOPMENT ********.
+        /// This was created to allow trading to happen by getting different hummingbots to get slightly dissimilar prices.</param>
+        /// <returns></returns>
         [HttpGet]
-        public async Task<ActionResult<string>> GetUsdNetAssetValue([FromQuery] string indexSymbol)
+        public async Task<ActionResult<string>> GetUsdNetAssetValue([FromQuery] string indexSymbol, [FromQuery]decimal maxRandomVariation = 0)
         {
             var currentComposition = await _indexProvider.GetCurrentComposition(indexSymbol);
 
@@ -35,7 +44,7 @@ namespace Trakx.Data.Market.Server.Controllers
             var currentValuation = await _navCalculator.GetIndexValuation(currentComposition)
                 .ConfigureAwait(false);
 
-            return new JsonResult(currentValuation.NetAssetValue);
+            return new JsonResult(currentValuation.NetAssetValue.AddRandomVariation(maxRandomVariation));
         }
     }
 }
