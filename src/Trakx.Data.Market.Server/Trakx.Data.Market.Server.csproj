@@ -5,17 +5,14 @@
     <UserSecretsId>aspnet-Trakx.Data.Market.Server-DC5159C2-8CF7-4353-A8EC-24774AF097FE</UserSecretsId>
     <DockerDefaultTargetOS>Linux</DockerDefaultTargetOS>
     <LangVersion>8</LangVersion>
+    <YarnWorkingDir>$(MSBuildProjectDirectory)/wwwroot/npm-libs/</YarnWorkingDir>
+    <YarnBuildCommand>install</YarnBuildCommand>
   </PropertyGroup>
 
   <Import Project="../Common.Projects.props" />
 
-  <!--<ItemGroup>
-    <Content Remove="wwwroot\npm-libs\.gitignore" />
-    <Content Remove="wwwroot\npm-libs\src\index.ts" />
-  </ItemGroup>-->
-
   <ItemGroup>
-    <PackageReference Include="Ardalis.GuardClauses" Version="1.3.3" />
+    <PackageReference Include="Ardalis.GuardClauses" Version="1.4.1" />
     <PackageReference Include="Microsoft.AspNetCore.Diagnostics.EntityFrameworkCore" Version="3.1.1" />
     <PackageReference Include="Microsoft.AspNetCore.Identity.EntityFrameworkCore" Version="3.1.1" />
     <PackageReference Include="Microsoft.AspNetCore.Identity.UI" Version="3.1.0" />
@@ -30,13 +27,14 @@
     </PackageReference>
     <PackageReference Include="Microsoft.Extensions.Configuration.CommandLine" Version="3.1.1" />
     <PackageReference Include="Microsoft.Extensions.Logging.Debug" Version="3.1.1" />
-    <!--<PackageReference Include="Microsoft.TypeScript.MSBuild" Version="3.7.2">
+    <PackageReference Include="Microsoft.TypeScript.MSBuild" Version="3.7.4">
       <PrivateAssets>all</PrivateAssets>
       <IncludeAssets>runtime; build; native; contentfiles; analyzers; buildtransitive</IncludeAssets>
-    </PackageReference>-->
+    </PackageReference>
     <PackageReference Include="Microsoft.VisualStudio.Azure.Containers.Tools.Targets" Version="1.9.10" />
     <PackageReference Include="Microsoft.VisualStudio.Web.CodeGeneration.Design" Version="3.1.1" />
     <PackageReference Include="Swashbuckle.AspNetCore" Version="5.0.0" />
+    <PackageReference Include="Yarn.MSBuild" Version="1.22.0" />
   </ItemGroup>
 
   <ItemGroup>
@@ -44,13 +42,29 @@
     <ProjectReference Include="..\Trakx.Data.Persistence\Trakx.Data.Persistence.csproj" />
   </ItemGroup>
 
-  <!--<ItemGroup>
+  <ItemGroup>
     <TypeScriptCompile Include="wwwroot\npm-libs\.gitignore" />
     <TypeScriptCompile Include="wwwroot\npm-libs\src\index.ts" />
-  </ItemGroup>-->
+  </ItemGroup>
 
-  <!--<ItemGroup>
+  <ItemGroup>
     <Folder Include="wwwroot\npm-libs\public\" />
-  </ItemGroup>-->
+  </ItemGroup>
 
+  <Target Name="CopyLinkedContentFiles" BeforeTargets="Build">
+    <Copy SourceFiles="%(Content.Identity)" DestinationFiles="%(Content.Link)" SkipUnchangedFiles="true" OverwriteReadOnlyFiles="true" Condition="'%(Content.Link)' != ''" />
+  </Target>
+
+  <ItemGroup>
+    <Content Include="wwwroot\npm-libs\node_modules\cryptocurrency-icons\svg\icon\*.svg" Link="wwwroot\crypto-icons\svg\imported\%(Filename)%(Extension)" CopyToOutputDirectory="PreserveNewest" />
+    <Content Update="wwwroot\crypto-icons\svg\local\computation-services.svg">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </Content>
+    <Content Update="wwwroot\crypto-icons\svg\local\lending.svg">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </Content>
+    <Content Update="wwwroot\crypto-icons\svg\local\_question-mark.svg">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </Content>
+  </ItemGroup>
 </Project>

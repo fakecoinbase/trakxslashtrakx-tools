@@ -14,8 +14,7 @@ namespace Trakx.Data.Market.Server.Controllers
     [Route("[controller]/[action]")]
     public class IndexDataController : ControllerBase
     {
-        private const string QuestionMarkIcon = "_question-mark";
-        private const string IconFileTemplate = "/crypto-icons/svg/icon/{0}.svg";
+        private const string QuestionMarkIcon = "/crypto-icons/svg/local/_question-mark.svg";
 
         private readonly IIndexDataProvider _indexProvider;
         private readonly INavCalculator _navCalculator;
@@ -54,16 +53,13 @@ namespace Trakx.Data.Market.Server.Controllers
                     s =>
                     {
                         var symbol = s;
-                        var candidateImagePath = Path.Combine("wwwroot", "crypto-icons", "svg", "icon", $"{s}.svg");
+                        var candidateImagePath = Path.Combine("wwwroot", "crypto-icons", "svg", "imported", $"{s}.svg");
                         var foundIcon = _hostEnvironment.ContentRootFileProvider.GetFileInfo(candidateImagePath).Exists;
+                        if (foundIcon) return $"/crypto-icons/svg/imported/{s}.svg";
 
-                        if (!foundIcon)
-                        {
-                            _logger.LogDebug("Failed to retrieve icon for symbol {0}", symbol);
-                        }
+                        _logger.LogDebug("Failed to retrieve icon for symbol {0}", symbol);
 
-                        var iconUrl = string.Format(IconFileTemplate, foundIcon ? symbol : QuestionMarkIcon);
-                        return iconUrl;
+                        return QuestionMarkIcon;
                     });
 
             var indexPriced = IndexPricedModel.FromIndexValuations(issuanceValuation, currentValuation);
