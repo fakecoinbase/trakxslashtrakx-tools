@@ -39,6 +39,7 @@
   },
   "dependencies": {
     "@microsoft/signalr": "^3.0.1",
+    "cryptocurrency-icons": "^0.16.1",
     "lodash": "^4.17.15"
   }
 }
