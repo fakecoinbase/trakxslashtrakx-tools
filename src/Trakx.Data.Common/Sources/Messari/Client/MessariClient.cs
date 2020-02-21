@@ -81,8 +81,14 @@ namespace Trakx.Data.Common.Sources.Messari.Client
         private Asset CorrectName(Asset asset)
         {
             if (asset?.Symbol == default) return asset;
-            if (asset?.Symbol == "ocean" && asset?.Name.ToLower() == "oceanex")
+            if (asset.Symbol.ToLower() == "ocean" && asset.Name?.ToLower() == "oceanex")
                 asset.Name = "Oceanex Token";
+            else if (asset.Symbol.ToLower() == "aura")
+            {
+                asset.Name = "Idex";
+                asset.Symbol = "idex";
+            }
+
             else if (NameReplacements.TryGetValue(asset.Symbol.ToLower(), out var newName))
                 asset.Name = newName;
             return asset;
@@ -119,8 +125,8 @@ namespace Trakx.Data.Common.Sources.Messari.Client
             {"nu", "networks units token"},
             {"oxt", "Orchid Protocol"},
             {"lst", "Lendroid Support Token"},
-            {"nexo", "nexo"},
-            {"rdn", "Raiden Network"},
+            {"nexo", "Nexo"},
+            {"rdn", "Raiden Network Token"},
             {"mln", "Melon"},
             {"poly", "Polymath Network"},
             {"snx", "Synthetix Network Token"},
@@ -132,6 +138,9 @@ namespace Trakx.Data.Common.Sources.Messari.Client
             {"mkr", "Maker"},
             {"bix", "Bibox Token"},
             {"zb", "ZB Token"},
+            {"bnt", "Bancor Network Token"},
+            {"aura", "Aurora Dao"},
+            {"bnb", "Binance Coin"},
         };
     }
 }

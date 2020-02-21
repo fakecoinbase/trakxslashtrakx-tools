@@ -1,6 +1,5 @@
 ﻿using System;
 using System.Collections.Generic;
-using System.Diagnostics;
 using System.Linq;
 using Trakx.Data.Common.Core;
 using Trakx.Data.Common.Interfaces.Index;

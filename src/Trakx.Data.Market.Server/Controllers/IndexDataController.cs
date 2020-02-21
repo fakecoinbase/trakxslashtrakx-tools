@@ -10,6 +10,9 @@ using Trakx.Data.Market.Server.Models;
 
 namespace Trakx.Data.Market.Server.Controllers
 {
+    /// <summary>
+    /// Provides endpoints related index information
+    /// </summary>
     [ApiController]
     [Route("[controller]/[action]")]
     public class IndexDataController : ControllerBase
@@ -33,6 +36,12 @@ namespace Trakx.Data.Market.Server.Controllers
             _logger = logger;
         }
 
+        /// <summary>
+        /// Use this endpoint to retrieve details about the composition of an index, such as issuance date, short description,
+        /// component weights, valuations, associated icons, etc.
+        /// </summary>
+        /// <param name="indexSymbol">The symbol for the index on which data is requested.</param>
+        /// <returns>Basic information about the index definition, including issuance and current valuation details.</returns>
         [HttpGet]
         public async Task<ActionResult<string>> IndexDetailsPriced([FromQuery] string indexSymbol)
         {
@@ -44,7 +53,8 @@ namespace Trakx.Data.Market.Server.Controllers
             var currentValuation = await _navCalculator.GetIndexValuation(composition)
                 .ConfigureAwait(false);
 
-            var issuanceValuation = await _indexProvider.GetInitialValuation(composition);
+            var issuanceValuation = await _indexProvider.GetInitialValuation(composition)
+                .ConfigureAwait(false);
 
             var iconBySymbol = currentValuation.ComponentValuations
                 .Select(d => d.ComponentQuantity.ComponentDefinition.Symbol.ToLower())

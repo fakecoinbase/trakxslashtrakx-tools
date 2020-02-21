@@ -68,7 +68,7 @@
             _message = $"Failed to add symbol {addSymbol}";
         }
 
-        _updatesBySymbol.TryAdd(_symbol, new NavUpdate(addSymbol, 0));
+        _updatesBySymbol.TryAdd(addSymbol, new NavUpdate(addSymbol, 0));
     }
 
     public async Task RemoveCurrentSymbol()

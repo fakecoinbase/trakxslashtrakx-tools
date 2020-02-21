@@ -39,7 +39,7 @@ namespace Trakx.Data.Market.Server.Models
                 CurrentValuation = IndexValuationModel.FromIIndexValuation(currentValuation),
                 CreationDate = currentValuation.IndexComposition.IndexDefinition.CreationDate,
                 ComponentDefinitions = currentValuation.IndexComposition
-                    .ComponentQuantities.Select(c => ComponentModel.FromIComponent(c))
+                    .ComponentQuantities.Select(ComponentModel.FromIComponent)
                     .ToList()
             };
             return indexPriced;

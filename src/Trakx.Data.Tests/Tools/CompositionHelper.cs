@@ -15,6 +15,7 @@ using Trakx.Data.Common.Sources.Web3;
 using Trakx.Data.Common.Sources.Web3.Client;
 using Xunit;
 using Xunit.Abstractions;
+using MarketData = Trakx.Data.Common.Sources.CoinGecko.MarketData;
 
 namespace Trakx.Data.Tests.Tools
 {
@@ -28,6 +29,16 @@ namespace Trakx.Data.Tests.Tools
         private ICoinbaseClient _coinbaseClient;
         private ICoinGeckoClient _coinGeckoClient;
         private IWeb3Client _web3Client;
+        private static readonly List<string> BadAssetNames = new List<string>() {"uniswap", "metacartel ventures", "tari" };
+
+        private static readonly Dictionary<string, MarketData> MarketDataOverridesByCoinGeckoIdAndDate = new Dictionary<string, MarketData>
+        {
+            {"swissborg|20200101", new MarketData {MarketCap = 8_488_127m}},
+            {"molecular-future|20200101", new MarketData {MarketCap = 75_298_069m}},
+            {"rublix|20200101", new MarketData {MarketCap = 2_584_608m}},
+            {"nectar-token|20200101", new MarketData {MarketCap = 6_833_195m}},
+            {"mixin|20200101", new MarketData {MarketCap = 79_918_720m}},
+        };
 
         public CompositionHelper(ITestOutputHelper output)
         {
@@ -70,6 +81,8 @@ namespace Trakx.Data.Tests.Tools
             public decimal? TargetWeight { get; set; }
             public ushort? Decimals { get; set; }
             public string? ContractAddress { get; set; }
+            public bool IsErc20 => !string.IsNullOrWhiteSpace(ContractAddress)
+                       && (TokenType?.Contains("ERC-20", StringComparison.InvariantCultureIgnoreCase) ?? false);
         }
 
         [Fact]
@@ -108,8 +121,8 @@ namespace Trakx.Data.Tests.Tools
                               $"\"{nameof(ComponentLine.ContractAddress)}\"," +
                               $"\"{nameof(ComponentLine.Decimals)}\"");
 
-            foreach (var sector in sectors.Where(s => s != "Unknown"))
-            //foreach (var sector in sectors.Where(s => s == "Centralized Exchanges"))
+            foreach (var sector in sectors.Where(s => s == "Scaling"))
+            //foreach (var sector in sectors.Where(s => s == "Asset Management"))
             {
                 var components = assets.Where(a =>
                     a.Profile?.Sector != null
@@ -133,6 +146,8 @@ namespace Trakx.Data.Tests.Tools
                         out var coinGeckoId, out var coinGeckoSymbol, out var contractAddress);
                     var marketData =
                         await _coinGeckoClient.GetMarketDataAsOfFromId(coinGeckoId, new DateTime(2020, 1, 1));
+
+                    AddMarketDataOverrides(marketData);
 
                     var decimals = string.IsNullOrWhiteSpace(contractAddress)
                         ? 0
@@ -163,9 +178,8 @@ namespace Trakx.Data.Tests.Tools
                             component.Metrics?.Marketcap?.VolumeTurnoverLast24_HoursPercent ?? 0
                     });
                 }
-
-                var marketCappedComponents = componentLines.Count(c => c.CoinGeckoHistoricalUsdcMarketCap != 0);
-                AssignComponentWeights(componentLines, marketCappedComponents > 3 ? 0.3m : 1m);
+                
+                AssignComponentWeights(componentLines, 0.3m);
 
                 foreach (var component in componentLines)
                 {
@@ -192,9 +206,17 @@ namespace Trakx.Data.Tests.Tools
 
         public List<Asset> RemoveBadAssets(List<Asset> assetsToFilter)
         {
-            var badAssetNames = new List<string>() {"Uniswap"};
-            var filtered = assetsToFilter.Where(a => !badAssetNames.Contains(a?.Name?.Trim()?.ToLower())).ToList();
+            var filtered = assetsToFilter.Where(a => !BadAssetNames.Contains(a?.Name?.Trim()?.ToLower())).ToList();
             return filtered;
+        }
+
+        public void AddMarketDataOverrides(MarketData marketData)
+        {
+            if (!MarketDataOverridesByCoinGeckoIdAndDate.TryGetValue($"{marketData.CoinId}|{marketData.AsOf:yyyyMMdd}",
+                out var overrides))
+                return;
+            
+            marketData.MarketCap = overrides.MarketCap;
         }
 
         public void Dispose()
@@ -205,26 +227,25 @@ namespace Trakx.Data.Tests.Tools
 
         private static void AssignComponentWeights(List<ComponentLine> componentLines, decimal weightCap)
         {
-            var totalMarketCap = componentLines.Sum(c => c.CoinGeckoHistoricalUsdcMarketCap);
-            var nonNullMarketCaps = componentLines.Count(c => c.CoinGeckoHistoricalUsdcMarketCap > 0);
-            if (nonNullMarketCaps == 0)
+            var erc20s = componentLines.Where(c => c.IsErc20).ToList();
+            var nonNullMarketCaps = erc20s.Count(c => c.CoinGeckoHistoricalUsdcMarketCap != 0);
+
+            var totalMarketCap = erc20s.Sum(c => c.CoinGeckoHistoricalUsdcMarketCap);
+
+            if (nonNullMarketCaps == 0) weightCap = 0;
+
+            else if (decimal.Round(weightCap, 10) < 1 / (decimal) nonNullMarketCaps)
             {
-                foreach (var componentLine in componentLines)
-                {
-                    componentLine.TargetWeight = 0;
-                }
-                return;
+                weightCap = 1 / (decimal) nonNullMarketCaps;
             }
-
-            if(decimal.Round(weightCap, 10) < 1 / (decimal)nonNullMarketCaps)
-                throw new InvalidDataException("weighCap is too low for given this set of components");
-
+            
             var unassigned = 0m;
             do
             {
                 var componentsAcceptingMoreWeight = componentLines.Count(c =>
-                    !c.TargetWeight.HasValue || (c.TargetWeight != 0 
-                    && c.TargetWeight < weightCap));
+                    !c.TargetWeight.HasValue || 
+                    (c.IsErc20 && c.TargetWeight != 0 && c.TargetWeight < weightCap));
+
                 if (componentsAcceptingMoreWeight == 0) return;
                 var weightToReassign = unassigned / componentsAcceptingMoreWeight;
 
@@ -232,7 +253,9 @@ namespace Trakx.Data.Tests.Tools
                 {
                     if (!component.TargetWeight.HasValue)
                     {
-                        var rawWeight = component.CoinGeckoHistoricalUsdcMarketCap / totalMarketCap;
+                        var rawWeight = component.IsErc20
+                            ? component.CoinGeckoHistoricalUsdcMarketCap / totalMarketCap
+                            : 0;
                         component.TargetWeight = Math.Min(rawWeight, 0.3m);
                         unassigned += Math.Max(0, rawWeight - 0.3m);
                     }
@@ -256,11 +279,16 @@ namespace Trakx.Data.Tests.Tools
                 {
                     new decimal[] {10, 10, 20, 0, 50},
                     new decimal[] {10, 10, 10, 0, 10},
-                    new decimal[] {10, 10, 20, 0, 0, 5, 10, 10},
+                    new decimal[] {10, 10, 20, 0, 6, 5, 10, 10},
                 };
                 marketCaps.ForEach(caps =>
                 {
-                    var lines = caps.Select(c => new ComponentLine() {CoinGeckoHistoricalUsdcMarketCap = c});
+                    var lines = caps.Select(c => new ComponentLine()
+                    {
+                        CoinGeckoHistoricalUsdcMarketCap = c,
+                        TokenType = c != 6m ? "erc-20" : "native",
+                        ContractAddress = "0xabc"
+                    });
                     AddRow(lines.ToList());
                 });
             }
@@ -274,15 +302,40 @@ namespace Trakx.Data.Tests.Tools
             components.ForEach(c => _output.WriteLine($"{c.CoinGeckoHistoricalUsdcMarketCap} => {c.TargetWeight}"));
             components.ForEach(c => c.TargetWeight.Should().BeLessOrEqualTo(0.3m));
             components.Sum(c => c.TargetWeight).Should().BeApproximately(1m, 0.001m);
+
+            components.Where(c => !c.IsErc20).ToList().ForEach(c => c.TargetWeight.Should().Be(0m));
         }
 
         [Fact]
-        internal void CheckWeightAssignment_fails_when_too_low_cap()
+        internal void CheckWeightAssignment_overrides_when_too_low_cap()
         {
             var components = new decimal[] {10, 10, 10, 0, 10}
-                .Select(c => new ComponentLine() {CoinGeckoHistoricalUsdcMarketCap = c}).ToList();
-            new Action(() => AssignComponentWeights(components, 0.2m))
-                .Should().Throw<InvalidDataException>();
+                .Select(c => new ComponentLine()
+                {
+                    CoinGeckoHistoricalUsdcMarketCap = c,
+                    TokenType ="erc-20",
+                    ContractAddress = "0xabc"
+
+                }).ToList();
+            AssignComponentWeights(components, 0.2m);
+            components.Where(c => c.CoinGeckoHistoricalUsdcMarketCap != 0m).ToList()
+                .ForEach(c => c.TargetWeight.Should().Be(0.25m));
+        }
+
+
+        [Fact]
+        internal void CheckWeightAssignment_returns_zero_when_market_cap_sum_is_null()
+        {
+            var components = new decimal[] { 10, 10, 10, 0, 10 }
+                .Select(c => new ComponentLine()
+                {
+                    //not erc20s, so they shouldn't get counted
+                    CoinGeckoHistoricalUsdcMarketCap = c
+                }).ToList();
+            
+            AssignComponentWeights(components, 0.3m);
+            
+            components.ForEach(c => c.TargetWeight.Should().Be(0));
         }
     }
 }

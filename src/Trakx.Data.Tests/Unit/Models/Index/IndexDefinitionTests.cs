@@ -37,6 +37,8 @@ namespace Trakx.Data.Tests.Unit.Models.Index
     public class IndexDefinitionTests : IClassFixture<DbContextFixture>
     {
         private readonly DbContextFixture _fixture;
+        private int _expectedIndexCounts = 7;
+        private int _expectedComponentCount = 61;
 
         public IndexDefinitionTests(DbContextFixture fixture)
         {
@@ -47,7 +49,7 @@ namespace Trakx.Data.Tests.Unit.Models.Index
         public void ComponentDefinitions_should_not_be_empty()
         {
             var componentDefinitions = _fixture.Context.ComponentDefinitions;
-            componentDefinitions.Count().Should().Be(26);
+            componentDefinitions.Count().Should().Be(_expectedComponentCount);
 
             foreach (var componentDefinitionDao in componentDefinitions)
             {
@@ -59,7 +61,7 @@ namespace Trakx.Data.Tests.Unit.Models.Index
         public void IndexDefinitions_should_not_be_empty()
         {
             var indexDefinitions = _fixture.Context.IndexDefinitions;
-            indexDefinitions.Count().Should().Be(3);
+            indexDefinitions.Count().Should().Be(_expectedIndexCounts);
             foreach (var indexDefinitionDao in indexDefinitions)
             {
                 indexDefinitionDao.IsValid().Should().BeTrue();
@@ -70,7 +72,7 @@ namespace Trakx.Data.Tests.Unit.Models.Index
         public void ComponentWeights_should_not_be_empty()
         {
             var componentWeights = _fixture.Context.ComponentWeights;
-            componentWeights.Count().Should().Be(17);
+            componentWeights.Count().Should().Be(_expectedComponentCount);
             foreach (var componentWeight in componentWeights)
             {
                 componentWeight.IsValid().Should().BeTrue();
@@ -81,7 +83,7 @@ namespace Trakx.Data.Tests.Unit.Models.Index
         public void ComponentQuantities_should_not_be_empty()
         {
             var components = _fixture.Context.ComponentQuantities;
-            components.Count().Should().Be(17);
+            components.Count().Should().Be(_expectedComponentCount);
             foreach (var component in components)
             {
                 component.IsValid().Should().BeTrue();
@@ -92,7 +94,7 @@ namespace Trakx.Data.Tests.Unit.Models.Index
         public void IndexCompositions_should_not_be_empty()
         {
             var indexCompositions = _fixture.Context.IndexCompositions;
-            indexCompositions.Count().Should().Be(3);
+            indexCompositions.Count().Should().Be(_expectedIndexCounts);
             foreach (var indexCompositionDao in indexCompositions)
             {
                 indexCompositionDao.IsValid().Should().BeTrue();
@@ -103,7 +105,7 @@ namespace Trakx.Data.Tests.Unit.Models.Index
         public void ComponentValuations_should_not_be_empty()
         {
             var componentValuations = _fixture.Context.ComponentValuations;
-            componentValuations.Count().Should().Be(17);
+            componentValuations.Count().Should().Be(_expectedComponentCount);
             foreach (var componentValuation in componentValuations)
             {
                 componentValuation.IsValid().Should().BeTrue();
@@ -116,7 +118,7 @@ namespace Trakx.Data.Tests.Unit.Models.Index
         public void IndexValuations_should_not_be_empty()
         {
             var indexValuations = _fixture.Context.IndexValuations;
-            indexValuations.Count().Should().Be(3);
+            indexValuations.Count().Should().Be(_expectedIndexCounts);
 
             foreach (var valuation in indexValuations)
             {

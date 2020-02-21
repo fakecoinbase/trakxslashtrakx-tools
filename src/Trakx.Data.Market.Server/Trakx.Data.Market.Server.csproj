@@ -7,6 +7,7 @@
     <LangVersion>8</LangVersion>
     <YarnWorkingDir>$(MSBuildProjectDirectory)/wwwroot/npm-libs/</YarnWorkingDir>
     <YarnBuildCommand>install</YarnBuildCommand>
+    <GenerateDocumentationFile>true</GenerateDocumentationFile>
   </PropertyGroup>
 
   <Import Project="../Common.Projects.props" />
@@ -52,11 +53,15 @@
   </ItemGroup>
 
   <Target Name="CopyLinkedContentFiles" BeforeTargets="Build">
-    <Copy SourceFiles="%(Content.Identity)" DestinationFiles="%(Content.Link)" SkipUnchangedFiles="true" OverwriteReadOnlyFiles="true" Condition="'%(Content.Link)' != ''" />
+    <Copy SourceFiles="%(Content.Identity)"
+          DestinationFiles="$(OutputPath)\%(Content.Link)"
+          SkipUnchangedFiles="true" OverwriteReadOnlyFiles="true" Condition="'%(Content.Link)' != ''" />
   </Target>
 
   <ItemGroup>
-    <Content Include="wwwroot\npm-libs\node_modules\cryptocurrency-icons\svg\icon\*.svg" Link="wwwroot\crypto-icons\svg\imported\%(Filename)%(Extension)" CopyToOutputDirectory="PreserveNewest" />
+    <Content Include="wwwroot\npm-libs\node_modules\cryptocurrency-icons\svg\icon\*.svg"
+             Link="wwwroot\crypto-icons\svg\imported\%(Filename)%(Extension)"
+             CopyToOutputDirectory="PreserveNewest" />
     <Content Update="wwwroot\crypto-icons\svg\local\computation-services.svg">
       <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
     </Content>

@@ -120,7 +120,7 @@ namespace Trakx.Data.Persistence
                 //.Include(c => c.ComponentQuantityDaos)
                 .Where(c => c.IndexDefinitionDao.Symbol == indexSymbol)
                 .OrderByDescending(c => c.CreationDate)
-                .FirstOrDefaultAsync(c => c.CreationDate <= asOfUtc);
+                .FirstOrDefaultAsync(c => c.CreationDate <= asOfUtc, cancellationToken: cancellationToken);
             return result?.Version;
         }
 
@@ -145,10 +145,16 @@ namespace Trakx.Data.Persistence
             var valuation = _dbContext.IndexValuations
                 .Include(i => i.ComponentValuationDaos)
                 .Include(i => i.IndexCompositionDao)
-                .SingleOrDefault(c => c.IndexCompositionDao.Id == $"{composition.IndexDefinition.Symbol}|{composition.Version}"
+                .ThenInclude(c => c.ComponentQuantityDaos)
+                .Include(i => i.IndexCompositionDao)
+                .ThenInclude(c => c.IndexDefinitionDao)
+                .ThenInclude(d => d.ComponentWeightDaos)
+                .ThenInclude(c => c.ComponentDefinitionDao)
+                .Where(c => c.IndexCompositionDao.Id == $"{composition.IndexDefinition.Symbol}|{composition.Version}"
                                       && c.QuoteCurrency == quoteCurrency
-                                      && c.TimeStamp == composition.CreationDate);
-            return valuation;
+                                      && c.TimeStamp == issueDate);
+            await valuation.LoadAsync(cancellationToken);
+            return valuation.SingleOrDefault();
         }
 
         /// <inheritdoc />

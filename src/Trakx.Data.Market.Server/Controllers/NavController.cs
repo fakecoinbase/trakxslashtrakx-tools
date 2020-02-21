@@ -8,6 +8,11 @@ using Trakx.Data.Common.Utils;
 
 namespace Trakx.Data.Market.Server.Controllers
 {
+    /// <summary>
+    /// Provides methods to get information about the Net Asset Value (NAV) of indexes.
+    /// For more detailed information about the definitions of the indexes themselves, please
+    /// refer to <see cref="IndexDataController"/>.
+    /// </summary>
     [ApiController]
     [Route("[controller]/[action]")]
     public class NavController : ControllerBase
@@ -28,9 +33,9 @@ namespace Trakx.Data.Market.Server.Controllers
         /// <summary>
         /// Returns the USDc Net Asset Value of a given index.
         /// </summary>
-        /// <param name="indexSymbol"></param>
-        /// <param name="maxRandomVariation">Adds a random variation to the NAV.
-        /// ******** ONLY SET THIS IN DEVELOPMENT ********.
+        /// <param name="indexSymbol">The symbol for the index on which data is requested.</param>
+        /// <param name="maxRandomVariation">
+        /// [DEVELOPMENT ONLY] Adds a random variation to the NAV.
         /// This was created to allow trading to happen by getting different hummingbots to get slightly dissimilar prices.</param>
         /// <returns></returns>
         [HttpGet]
