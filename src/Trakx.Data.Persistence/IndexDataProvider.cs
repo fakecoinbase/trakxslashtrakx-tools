@@ -37,7 +37,7 @@ namespace Trakx.Data.Persistence
                 {
                     var definitions = _dbContext.IndexDefinitions;
                             
-                    var result = await definitions.FirstAsync(d => d.Symbol.Equals(indexSymbol));
+                    var result = await definitions.FirstAsync(d => d.Symbol.Equals(indexSymbol), cancellationToken);
                     return result;
                 });
 
@@ -65,7 +65,7 @@ namespace Trakx.Data.Persistence
                 {
                     entry.SetSlidingExpiration(TimeSpan.FromSeconds(10));
                     
-                    var version = await GetVersionAtDate(indexSymbol, asOfUtc);
+                    var version = await GetVersionAtDate(indexSymbol, asOfUtc, cancellationToken);
                     var composition = await RetrieveFullComposition(indexSymbol, version.Value, cancellationToken);
 
                     entry.AbsoluteExpirationRelativeToNow = composition != null && composition.IsValid() 
@@ -78,7 +78,7 @@ namespace Trakx.Data.Persistence
             }
             catch (Exception ex)
             {
-                _logger.LogError(ex, "Failed to retrieve composition for {0} at date {1}", indexSymbol);
+                _logger.LogError(ex, "Failed to retrieve composition for {0} at date {1}", indexSymbol, asOfUtc);
                 return default;
             }
         }
@@ -97,7 +97,7 @@ namespace Trakx.Data.Persistence
                 {
                     entry.SetSlidingExpiration(TimeSpan.FromSeconds(20));
 
-                    var version = await GetVersionAtDate(indexSymbol, DateTime.UtcNow);
+                    var version = await GetVersionAtDate(indexSymbol, DateTime.UtcNow, cancellationToken);
                     var composition = await RetrieveFullComposition(indexSymbol, version.Value, cancellationToken);
                     return composition;
                 });
@@ -157,7 +157,6 @@ namespace Trakx.Data.Persistence
             return valuation.SingleOrDefault();
         }
 
-        /// <inheritdoc />
         private async Task<IIndexComposition> RetrieveFullComposition(string indexSymbol, uint version, 
             CancellationToken cancellationToken = default)
         {

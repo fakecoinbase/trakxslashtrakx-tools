@@ -62,14 +62,10 @@ namespace Trakx.Data.Market.Server.Controllers
                     s => s,
                     s =>
                     {
-                        var symbol = s;
                         var candidateImagePath = Path.Combine("wwwroot", "crypto-icons", "svg", "imported", $"{s}.svg");
                         var foundIcon = _hostEnvironment.ContentRootFileProvider.GetFileInfo(candidateImagePath).Exists;
-                        if (foundIcon) return $"/crypto-icons/svg/imported/{s}.svg";
-
-                        _logger.LogDebug("Failed to retrieve icon for symbol {0}", symbol);
-
-                        return QuestionMarkIcon;
+                        var iconName = foundIcon ? s : "generic";
+                        return $"/crypto-icons/svg/imported/{iconName}.svg";
                     });
 
             var indexPriced = IndexPricedModel.FromIndexValuations(issuanceValuation, currentValuation);
