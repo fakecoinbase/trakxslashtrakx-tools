@@ -28,32 +28,6 @@ namespace Trakx.Data.Persistence
             _logger = logger;
         }
 
-        [Obsolete("Now we should only use the composition of the index to get the price.")]
-        public async Task<IIndexDefinition?> GetDefinitionFromSymbol(string indexSymbol, CancellationToken cancellationToken = default)
-        {
-            try
-            {
-                var def = await _memoryCache.GetOrCreateAsync(indexSymbol, async entry =>
-                {
-                    var definitions = _dbContext.IndexDefinitions;
-                            
-                    var result = await definitions.AsNoTracking().FirstAsync(d => d.Symbol.Equals(indexSymbol), cancellationToken);
-                    return result;
-                });
-
-                if (def == default) return default;
-
-                _memoryCache.GetOrCreate(def.Address, _ => def);
-                return def;
-
-            }
-            catch (Exception ex)
-            {
-                _logger.LogError(ex, "Failed to retrieve definition for {0}", indexSymbol);
-                return default;
-            }
-        }
-
         /// <inheritdoc />
         public async Task<IIndexComposition?> GetCompositionAtDate(string indexSymbol, DateTime asOfUtc,
             CancellationToken cancellationToken)

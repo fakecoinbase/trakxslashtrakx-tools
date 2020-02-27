@@ -65,32 +65,18 @@ namespace Trakx.Data.Persistence.Initialisation
             await CreateComponentWeights(dbContext, cancellationToken);
 
             await CreateIndexCompositions(dbContext, mapper, cancellationToken);
-
-            await CreateComponentQuantities(dbContext, cancellationToken);
-
-            await CreateComponentValuations(dbContext, cancellationToken);
-
-            await CreateIndexValuations(dbContext, cancellationToken);
         }
 
         internal static async Task CreateComponentDefinitions(IndexRepositoryContext dbContext, CancellationToken cancellationToken)
         {
             var componentDefinitions = new List<ComponentDefinitionDao>()
             {
-                new ComponentDefinitionDao( "0xbf2179859fc6D5BEE9Bf9158632Dc51678a4100e", "ELF Token", "elf", 18),
-                new ComponentDefinitionDao( "0xB98d4C97425d9908E66E53A6fDf673ACcA0BE986", "ArcBlock", "abt", 18),
-                new ComponentDefinitionDao( "0x8290333ceF9e6D528dD5618Fb97a76f268f3EDD4", "Ankr Network", "ankr", 18),
-                new ComponentDefinitionDao( "0xB64ef51C888972c908CFacf59B47C1AfBC0Ab8aC", "StorjToken", "storj", 8),
-                new ComponentDefinitionDao( "0x5732046A883704404F284Ce41FfADd5b007FD668", "Bluzelle Token", "blz", 18),
-                new ComponentDefinitionDao( "0x607F4C5BB672230e8672085532f7e901544a7375", "iEx.ec Network Token", "rlc", 9),
-                
                 #region Lending
                 new ComponentDefinitionDao("0x0947b0e6d821378805c9598291385ce7c791a6b2", "Lendingblock", "lnd", 18),
                 new ComponentDefinitionDao("0x8ab7404063ec4dbcfd4598215992dc3f8ec853d7", "Akropolis", "akro", 18),
                 new ComponentDefinitionDao("0x1c4481750daa5ff521a2a7490d9981ed46465dbd", "Blockmason Credit Protocol", "bcpt", 18),
                 new ComponentDefinitionDao("0xfe5f141bf94fe84bc28ded0ab966c16b17490657", "Cred", "lba", 18),
                 new ComponentDefinitionDao("0x80fB784B7eD66730e8b1DBd9820aFD29931aab03", "Aave", "lend", 18),
-                new ComponentDefinitionDao("0x4de2573e27e648607b50e1cfff921a33e4a34405", "Lendroid Support Token", "lst", 18),
                 new ComponentDefinitionDao("0x9f8f72aa9304c8b593d555f12ef6589cc3a579a2", "Maker", "mkr", 18),
                 new ComponentDefinitionDao("0xb62132e35a6c13ee1ee0f84dc5d40bad8d815206", "Nexo", "nexo", 18),
                 new ComponentDefinitionDao("0xd4fa1460f537bb9085d22c7bccb5dd450ef28e3a", "Populous", "ppt", 8),
@@ -162,14 +148,6 @@ namespace Trakx.Data.Persistence.Initialisation
         {
             var indexDefinitions = new List<IndexDefinitionDao>
             {
-                new IndexDefinitionDao("l1cpu003", "Top 3 Computation Services",
-                    "This index is composed of the top 3 erc20 tokens for Computation Services. Created on the 1st of October as a POC.",
-                    2,
-                    "0x7210cc724480c85b893a9febbecc24a8dc4ff1de", FirstOctober),
-                new IndexDefinitionDao("l1str004", "Top 4 Storage Services",
-                    "This index is composed of the top 4 erc20 tokens for Storage Services. Created on the 1st of October as a POC.",
-                    11,
-                    "0xe05168c3fa30e93d3f1667b35e9456aac9b5519a", FirstOctober),
                 new IndexDefinitionDao("l1len", "Lending",
                     "Index composed of tokens from the Messari Lending sector",
                     10,
@@ -199,27 +177,6 @@ namespace Trakx.Data.Persistence.Initialisation
         {
             var indexBySymbols = (await dbContext.IndexDefinitions.ToListAsync(cancellationToken)).ToDictionary(i => i.Symbol, i => i);
             var componentBySymbol = (await dbContext.ComponentDefinitions.ToListAsync(cancellationToken)).ToDictionary(c => c.Symbol, c => c);
-
-            var l1cpu003 = indexBySymbols["l1cpu003"];
-
-            var cpuComponentWeightDaos = new []
-            {
-                new ComponentWeightDao(l1cpu003, componentBySymbol["elf"], 0.33m),
-                new ComponentWeightDao(l1cpu003, componentBySymbol["abt"], 0.33m),
-                new ComponentWeightDao(l1cpu003, componentBySymbol["ankr"], 0.34m)
-            };
-            await dbContext.ComponentWeights.AddRangeAsync(cpuComponentWeightDaos, cancellationToken);
-
-            var l1str004 = indexBySymbols["l1str004"];
-            var strComponentWeightDaos = new []
-            {
-                new ComponentWeightDao(l1str004, componentBySymbol["storj"], 0.25m),
-                new ComponentWeightDao(l1str004, componentBySymbol["ankr"], 0.25m),
-                new ComponentWeightDao(l1str004, componentBySymbol["blz"], 0.25m),
-                new ComponentWeightDao(l1str004, componentBySymbol["rlc"], 0.25m)
-            };
-
-            await dbContext.ComponentWeights.AddRangeAsync(strComponentWeightDaos, cancellationToken);
 
             var lendingWeights = new[]
             {
@@ -302,32 +259,7 @@ namespace Trakx.Data.Persistence.Initialisation
                 new ComponentWeightDao(indexBySymbols["l1sca"], componentBySymbol["rdn"], 0.163366783037182m),
             };
             await dbContext.ComponentWeights.AddRangeAsync(scalability, cancellationToken);
-            await dbContext.SaveChangesAsync(cancellationToken);
-        }
-
-        [Obsolete("only for the old indexes that will disappear")]
-        internal static async Task CreateComponentQuantities(IndexRepositoryContext dbContext, CancellationToken cancellationToken)
-        {
-            var componentDefinitions = dbContext.ComponentDefinitions.ToDictionary(d => d.Symbol, d => d);
-
-            var l1cpu003 = await dbContext.IndexCompositions.SingleAsync(c => c.Id == "l1cpu003|1", cancellationToken);
-            var l1str004 = await dbContext.IndexCompositions.SingleAsync(c => c.Id == "l1str004|1", cancellationToken);
-
-            var oldIndexAdjustment = (ulong)10e2;
-            var elfCpuQuantity = new ComponentQuantityDao(l1cpu003, componentDefinitions["elf"], 42 * oldIndexAdjustment);
-            var abtCpuQuantity = new ComponentQuantityDao(l1cpu003, componentDefinitions["abt"], 17 * oldIndexAdjustment);
-            var ankrCpuQuantity = new ComponentQuantityDao(l1cpu003, componentDefinitions["ankr"], 1010 * oldIndexAdjustment);
-
-            var storjStrQuantity = new ComponentQuantityDao(l1str004, componentDefinitions["storj"], 2);
-            var ankrStrQuantity = new ComponentQuantityDao(l1str004, componentDefinitions["ankr"], 836960160697 * oldIndexAdjustment);
-            var blzStrQuantity = new ComponentQuantityDao(l1str004, componentDefinitions["blz"], 75688767787 * oldIndexAdjustment);
-            var rlcStrQuantity = new ComponentQuantityDao(l1str004, componentDefinitions["rlc"], 12 * oldIndexAdjustment);
-
-            await dbContext.ComponentQuantities.AddRangeAsync(new[]
-            {
-                elfCpuQuantity, abtCpuQuantity, ankrCpuQuantity,
-                storjStrQuantity, ankrStrQuantity, blzStrQuantity, rlcStrQuantity
-            });
+            
             await dbContext.SaveChangesAsync(cancellationToken);
         }
 
@@ -335,15 +267,8 @@ namespace Trakx.Data.Persistence.Initialisation
         {
             var indexBySymbols = (await dbContext.IndexDefinitions.ToListAsync(cancellationToken)).ToDictionary(i => i.Symbol, i => i);
             var componentsBySymbols = (await dbContext.ComponentDefinitions.ToListAsync(cancellationToken)).ToDictionary(i => i.Symbol, i => i);
-            var l1cpu003 = indexBySymbols["l1cpu003"];
-            var cpuComposition = new IndexCompositionDao(l1cpu003, 1, FirstOctober);
 
-            var l1str004 = indexBySymbols["l1str004"];
-            var strComposition = new IndexCompositionDao(l1str004, 1, FirstOctober);
-
-            await dbContext.IndexCompositions.AddRangeAsync(new[] { cpuComposition, strComposition }, cancellationToken);
-
-            var lendingPricesByDefintions = new Dictionary<IComponentDefinition, decimal>{
+            var lendingPricesByDefinitions = new Dictionary<IComponentDefinition, decimal>{
                 { componentsBySymbols["lnd"], 0.00152077889740119m },
                 { componentsBySymbols["akro"], 0.00106594967399099m },
                 { componentsBySymbols["bcpt"], 0.0199456639115704m },
@@ -355,7 +280,7 @@ namespace Trakx.Data.Persistence.Initialisation
                 { componentsBySymbols["rcn"], 0.0448472125928383m },
                 { componentsBySymbols["salt"], 0.0503968166330671m },
             };
-            await AddCompositionAndInitialValuations(dbContext, mapper, indexBySymbols["l1len"], lendingPricesByDefintions, componentsBySymbols, cancellationToken);
+            await AddCompositionAndInitialValuations(dbContext, mapper, indexBySymbols["l1len"], lendingPricesByDefinitions, componentsBySymbols, cancellationToken);
 
             var assetManagementValuations = new Dictionary<IComponentDefinition, decimal>{
                 { componentsBySymbols["bnk"], 0.00127682717125466m },
@@ -443,48 +368,6 @@ namespace Trakx.Data.Persistence.Initialisation
 
             var lenValuation = new IndexValuationDao(componentValuations);
             await dbContext.IndexValuations.AddAsync(lenValuation, cancellationToken);
-        }
-
-        [Obsolete("ony for the old indexes")]
-        private static async Task CreateComponentValuations(IndexRepositoryContext dbContext, CancellationToken cancellationToken)
-        {
-            var quantities = dbContext.ComponentQuantities.ToDictionary(d => d.Id, d => d);
-
-            await dbContext.ComponentValuations.AddRangeAsync(new[]
-            {
-                new ComponentValuationDao(quantities["l1cpu003|1|elf"], FirstOctober, Usdc, 0.08069m),
-                new ComponentValuationDao(quantities["l1cpu003|1|abt"], FirstOctober, Usdc, 0.202m),
-                new ComponentValuationDao(quantities["l1cpu003|1|ankr"], FirstOctober, Usdc, 0.00225661m),
-
-                new ComponentValuationDao(quantities["l1str004|1|storj"], FirstOctober, Usdc, 0.1493m),
-                new ComponentValuationDao(quantities["l1str004|1|ankr"], FirstOctober, Usdc, 0.00225661m),
-                new ComponentValuationDao(quantities["l1str004|1|blz"], FirstOctober, Usdc, 0.03303m),
-                new ComponentValuationDao(quantities["l1str004|1|rlc"], FirstOctober, Usdc, 0.2181m),
-            });
-            await dbContext.SaveChangesAsync(cancellationToken);
-        }
-
-        [Obsolete("ony for the old indexes")]
-        private static async Task CreateIndexValuations(IndexRepositoryContext dbContext,
-            CancellationToken cancellationToken)
-        {
-            var initialCpuValuations = dbContext.ComponentValuations
-                .Include(c => c.ComponentQuantityDao)
-                .ThenInclude(c => c.IndexCompositionDao)
-                .Where(v => v.ComponentQuantityDao.IndexCompositionDao.Id == "l1cpu003|1").ToList();
-            var initialCpuValuation = new IndexValuationDao(initialCpuValuations);
-            initialCpuValuations.ForEach(v => v.SetWeightFromTotalValue(initialCpuValuation.NetAssetValue));
-
-            var initialStrValuations = dbContext.ComponentValuations
-                .Include(c => c.ComponentQuantityDao)
-                .ThenInclude(c => c.IndexCompositionDao)
-                .Where(v => v.ComponentQuantityDao.IndexCompositionDao.Id == "l1str004|1").ToList();
-            var initialStrValuation = new IndexValuationDao(initialStrValuations);
-            initialStrValuations.ForEach(v => v.SetWeightFromTotalValue(initialStrValuation.NetAssetValue));
-
-            await dbContext.AddRangeAsync(new[] {initialStrValuation, initialCpuValuation}, cancellationToken);
-            await dbContext.SaveChangesAsync(cancellationToken);
-
         }
     } 
 }

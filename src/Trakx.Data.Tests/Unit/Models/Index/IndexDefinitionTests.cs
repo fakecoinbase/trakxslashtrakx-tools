@@ -37,8 +37,8 @@ namespace Trakx.Data.Tests.Unit.Models.Index
     public class IndexDefinitionTests : IClassFixture<DbContextFixture>
     {
         private readonly DbContextFixture _fixture;
-        private int _expectedIndexCounts = 7;
-        private int _expectedComponentCount = 61;
+        private int _expectedIndexCounts = 5;
+        private int _expectedComponentCount = 54;
 
         public IndexDefinitionTests(DbContextFixture fixture)
         {
