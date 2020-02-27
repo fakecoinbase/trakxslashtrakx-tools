@@ -37,7 +37,7 @@ namespace Trakx.Data.Persistence
                 {
                     var definitions = _dbContext.IndexDefinitions;
                             
-                    var result = await definitions.FirstAsync(d => d.Symbol.Equals(indexSymbol), cancellationToken);
+                    var result = await definitions.AsNoTracking().FirstAsync(d => d.Symbol.Equals(indexSymbol), cancellationToken);
                     return result;
                 });
 
@@ -120,6 +120,7 @@ namespace Trakx.Data.Persistence
                 //.Include(c => c.ComponentQuantityDaos)
                 .Where(c => c.IndexDefinitionDao.Symbol == indexSymbol)
                 .OrderByDescending(c => c.CreationDate)
+                .AsNoTracking()
                 .FirstOrDefaultAsync(c => c.CreationDate <= asOfUtc, cancellationToken: cancellationToken);
             return result?.Version;
         }
@@ -142,7 +143,7 @@ namespace Trakx.Data.Persistence
             CancellationToken cancellationToken = default)
         {
             var issueDate = composition.CreationDate;
-            var valuation = _dbContext.IndexValuations
+            var valuation = await _dbContext.IndexValuations
                 .Include(i => i.ComponentValuationDaos)
                 .Include(i => i.IndexCompositionDao)
                 .ThenInclude(c => c.ComponentQuantityDaos)
@@ -152,9 +153,10 @@ namespace Trakx.Data.Persistence
                 .ThenInclude(c => c.ComponentDefinitionDao)
                 .Where(c => c.IndexCompositionDao.Id == $"{composition.IndexDefinition.Symbol}|{composition.Version}"
                                       && c.QuoteCurrency == quoteCurrency
-                                      && c.TimeStamp == issueDate);
-            await valuation.LoadAsync(cancellationToken);
-            return valuation.SingleOrDefault();
+                                      && c.TimeStamp == issueDate)
+                .AsNoTracking()
+                .SingleOrDefaultAsync(cancellationToken);
+            return valuation;
         }
 
         private async Task<IIndexComposition> RetrieveFullComposition(string indexSymbol, uint version, 
@@ -165,6 +167,7 @@ namespace Trakx.Data.Persistence
                 .ThenInclude(c => c.ComponentDefinitionDao)
                 .Include(c => c.IndexDefinitionDao)
                 .ThenInclude(c => c.ComponentWeightDaos)
+                .AsNoTracking()
                 .SingleOrDefaultAsync(c => c.IndexDefinitionDao.Symbol == indexSymbol 
                                            && c.Version == version, cancellationToken);
             return composition;
