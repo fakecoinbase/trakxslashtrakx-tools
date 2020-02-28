@@ -92,10 +92,11 @@ namespace Trakx.Data.Persistence
             var result = await compositions
                 .Include(c => c.IndexDefinitionDao)
                 //.Include(c => c.ComponentQuantityDaos)
+                //.ThenInclude(q => q.ComponentDefinitionDao)
                 .Where(c => c.IndexDefinitionDao.Symbol == indexSymbol)
                 .OrderByDescending(c => c.CreationDate)
                 .AsNoTracking()
-                .FirstOrDefaultAsync(c => c.CreationDate <= asOfUtc, cancellationToken: cancellationToken);
+                .FirstOrDefaultAsync(c => c.CreationDate <= asOfUtc, cancellationToken);
             return result?.Version;
         }
 
@@ -112,6 +113,7 @@ namespace Trakx.Data.Persistence
         }
 
         /// <inheritdoc />
+        /// <remarks>Obviously too much nesting here</remarks>
         public async Task<IIndexValuation> GetInitialValuation(IIndexComposition composition, 
             string quoteCurrency = Constants.DefaultQuoteCurrency,
             CancellationToken cancellationToken = default)
@@ -119,12 +121,15 @@ namespace Trakx.Data.Persistence
             var issueDate = composition.CreationDate;
             var valuation = await _dbContext.IndexValuations
                 .Include(i => i.ComponentValuationDaos)
+                    .ThenInclude(v => v.ComponentQuantityDao)
+                        .ThenInclude(q => q.ComponentDefinitionDao)
                 .Include(i => i.IndexCompositionDao)
-                .ThenInclude(c => c.ComponentQuantityDaos)
+                    .ThenInclude(c => c.ComponentQuantityDaos)
+                        .ThenInclude(q => q.ComponentDefinitionDao)
                 .Include(i => i.IndexCompositionDao)
-                .ThenInclude(c => c.IndexDefinitionDao)
-                .ThenInclude(d => d.ComponentWeightDaos)
-                .ThenInclude(c => c.ComponentDefinitionDao)
+                    .ThenInclude(c => c.IndexDefinitionDao)
+                        .ThenInclude(d => d.ComponentWeightDaos)
+                            .ThenInclude(c => c.ComponentDefinitionDao)
                 .Where(c => c.IndexCompositionDao.Id == $"{composition.IndexDefinition.Symbol}|{composition.Version}"
                                       && c.QuoteCurrency == quoteCurrency
                                       && c.TimeStamp == issueDate)
@@ -141,6 +146,7 @@ namespace Trakx.Data.Persistence
                 .ThenInclude(c => c.ComponentDefinitionDao)
                 .Include(c => c.IndexDefinitionDao)
                 .ThenInclude(c => c.ComponentWeightDaos)
+                .ThenInclude(w => w.ComponentDefinitionDao)
                 .AsNoTracking()
                 .SingleOrDefaultAsync(c => c.IndexDefinitionDao.Symbol == indexSymbol 
                                            && c.Version == version, cancellationToken);
