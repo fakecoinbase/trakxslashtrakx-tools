@@ -1,0 +1,15 @@
+﻿<Project Sdk="Microsoft.NET.Sdk">
+
+  <PropertyGroup>
+    <TargetFramework>netcoreapp3.1</TargetFramework>
+  </PropertyGroup>
+
+  <ItemGroup>
+    <!--
+    This makes the build fail as it is only working for dontet core 
+    <PackageReference Include="Nethereum.Autogen.ContractApi" Version="3.6.2" />
+    -->
+    <PackageReference Include="Nethereum.Web3" Version="3.7.1" />
+  </ItemGroup>
+
+</Project>

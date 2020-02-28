@@ -1,7 +1,6 @@
 ﻿using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Logging;
-using Trakx.Data.Common.Sources.Messari.Client;
 using Trakx.Data.Common.Sources.Web3.Client;
 
 namespace Trakx.Data.Common.Sources.Web3

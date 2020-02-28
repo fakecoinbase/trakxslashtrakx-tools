@@ -48,7 +48,7 @@ namespace Trakx.Data.Tests.Tools
             serviceCollection.AddCoinbaseClient();
             serviceCollection.AddCoinGeckoClient();
             serviceCollection.AddMemoryCache();
-            serviceCollection.AddWeb3Client();
+            serviceCollection.AddWeb3Client(ApiKeys.Infura);
 
             _serviceProvider = serviceCollection.BuildServiceProvider();
             var conf = _serviceProvider.GetService<IConfiguration>();

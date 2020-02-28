@@ -23,7 +23,7 @@ namespace Trakx.Data.Common.Sources.Web3.Client
             {
                 var contractService = new StandardTokenService(_web3, contractAddress);
                 var bytes = await contractService.DecimalsQueryAsync();
-               return (ushort)bytes;
+                return (ushort)bytes;
             }
             catch (Exception e)
             {
