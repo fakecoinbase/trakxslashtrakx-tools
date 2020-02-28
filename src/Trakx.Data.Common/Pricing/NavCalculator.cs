@@ -27,13 +27,25 @@ namespace Trakx.Data.Common.Pricing
 
         private readonly ILogger<NavCalculator> _logger;
 
-      
-        private async Task<KeyValuePair<string, decimal?>> GetUsdPrice(IComponentQuantity c)
+        private struct SourcedPrice
+        {
+            public SourcedPrice(string source, decimal price)
+            {
+                Source = source;
+                Price = price;
+            }
+
+            public string Source { get; }
+            public decimal Price { get; }
+        }
+
+
+        private async Task<KeyValuePair<string, SourcedPrice>> GetUsdPrice(IComponentQuantity c)
         {
             try
             {
                 var result = await GetMessariPrice(c.ComponentDefinition);
-                if (result.Value != default) return result;
+                if (result.Value.Price != default) return result;
             }
             catch (Exception e)
             {
@@ -43,7 +55,7 @@ namespace Trakx.Data.Common.Pricing
             try
             {
                 var result = await GetCoinGeckoUsdPrice(c.ComponentDefinition);
-                if (result.Value != default) return result;
+                if (result.Value.Price != default) return result;
             }
             catch (Exception e)
             {
@@ -53,17 +65,20 @@ namespace Trakx.Data.Common.Pricing
             throw new FailedToRetrievePriceException($"Failed to retrieve price for component {c.ComponentDefinition.Symbol}");
         }
 
-        private async Task<KeyValuePair<string, decimal?>> GetMessariPrice(IComponentDefinition c)
+        private async Task<KeyValuePair<string, SourcedPrice>> GetMessariPrice(IComponentDefinition c)
         {
             var price = await _messariClient.GetLatestPrice(c.Symbol).ConfigureAwait(false);
-            return new KeyValuePair<string, decimal?>(c.Symbol, price);
+            return price == default 
+                ? default
+                : new KeyValuePair<string, SourcedPrice>(c.Symbol, new SourcedPrice("messari", price.Value));
         }
 
-        private async Task<KeyValuePair<string, decimal?>> GetCoinGeckoUsdPrice(IComponentDefinition c)
+        private async Task<KeyValuePair<string, SourcedPrice>> GetCoinGeckoUsdPrice(IComponentDefinition c)
         {
-            var price = await _coinGeckoClient.GetLatestPrice(c.Symbol)
-                .ConfigureAwait(false);
-            return new KeyValuePair<string, decimal?>(c.Symbol, price);
+            var price = await _coinGeckoClient.GetLatestPrice(c.CoinGeckoId).ConfigureAwait(false);
+            return price == default
+                ? default
+                : new KeyValuePair<string, SourcedPrice>(c.Symbol, new SourcedPrice("coinGecko", price.Value));
         }
 
         public class FailedToRetrievePriceException : Exception
@@ -95,8 +110,8 @@ namespace Trakx.Data.Common.Pricing
             var componentValuations = composition.ComponentQuantities.Select(
                 c =>
                 {
-                    var price = getPricesTasks.Single(t => t.Result.Key.Equals(c.ComponentDefinition.Symbol)).Result.Value;
-                    var valuation = new ComponentValuation(c, quoteCurrency, price ?? 0, DateTime.UtcNow);
+                    var sourcedPrice = getPricesTasks.Single(t => t.Result.Key.Equals(c.ComponentDefinition.Symbol)).Result.Value;
+                    var valuation = new ComponentValuation(c, quoteCurrency, sourcedPrice.Price, sourcedPrice.Source, DateTime.UtcNow);
                     return (IComponentValuation) valuation;
                 }).ToList();
 

@@ -19,7 +19,12 @@ namespace Trakx.Data.Common.Interfaces.Index
         /// Price of one unit of the <see cref="ComponentQuantity"/>.
         /// </summary>
         decimal Price { get; }
-        
+
+        /// <summary>
+        /// DataSource from which the price was taken
+        /// </summary>
+        string PriceSource { get; }
+
         /// <summary>
         /// Total value contributed to the index NAV by the component.
         /// This is basically <see cref="Price"/> * <see cref="IComponentQuantity.Quantity"/>

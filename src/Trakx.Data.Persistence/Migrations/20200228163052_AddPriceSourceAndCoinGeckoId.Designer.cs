@@ -3,15 +3,17 @@ using System;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Infrastructure;
 using Microsoft.EntityFrameworkCore.Metadata;
+using Microsoft.EntityFrameworkCore.Migrations;
 using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 using Trakx.Data.Persistence;
 
 namespace Trakx.Data.Persistence.Migrations
 {
     [DbContext(typeof(IndexRepositoryContext))]
-    partial class IndexRepositoryContextModelSnapshot : ModelSnapshot
+    [Migration("20200228163052_AddPriceSourceAndCoinGeckoId")]
+    partial class AddPriceSourceAndCoinGeckoId
     {
-        protected override void BuildModel(ModelBuilder modelBuilder)
+        protected override void BuildTargetModel(ModelBuilder modelBuilder)
         {
 #pragma warning disable 612, 618
             modelBuilder

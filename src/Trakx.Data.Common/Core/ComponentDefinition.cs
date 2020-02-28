@@ -8,11 +8,12 @@ namespace Trakx.Data.Common.Core
     {
         public ComponentDefinition() { }
 
-        public ComponentDefinition(string address, string name, string symbol, int decimals)
+        public ComponentDefinition(string address, string name, string symbol, string coinGeckoId, int decimals)
         {
             Address = address;
             Name = name;
             Symbol = symbol;
+            CoinGeckoId = coinGeckoId;
             Decimals = decimals;
 
             Debug.Assert(this.IsValid());
@@ -31,6 +32,9 @@ namespace Trakx.Data.Common.Core
 
         /// <inheritdoc />
         public int Decimals { get; set; }
+
+        /// <inheritdoc />
+        public string CoinGeckoId { get; }
 
         #endregion
     }

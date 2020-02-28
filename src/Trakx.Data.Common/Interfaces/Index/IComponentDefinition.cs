@@ -24,5 +24,10 @@
         /// Number of decimals by which 1 unit of the ERC20 can be divided.
         /// </summary>
         int Decimals { get; }
+
+        /// <summary>
+        /// The Id of the token on the CoinGeckoApi
+        /// </summary>
+        string? CoinGeckoId { get; }
     }
 }

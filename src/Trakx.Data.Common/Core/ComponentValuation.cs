@@ -1,6 +1,5 @@
 ﻿using System;
 using System.Diagnostics;
-using Ardalis.GuardClauses;
 using Trakx.Data.Common.Interfaces.Index;
 
 namespace Trakx.Data.Common.Core
@@ -8,11 +7,13 @@ namespace Trakx.Data.Common.Core
     /// <inheritdoc />
     public class ComponentValuation : IComponentValuation
     {
-        public ComponentValuation(IComponentQuantity componentQuantity, string quoteCurrency, decimal price, DateTime timeStamp)
+        public ComponentValuation(IComponentQuantity componentQuantity, 
+            string quoteCurrency, decimal price, string priceSource, DateTime timeStamp)
         {
             ComponentQuantity = componentQuantity;
             QuoteCurrency = quoteCurrency.ToLower();
             Price = price;
+            PriceSource = priceSource;
             TimeStamp = timeStamp;
 
             Debug.Assert(this.IsValid());
@@ -28,6 +29,9 @@ namespace Trakx.Data.Common.Core
 
         /// <inheritdoc />
         public decimal Price { get; }
+
+        /// <inheritdoc />
+        public string PriceSource { get; }
 
         /// <inheritdoc />
         public decimal Value => Price * ComponentQuantity.Quantity;

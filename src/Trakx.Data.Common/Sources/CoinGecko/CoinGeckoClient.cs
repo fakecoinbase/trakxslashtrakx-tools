@@ -21,7 +21,6 @@ namespace Trakx.Data.Common.Sources.CoinGecko
         private readonly ICoinsClient _coinsClient;
         private readonly AsyncRetryPolicy _retryPolicy;
         private readonly ISimpleClient _simpleClient;
-        private Dictionary<string, string> _idsByName;
         private Dictionary<string, string> _symbolsByNames;
         private Dictionary<string, string> _idsBySymbolName;
 
@@ -54,20 +53,17 @@ namespace Trakx.Data.Common.Sources.CoinGecko
         }
 
         /// <inheritdoc />
-        public async Task<decimal?> GetLatestPrice(string symbol, string quoteCurrency = Constants.DefaultQuoteCurrency)
+        public async Task<decimal?> GetLatestPrice(string coinGeckoId, string quoteCurrency = Constants.DefaultQuoteCurrency)
         {
-            var id = await GetCoinGeckoIdFromSymbol(symbol);
-            if (id == default) return 0;
-
             var quoteCurrencyId = quoteCurrency.ToLower() == Constants.Usd 
                 ? Constants.Usd 
                 : await GetCoinGeckoIdFromSymbol(quoteCurrency);
             if (quoteCurrencyId == default) return 0;
 
             var tickerDetails = await _retryPolicy.ExecuteAsync(
-                () => _simpleClient.GetSimplePrice(new []{id, quoteCurrencyId }, new []{ Constants.Usd }))
+                () => _simpleClient.GetSimplePrice(new []{ coinGeckoId, quoteCurrencyId }, new []{ Constants.Usd }))
                 .ConfigureAwait(false);
-            var price = tickerDetails[id][Constants.Usd];
+            var price = tickerDetails[coinGeckoId][Constants.Usd];
             var conversionToQuoteCurrency = tickerDetails[quoteCurrencyId][Constants.Usd];
             return (decimal?)(price / conversionToQuoteCurrency) ?? 0m;
         }

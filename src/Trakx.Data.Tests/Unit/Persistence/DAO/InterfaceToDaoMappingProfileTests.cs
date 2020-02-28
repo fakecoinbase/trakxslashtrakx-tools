@@ -23,7 +23,7 @@ namespace Trakx.Data.Tests.Unit.Persistence.DAO
         [Fact]
         public void ComponentDefinition_Should_Map_Correctly()
         {
-            var component = new ComponentDefinition("0xabcdef", "test", "abc", 15);
+            var component = new ComponentDefinition("0xabcdef", "test", "abc", "gecko", 15);
             var componentDefinitionDao = _mapper.Map<ComponentDefinitionDao>(component);
 
             componentDefinitionDao.Address.Should().Be("0xabcdef");

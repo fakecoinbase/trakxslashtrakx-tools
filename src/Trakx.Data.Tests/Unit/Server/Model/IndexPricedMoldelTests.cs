@@ -10,7 +10,7 @@ namespace Trakx.Data.Tests.Unit.Server.Model
         public IndexPricedMoldelTests()
         {
             var componentDefinitions = Enumerable.Range(0, 4)
-                .Select(i => new ComponentDefinition($"0xaddress{i}", $"name{i}", $"symbol{i}", i))
+                .Select(i => new ComponentDefinition($"0xaddress{i}", $"name{i}", $"symbol{i}", $"gecko{i}", i))
                 .ToList();
             var indexDefintion = new IndexDefinition("idx", "index", "test index", 
                 componentDefinitions.Select(c => (IComponentWeight)new ComponentWeight(c, 0.25m)).ToList(),

@@ -28,10 +28,10 @@ namespace Trakx.Data.Tests.Unit.Common.Composition
 
             _definitions = new IComponentDefinition[]
             {
-                new ComponentDefinition("0xa10", "comp10", "c10", 10),
-                new ComponentDefinition("0xa18", "comp18", "c18", 18),
-                new ComponentDefinition("0xa2", "comp2", "c2", 2),
-                new ComponentDefinition("0xa15", "comp15", "c15", 15),
+                new ComponentDefinition("0xa10", "comp10", "c10", "gecko10", 10),
+                new ComponentDefinition("0xa18", "comp18", "c18", "gecko18", 18),
+                new ComponentDefinition("0xa2", "comp2", "c2", "g2", 2),
+                new ComponentDefinition("0xa15", "comp15", "c15", "g15", 15),
             };
 
             _weights = new IComponentWeight[]
@@ -71,7 +71,7 @@ namespace Trakx.Data.Tests.Unit.Common.Composition
                     w.ComponentDefinition.Address == componentQuantity.ComponentDefinition.Address).Weight;
     
                 var valuation = new ComponentValuation(componentQuantity, "_",
-                    _prices[componentQuantity.ComponentDefinition], DateTime.UtcNow);
+                    _prices[componentQuantity.ComponentDefinition], "_", DateTime.UtcNow);
 
                 valuation.Value.Should().BeApproximately(TargetIndexPrice1 * weight, 1e-2m);
             }
@@ -90,7 +90,7 @@ namespace Trakx.Data.Tests.Unit.Common.Composition
         private void ValidateNav(IIndexComposition composition, decimal targetIndexPrice)
         {
             var componentValuations = composition.ComponentQuantities.Select(c =>
-                (IComponentValuation) new ComponentValuation(c, "_", _prices[c.ComponentDefinition], DateTime.UtcNow));
+                (IComponentValuation) new ComponentValuation(c, "_", _prices[c.ComponentDefinition], "_", DateTime.UtcNow));
 
             var indexValuation = new IndexValuation(composition, componentValuations.ToList(), DateTime.UtcNow);
 

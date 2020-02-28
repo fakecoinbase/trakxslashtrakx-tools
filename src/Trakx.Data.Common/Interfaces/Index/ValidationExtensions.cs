@@ -15,6 +15,7 @@ namespace Trakx.Data.Common.Interfaces.Index
             Guard.Against.NullOrWhiteSpace(definition.Address, nameof(definition.Address));
             Guard.Against.NullOrWhiteSpace(definition.Name, nameof(definition.Name));
             Guard.Against.NullOrWhiteSpace(definition.Symbol, nameof(definition.Symbol));
+            Guard.Against.NullOrWhiteSpace(definition.CoinGeckoId, nameof(definition.CoinGeckoId));
             Guard.Against.OutOfRange(definition.Decimals, nameof(definition.Decimals), 0, 18);
             return true;
         }

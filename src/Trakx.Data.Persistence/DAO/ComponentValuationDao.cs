@@ -11,13 +11,14 @@ namespace Trakx.Data.Persistence.DAO
         public ComponentValuationDao() {}
 
         public ComponentValuationDao(ComponentQuantityDao componentComponentQuantity, DateTime timeStamp, string quoteCurrency,
-            decimal price)
+            decimal price, string priceSource)
         {
             Id = $"{componentComponentQuantity.Id}|{quoteCurrency}|{timeStamp:yyMMddHHmmssff}";
             ComponentQuantityDao = componentComponentQuantity;
             QuoteCurrency = quoteCurrency;
             TimeStamp = timeStamp;
             Price = price;
+            PriceSource = priceSource;
             Value = price * ComponentQuantityDao.Quantity;
         }
 
@@ -53,6 +54,10 @@ namespace Trakx.Data.Persistence.DAO
         /// <inheritdoc />
         [Column(TypeName = "decimal(38, 18)")]
         public decimal Price { get; set; }
+
+        /// <inheritdoc />
+        [MaxLength(50)]
+        public string PriceSource { get; set; }
 
         /// <inheritdoc />
         [Column(TypeName = "decimal(38, 18)")]

@@ -8,6 +8,7 @@ namespace Trakx.Data.Market.Server.Models
         public string QuoteCurrency { get; set; }
         public DateTime TimeStamp { get; set; }
         public decimal Price { get; set; }
+        public string PriceSource { get; set; }
         public decimal Value { get; set; }
         public double? Weight { get; set; }
 
@@ -18,6 +19,7 @@ namespace Trakx.Data.Market.Server.Models
                 QuoteCurrency = valuation.QuoteCurrency == "usdc" ? "USD" : valuation.QuoteCurrency,
                 TimeStamp = valuation.TimeStamp,
                 Price = valuation.Price,
+                PriceSource = valuation.PriceSource,
                 Value = valuation.Value,
                 Weight = valuation.Weight,
             };

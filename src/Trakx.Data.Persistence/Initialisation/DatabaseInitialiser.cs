@@ -72,72 +72,72 @@ namespace Trakx.Data.Persistence.Initialisation
             var componentDefinitions = new List<ComponentDefinitionDao>()
             {
                 #region Lending
-                new ComponentDefinitionDao("0x0947b0e6d821378805c9598291385ce7c791a6b2", "Lendingblock", "lnd", 18),
-                new ComponentDefinitionDao("0x8ab7404063ec4dbcfd4598215992dc3f8ec853d7", "Akropolis", "akro", 18),
-                new ComponentDefinitionDao("0x1c4481750daa5ff521a2a7490d9981ed46465dbd", "Blockmason Credit Protocol", "bcpt", 18),
-                new ComponentDefinitionDao("0xfe5f141bf94fe84bc28ded0ab966c16b17490657", "Cred", "lba", 18),
-                new ComponentDefinitionDao("0x80fB784B7eD66730e8b1DBd9820aFD29931aab03", "Aave", "lend", 18),
-                new ComponentDefinitionDao("0x9f8f72aa9304c8b593d555f12ef6589cc3a579a2", "Maker", "mkr", 18),
-                new ComponentDefinitionDao("0xb62132e35a6c13ee1ee0f84dc5d40bad8d815206", "Nexo", "nexo", 18),
-                new ComponentDefinitionDao("0xd4fa1460f537bb9085d22c7bccb5dd450ef28e3a", "Populous", "ppt", 8),
-                new ComponentDefinitionDao("0xf970b8e36e23f7fc3fd752eea86f8be8d83375a6", "Ripio Credit Network", "rcn", 18),
-                new ComponentDefinitionDao("0x4156D3342D5c385a87D264F90653733592000581", "Salt", "salt", 8),
+                new ComponentDefinitionDao("0x0947b0e6d821378805c9598291385ce7c791a6b2", "Lendingblock", "lnd", "lendingblock", 18),
+                new ComponentDefinitionDao("0x8ab7404063ec4dbcfd4598215992dc3f8ec853d7", "Akropolis", "akro", "akropolis", 18),
+                new ComponentDefinitionDao("0x1c4481750daa5ff521a2a7490d9981ed46465dbd", "Blockmason Credit Protocol", "bcpt", "blockmason-credit-protocol", 18),
+                new ComponentDefinitionDao("0xfe5f141bf94fe84bc28ded0ab966c16b17490657", "Cred", "lba", "libra-credit", 18),
+                new ComponentDefinitionDao("0x80fB784B7eD66730e8b1DBd9820aFD29931aab03", "Aave", "lend", "ethlend", 18),
+                new ComponentDefinitionDao("0x9f8f72aa9304c8b593d555f12ef6589cc3a579a2", "Maker", "mkr", "maker", 18),
+                new ComponentDefinitionDao("0xb62132e35a6c13ee1ee0f84dc5d40bad8d815206", "nexo", "nexo", "nexo", 18),
+                new ComponentDefinitionDao("0xd4fa1460f537bb9085d22c7bccb5dd450ef28e3a", "Populous", "ppt", "populous", 8),
+                new ComponentDefinitionDao("0xf970b8e36e23f7fc3fd752eea86f8be8d83375a6", "Ripio Credit Network", "rcn", "ripio-credit-network", 18),
+                new ComponentDefinitionDao("0x4156D3342D5c385a87D264F90653733592000581", "SALT", "salt", "salt", 8),
                 #endregion
 
                 #region Asset Management
-                new ComponentDefinitionDao("0xc80c5e40220172b36adee2c951f26f2a577810c5", "Bankera", "bnk", 8),
-                new ComponentDefinitionDao("0x1014613e2b3cbc4d575054d4982e580d9b99d7b1", "BitCapitalVendor", "bcv", 8),
-                new ComponentDefinitionDao("0x01ff50f8b7f74e4f00580d9596cd3d0d6d6e326f", "BnkToTheFuture", "bft", 18),
-                new ComponentDefinitionDao("0xcb97e65f07da24d46bcdd078ebebd7c6e6e3d750", "Bytom", "btm", 8),
-                new ComponentDefinitionDao("0x26e75307fc0c021472feb8f727839531f112f317", "Crypto20", "c20", 18),
-                new ComponentDefinitionDao("0x177d39ac676ed1c67a2b268ad7f1e58826e5b0af", "Blox", "cdt", 18),
-                new ComponentDefinitionDao("0xba9d4199fab4f26efe3551d490e3821486f135ba", "Swissborg", "chsb", 8),
-                new ComponentDefinitionDao("0xd4c435f5b09f855c3317c8524cb1f586e42795fa", "Cindicator", "cnd", 18),
-                new ComponentDefinitionDao("0x103c3a209da59d3e7c4a89307e66521e081cfdf0", "Genesis Vision", "gvt", 18),
-                new ComponentDefinitionDao("0xec67005c4E498Ec7f55E092bd1d35cbC47C91892", "Melon", "mln", 18),
-                new ComponentDefinitionDao("0x653430560be843c4a3d143d0110e896c2ab8ac0d", "Molecular Future", "mof", 16),
-                new ComponentDefinitionDao("0x1776e1F26f98b1A5dF9cD347953a26dd3Cb46671", "Numeraire", "nmr", 18),
-                new ComponentDefinitionDao("0xd26114cd6EE289AccF82350c8d8487fedB8A0C07", "OmiseGo", "omg", 18),
-                new ComponentDefinitionDao("0x9992ec3cf6a55b00978cddf2b27bc6882d88d1ec", "Polymath Network", "poly", 18),
-                new ComponentDefinitionDao("0xFc2C4D8f95002C14eD0a7aA65102Cac9e5953b5E", "Rublix", "rblx", 18),
-                new ComponentDefinitionDao("0xc011a72400e58ecd99ee497cf89e3775d4bd732f", "Synthetix Network Token", "snx", 18),
-                new ComponentDefinitionDao("0x3a92bd396aef82af98ebc0aa9030d25a23b11c6b", "Tokenbox", "tbx", 18),
-                new ComponentDefinitionDao("0x4824a7b64e3966b0133f4f4ffb1b9d6beb75fff7", "TokenClub", "tct", 18),
-                new ComponentDefinitionDao("0xf7920b0768ecb20a123fac32311d07d193381d6f", "Time New Bank  ", "tnb", 18),
-            #endregion
+                new ComponentDefinitionDao("0xc80c5e40220172b36adee2c951f26f2a577810c5", "Bankera", "bnk", "bankera", 8),
+                new ComponentDefinitionDao("0x1014613e2b3cbc4d575054d4982e580d9b99d7b1", "BitCapitalVendor", "bcv", "bcv", 8),
+                new ComponentDefinitionDao("0x01ff50f8b7f74e4f00580d9596cd3d0d6d6e326f", "BnkToTheFuture", "bft", "bnktothefuture", 18),
+                new ComponentDefinitionDao("0xcb97e65f07da24d46bcdd078ebebd7c6e6e3d750", "Bytom", "btm", "bytom", 8),
+                new ComponentDefinitionDao("0x26e75307fc0c021472feb8f727839531f112f317", "Crypto20", "c20", "crypto20", 18),
+                new ComponentDefinitionDao("0x177d39ac676ed1c67a2b268ad7f1e58826e5b0af", "Blox", "cdt", "blox", 18),
+                new ComponentDefinitionDao("0xba9d4199fab4f26efe3551d490e3821486f135ba", "Swissborg", "chsb", "swissborg", 8),
+                new ComponentDefinitionDao("0xd4c435f5b09f855c3317c8524cb1f586e42795fa", "Cindicator", "cnd", "cindicator", 18),
+                new ComponentDefinitionDao("0x103c3a209da59d3e7c4a89307e66521e081cfdf0", "Genesis Vision", "gvt", "genesis-vision", 18),
+                new ComponentDefinitionDao("0xec67005c4E498Ec7f55E092bd1d35cbC47C91892", "Melon", "mln", "melon", 18),
+                new ComponentDefinitionDao("0x653430560be843c4a3d143d0110e896c2ab8ac0d", "Molecular Future", "mof", "molecular-future", 16),
+                new ComponentDefinitionDao("0x1776e1F26f98b1A5dF9cD347953a26dd3Cb46671", "Numeraire", "nmr", "numeraire", 18),
+                new ComponentDefinitionDao("0xd26114cd6EE289AccF82350c8d8487fedB8A0C07", "OmiseGo", "omg", "omisego", 18),
+                new ComponentDefinitionDao("0x9992ec3cf6a55b00978cddf2b27bc6882d88d1ec", "Polymath Network", "poly", "polymath-network", 18),
+                new ComponentDefinitionDao("0xFc2C4D8f95002C14eD0a7aA65102Cac9e5953b5E", "Rublix", "rblx", "rublix", 18),
+                new ComponentDefinitionDao("0xc011a72400e58ecd99ee497cf89e3775d4bd732f", "Synthetix Network Token", "snx", "havven", 18),
+                new ComponentDefinitionDao("0x3a92bd396aef82af98ebc0aa9030d25a23b11c6b", "Tokenbox", "tbx", "tokenbox", 18),
+                new ComponentDefinitionDao("0x4824a7b64e3966b0133f4f4ffb1b9d6beb75fff7", "TokenClub", "tct", "tokenclub", 18),
+                new ComponentDefinitionDao("0xf7920b0768ecb20a123fac32311d07d193381d6f", "Time New Bank  ", "tnb", "time-new-bank", 18),
+                #endregion
 
                 #region Decentralised Exchanges
-                new ComponentDefinitionDao("0x27054b13b1b798b345b591a4d22e6562d47ea75a", "AirSwap", "ast", 4),
-                new ComponentDefinitionDao("0x1f573d6fb3f13d689ff844b4ce37794d79a7ff1c", "Bancor Network Token", "bnt", 18),
-                new ComponentDefinitionDao("0x1c83501478f1320977047008496dacbd60bb15ef", "Digitex Futures Exchange", "dgtx", 18),
-                new ComponentDefinitionDao("0x9af839687f6c94542ac5ece2e317daae355493a1", "Hydro Protocol", "hot", 18),
-                new ComponentDefinitionDao("0xB705268213D593B8FD88d3FDEFF93AFF5CbDcfAE", "Idex", "idex", 18),
-                new ComponentDefinitionDao("0xdd974d5c2e2928dea5f71b9825b8b646686bd200", "Kyber Network", "knc", 18),
-                new ComponentDefinitionDao("0xbbbbca6a901c926f240b89eacb641d8aec7aeafd", "Loopring", "lrc", 18),
-                new ComponentDefinitionDao("0xcc80c051057b774cd75067dc48f8987c4eb97a5e", "Nectar Token", "nec", 18),
-                new ComponentDefinitionDao("0x701c244b988a513c945973defa05de933b23fe1d", "Token OpenANX", "oax", 18),
-                new ComponentDefinitionDao("0xa974c709cfb4566686553a20790685a47aceaa33", "Mixin", "xin", 18),
-                new ComponentDefinitionDao("0xe41d2489571d322189246dafa5ebde1f4699f498", "0x", "zrx", 18),
+                new ComponentDefinitionDao("0x27054b13b1b798b345b591a4d22e6562d47ea75a", "AirSwap", "ast", "airswap", 4),
+                new ComponentDefinitionDao("0x1f573d6fb3f13d689ff844b4ce37794d79a7ff1c", "Bancor Network Token", "bnt", "bancor", 18),
+                new ComponentDefinitionDao("0x1c83501478f1320977047008496dacbd60bb15ef", "Digitex Futures Exchange", "dgtx", "digitex-futures-exchange", 18),
+                new ComponentDefinitionDao("0x9af839687f6c94542ac5ece2e317daae355493a1", "Hydro Protocol", "hot", "hydro-protocol", 18),
+                new ComponentDefinitionDao("0xB705268213D593B8FD88d3FDEFF93AFF5CbDcfAE", "Idex", "idex", "aurora-dao", 18),
+                new ComponentDefinitionDao("0xdd974d5c2e2928dea5f71b9825b8b646686bd200", "Kyber Network", "knc", "kyber-network", 18),
+                new ComponentDefinitionDao("0xbbbbca6a901c926f240b89eacb641d8aec7aeafd", "Loopring", "lrc", "loopring", 18),
+                new ComponentDefinitionDao("0xcc80c051057b774cd75067dc48f8987c4eb97a5e", "Nectar Token", "nec", "nectar-token", 18),
+                new ComponentDefinitionDao("0x701c244b988a513c945973defa05de933b23fe1d", "Token OpenANX", "oax", "openanx", 18),
+                new ComponentDefinitionDao("0xa974c709cfb4566686553a20790685a47aceaa33", "Mixin", "xin", "mixin", 18),
+                new ComponentDefinitionDao("0xe41d2489571d322189246dafa5ebde1f4699f498", "0x", "zrx", "0x", 18),
                 #endregion
 
                 #region Centralised Exchanges
-                new ComponentDefinitionDao("0xb3104b4b9da82025e8b9f8fb28b3553ce2f67069", "Bibox Token", "bix", 18),
-                new ComponentDefinitionDao("0x4375e7ad8a01b8ec3ed041399f62d9cd120e0063", "Bit-Z Token", "bz", 18),
-                new ComponentDefinitionDao("0xced4e93198734ddaff8492d525bd258d49eb388e", "Eidoo", "edo", 18),
-                new ComponentDefinitionDao("0x50d1c9771902476076ecfc8b2a83ad6b9355a4c9", "FTX Token", "ftt", 18),
-                new ComponentDefinitionDao("0x6f259637dcd74c767781e37bc6133cd6a68aa161", "Huobi Token", "ht", 18),
-                new ComponentDefinitionDao("0x039b5649a59967e3e936d7471f9c3700100ee1ab", "Kucoin Shares", "kcs", 6),
-                new ComponentDefinitionDao("0x2af5d2ad76741191d15dfe7bf6ac92d4bd912ca3", "LEO Token", "leo", 18),
-                new ComponentDefinitionDao("0x75231f58b43240c9718dd58b4967c5114342a86c", "OKB", "okb", 18),
-                new ComponentDefinitionDao("0x618e75ac90b12c6049ba3b27f5d5f8651b0037f6", "Qash", "qash", 6),
-                new ComponentDefinitionDao("0xbd0793332e9fb844a52a205a233ef27a5b34b927", "ZB Token", "zb", 18),
+                new ComponentDefinitionDao("0xb3104b4b9da82025e8b9f8fb28b3553ce2f67069", "Bibox Token", "bix", "bibox-token", 18),
+                new ComponentDefinitionDao("0x4375e7ad8a01b8ec3ed041399f62d9cd120e0063", "Bit-Z Token", "bz", "bit-z-token", 18),
+                new ComponentDefinitionDao("0xced4e93198734ddaff8492d525bd258d49eb388e", "Eidoo", "edo", "eidoo", 18),
+                new ComponentDefinitionDao("0x50d1c9771902476076ecfc8b2a83ad6b9355a4c9", "FTX Token", "ftt", "ftx-token", 18),
+                new ComponentDefinitionDao("0x6f259637dcd74c767781e37bc6133cd6a68aa161", "Huobi Token", "ht", "huobi-token", 18),
+                new ComponentDefinitionDao("0x039b5649a59967e3e936d7471f9c3700100ee1ab", "Kucoin Shares", "kcs", "kucoin-shares", 6),
+                new ComponentDefinitionDao("0x2af5d2ad76741191d15dfe7bf6ac92d4bd912ca3", "LEO Token", "leo", "leo-token", 18),
+                new ComponentDefinitionDao("0x75231f58b43240c9718dd58b4967c5114342a86c", "OKB", "okb", "okb", 18),
+                new ComponentDefinitionDao("0x618e75ac90b12c6049ba3b27f5d5f8651b0037f6", "Qash", "qash", "qash", 6),
+                new ComponentDefinitionDao("0xbd0793332e9fb844a52a205a233ef27a5b34b927", "ZB Token", "zb", "zb-token", 18),
                 #endregion
 
                 #region Scaling
-                new ComponentDefinitionDao("0x4f9254c83eb525f9fcf346490bbb3ed28a81c667", "Celer Network", "celr", 18),
-                new ComponentDefinitionDao("0xa4e8c3ec456107ea67d3075bf9e3df3a75823db0", "Loom Network", "loom", 18),
-                new ComponentDefinitionDao("0x7d1afa7b718fb893db30a3abc0cfc608aacfebb0", "Matic Network", "matic", 18),
-                new ComponentDefinitionDao("0x255aa6df07540cb5d3d297f0d0d4d84cb52bc8e6", "Raiden Network Token", "rdn", 18),
+                new ComponentDefinitionDao("0x4f9254c83eb525f9fcf346490bbb3ed28a81c667", "Celer Network", "celr", "celer-network", 18),
+                new ComponentDefinitionDao("0xa4e8c3ec456107ea67d3075bf9e3df3a75823db0", "Loom Network", "loom", "loom-network", 18),
+                new ComponentDefinitionDao("0x7d1afa7b718fb893db30a3abc0cfc608aacfebb0", "Matic Network", "matic", "matic-network", 18),
+                new ComponentDefinitionDao("0x255aa6df07540cb5d3d297f0d0d4d84cb52bc8e6", "Raiden Network Token", "rdn", "raiden-network", 18),
                 #endregion
             };
             await dbContext.ComponentDefinitions.AddRangeAsync(componentDefinitions, cancellationToken);
@@ -217,7 +217,6 @@ namespace Trakx.Data.Persistence.Initialisation
                 new ComponentWeightDao(indexBySymbols["l1amg"], componentBySymbol["tnb"], 0.0100339334494979m),
 
             };
-
             await dbContext.ComponentWeights.AddRangeAsync(assetManagementWeights, cancellationToken);
 
             var decentralisedExchanges = new[]
@@ -362,7 +361,7 @@ namespace Trakx.Data.Persistence.Initialisation
 
             var componentValuations = pricesByDefinitions.Select(p => new ComponentValuationDao(
                 compositionDao.ComponentQuantityDaos.Single(q => q.ComponentDefinition.Symbol == p.Key.Symbol),
-                FirstJan, Usdc, pricesByDefinitions[componentsBySymbols[p.Key.Symbol]])).ToList();
+                FirstJan, Usdc, pricesByDefinitions[componentsBySymbols[p.Key.Symbol]], "coinGecko")).ToList();
 
             await dbContext.ComponentValuations.AddRangeAsync(componentValuations, cancellationToken);
 
