@@ -38,7 +38,7 @@ namespace Trakx.Contracts.Set.SetTokenFactory.ContractDefinition
         [Parameter("bytes32", "_symbol", 5)]
         public virtual byte[] Symbol { get; set; }
         [Parameter("bytes", "", 6)]
-        public virtual byte[] ReturnValue6 { get; set; }
+        public virtual byte[] CallData { get; set; }
     }
 
     public partial class CoreFunction : CoreFunctionBase { }

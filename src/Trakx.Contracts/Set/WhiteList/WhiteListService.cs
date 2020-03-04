@@ -4,33 +4,34 @@ using System.Numerics;
 using Nethereum.RPC.Eth.DTOs;
 using Nethereum.Contracts.ContractHandlers;
 using System.Threading;
+using Nethereum.Web3;
 using Trakx.Contracts.Set.WhiteList.ContractDefinition;
 
 namespace Trakx.Contracts.Set.WhiteList
 {
     public partial class WhiteListService
     {
-        public static Task<TransactionReceipt> DeployContractAndWaitForReceiptAsync(Nethereum.Web3.Web3 web3, WhiteListDeployment whiteListDeployment, CancellationTokenSource cancellationTokenSource = null)
+        public static Task<TransactionReceipt> DeployContractAndWaitForReceiptAsync(IWeb3 web3, WhiteListDeployment whiteListDeployment, CancellationTokenSource cancellationTokenSource = null)
         {
             return web3.Eth.GetContractDeploymentHandler<WhiteListDeployment>().SendRequestAndWaitForReceiptAsync(whiteListDeployment, cancellationTokenSource);
         }
 
-        public static Task<string> DeployContractAsync(Nethereum.Web3.Web3 web3, WhiteListDeployment whiteListDeployment)
+        public static Task<string> DeployContractAsync(IWeb3 web3, WhiteListDeployment whiteListDeployment)
         {
             return web3.Eth.GetContractDeploymentHandler<WhiteListDeployment>().SendRequestAsync(whiteListDeployment);
         }
 
-        public static async Task<WhiteListService> DeployContractAndGetServiceAsync(Nethereum.Web3.Web3 web3, WhiteListDeployment whiteListDeployment, CancellationTokenSource cancellationTokenSource = null)
+        public static async Task<WhiteListService> DeployContractAndGetServiceAsync(IWeb3 web3, WhiteListDeployment whiteListDeployment, CancellationTokenSource cancellationTokenSource = null)
         {
             var receipt = await DeployContractAndWaitForReceiptAsync(web3, whiteListDeployment, cancellationTokenSource);
             return new WhiteListService(web3, receipt.ContractAddress);
         }
 
-        protected Nethereum.Web3.Web3 Web3{ get; }
+        protected IWeb3 Web3{ get; }
 
         public ContractHandler ContractHandler { get; }
 
-        public WhiteListService(Nethereum.Web3.Web3 web3, string contractAddress)
+        public WhiteListService(IWeb3 web3, string contractAddress)
         {
             Web3 = web3;
             ContractHandler = web3.Eth.GetContractHandler(contractAddress);

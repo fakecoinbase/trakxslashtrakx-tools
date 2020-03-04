@@ -4,33 +4,34 @@ using System.Numerics;
 using Nethereum.RPC.Eth.DTOs;
 using Nethereum.Contracts.ContractHandlers;
 using System.Threading;
+using Nethereum.Web3;
 using Trakx.Contracts.Set.TransferProxy.ContractDefinition;
 
 namespace Trakx.Contracts.Set.TransferProxy
 {
     public partial class TransferProxyService
     {
-        public static Task<TransactionReceipt> DeployContractAndWaitForReceiptAsync(Nethereum.Web3.Web3 web3, TransferProxyDeployment transferProxyDeployment, CancellationTokenSource cancellationTokenSource = null)
+        public static Task<TransactionReceipt> DeployContractAndWaitForReceiptAsync(IWeb3 web3, TransferProxyDeployment transferProxyDeployment, CancellationTokenSource cancellationTokenSource = null)
         {
             return web3.Eth.GetContractDeploymentHandler<TransferProxyDeployment>().SendRequestAndWaitForReceiptAsync(transferProxyDeployment, cancellationTokenSource);
         }
 
-        public static Task<string> DeployContractAsync(Nethereum.Web3.Web3 web3, TransferProxyDeployment transferProxyDeployment)
+        public static Task<string> DeployContractAsync(IWeb3 web3, TransferProxyDeployment transferProxyDeployment)
         {
             return web3.Eth.GetContractDeploymentHandler<TransferProxyDeployment>().SendRequestAsync(transferProxyDeployment);
         }
 
-        public static async Task<TransferProxyService> DeployContractAndGetServiceAsync(Nethereum.Web3.Web3 web3, TransferProxyDeployment transferProxyDeployment, CancellationTokenSource cancellationTokenSource = null)
+        public static async Task<TransferProxyService> DeployContractAndGetServiceAsync(IWeb3 web3, TransferProxyDeployment transferProxyDeployment, CancellationTokenSource cancellationTokenSource = null)
         {
             var receipt = await DeployContractAndWaitForReceiptAsync(web3, transferProxyDeployment, cancellationTokenSource);
             return new TransferProxyService(web3, receipt.ContractAddress);
         }
 
-        protected Nethereum.Web3.Web3 Web3{ get; }
+        protected IWeb3 Web3{ get; }
 
         public ContractHandler ContractHandler { get; }
 
-        public TransferProxyService(Nethereum.Web3.Web3 web3, string contractAddress)
+        public TransferProxyService(IWeb3 web3, string contractAddress)
         {
             Web3 = web3;
             ContractHandler = web3.Eth.GetContractHandler(contractAddress);

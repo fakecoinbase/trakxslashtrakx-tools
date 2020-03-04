@@ -40,7 +40,9 @@ namespace Trakx.Data.Common.Composition
             var quantities = componentPrices.Select(v => 
                     CalculateQuantity(indexDefinition, v.Key, v.Value, targetIndexPrice));
 
-            var composition = new IndexComposition(indexDefinition, quantities.ToList(), version, creationDate ?? DateTime.UtcNow);
+            var composition = new IndexComposition(indexDefinition, 
+                quantities.ToList(), version, 
+                creationDate ?? DateTime.UtcNow, "");
 
             return composition;
         }

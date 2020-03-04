@@ -11,6 +11,16 @@ namespace Trakx.Data.Common.Interfaces.Index
     public interface IIndexComposition
     {
         /// <summary>
+        /// Address at which the initial composition of the index has been deployed on chain.
+        /// </summary>
+        string Address { get; }
+
+        /// <summary>
+        /// Symbol for the token under which the composition is traded.
+        /// </summary>
+        string Symbol { get; }
+
+        /// <summary>
         /// Definition of the index, from which the composition derives.
         /// </summary>
         IIndexDefinition IndexDefinition { get; }

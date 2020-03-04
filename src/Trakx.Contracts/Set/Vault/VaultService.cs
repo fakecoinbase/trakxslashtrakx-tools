@@ -4,33 +4,34 @@ using System.Numerics;
 using Nethereum.RPC.Eth.DTOs;
 using Nethereum.Contracts.ContractHandlers;
 using System.Threading;
+using Nethereum.Web3;
 using Trakx.Contracts.Set.Vault.ContractDefinition;
 
 namespace Trakx.Contracts.Set.Vault
 {
     public partial class VaultService
     {
-        public static Task<TransactionReceipt> DeployContractAndWaitForReceiptAsync(Nethereum.Web3.Web3 web3, VaultDeployment vaultDeployment, CancellationTokenSource cancellationTokenSource = null)
+        public static Task<TransactionReceipt> DeployContractAndWaitForReceiptAsync(IWeb3 web3, VaultDeployment vaultDeployment, CancellationTokenSource cancellationTokenSource = null)
         {
             return web3.Eth.GetContractDeploymentHandler<VaultDeployment>().SendRequestAndWaitForReceiptAsync(vaultDeployment, cancellationTokenSource);
         }
 
-        public static Task<string> DeployContractAsync(Nethereum.Web3.Web3 web3, VaultDeployment vaultDeployment)
+        public static Task<string> DeployContractAsync(IWeb3 web3, VaultDeployment vaultDeployment)
         {
             return web3.Eth.GetContractDeploymentHandler<VaultDeployment>().SendRequestAsync(vaultDeployment);
         }
 
-        public static async Task<VaultService> DeployContractAndGetServiceAsync(Nethereum.Web3.Web3 web3, VaultDeployment vaultDeployment, CancellationTokenSource cancellationTokenSource = null)
+        public static async Task<VaultService> DeployContractAndGetServiceAsync(IWeb3 web3, VaultDeployment vaultDeployment, CancellationTokenSource cancellationTokenSource = null)
         {
             var receipt = await DeployContractAndWaitForReceiptAsync(web3, vaultDeployment, cancellationTokenSource);
             return new VaultService(web3, receipt.ContractAddress);
         }
 
-        protected Nethereum.Web3.Web3 Web3{ get; }
+        protected IWeb3 Web3{ get; }
 
         public ContractHandler ContractHandler { get; }
 
-        public VaultService(Nethereum.Web3.Web3 web3, string contractAddress)
+        public VaultService(IWeb3 web3, string contractAddress)
         {
             Web3 = web3;
             ContractHandler = web3.Eth.GetContractHandler(contractAddress);

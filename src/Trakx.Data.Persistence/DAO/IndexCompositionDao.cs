@@ -9,14 +9,21 @@ namespace Trakx.Data.Persistence.DAO
 {
     public class IndexCompositionDao : IIndexComposition
     {
-        public IndexCompositionDao() { }
+        public IndexCompositionDao(string address, string symbol)
+        {
+            Address = address;
+            Symbol = symbol;
+        }
 
-        public IndexCompositionDao(IndexDefinitionDao indexDefinition, uint version, DateTime creationDate)
+        public IndexCompositionDao(IndexDefinitionDao indexDefinition, 
+            uint version, DateTime creationDate, string address, string symbol)
         {
             Id = $"{indexDefinition.Symbol}|{version}";
             IndexDefinitionDao = indexDefinition;
             Version = version;
             CreationDate = creationDate;
+            Address = address;
+            Symbol = $"{indexDefinition.Symbol}{creationDate:yyMM}";
             ComponentQuantityDaos = new List<ComponentQuantityDao>();
             IndexValuationDaos = new List<IndexValuationDao>();
         }
@@ -29,6 +36,12 @@ namespace Trakx.Data.Persistence.DAO
         /// </summary>
         [Key]
         public string Id { get; private set; }
+
+        /// <inheritdoc />
+        public string Address { get; set; }
+
+        /// <inheritdoc />
+        public string Symbol { get; set; }
 
         /// <inheritdoc />
         [NotMapped]

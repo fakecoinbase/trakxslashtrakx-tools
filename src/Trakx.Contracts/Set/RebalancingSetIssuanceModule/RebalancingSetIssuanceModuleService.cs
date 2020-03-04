@@ -3,33 +3,34 @@ using System.Numerics;
 using Nethereum.RPC.Eth.DTOs;
 using Nethereum.Contracts.ContractHandlers;
 using System.Threading;
+using Nethereum.Web3;
 using Trakx.Contracts.Set.RebalancingSetIssuanceModule.ContractDefinition;
 
 namespace Trakx.Contracts.Set.RebalancingSetIssuanceModule
 {
     public partial class RebalancingSetIssuanceModuleService
     {
-        public static Task<TransactionReceipt> DeployContractAndWaitForReceiptAsync(Nethereum.Web3.Web3 web3, RebalancingSetIssuanceModuleDeployment rebalancingSetIssuanceModuleDeployment, CancellationTokenSource cancellationTokenSource = null)
+        public static Task<TransactionReceipt> DeployContractAndWaitForReceiptAsync(IWeb3 web3, RebalancingSetIssuanceModuleDeployment rebalancingSetIssuanceModuleDeployment, CancellationTokenSource cancellationTokenSource = null)
         {
             return web3.Eth.GetContractDeploymentHandler<RebalancingSetIssuanceModuleDeployment>().SendRequestAndWaitForReceiptAsync(rebalancingSetIssuanceModuleDeployment, cancellationTokenSource);
         }
 
-        public static Task<string> DeployContractAsync(Nethereum.Web3.Web3 web3, RebalancingSetIssuanceModuleDeployment rebalancingSetIssuanceModuleDeployment)
+        public static Task<string> DeployContractAsync(IWeb3 web3, RebalancingSetIssuanceModuleDeployment rebalancingSetIssuanceModuleDeployment)
         {
             return web3.Eth.GetContractDeploymentHandler<RebalancingSetIssuanceModuleDeployment>().SendRequestAsync(rebalancingSetIssuanceModuleDeployment);
         }
 
-        public static async Task<RebalancingSetIssuanceModuleService> DeployContractAndGetServiceAsync(Nethereum.Web3.Web3 web3, RebalancingSetIssuanceModuleDeployment rebalancingSetIssuanceModuleDeployment, CancellationTokenSource cancellationTokenSource = null)
+        public static async Task<RebalancingSetIssuanceModuleService> DeployContractAndGetServiceAsync(IWeb3 web3, RebalancingSetIssuanceModuleDeployment rebalancingSetIssuanceModuleDeployment, CancellationTokenSource cancellationTokenSource = null)
         {
             var receipt = await DeployContractAndWaitForReceiptAsync(web3, rebalancingSetIssuanceModuleDeployment, cancellationTokenSource);
             return new RebalancingSetIssuanceModuleService(web3, receipt.ContractAddress);
         }
 
-        protected Nethereum.Web3.Web3 Web3{ get; }
+        protected IWeb3 Web3{ get; }
 
         public ContractHandler ContractHandler { get; }
 
-        public RebalancingSetIssuanceModuleService(Nethereum.Web3.Web3 web3, string contractAddress)
+        public RebalancingSetIssuanceModuleService(IWeb3 web3, string contractAddress)
         {
             Web3 = web3;
             ContractHandler = web3.Eth.GetContractHandler(contractAddress);

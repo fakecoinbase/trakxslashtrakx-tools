@@ -3,33 +3,34 @@ using System.Numerics;
 using Nethereum.RPC.Eth.DTOs;
 using Nethereum.Contracts.ContractHandlers;
 using System.Threading;
+using Nethereum.Web3;
 using Trakx.Contracts.Set.RebalanceAuctionModule.ContractDefinition;
 
 namespace Trakx.Contracts.Set.RebalanceAuctionModule
 {
     public partial class RebalanceAuctionModuleService
     {
-        public static Task<TransactionReceipt> DeployContractAndWaitForReceiptAsync(Nethereum.Web3.Web3 web3, RebalanceAuctionModuleDeployment rebalanceAuctionModuleDeployment, CancellationTokenSource cancellationTokenSource = null)
+        public static Task<TransactionReceipt> DeployContractAndWaitForReceiptAsync(IWeb3 web3, RebalanceAuctionModuleDeployment rebalanceAuctionModuleDeployment, CancellationTokenSource cancellationTokenSource = null)
         {
             return web3.Eth.GetContractDeploymentHandler<RebalanceAuctionModuleDeployment>().SendRequestAndWaitForReceiptAsync(rebalanceAuctionModuleDeployment, cancellationTokenSource);
         }
 
-        public static Task<string> DeployContractAsync(Nethereum.Web3.Web3 web3, RebalanceAuctionModuleDeployment rebalanceAuctionModuleDeployment)
+        public static Task<string> DeployContractAsync(IWeb3 web3, RebalanceAuctionModuleDeployment rebalanceAuctionModuleDeployment)
         {
             return web3.Eth.GetContractDeploymentHandler<RebalanceAuctionModuleDeployment>().SendRequestAsync(rebalanceAuctionModuleDeployment);
         }
 
-        public static async Task<RebalanceAuctionModuleService> DeployContractAndGetServiceAsync(Nethereum.Web3.Web3 web3, RebalanceAuctionModuleDeployment rebalanceAuctionModuleDeployment, CancellationTokenSource cancellationTokenSource = null)
+        public static async Task<RebalanceAuctionModuleService> DeployContractAndGetServiceAsync(IWeb3 web3, RebalanceAuctionModuleDeployment rebalanceAuctionModuleDeployment, CancellationTokenSource cancellationTokenSource = null)
         {
             var receipt = await DeployContractAndWaitForReceiptAsync(web3, rebalanceAuctionModuleDeployment, cancellationTokenSource);
             return new RebalanceAuctionModuleService(web3, receipt.ContractAddress);
         }
 
-        protected Nethereum.Web3.Web3 Web3{ get; }
+        protected IWeb3 Web3{ get; }
 
         public ContractHandler ContractHandler { get; }
 
-        public RebalanceAuctionModuleService(Nethereum.Web3.Web3 web3, string contractAddress)
+        public RebalanceAuctionModuleService(IWeb3 web3, string contractAddress)
         {
             Web3 = web3;
             ContractHandler = web3.Eth.GetContractHandler(contractAddress);

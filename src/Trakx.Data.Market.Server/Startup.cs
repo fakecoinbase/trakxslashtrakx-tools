@@ -11,6 +11,7 @@ using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Hosting;
 using Microsoft.OpenApi.Models;
+using Trakx.Data.Common.Ethereum;
 using Trakx.Data.Common.Interfaces;
 using Trakx.Data.Common.Pricing;
 using Trakx.Data.Common.Sources.CoinGecko;
@@ -69,7 +70,7 @@ namespace Trakx.Data.Market.Server
             services.AddPricing();
             services.AddCoinGeckoClient();
             services.AddMessariClient();
-            services.AddWeb3Client();
+            services.AddEthereumInteraction();
             services.AddMappings();
 
             services.AddMemoryCache();

@@ -7,7 +7,6 @@ using System.Reflection;
 using System.Threading.Tasks;
 using Trakx.Contracts.Set;
 using Trakx.Data.Common.Sources.Web3;
-using Trakx.Data.Common.Sources.Web3.Client;
 using Xunit;
 using Xunit.Abstractions;
 
@@ -17,7 +16,6 @@ namespace Trakx.Data.Tests.Tools
     {
         private ITestOutputHelper _output;
         private IServiceProvider _serviceProvider;
-        private IWeb3Client _web3Client;
         private HttpClient _httpClient;
 
         public SmartContractAbiAndBinDownloader(ITestOutputHelper output)
@@ -25,17 +23,15 @@ namespace Trakx.Data.Tests.Tools
             _output = output;
             var serviceCollection = new ServiceCollection();
 
-            serviceCollection.AddWeb3Client(ApiKeys.Infura);
             serviceCollection.AddHttpClient();
 
             _serviceProvider = serviceCollection.BuildServiceProvider();
 
-            _web3Client = _serviceProvider.GetRequiredService<IWeb3Client>();
             _httpClient = _serviceProvider.GetService<IHttpClientFactory>().CreateClient();
             _httpClient.BaseAddress = new Uri(@"https://etherscan.io/address/");
         }
 
-        [Fact(Skip = "Use this to generate retrieve ABI and BIN files of verified smart contract from etherscan.io")]
+        [Fact(Skip = "not a test")]
         public async Task GenerateSetBinAndAbiFiles()
         {
             var projectDirectory = new FileInfo(Assembly.GetExecutingAssembly().Location).Directory.Parent.Parent.Parent;

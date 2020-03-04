@@ -6,11 +6,11 @@ using System.Threading.Tasks;
 using FluentAssertions;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
+using Trakx.Data.Common.Ethereum;
 using Trakx.Data.Common.Sources.Coinbase;
 using Trakx.Data.Common.Sources.CoinGecko;
 using Trakx.Data.Common.Sources.Messari.Client;
 using Trakx.Data.Common.Sources.Messari.DTOs;
-using Trakx.Data.Common.Sources.Web3;
 using Trakx.Data.Common.Sources.Web3.Client;
 using Xunit;
 using Xunit.Abstractions;
@@ -48,7 +48,7 @@ namespace Trakx.Data.Tests.Tools
             serviceCollection.AddCoinbaseClient();
             serviceCollection.AddCoinGeckoClient();
             serviceCollection.AddMemoryCache();
-            serviceCollection.AddWeb3Client(ApiKeys.Infura);
+            serviceCollection.AddEthereumInteraction();
 
             _serviceProvider = serviceCollection.BuildServiceProvider();
             var conf = _serviceProvider.GetService<IConfiguration>();

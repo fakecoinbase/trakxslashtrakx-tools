@@ -4,33 +4,34 @@ using System.Numerics;
 using Nethereum.RPC.Eth.DTOs;
 using Nethereum.Contracts.ContractHandlers;
 using System.Threading;
+using Nethereum.Web3;
 using Trakx.Contracts.Set.Core.ContractDefinition;
 
 namespace Trakx.Contracts.Set.Core
 {
-    public partial class CoreService
+    public partial class CoreService : ICoreService
     {
-        public static Task<TransactionReceipt> DeployContractAndWaitForReceiptAsync(Nethereum.Web3.Web3 web3, CoreDeployment coreDeployment, CancellationTokenSource cancellationTokenSource = null)
+        public static Task<TransactionReceipt> DeployContractAndWaitForReceiptAsync(IWeb3 web3, CoreDeployment coreDeployment, CancellationTokenSource cancellationTokenSource = null)
         {
             return web3.Eth.GetContractDeploymentHandler<CoreDeployment>().SendRequestAndWaitForReceiptAsync(coreDeployment, cancellationTokenSource);
         }
 
-        public static Task<string> DeployContractAsync(Nethereum.Web3.Web3 web3, CoreDeployment coreDeployment)
+        public static Task<string> DeployContractAsync(IWeb3 web3, CoreDeployment coreDeployment)
         {
             return web3.Eth.GetContractDeploymentHandler<CoreDeployment>().SendRequestAsync(coreDeployment);
         }
 
-        public static async Task<CoreService> DeployContractAndGetServiceAsync(Nethereum.Web3.Web3 web3, CoreDeployment coreDeployment, CancellationTokenSource cancellationTokenSource = null)
+        public static async Task<CoreService> DeployContractAndGetServiceAsync(IWeb3 web3, CoreDeployment coreDeployment, CancellationTokenSource cancellationTokenSource = null)
         {
             var receipt = await DeployContractAndWaitForReceiptAsync(web3, coreDeployment, cancellationTokenSource);
             return new CoreService(web3, receipt.ContractAddress);
         }
 
-        protected Nethereum.Web3.Web3 Web3{ get; }
+        protected IWeb3 Web3{ get; }
 
         public ContractHandler ContractHandler { get; }
 
-        public CoreService(Nethereum.Web3.Web3 web3, string contractAddress)
+        public CoreService(IWeb3 web3, string contractAddress)
         {
             Web3 = web3;
             ContractHandler = web3.Eth.GetContractHandler(contractAddress);
@@ -72,7 +73,6 @@ namespace Trakx.Contracts.Set.Core
         {
             return ContractHandler.QueryAsync<ValidFactoriesFunction, bool>(validFactoriesFunction, blockParameter);
         }
-
         
         public Task<bool> ValidFactoriesQueryAsync(string factory, BlockParameter blockParameter = null)
         {
