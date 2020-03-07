@@ -1,4 +1,7 @@
-﻿using Microsoft.AspNetCore.Mvc;
+﻿using System;
+using System.Diagnostics;
+using System.Threading;
+using Microsoft.AspNetCore.Mvc;
 using Microsoft.Extensions.Logging;
 using System.Threading.Tasks;
 using Trakx.Data.Common.Interfaces;
@@ -33,20 +36,30 @@ namespace Trakx.Data.Market.Server.Controllers
         /// <summary>
         /// Returns the USDc Net Asset Value of a given index.
         /// </summary>
-        /// <param name="indexSymbol">The symbol for the index on which data is requested.</param>
+        /// <param name="indexOrCompositionSymbol">The symbol for the index on which data is requested.</param>
+        /// <param name="compositionAsOf">DateTime as of which the composition of the index is retrieved.</param>
         /// <param name="maxRandomVariation">
         /// [DEVELOPMENT ONLY] Adds a random variation to the NAV.
         /// This was created to allow trading to happen by getting different hummingbots to get slightly dissimilar prices.</param>
+        /// <param name="cancellationToken">Token used to cancel the query.</param>
         /// <returns></returns>
         [HttpGet]
-        public async Task<ActionResult<string>> GetUsdNetAssetValue([FromQuery] string indexSymbol, [FromQuery]decimal maxRandomVariation = 0)
+        public async Task<ActionResult<string>> GetUsdNetAssetValue([FromQuery] string indexOrCompositionSymbol, 
+            [FromQuery]DateTime? compositionAsOf = default,
+            [FromQuery]decimal maxRandomVariation = 0,
+            CancellationToken cancellationToken = default)
         {
-            var currentComposition = await _indexProvider.GetCurrentComposition(indexSymbol);
+            compositionAsOf ??= DateTime.UtcNow;
+            var composition = indexOrCompositionSymbol.IsCompositionSymbol()
+                ? await _indexProvider.GetCompositionFromSymbol(indexOrCompositionSymbol, cancellationToken)
+                : indexOrCompositionSymbol.IsIndexSymbol()
+                    ? await _indexProvider.GetCompositionAtDate(indexOrCompositionSymbol, compositionAsOf.Value, cancellationToken)
+                    : default;
 
-            if (currentComposition == default(IIndexDefinition))
-                return $"failed to retrieve composition for index {indexSymbol}";
+            if (composition == default)
+                return $"failed to retrieve composition for index {indexOrCompositionSymbol}";
 
-            var currentValuation = await _navCalculator.GetIndexValuation(currentComposition)
+            var currentValuation = await _navCalculator.GetIndexValuation(composition)
                 .ConfigureAwait(false);
 
             return new JsonResult(currentValuation.NetAssetValue.AddRandomVariation(maxRandomVariation));

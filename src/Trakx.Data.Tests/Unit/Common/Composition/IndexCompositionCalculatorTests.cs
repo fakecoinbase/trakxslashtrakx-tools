@@ -18,9 +18,8 @@ namespace Trakx.Data.Tests.Unit.Common.Composition
         private readonly ITestOutputHelper _output;
         private IndexDefinition _indexDefinition1;
         private IndexDefinition _indexDefinition2;
-        private IComponentWeight[] _weights;
         private IComponentDefinition[] _definitions;
-        private Dictionary<IComponentDefinition, decimal> _prices;
+        private Dictionary<IComponentDefinition, PriceAndTargetWeight> _prices;
 
         public IndexCompositionCalculatorTests(ITestOutputHelper output)
         {
@@ -34,23 +33,20 @@ namespace Trakx.Data.Tests.Unit.Common.Composition
                 new ComponentDefinition("0xa15", "comp15", "c15", "g15", 15),
             };
 
-            _weights = new IComponentWeight[]
-            {
-                new ComponentWeight(_definitions[0], 0.3m),
-                new ComponentWeight(_definitions[1], 0.1m),
-                new ComponentWeight(_definitions[2], 0.2m),
-                new ComponentWeight(_definitions[3], 0.4m),
-            };
-
-            _prices = new [] {0.001m, 50m, 3m, 0.02m}.Zip(_definitions)
+            _prices = new[] {
+                    new PriceAndTargetWeight(.001m, 0.3m),
+                    new PriceAndTargetWeight(50m, 0.1m),
+                    new PriceAndTargetWeight(3m, 0.2m),
+                    new PriceAndTargetWeight(0.02m, 0.4m)
+                }.Zip(_definitions)
                 .ToDictionary(x => x.Second, x => x.First);
 
-            _indexDefinition1 = new IndexDefinition("idx1", "dummy1", 
-                "blablabla", _weights.ToList(), 10, "0xidx",
+            _indexDefinition1 = new IndexDefinition("idx1", "dummy1",
+                "blablabla", 10, "0xidx",
                 DateTime.UtcNow);
 
             _indexDefinition2 = new IndexDefinition("idx2", "dummy2",
-                "blablabla", _weights.ToList(), 15, "0xidx",
+                "blablabla", 15, "0xidx",
                 DateTime.UtcNow);
 
         }
@@ -64,16 +60,14 @@ namespace Trakx.Data.Tests.Unit.Common.Composition
 
             foreach (var componentQuantity in quantities)
             {
-                _output.WriteLine($"price {_prices[componentQuantity.ComponentDefinition]} => " 
+                _output.WriteLine($"price {_prices[componentQuantity.ComponentDefinition]} => "
                                   + System.Text.Json.JsonSerializer.Serialize(componentQuantity));
 
-                var weight = _weights.Single(w =>
-                    w.ComponentDefinition.Address == componentQuantity.ComponentDefinition.Address).Weight;
-    
                 var valuation = new ComponentValuation(componentQuantity, "_",
-                    _prices[componentQuantity.ComponentDefinition], "_", DateTime.UtcNow);
+                    _prices[componentQuantity.ComponentDefinition].Price, "_", DateTime.UtcNow);
 
-                valuation.Value.Should().BeApproximately(TargetIndexPrice1 * weight, 1e-2m);
+                valuation.Value.Should().BeApproximately(
+                    TargetIndexPrice1 * _prices[componentQuantity.ComponentDefinition].TargetWeight, 1e-2m);
             }
         }
 
@@ -90,7 +84,7 @@ namespace Trakx.Data.Tests.Unit.Common.Composition
         private void ValidateNav(IIndexComposition composition, decimal targetIndexPrice)
         {
             var componentValuations = composition.ComponentQuantities.Select(c =>
-                (IComponentValuation) new ComponentValuation(c, "_", _prices[c.ComponentDefinition], "_", DateTime.UtcNow));
+                (IComponentValuation)new ComponentValuation(c, "_", _prices[c.ComponentDefinition].Price, "_", DateTime.UtcNow));
 
             var indexValuation = new IndexValuation(composition, componentValuations.ToList(), DateTime.UtcNow);
 

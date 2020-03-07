@@ -33,7 +33,7 @@ namespace Trakx.Data.Tests.Unit.Common.Ethereum
             return indexDefinition;
         }
 
-        public IComponentQuantity GetComponentQuantity(string address, decimal quantity, int decimals = 18)
+        public IComponentQuantity GetComponentQuantity(string address, decimal quantity, ushort decimals = 18)
         {
             var componentQuantity = Substitute.For<IComponentQuantity>();
             componentQuantity.Quantity.Returns(quantity);

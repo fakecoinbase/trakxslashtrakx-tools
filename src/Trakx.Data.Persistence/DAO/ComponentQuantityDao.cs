@@ -1,6 +1,7 @@
 ﻿using System;
 using System.ComponentModel.DataAnnotations;
 using System.ComponentModel.DataAnnotations.Schema;
+using Trakx.Data.Common.Extensions;
 using Trakx.Data.Common.Interfaces.Index;
 
 namespace Trakx.Data.Persistence.DAO
@@ -16,7 +17,7 @@ namespace Trakx.Data.Persistence.DAO
         {
             IndexCompositionDao = indexComposition;
             ComponentDefinitionDao = componentDefinition;
-            Quantity = unscaledQuantity * (decimal)Math.Pow(10, 18 - componentDefinition.Decimals - indexComposition.IndexDefinitionDao.NaturalUnit);
+            Quantity = ((decimal)unscaledQuantity).ScaleComponentQuantity(componentDefinition.Decimals, indexComposition.IndexDefinitionDao.NaturalUnit);
             UpdateId();
         }
 

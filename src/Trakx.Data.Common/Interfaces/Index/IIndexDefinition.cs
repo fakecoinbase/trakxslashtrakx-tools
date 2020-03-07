@@ -7,9 +7,8 @@ namespace Trakx.Data.Common.Interfaces.Index
     /// <summary>
     /// Represents an index with an immutable definition. Not to be confused with
     /// <see cref="IIndexComposition"/> which is an instance of the index where the
-    /// quantity for each component is assigned as a result of component valuations,
-    /// and in order to match the invariable weights encoded in the definition in
-    /// <see cref="WeightByComponent"/>.
+    /// quantity for each component is assigned as a result of component valuations
+    /// and weight redistribution.
     /// </summary>
     public interface IIndexDefinition
     {
@@ -29,11 +28,6 @@ namespace Trakx.Data.Common.Interfaces.Index
         string Description { get; }
 
         /// <summary>
-        /// Component and assigned weights.
-        /// </summary>
-        List<IComponentWeight> ComponentWeights { get; }
-
-        /// <summary>
         /// Expressed as a power of 10, it represents the minimal amount of the token
         /// representing the index that one can buy. 
         /// </summary>
@@ -49,11 +43,5 @@ namespace Trakx.Data.Common.Interfaces.Index
         /// Date at which the index was created.
         /// </summary>
         DateTime? CreationDate { get; }
-    }
-
-    public static class IndexDefinitionExtensions
-    {
-        public static List<string> GetComponentAddresses(this IIndexDefinition definition)
-            => definition.ComponentWeights.Select(c => c.ComponentDefinition.Address).ToList();
     }
 }

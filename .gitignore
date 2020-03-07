@@ -328,4 +328,4 @@ ASALocalRun/
 
 # MFractors (Xamarin productivity tool) working folder 
 .mfractor/
-"src/Trakx.Data.Tests/Tools/Secrets.cs" 
+/src/Trakx.Data.Tests/Tools/Secrets.cs

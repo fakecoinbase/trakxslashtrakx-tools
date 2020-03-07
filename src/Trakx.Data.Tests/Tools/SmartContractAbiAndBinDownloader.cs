@@ -6,7 +6,6 @@ using System.Net.Http;
 using System.Reflection;
 using System.Threading.Tasks;
 using Trakx.Contracts.Set;
-using Trakx.Data.Common.Sources.Web3;
 using Xunit;
 using Xunit.Abstractions;
 

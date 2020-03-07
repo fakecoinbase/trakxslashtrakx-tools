@@ -16,10 +16,6 @@ namespace Trakx.Data.Persistence.DAO
                 .ForMember(dest => dest.ComponentDefinitionDao, 
                     opt => opt.MapFrom(src => src.ComponentDefinition));
 
-            CreateMap<IndexDefinition, IndexDefinitionDao>()
-                .ForMember(dest => dest.ComponentWeightDaos, 
-                    opt => opt.MapFrom(src => src.ComponentWeights));
-
             CreateMap<ComponentQuantity, ComponentQuantityDao>()
                 .ForMember(dest => dest.ComponentDefinitionDao,
                     opt => opt.MapFrom(src => src.ComponentDefinition));

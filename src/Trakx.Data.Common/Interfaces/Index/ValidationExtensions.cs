@@ -51,35 +51,14 @@ namespace Trakx.Data.Common.Interfaces.Index
             Guard.Against.NullOrWhiteSpace(definition.Symbol, nameof(definition.Symbol));
             Guard.Against.NullOrWhiteSpace(definition.Description, nameof(definition.Description));
             Guard.Against.OutOfRange(definition.NaturalUnit, nameof(definition.NaturalUnit), 0, 50);
-            Guard.Against.Default(definition.ComponentWeights, nameof(definition.ComponentWeights));
-            Guard.Against.Zero(definition.ComponentWeights.Count,
-                "Index needs at least one component to be defined properly.");
-
-            var summedWeights = 0m;
-            var allComponentsAreValid = true;
-
-            foreach (var component in definition.ComponentWeights)
-            {
-                allComponentsAreValid &= component.IsValid();
-                summedWeights += component.Weight;
-            }
-
-            return allComponentsAreValid && Math.Abs(summedWeights - 1m) < 1e-6m;
+            return true;
         }
 
         public static bool IsValid(this IIndexComposition composition)
         {
             Guard.Against.Default(composition, nameof(composition));
             Guard.Against.Default(composition.ComponentQuantities, nameof(composition.ComponentQuantities));
-            var definitionIsValid = composition.IndexDefinition.IsValid();
-            if (!definitionIsValid) return false;
-
-            var areAllAndOnlyDefinitionComponentsListed = 
-                composition.ComponentQuantities.Count == composition.IndexDefinition.ComponentWeights.Count
-            && !composition.IndexDefinition.GetComponentAddresses()
-                .Except(composition.ComponentQuantities.Select(c => c.ComponentDefinition.Address)).Any();
-
-            return areAllAndOnlyDefinitionComponentsListed;
+            return composition.IndexDefinition.IsValid();
         }
 
         public static bool IsValid(this IIndexValuation valuation)
@@ -95,7 +74,7 @@ namespace Trakx.Data.Common.Interfaces.Index
             if (!isCompositionValid) return false;
 
             var areAllAndOnlyCompositionComponentsValued = valuation.IndexComposition.ComponentQuantities.Count == valuation.ComponentValuations.Count
-              && !valuation.IndexComposition.IndexDefinition.GetComponentAddresses()
+              && !valuation.IndexComposition.ComponentQuantities.Select(q => q.ComponentDefinition.Address)
                   .Except(valuation.ComponentValuations.Select(c => c.ComponentQuantity.ComponentDefinition.Address)).Any();
             
             if (!areAllAndOnlyCompositionComponentsValued) return false;

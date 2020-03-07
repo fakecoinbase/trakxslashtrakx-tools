@@ -9,6 +9,7 @@ namespace Trakx.Data.Common.Interfaces
     public interface IIndexDataProvider
     {
         Task<IIndexComposition?> GetCompositionAtDate(string indexSymbol, DateTime asOfUtc, CancellationToken cancellationToken = default);
+        Task<IIndexComposition?> GetCompositionFromSymbol(string compositionSymbol, CancellationToken cancellationToken = default);
         Task<uint?> GetVersionAtDate(string indexSymbol, DateTime asOfUtc, CancellationToken cancellationToken = default);
 
         Task<IIndexComposition?> GetCurrentComposition(string indexSymbol, CancellationToken cancellationToken = default);

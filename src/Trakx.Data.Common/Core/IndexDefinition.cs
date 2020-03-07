@@ -1,5 +1,4 @@
 ﻿using System;
-using System.Collections.Generic;
 using System.Diagnostics;
 using Trakx.Data.Common.Interfaces.Index;
 
@@ -8,13 +7,11 @@ namespace Trakx.Data.Common.Core
     public class IndexDefinition : IIndexDefinition
     {
         public IndexDefinition(string symbol, string name, string description,
-            List<IComponentWeight> componentWeights, ushort naturalUnit, string address,
-            DateTime? creationDate)
+            ushort naturalUnit, string address, DateTime? creationDate)
         {
             Symbol = symbol;
             Name = name;
             Description = description;
-            ComponentWeights = componentWeights;
             NaturalUnit = naturalUnit;
             Address = address;
             CreationDate = creationDate;
@@ -32,10 +29,7 @@ namespace Trakx.Data.Common.Core
 
         /// <inheritdoc />
         public string Description { get; }
-
-        /// <inheritdoc />
-        public List<IComponentWeight> ComponentWeights { get; }
-
+        
         /// <inheritdoc />
         public ushort NaturalUnit { get; }
 

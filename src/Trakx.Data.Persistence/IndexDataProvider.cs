@@ -30,7 +30,7 @@ namespace Trakx.Data.Persistence
 
         /// <inheritdoc />
         public async Task<IIndexComposition?> GetCompositionAtDate(string indexSymbol, DateTime asOfUtc,
-            CancellationToken cancellationToken)
+            CancellationToken cancellationToken = default)
         {
             try
             {
@@ -53,6 +53,33 @@ namespace Trakx.Data.Persistence
             catch (Exception ex)
             {
                 _logger.LogError(ex, "Failed to retrieve composition for {0} at date {1}", indexSymbol, asOfUtc);
+                return default;
+            }
+        }
+
+        /// <inheritdoc />
+        public async Task<IIndexComposition?> GetCompositionFromSymbol(string compositionSymbol, CancellationToken cancellationToken = default)
+        {
+            try
+            {
+                var cacheKey = $"{compositionSymbol}";
+                var def = await _memoryCache.GetOrCreateAsync(cacheKey, async entry =>
+                {
+                    entry.SetSlidingExpiration(TimeSpan.FromSeconds(10));
+
+                    var composition = await RetrieveFullComposition(compositionSymbol, cancellationToken);
+
+                    entry.AbsoluteExpirationRelativeToNow = composition != null && composition.IsValid()
+                        ? TimeSpan.FromSeconds(100)
+                        : TimeSpan.FromTicks(1);
+                    return composition;
+                });
+
+                return def;
+            }
+            catch (Exception ex)
+            {
+                _logger.LogError(ex, "Failed to retrieve composition with symbol {0}", compositionSymbol);
                 return default;
             }
         }
@@ -91,8 +118,6 @@ namespace Trakx.Data.Persistence
             var compositions = _dbContext.IndexCompositions;
             var result = await compositions
                 .Include(c => c.IndexDefinitionDao)
-                //.Include(c => c.ComponentQuantityDaos)
-                //.ThenInclude(q => q.ComponentDefinitionDao)
                 .Where(c => c.IndexDefinitionDao.Symbol == indexSymbol)
                 .OrderByDescending(c => c.CreationDate)
                 .AsNoTracking()
@@ -113,23 +138,13 @@ namespace Trakx.Data.Persistence
         }
 
         /// <inheritdoc />
-        /// <remarks>Obviously too much nesting here</remarks>
         public async Task<IIndexValuation> GetInitialValuation(IIndexComposition composition, 
             string quoteCurrency = Constants.DefaultQuoteCurrency,
             CancellationToken cancellationToken = default)
         {
             var issueDate = composition.CreationDate;
             var valuation = await _dbContext.IndexValuations
-                .Include(i => i.ComponentValuationDaos)
-                    .ThenInclude(v => v.ComponentQuantityDao)
-                        .ThenInclude(q => q.ComponentDefinitionDao)
-                .Include(i => i.IndexCompositionDao)
-                    .ThenInclude(c => c.ComponentQuantityDaos)
-                        .ThenInclude(q => q.ComponentDefinitionDao)
-                .Include(i => i.IndexCompositionDao)
-                    .ThenInclude(c => c.IndexDefinitionDao)
-                        .ThenInclude(d => d.ComponentWeightDaos)
-                            .ThenInclude(c => c.ComponentDefinitionDao)
+                .IncludeAllLinkedEntities()
                 .Where(c => c.IndexCompositionDao.Id == $"{composition.IndexDefinition.Symbol}|{composition.Version}"
                                       && c.QuoteCurrency == quoteCurrency
                                       && c.TimeStamp == issueDate)
@@ -142,14 +157,22 @@ namespace Trakx.Data.Persistence
             CancellationToken cancellationToken = default)
         {
             var composition = await _dbContext.IndexCompositions
-                .Include(c => c.ComponentQuantityDaos)
-                .ThenInclude(c => c.ComponentDefinitionDao)
-                .Include(c => c.IndexDefinitionDao)
-                .ThenInclude(c => c.ComponentWeightDaos)
-                .ThenInclude(w => w.ComponentDefinitionDao)
+                .IncludeAllLinkedEntities()
                 .AsNoTracking()
                 .SingleOrDefaultAsync(c => c.IndexDefinitionDao.Symbol == indexSymbol 
                                            && c.Version == version, cancellationToken);
+            return composition;
+        }
+
+        private async Task<IIndexComposition> RetrieveFullComposition(string compositionSymbol,
+            CancellationToken cancellationToken = default)
+        {
+            var composition = await _dbContext.IndexCompositions
+                .IncludeAllLinkedEntities()
+                .AsNoTracking()
+                .Where(c => c.Symbol == compositionSymbol)
+                .OrderByDescending(c => c.Version)
+                .FirstAsync(cancellationToken);
             return composition;
         }
     }

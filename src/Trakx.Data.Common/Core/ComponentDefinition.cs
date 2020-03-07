@@ -8,7 +8,7 @@ namespace Trakx.Data.Common.Core
     {
         public ComponentDefinition() { }
 
-        public ComponentDefinition(string address, string name, string symbol, string coinGeckoId, int decimals)
+        public ComponentDefinition(string address, string name, string symbol, string coinGeckoId, ushort decimals)
         {
             Address = address;
             Name = name;
@@ -31,7 +31,7 @@ namespace Trakx.Data.Common.Core
         public string Symbol { get; set; }
 
         /// <inheritdoc />
-        public int Decimals { get; set; }
+        public ushort Decimals { get; set; }
 
         /// <inheritdoc />
         public string CoinGeckoId { get; }

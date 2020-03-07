@@ -54,8 +54,8 @@ namespace Trakx.Data.Common.Ethereum
             {
                 var receipt = await _coreService.CreateSetRequestAndWaitForReceiptAsync(rebalancingFactoryAddress, 
                     new []{ initialComposition.Address }.ToList(),
-                    new[] { new BigInteger(Math.Pow(10, initialComposition.IndexDefinition.NaturalUnit)) }.ToList(),
-                    new BigInteger(Math.Pow(10, 10)),
+                    new[] { initialComposition.IndexDefinition.NaturalUnit.AsAPowerOf10() }.ToList(),
+                    ((ushort)10).AsAPowerOf10(),
                     stringTypeEncoder.EncodePacked(initialComposition.IndexDefinition.Name),
                     stringTypeEncoder.EncodePacked(initialComposition.IndexDefinition.Symbol),
                     stringTypeEncoder.EncodePacked(callData),

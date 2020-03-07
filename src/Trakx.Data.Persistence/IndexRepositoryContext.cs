@@ -16,7 +16,6 @@ namespace Trakx.Data.Persistence
         {}
 
         public DbSet<ComponentQuantityDao> ComponentQuantities { get; set; }
-        public DbSet<ComponentWeightDao> ComponentWeights { get; set; }
         public DbSet<ComponentDefinitionDao> ComponentDefinitions { get; set; }
         public DbSet<ComponentValuationDao> ComponentValuations { get; set; }
         

@@ -3,6 +3,7 @@ using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Logging;
 using System;
 using System.Collections.Generic;
+using System.Globalization;
 using System.Linq;
 using System.Runtime.CompilerServices;
 using System.Threading;
@@ -21,8 +22,6 @@ namespace Trakx.Data.Persistence.Initialisation
         private readonly IndexRepositoryContext _dbContext;
         private readonly IMapper _mapper;
         private readonly ILogger<DatabaseInitialiser> _logger;
-        private static readonly DateTime FirstOctober = new DateTime(2019, 10, 1);
-        private static readonly DateTime FirstJan = new DateTime(2020, 1, 1);
         private const string Usdc = Constants.DefaultQuoteCurrency;
 
         public DatabaseInitialiser(IndexRepositoryContext dbContext,
@@ -62,8 +61,6 @@ namespace Trakx.Data.Persistence.Initialisation
 
             await CreateIndexDefinitions(dbContext, cancellationToken);
 
-            await CreateComponentWeights(dbContext, cancellationToken);
-
             await CreateIndexCompositions(dbContext, mapper, cancellationToken);
         }
 
@@ -88,7 +85,6 @@ namespace Trakx.Data.Persistence.Initialisation
                 new ComponentDefinitionDao("0xc80c5e40220172b36adee2c951f26f2a577810c5", "Bankera", "bnk", "bankera", 8),
                 new ComponentDefinitionDao("0x1014613e2b3cbc4d575054d4982e580d9b99d7b1", "BitCapitalVendor", "bcv", "bcv", 8),
                 new ComponentDefinitionDao("0x01ff50f8b7f74e4f00580d9596cd3d0d6d6e326f", "BnkToTheFuture", "bft", "bnktothefuture", 18),
-                new ComponentDefinitionDao("0xcb97e65f07da24d46bcdd078ebebd7c6e6e3d750", "Bytom", "btm", "bytom", 8),
                 new ComponentDefinitionDao("0x26e75307fc0c021472feb8f727839531f112f317", "Crypto20", "c20", "crypto20", 18),
                 new ComponentDefinitionDao("0x177d39ac676ed1c67a2b268ad7f1e58826e5b0af", "Blox", "cdt", "blox", 18),
                 new ComponentDefinitionDao("0xba9d4199fab4f26efe3551d490e3821486f135ba", "Swissborg", "chsb", "swissborg", 8),
@@ -100,6 +96,7 @@ namespace Trakx.Data.Persistence.Initialisation
                 new ComponentDefinitionDao("0xd26114cd6EE289AccF82350c8d8487fedB8A0C07", "OmiseGo", "omg", "omisego", 18),
                 new ComponentDefinitionDao("0x9992ec3cf6a55b00978cddf2b27bc6882d88d1ec", "Polymath Network", "poly", "polymath-network", 18),
                 new ComponentDefinitionDao("0xFc2C4D8f95002C14eD0a7aA65102Cac9e5953b5E", "Rublix", "rblx", "rublix", 18),
+                new ComponentDefinitionDao("0xa31b1767e09f842ecfd4bc471fe44f830e3891aa", "Robee", "roobee", "roobee", 18),
                 new ComponentDefinitionDao("0xc011a72400e58ecd99ee497cf89e3775d4bd732f", "Synthetix Network Token", "snx", "havven", 18),
                 new ComponentDefinitionDao("0x3a92bd396aef82af98ebc0aa9030d25a23b11c6b", "Tokenbox", "tbx", "tokenbox", 18),
                 new ComponentDefinitionDao("0x4824a7b64e3966b0133f4f4ffb1b9d6beb75fff7", "TokenClub", "tct", "tokenclub", 18),
@@ -146,120 +143,48 @@ namespace Trakx.Data.Persistence.Initialisation
 
         internal static async Task CreateIndexDefinitions(IndexRepositoryContext dbCOntext, CancellationToken cancellationToken)
         {
+            var firstJan = new DateTime(2020, 1, 1);
             var indexDefinitions = new List<IndexDefinitionDao>
             {
                 new IndexDefinitionDao("l1len", "Lending",
                     "Index composed of tokens from the Messari Lending sector",
                     10,
-                    "", FirstJan),
+                    "", firstJan),
                 new IndexDefinitionDao("l1amg", "Asset Management",
                     "Index composed of tokens from the Messari Asset Management sector",
                     10,
-                    "", FirstJan),
+                    "", firstJan),
                 new IndexDefinitionDao("l1dex", "Decentralised Exchanges",
                     "Index composed of tokens from the Messari Decentralised Exchange sector",
                     10,
-                    "", FirstJan),
+                    "", firstJan),
                 new IndexDefinitionDao("l1cex", "Decentralised Exchanges",
                     "Index composed of tokens from the Messari Centralised Exchange sector",
                     10,
-                    "", FirstJan),
+                    "", firstJan),
                 new IndexDefinitionDao("l1sca", "Scalability",
                     "Index composed of tokens from the Messari Scalability sector",
                     10,
-                    "", FirstJan)
+                    "", firstJan)
             };
             await dbCOntext.AddRangeAsync(indexDefinitions, cancellationToken);
             await dbCOntext.SaveChangesAsync(cancellationToken);
         }
 
-        private static async Task CreateComponentWeights(IndexRepositoryContext dbContext, CancellationToken cancellationToken)
+        public struct CompositionData
         {
-            var indexBySymbols = (await dbContext.IndexDefinitions.ToListAsync(cancellationToken)).ToDictionary(i => i.Symbol, i => i);
-            var componentBySymbol = (await dbContext.ComponentDefinitions.ToListAsync(cancellationToken)).ToDictionary(c => c.Symbol, c => c);
-
-            var lendingWeights = new[]
+            public CompositionData(IndexDefinitionDao indexDefinition, DateTime asOf, ComponentDefinitionDao componentDefinition,
+                decimal price, decimal targetWeight)
             {
-                new ComponentWeightDao(indexBySymbols["l1len"], componentBySymbol["lnd"], 0.0487275092314901m),
-                new ComponentWeightDao(indexBySymbols["l1len"], componentBySymbol["akro"], 0.048267987428224m),
-                new ComponentWeightDao(indexBySymbols["l1len"], componentBySymbol["bcpt"], 0.0514905531675755m),
-                new ComponentWeightDao(indexBySymbols["l1len"], componentBySymbol["lba"], 0.075050561708752m),
-                new ComponentWeightDao(indexBySymbols["l1len"], componentBySymbol["lend"], 0.0865759511672131m),
-                new ComponentWeightDao(indexBySymbols["l1len"], componentBySymbol["mkr"], 0.3m),
-                new ComponentWeightDao(indexBySymbols["l1len"], componentBySymbol["nexo"], 0.164041680816541m),
-                new ComponentWeightDao(indexBySymbols["l1len"], componentBySymbol["ppt"], 0.0735535096292126m),
-                new ComponentWeightDao(indexBySymbols["l1len"], componentBySymbol["rcn"], 0.0969502811373821m),
-                new ComponentWeightDao(indexBySymbols["l1len"], componentBySymbol["salt"], 0.0553419657136083m),
-
-            };
-            await dbContext.ComponentWeights.AddRangeAsync(lendingWeights, cancellationToken);
-
-            var assetManagementWeights = new[]
-            {
-                new ComponentWeightDao(indexBySymbols["l1amg"], componentBySymbol["bnk"], 0.0283606057934474m),
-                new ComponentWeightDao(indexBySymbols["l1amg"], componentBySymbol["bcv"], 0.0166189623155937m),
-                new ComponentWeightDao(indexBySymbols["l1amg"], componentBySymbol["bft"], 0.00807837087989956m),
-                new ComponentWeightDao(indexBySymbols["l1amg"], componentBySymbol["btm"], 0.208690588791667m),
-                new ComponentWeightDao(indexBySymbols["l1amg"], componentBySymbol["c20"], 0.024586921579546m),
-                new ComponentWeightDao(indexBySymbols["l1amg"], componentBySymbol["cdt"], 0.00929594714959045m),
-                new ComponentWeightDao(indexBySymbols["l1amg"], componentBySymbol["chsb"], 0.0173546031026408m),
-                new ComponentWeightDao(indexBySymbols["l1amg"], componentBySymbol["cnd"], 0.0230162273629083m),
-                new ComponentWeightDao(indexBySymbols["l1amg"], componentBySymbol["gvt"], 0.00862752467038452m),
-                new ComponentWeightDao(indexBySymbols["l1amg"], componentBySymbol["mln"], 0.0051752367973936m),
-                new ComponentWeightDao(indexBySymbols["l1amg"], componentBySymbol["mof"], 0.153952468181762m),
-                new ComponentWeightDao(indexBySymbols["l1amg"], componentBySymbol["nmr"], 0.0556137703188981m),
-                new ComponentWeightDao(indexBySymbols["l1amg"], componentBySymbol["omg"], 0.173563437374606m),
-                new ComponentWeightDao(indexBySymbols["l1amg"], componentBySymbol["poly"], 0.0184570876599013m),
-                new ComponentWeightDao(indexBySymbols["l1amg"], componentBySymbol["rblx"], 0.00528442211290079m),
-                new ComponentWeightDao(indexBySymbols["l1amg"], componentBySymbol["snx"], 0.220877626788818m),
-                new ComponentWeightDao(indexBySymbols["l1amg"], componentBySymbol["tbx"], 0.000125557511683702m),
-                new ComponentWeightDao(indexBySymbols["l1amg"], componentBySymbol["tct"], 0.0122867081588579m),
-                new ComponentWeightDao(indexBySymbols["l1amg"], componentBySymbol["tnb"], 0.0100339334494979m),
-
-            };
-            await dbContext.ComponentWeights.AddRangeAsync(assetManagementWeights, cancellationToken);
-
-            var decentralisedExchanges = new[]
-            {
-                new ComponentWeightDao(indexBySymbols["l1dex"], componentBySymbol["ast"], 0.0151997643954643m),
-                new ComponentWeightDao(indexBySymbols["l1dex"], componentBySymbol["bnt"], 0.0637506397924764m),
-                new ComponentWeightDao(indexBySymbols["l1dex"], componentBySymbol["dgtx"], 0.108510102162468m),
-                new ComponentWeightDao(indexBySymbols["l1dex"], componentBySymbol["hot"], 0.00799719221776441m),
-                new ComponentWeightDao(indexBySymbols["l1dex"], componentBySymbol["idex"], 0.0189086366603815m),
-                new ComponentWeightDao(indexBySymbols["l1dex"], componentBySymbol["knc"], 0.106497089306184m),
-                new ComponentWeightDao(indexBySymbols["l1dex"], componentBySymbol["lrc"], 0.0726976405180716m),
-                new ComponentWeightDao(indexBySymbols["l1dex"], componentBySymbol["nec"], 0.0275884456947414m),
-                new ComponentWeightDao(indexBySymbols["l1dex"], componentBySymbol["oax"], 0.0138485110144m),
-                new ComponentWeightDao(indexBySymbols["l1dex"], componentBySymbol["xin"], 0.265001978238046m),
-                new ComponentWeightDao(indexBySymbols["l1dex"], componentBySymbol["zrx"], 0.3m),
-            };
-            await dbContext.ComponentWeights.AddRangeAsync(decentralisedExchanges, cancellationToken);
-
-            var centralisedExchanges = new[]
-            {
-                new ComponentWeightDao(indexBySymbols["l1cex"], componentBySymbol["bix"], 0.00929248780205452m),
-                new ComponentWeightDao(indexBySymbols["l1cex"], componentBySymbol["bz"], 0.014216253755328m),
-                new ComponentWeightDao(indexBySymbols["l1cex"], componentBySymbol["edo"], 0.00785614659446946m),
-                new ComponentWeightDao(indexBySymbols["l1cex"], componentBySymbol["ftt"], 0.0305091553304733m),
-                new ComponentWeightDao(indexBySymbols["l1cex"], componentBySymbol["ht"], 0.277485014341216m),
-                new ComponentWeightDao(indexBySymbols["l1cex"], componentBySymbol["kcs"], 0.0358527808450112m),
-                new ComponentWeightDao(indexBySymbols["l1cex"], componentBySymbol["leo"], 0.3m),
-                new ComponentWeightDao(indexBySymbols["l1cex"], componentBySymbol["okb"], 0.3m),
-                new ComponentWeightDao(indexBySymbols["l1cex"], componentBySymbol["qash"], 0.0116330485567578m),
-                new ComponentWeightDao(indexBySymbols["l1cex"], componentBySymbol["zb"], 0.0131551127746894m),
-            };
-            await dbContext.ComponentWeights.AddRangeAsync(centralisedExchanges, cancellationToken);
-
-            var scalability = new[]
-            {
-                new ComponentWeightDao(indexBySymbols["l1sca"], componentBySymbol["celr"], 0.268136705575649m),
-                new ComponentWeightDao(indexBySymbols["l1sca"], componentBySymbol["loom"], 0.268496511387167m),
-                new ComponentWeightDao(indexBySymbols["l1sca"], componentBySymbol["matic"], 0.3m),
-                new ComponentWeightDao(indexBySymbols["l1sca"], componentBySymbol["rdn"], 0.163366783037182m),
-            };
-            await dbContext.ComponentWeights.AddRangeAsync(scalability, cancellationToken);
-            
-            await dbContext.SaveChangesAsync(cancellationToken);
+                AsOf = asOf;
+                ComponentDefinition = componentDefinition;
+                IndexDefinition = indexDefinition;
+                PriceAndWeight = new PriceAndTargetWeight(price, targetWeight);
+            }
+            public DateTime AsOf { get; }
+            public PriceAndTargetWeight PriceAndWeight { get; }
+            public ComponentDefinitionDao ComponentDefinition { get; }
+            public IndexDefinitionDao IndexDefinition { get; }
         }
 
         private static async Task CreateIndexCompositions(IndexRepositoryContext dbContext, IMapper mapper, CancellationToken cancellationToken)
@@ -267,106 +192,159 @@ namespace Trakx.Data.Persistence.Initialisation
             var indexBySymbols = (await dbContext.IndexDefinitions.ToListAsync(cancellationToken)).ToDictionary(i => i.Symbol, i => i);
             var componentsBySymbols = (await dbContext.ComponentDefinitions.ToListAsync(cancellationToken)).ToDictionary(i => i.Symbol, i => i);
 
-            var lendingPricesByDefinitions = new Dictionary<IComponentDefinition, decimal>{
-                { componentsBySymbols["lnd"], 0.00152077889740119m },
-                { componentsBySymbols["akro"], 0.00106594967399099m },
-                { componentsBySymbols["bcpt"], 0.0199456639115704m },
-                { componentsBySymbols["lba"], 0.0198576158149738m },
-                { componentsBySymbols["lend"], 0.0162103877518573m },
-                { componentsBySymbols["mkr"], 433.309542948559m },
-                { componentsBySymbols["nexo"], 0.09443929731183m },
-                { componentsBySymbols["ppt"], 0.339213629017299m },
-                { componentsBySymbols["rcn"], 0.0448472125928383m },
-                { componentsBySymbols["salt"], 0.0503968166330671m },
-            };
-            await AddCompositionAndInitialValuations(dbContext, mapper, indexBySymbols["l1len"], lendingPricesByDefinitions, componentsBySymbols, cancellationToken);
+            var allCompositionData = new List<CompositionData>{
+                
+                #region Jan 2020
+                new CompositionData(indexBySymbols["l1amg"], DateTime.Parse("01-Jan-2020"), componentsBySymbols["bnk"], 0.00127682717125466m, 0.035840096669823m),
+                new CompositionData(indexBySymbols["l1amg"], DateTime.Parse("01-Jan-2020"), componentsBySymbols["bcv"], 0.00955292820960845m, 0.0210018509576633m),
+                new CompositionData(indexBySymbols["l1amg"], DateTime.Parse("01-Jan-2020"), componentsBySymbols["bft"], 0.0119812064436263m, 0.0102088649085619m),
+                new CompositionData(indexBySymbols["l1amg"], DateTime.Parse("01-Jan-2020"), componentsBySymbols["c20"], 0.349519615487476m, 0.0310711855960384m),
+                new CompositionData(indexBySymbols["l1amg"], DateTime.Parse("01-Jan-2020"), componentsBySymbols["cdt"], 0.00674435577567889m, 0.0117475503487258m),
+                new CompositionData(indexBySymbols["l1amg"], DateTime.Parse("01-Jan-2020"), componentsBySymbols["chsb"], 0.00952294708958006m, 0.0219315009487126m),
+                new CompositionData(indexBySymbols["l1amg"], DateTime.Parse("01-Jan-2020"), componentsBySymbols["cnd"], 0.00595943153957113m, 0.029086255056366m),
+                new CompositionData(indexBySymbols["l1amg"], DateTime.Parse("01-Jan-2020"), componentsBySymbols["gvt"], 0.950674194531802m, 0.0109028460273336m),
+                new CompositionData(indexBySymbols["l1amg"], DateTime.Parse("01-Jan-2020"), componentsBySymbols["mln"], 2.8833896725712m, 0.00654009256567668m),
+                new CompositionData(indexBySymbols["l1amg"], DateTime.Parse("01-Jan-2020"), componentsBySymbols["mof"], 1.69544454043322m, 0.194554072024338m),
+                new CompositionData(indexBySymbols["l1amg"], DateTime.Parse("01-Jan-2020"), componentsBySymbols["nmr"], 6.35947348950127m, 0.0702806886044432m),
+                new CompositionData(indexBySymbols["l1amg"], DateTime.Parse("01-Jan-2020"), componentsBySymbols["omg"], 0.604808110884946m, 0.219337006379811m),
+                new CompositionData(indexBySymbols["l1amg"], DateTime.Parse("01-Jan-2020"), componentsBySymbols["poly"], 0.0160377918288668m, 0.023324741748891m),
+                new CompositionData(indexBySymbols["l1amg"], DateTime.Parse("01-Jan-2020"), componentsBySymbols["rblx"], 0.121976877211174m, 0.00667807312544338m),
+                new CompositionData(indexBySymbols["l1amg"], DateTime.Parse("01-Jan-2020"), componentsBySymbols["snx"], 1.20176547271829m, 0.279129280734241m),
+                new CompositionData(indexBySymbols["l1amg"], DateTime.Parse("01-Jan-2020"), componentsBySymbols["tbx"], 0.00538368570118677m, 0.000158670565401182m),
+                new CompositionData(indexBySymbols["l1amg"], DateTime.Parse("01-Jan-2020"), componentsBySymbols["tct"], 0.0104193472179932m, 0.0155270593080602m),
+                new CompositionData(indexBySymbols["l1amg"], DateTime.Parse("01-Jan-2020"), componentsBySymbols["tnb"], 0.00158556400689227m, 0.0126801644304673m),
+                new CompositionData(indexBySymbols["l1cex"], DateTime.Parse("01-Jan-2020"), componentsBySymbols["bix"], 0.089493515237409m, 0.00929248780205452m),
+                new CompositionData(indexBySymbols["l1cex"], DateTime.Parse("01-Jan-2020"), componentsBySymbols["bz"], 0.173237660031493m, 0.014216253755328m),
+                new CompositionData(indexBySymbols["l1cex"], DateTime.Parse("01-Jan-2020"), componentsBySymbols["edo"], 0.18852616414119m, 0.00785614659446946m),
+                new CompositionData(indexBySymbols["l1cex"], DateTime.Parse("01-Jan-2020"), componentsBySymbols["ftt"], 2.13790281590313m, 0.0305091553304733m),
+                new CompositionData(indexBySymbols["l1cex"], DateTime.Parse("01-Jan-2020"), componentsBySymbols["ht"], 2.7370290011753m, 0.277485014341216m),
+                new CompositionData(indexBySymbols["l1cex"], DateTime.Parse("01-Jan-2020"), componentsBySymbols["kcs"], 0.905953652540513m, 0.0358527808450112m),
+                new CompositionData(indexBySymbols["l1cex"], DateTime.Parse("01-Jan-2020"), componentsBySymbols["leo"], 0.814762934840878m, 0.3m),
+                new CompositionData(indexBySymbols["l1cex"], DateTime.Parse("01-Jan-2020"), componentsBySymbols["okb"], 2.60909080011118m, 0.3m),
+                new CompositionData(indexBySymbols["l1cex"], DateTime.Parse("01-Jan-2020"), componentsBySymbols["qash"], 0.0449816356152302m, 0.0116330485567578m),
+                new CompositionData(indexBySymbols["l1cex"], DateTime.Parse("01-Jan-2020"), componentsBySymbols["zb"], 0.18506306899m, 0.0131551127746894m),
+                new CompositionData(indexBySymbols["l1dex"], DateTime.Parse("01-Jan-2020"), componentsBySymbols["ast"], 0.0177339431816429m, 0.0151997643954643m),
+                new CompositionData(indexBySymbols["l1dex"], DateTime.Parse("01-Jan-2020"), componentsBySymbols["bnt"], 0.256411484845533m, 0.0637506397924764m),
+                new CompositionData(indexBySymbols["l1dex"], DateTime.Parse("01-Jan-2020"), componentsBySymbols["dgtx"], 0.0372852878856344m, 0.108510102162468m),
+                new CompositionData(indexBySymbols["l1dex"], DateTime.Parse("01-Jan-2020"), componentsBySymbols["hot"], 0.00217223568546613m, 0.00799719221776441m),
+                new CompositionData(indexBySymbols["l1dex"], DateTime.Parse("01-Jan-2020"), componentsBySymbols["idex"], 0.00907486808710847m, 0.0189086366603815m),
+                new CompositionData(indexBySymbols["l1dex"], DateTime.Parse("01-Jan-2020"), componentsBySymbols["knc"], 0.183783456399917m, 0.106497089306184m),
+                new CompositionData(indexBySymbols["l1dex"], DateTime.Parse("01-Jan-2020"), componentsBySymbols["lrc"], 0.0215384350199587m, 0.0726976405180716m),
+                new CompositionData(indexBySymbols["l1dex"], DateTime.Parse("01-Jan-2020"), componentsBySymbols["nec"], 0.0793305206167633m, 0.0275884456947414m),
+                new CompositionData(indexBySymbols["l1dex"], DateTime.Parse("01-Jan-2020"), componentsBySymbols["oax"], 0.0494125594465681m, 0.0138485110144m),
+                new CompositionData(indexBySymbols["l1dex"], DateTime.Parse("01-Jan-2020"), componentsBySymbols["xin"], 175.122315555066m, 0.265001978238046m),
+                new CompositionData(indexBySymbols["l1dex"], DateTime.Parse("01-Jan-2020"), componentsBySymbols["zrx"], 0.180131026909712m, 0.3m),
+                new CompositionData(indexBySymbols["l1len"], DateTime.Parse("01-Jan-2020"), componentsBySymbols["lnd"], 0.00152077889740119m, 0.0487275092314901m),
+                new CompositionData(indexBySymbols["l1len"], DateTime.Parse("01-Jan-2020"), componentsBySymbols["akro"], 0.00106594967399099m, 0.048267987428224m),
+                new CompositionData(indexBySymbols["l1len"], DateTime.Parse("01-Jan-2020"), componentsBySymbols["bcpt"], 0.0199456639115704m, 0.0514905531675755m),
+                new CompositionData(indexBySymbols["l1len"], DateTime.Parse("01-Jan-2020"), componentsBySymbols["lba"], 0.0198576158149738m, 0.075050561708752m),
+                new CompositionData(indexBySymbols["l1len"], DateTime.Parse("01-Jan-2020"), componentsBySymbols["lend"], 0.0162103877518573m, 0.0865759511672131m),
+                new CompositionData(indexBySymbols["l1len"], DateTime.Parse("01-Jan-2020"), componentsBySymbols["mkr"], 433.309542948559m, 0.3m),
+                new CompositionData(indexBySymbols["l1len"], DateTime.Parse("01-Jan-2020"), componentsBySymbols["nexo"], 0.09443929731183m, 0.164041680816541m),
+                new CompositionData(indexBySymbols["l1len"], DateTime.Parse("01-Jan-2020"), componentsBySymbols["ppt"], 0.339213629017299m, 0.0735535096292126m),
+                new CompositionData(indexBySymbols["l1len"], DateTime.Parse("01-Jan-2020"), componentsBySymbols["rcn"], 0.0448472125928383m, 0.0969502811373821m),
+                new CompositionData(indexBySymbols["l1len"], DateTime.Parse("01-Jan-2020"), componentsBySymbols["salt"], 0.0503968166330671m, 0.0553419657136083m),
+                new CompositionData(indexBySymbols["l1sca"], DateTime.Parse("01-Jan-2020"), componentsBySymbols["celr"], 0.00354795542862913m, 0.268136705575649m),
+                new CompositionData(indexBySymbols["l1sca"], DateTime.Parse("01-Jan-2020"), componentsBySymbols["loom"], 0.0153843850233695m, 0.268496511387167m),
+                new CompositionData(indexBySymbols["l1sca"], DateTime.Parse("01-Jan-2020"), componentsBySymbols["matic"], 0.013721005734545m, 0.3m),
+                new CompositionData(indexBySymbols["l1sca"], DateTime.Parse("01-Jan-2020"), componentsBySymbols["rdn"], 0.114910875756317m, 0.163366783037182m),
 
-            var assetManagementValuations = new Dictionary<IComponentDefinition, decimal>{
-                { componentsBySymbols["bnk"], 0.00127682717125466m },
-                { componentsBySymbols["bcv"], 0.00955292820960845m },
-                { componentsBySymbols["bft"], 0.0119812064436263m },
-                { componentsBySymbols["btm"], 0.0654961124175985m },
-                { componentsBySymbols["c20"], 0.349519615487476m },
-                { componentsBySymbols["cdt"], 0.00674435577567889m },
-                { componentsBySymbols["chsb"], 0.00952294708958006m },
-                { componentsBySymbols["cnd"], 0.00595943153957113m },
-                { componentsBySymbols["gvt"], 0.950674194531802m },
-                { componentsBySymbols["mln"], 2.8833896725712m },
-                { componentsBySymbols["mof"], 1.69544454043322m },
-                { componentsBySymbols["nmr"], 6.35947348950127m },
-                { componentsBySymbols["omg"], 0.604808110884946m },
-                { componentsBySymbols["poly"], 0.0160377918288668m },
-                { componentsBySymbols["rblx"], 0.121976877211174m },
-                { componentsBySymbols["snx"], 1.20176547271829m },
-                { componentsBySymbols["tbx"], 0.00538368570118677m },
-                { componentsBySymbols["tct"], 0.0104193472179932m },
-                { componentsBySymbols["tnb"], 0.00158556400689227m },
-            };
-            await AddCompositionAndInitialValuations(dbContext, mapper, indexBySymbols["l1amg"], assetManagementValuations, componentsBySymbols, cancellationToken);
 
-            var decentralisedExchangesValuations = new Dictionary<IComponentDefinition, decimal>{
-                { componentsBySymbols["ast"], 0.0177339431816429m },
-                { componentsBySymbols["bnt"], 0.256411484845533m },
-                { componentsBySymbols["dgtx"], 0.0372852878856344m },
-                { componentsBySymbols["hot"], 0.00217223568546613m },
-                { componentsBySymbols["idex"], 0.00907486808710847m },
-                { componentsBySymbols["knc"], 0.183783456399917m },
-                { componentsBySymbols["lrc"], 0.0215384350199587m },
-                { componentsBySymbols["nec"], 0.0793305206167633m },
-                { componentsBySymbols["oax"], 0.0494125594465681m },
-                { componentsBySymbols["xin"], 175.122315555066m },
-                { componentsBySymbols["zrx"], 0.180131026909712m },
+                #endregion
+                 
+                #region Mar 2020
+                new CompositionData(indexBySymbols["l1amg"], DateTime.Parse("01-Mar-2020"), componentsBySymbols["bnk"], 0.00179927067940598m, 0.0128403974669602m),
+                new CompositionData(indexBySymbols["l1amg"], DateTime.Parse("01-Mar-2020"), componentsBySymbols["bcv"], 0.00652393360098039m, 0.014261232903802m),
+                new CompositionData(indexBySymbols["l1amg"], DateTime.Parse("01-Mar-2020"), componentsBySymbols["bft"], 0.0131152454045855m, 0.0111495624318539m),
+                new CompositionData(indexBySymbols["l1amg"], DateTime.Parse("01-Mar-2020"), componentsBySymbols["c20"], 0.540455014732873m, 0.0459739528567894m),
+                new CompositionData(indexBySymbols["l1amg"], DateTime.Parse("01-Mar-2020"), componentsBySymbols["cdt"], 0.0057474571339946m, 0.00996738435276207m),
+                new CompositionData(indexBySymbols["l1amg"], DateTime.Parse("01-Mar-2020"), componentsBySymbols["chsb"], 0.0220050845036541m, 0.04101454880274m),
+                new CompositionData(indexBySymbols["l1amg"], DateTime.Parse("01-Mar-2020"), componentsBySymbols["cnd"], 0.00584859187225522m, 0.0287194389247049m),
+                new CompositionData(indexBySymbols["l1amg"], DateTime.Parse("01-Mar-2020"), componentsBySymbols["gvt"], 1.01170709001647m, 0.0115107844700346m),
+                new CompositionData(indexBySymbols["l1amg"], DateTime.Parse("01-Mar-2020"), componentsBySymbols["mln"], 4.1985094120947m, 0.0100085874239956m),
+                new CompositionData(indexBySymbols["l1amg"], DateTime.Parse("01-Mar-2020"), componentsBySymbols["mof"], 0.730657583001441m, 0.129022282975743m),
+                new CompositionData(indexBySymbols["l1amg"], DateTime.Parse("01-Mar-2020"), componentsBySymbols["nmr"], 8.65344953265644m, 0.102097556671354m),
+                new CompositionData(indexBySymbols["l1amg"], DateTime.Parse("01-Mar-2020"), componentsBySymbols["omg"], 0.835872986683654m, 0.3m),
+                new CompositionData(indexBySymbols["l1amg"], DateTime.Parse("01-Mar-2020"), componentsBySymbols["poly"], 0.024806747751792m, 0.0388595872429848m),
+                new CompositionData(indexBySymbols["l1amg"], DateTime.Parse("01-Mar-2020"), componentsBySymbols["rblx"], 0.148482670829074m, 0.00819473343122873m),
+                new CompositionData(indexBySymbols["l1amg"], DateTime.Parse("01-Mar-2020"), componentsBySymbols["roobee"], 0.00335377444363906m, 0.0064739365560356m),
+                new CompositionData(indexBySymbols["l1amg"], DateTime.Parse("01-Mar-2020"), componentsBySymbols["snx"], 0.875717259624373m, 0.204721943644422m),
+                new CompositionData(indexBySymbols["l1amg"], DateTime.Parse("01-Mar-2020"), componentsBySymbols["tbx"], 0.00940074719338648m, 0.000373635944381894m),
+                new CompositionData(indexBySymbols["l1amg"], DateTime.Parse("01-Mar-2020"), componentsBySymbols["tct"], 0.00822078969971243m, 0.0122422819173487m),
+                new CompositionData(indexBySymbols["l1amg"], DateTime.Parse("01-Mar-2020"), componentsBySymbols["tnb"], 0.00157653631604079m, 0.0125681519828568m),
+                new CompositionData(indexBySymbols["l1cex"], DateTime.Parse("01-Mar-2020"), componentsBySymbols["bix"], 0.145596531807524m, 0.0171355792907843m),
+                new CompositionData(indexBySymbols["l1cex"], DateTime.Parse("01-Mar-2020"), componentsBySymbols["bz"], 0.166302026278831m, 0.0182761299655992m),
+                new CompositionData(indexBySymbols["l1cex"], DateTime.Parse("01-Mar-2020"), componentsBySymbols["edo"], 0.17774961790996m, 0.0145541186171703m),
+                new CompositionData(indexBySymbols["l1cex"], DateTime.Parse("01-Mar-2020"), componentsBySymbols["ftt"], 2.58473124840741m, 0.0316051364819033m),
+                new CompositionData(indexBySymbols["l1cex"], DateTime.Parse("01-Mar-2020"), componentsBySymbols["ht"], 4.83808171621169m, 0.296093156309471m),
+                new CompositionData(indexBySymbols["l1cex"], DateTime.Parse("01-Mar-2020"), componentsBySymbols["kcs"], 1.18220253951047m, 0.0370531129773155m),
+                new CompositionData(indexBySymbols["l1cex"], DateTime.Parse("01-Mar-2020"), componentsBySymbols["leo"], 0.958145980936401m, 0.24661621522009m),
+                new CompositionData(indexBySymbols["l1cex"], DateTime.Parse("01-Mar-2020"), componentsBySymbols["okb"], 5.83293331012433m, 0.3m),
+                new CompositionData(indexBySymbols["l1cex"], DateTime.Parse("01-Mar-2020"), componentsBySymbols["qash"], 0.0477015136106287m, 0.0172279155657657m),
+                new CompositionData(indexBySymbols["l1cex"], DateTime.Parse("01-Mar-2020"), componentsBySymbols["zb"], 0.320086927593225m, 0.0214386355718992m),
+                new CompositionData(indexBySymbols["l1dex"], DateTime.Parse("01-Mar-2020"), componentsBySymbols["ast"], 0.0194412304573582m, 0.00676533002410039m),
+                new CompositionData(indexBySymbols["l1dex"], DateTime.Parse("01-Mar-2020"), componentsBySymbols["bnt"], 0.267657854254685m, 0.0379004104610325m),
+                new CompositionData(indexBySymbols["l1dex"], DateTime.Parse("01-Mar-2020"), componentsBySymbols["dgtx"], 0.0374799919300932m, 0.0653199601275881m),
+                new CompositionData(indexBySymbols["l1dex"], DateTime.Parse("01-Mar-2020"), componentsBySymbols["hot"], 0.00225402160447076m, 0.00168001323598462m),
+                new CompositionData(indexBySymbols["l1dex"], DateTime.Parse("01-Mar-2020"), componentsBySymbols["idex"], 0.0139369686750128m, 0.0141626027644421m),
+                new CompositionData(indexBySymbols["l1dex"], DateTime.Parse("01-Mar-2020"), componentsBySymbols["knc"], 0.644178083807428m, 0.231808637119559m),
+                new CompositionData(indexBySymbols["l1dex"], DateTime.Parse("01-Mar-2020"), componentsBySymbols["lrc"], 0.0405873640470377m, 0.0934633115470443m),
+                new CompositionData(indexBySymbols["l1dex"], DateTime.Parse("01-Mar-2020"), componentsBySymbols["nec"], 0.0850702023391386m, 0.0139569409665785m),
+                new CompositionData(indexBySymbols["l1dex"], DateTime.Parse("01-Mar-2020"), componentsBySymbols["oax"], 0.0469286539476105m, 0.00487614342809933m),
+                new CompositionData(indexBySymbols["l1dex"], DateTime.Parse("01-Mar-2020"), componentsBySymbols["xin"], 246.83385038913m, 0.241312397478017m),
+                new CompositionData(indexBySymbols["l1dex"], DateTime.Parse("01-Mar-2020"), componentsBySymbols["zrx"], 0.228677970080333m, 0.288754252847552m),
+                new CompositionData(indexBySymbols["l1len"], DateTime.Parse("01-Mar-2020"), componentsBySymbols["lnd"], 0.00155359312006652m, 0.0484664099619815m),
+                new CompositionData(indexBySymbols["l1len"], DateTime.Parse("01-Mar-2020"), componentsBySymbols["akro"], 0.00252665346875605m, 0.0511204180654679m),
+                new CompositionData(indexBySymbols["l1len"], DateTime.Parse("01-Mar-2020"), componentsBySymbols["bcpt"], 0.0219315246073939m, 0.0504731748260241m),
+                new CompositionData(indexBySymbols["l1len"], DateTime.Parse("01-Mar-2020"), componentsBySymbols["lba"], 0.0187571617369506m, 0.0648896877646399m),
+                new CompositionData(indexBySymbols["l1len"], DateTime.Parse("01-Mar-2020"), componentsBySymbols["lend"], 0.0264762931461642m, 0.091218912537611m),
+                new CompositionData(indexBySymbols["l1len"], DateTime.Parse("01-Mar-2020"), componentsBySymbols["mkr"], 553.603684322521m, 0.3m),
+                new CompositionData(indexBySymbols["l1len"], DateTime.Parse("01-Mar-2020"), componentsBySymbols["nexo"], 0.154411606115267m, 0.176357800705126m),
+                new CompositionData(indexBySymbols["l1len"], DateTime.Parse("01-Mar-2020"), componentsBySymbols["ppt"], 0.427505548392617m, 0.0698816909889621m),
+                new CompositionData(indexBySymbols["l1len"], DateTime.Parse("01-Mar-2020"), componentsBySymbols["rcn"], 0.0588212835802107m, 0.091477052036923m),
+                new CompositionData(indexBySymbols["l1len"], DateTime.Parse("01-Mar-2020"), componentsBySymbols["salt"], 0.0786002649008706m, 0.0561148531132636m),
+                new CompositionData(indexBySymbols["l1sca"], DateTime.Parse("01-Mar-2020"), componentsBySymbols["celr"], 0.00331769744726571m, 0.245006056678801m),
+                new CompositionData(indexBySymbols["l1sca"], DateTime.Parse("01-Mar-2020"), componentsBySymbols["loom"], 0.0189526689318092m, 0.283327216553418m),
+                new CompositionData(indexBySymbols["l1sca"], DateTime.Parse("01-Mar-2020"), componentsBySymbols["matic"], 0.0202222588096855m, 0.3m),
+                new CompositionData(indexBySymbols["l1sca"], DateTime.Parse("01-Mar-2020"), componentsBySymbols["rdn"], 0.120808864365804m, 0.17166672676778m),
+                #endregion
             };
-            await AddCompositionAndInitialValuations(dbContext, mapper, indexBySymbols["l1dex"], decentralisedExchangesValuations, componentsBySymbols, cancellationToken);
-            
-            var centralisedExchangesValuations = new Dictionary<IComponentDefinition, decimal>{
-                { componentsBySymbols["bix"], 0.089493515237409m },
-                { componentsBySymbols["bz"], 0.173237660031493m },
-                { componentsBySymbols["edo"], 0.18852616414119m },
-                { componentsBySymbols["ftt"], 2.13790281590313m },
-                { componentsBySymbols["ht"], 2.7370290011753m },
-                { componentsBySymbols["kcs"], 0.905953652540513m },
-                { componentsBySymbols["leo"], 0.814762934840878m },
-                { componentsBySymbols["okb"], 2.60909080011118m },
-                { componentsBySymbols["qash"], 0.0449816356152302m },
-                { componentsBySymbols["zb"], 0.18506306899m },
 
-            };
-            await AddCompositionAndInitialValuations(dbContext, mapper, indexBySymbols["l1cex"], centralisedExchangesValuations, componentsBySymbols, cancellationToken);
-
-            var scalabilityValuations = new Dictionary<IComponentDefinition, decimal>{
-                { componentsBySymbols["celr"], 0.00354795542862913m },
-                { componentsBySymbols["loom"], 0.0153843850233695m },
-                { componentsBySymbols["matic"], 0.013721005734545m },
-                { componentsBySymbols["rdn"], 0.114910875756317m },
-            };
-            await AddCompositionAndInitialValuations(dbContext, mapper, indexBySymbols["l1sca"], scalabilityValuations, componentsBySymbols, cancellationToken);
+            uint version = 0;
+            foreach (var date in allCompositionData.Select(c => c.AsOf).Distinct().OrderBy(d => d))
+            {
+                version++;
+                foreach (var indexDefinition in allCompositionData.Where(c => c.AsOf == date).Select(c => c.IndexDefinition).Distinct())
+                {
+                    var compositionData = allCompositionData.Where(c => c.AsOf == date && c.IndexDefinition == indexDefinition).ToList();
+                    await AddCompositionAndInitialValuations(dbContext, mapper, date, version, indexDefinition, compositionData, cancellationToken);
+                }
+            }
 
             await dbContext.SaveChangesAsync(cancellationToken);
         }
 
         private static async Task AddCompositionAndInitialValuations(IndexRepositoryContext dbContext, IMapper mapper,
-            IndexDefinitionDao indexDefinitionDao, Dictionary<IComponentDefinition, decimal> pricesByDefinitions,
-            Dictionary<string, ComponentDefinitionDao> componentsBySymbols,
+            DateTime historicalAsOfDate, uint version, IndexDefinitionDao indexDefinitionDao, List<CompositionData> compositionData,
             CancellationToken cancellationToken)
         {
+            var priceAndTargetWeights = compositionData.ToDictionary(c => (IComponentDefinition)c.ComponentDefinition, c => c.PriceAndWeight);
             var compositions = IndexCompositionCalculator.CalculateIndexComposition(indexDefinitionDao,
-                pricesByDefinitions, 100m, 1,
-                FirstJan);
+                priceAndTargetWeights, 100m, version, historicalAsOfDate);
 
             var compositionDao = mapper.Map<IndexCompositionDao>(compositions);
             compositionDao.ComponentQuantityDaos.ForEach(q => q.LinkToIndexComposition(compositionDao));
             await dbContext.IndexCompositions.AddAsync(compositionDao, cancellationToken);
             await dbContext.SaveChangesAsync(cancellationToken);
 
-            var componentValuations = pricesByDefinitions.Select(p => new ComponentValuationDao(
-                compositionDao.ComponentQuantityDaos.Single(q => q.ComponentDefinition.Symbol == p.Key.Symbol),
-                FirstJan, Usdc, pricesByDefinitions[componentsBySymbols[p.Key.Symbol]], "coinGecko")).ToList();
+            var componentValuations = compositionData.Select(p => new ComponentValuationDao(
+                compositionDao.ComponentQuantityDaos.Single(q => q.ComponentDefinition.Symbol == p.ComponentDefinition.Symbol),
+                historicalAsOfDate, Usdc, p.PriceAndWeight.Price, "coinGecko")).ToList();
 
             await dbContext.ComponentValuations.AddRangeAsync(componentValuations, cancellationToken);
 
-            var lenValuation = new IndexValuationDao(componentValuations);
-            await dbContext.IndexValuations.AddAsync(lenValuation, cancellationToken);
+            var indexValuation = new IndexValuationDao(componentValuations);
+            await dbContext.IndexValuations.AddAsync(indexValuation, cancellationToken);
         }
-    } 
+    }
 }

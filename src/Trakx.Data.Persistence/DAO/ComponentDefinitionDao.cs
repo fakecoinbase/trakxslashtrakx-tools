@@ -8,7 +8,7 @@ namespace Trakx.Data.Persistence.DAO
     {
         public ComponentDefinitionDao() {}
 
-        public ComponentDefinitionDao(string address, string name, string symbol, string coinGeckoId, int decimals)
+        public ComponentDefinitionDao(string address, string name, string symbol, string coinGeckoId, ushort decimals)
         {
             Address = address;
             Name = name;
@@ -32,7 +32,7 @@ namespace Trakx.Data.Persistence.DAO
         public string Symbol { get; set; }
 
         /// <inheritdoc />
-        public int Decimals { get; set; }
+        public ushort Decimals { get; set; }
 
         /// <inheritdoc />
         [MaxLength(256)]

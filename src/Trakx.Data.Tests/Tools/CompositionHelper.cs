@@ -9,6 +9,7 @@ using Microsoft.Extensions.DependencyInjection;
 using Trakx.Data.Common.Ethereum;
 using Trakx.Data.Common.Sources.Coinbase;
 using Trakx.Data.Common.Sources.CoinGecko;
+using Trakx.Data.Common.Sources.Messari;
 using Trakx.Data.Common.Sources.Messari.Client;
 using Trakx.Data.Common.Sources.Messari.DTOs;
 using Trakx.Data.Common.Sources.Web3.Client;
@@ -20,6 +21,7 @@ namespace Trakx.Data.Tests.Tools
 {
     public class CompositionHelper : IDisposable
     {
+        private const string NullString = "null";
         private readonly HttpClientHandler _httpClientHandler;
         private readonly HttpClient _httpClient;
         private ITestOutputHelper _output;
@@ -37,7 +39,16 @@ namespace Trakx.Data.Tests.Tools
             {"rublix|20200101", new MarketData {MarketCap = 2_584_608m}},
             {"nectar-token|20200101", new MarketData {MarketCap = 6_833_195m}},
             {"mixin|20200101", new MarketData {MarketCap = 79_918_720m}},
+
+            {"bankera|20200301", new MarketData {MarketCap = 5_003_707m}},
+            {"swissborg|20200301", new MarketData {MarketCap = 16_065_760m}},
+            {"molecular-future|20200301", new MarketData {MarketCap = 50_620_349m}},
+            {"rublix|20200301", new MarketData {MarketCap = 3_179_674m}},
+            {"nectar-token|20200301", new MarketData {MarketCap = 6_926_546m}},
+            {"mixin|20200301", new MarketData {MarketCap = 119_758_436m}},
         };
+
+        private List<Asset> _assetsFromMessari;
 
         public CompositionHelper(ITestOutputHelper output)
         {
@@ -48,7 +59,7 @@ namespace Trakx.Data.Tests.Tools
             serviceCollection.AddCoinbaseClient();
             serviceCollection.AddCoinGeckoClient();
             serviceCollection.AddMemoryCache();
-            serviceCollection.AddEthereumInteraction();
+            serviceCollection.AddEthereumInteraction(AddYourSecretsHere.InfuraApiKey);
 
             _serviceProvider = serviceCollection.BuildServiceProvider();
             var conf = _serviceProvider.GetService<IConfiguration>();
@@ -80,6 +91,8 @@ namespace Trakx.Data.Tests.Tools
             public decimal? TargetWeight { get; set; }
             public ushort? Decimals { get; set; }
             public string? ContractAddress { get; set; }
+            public string? SectorSymbol { get; set; }
+            public DateTime HistoricalAsOfDate { get; set; }
             public bool IsErc20 => !string.IsNullOrWhiteSpace(ContractAddress)
                        && (TokenType?.Contains("ERC-20", StringComparison.InvariantCultureIgnoreCase) ?? false);
         }
@@ -87,43 +100,31 @@ namespace Trakx.Data.Tests.Tools
         [Fact]
         public async Task GetDecimals()
         {
-            var decimals =
-                await _web3Client.GetDecimalsFromContractAddress("0xc80c5e40220172b36adee2c951f26f2a577810c5");
+            var decimals = await _web3Client.GetDecimalsFromContractAddress("0xc80c5e40220172b36adee2c951f26f2a577810c5");
             decimals.Should().NotBe(0);
         }
 
         [Fact(Skip = "not a test")]
+        //[Fact]
         public async Task GetCompositionCsv()
         {
             var allAssets = await _messariClient.GetAllAssets().ConfigureAwait(false);
-            var assets = RemoveBadAssets(allAssets);
+            var historicalAsOfDate = new DateTime(2020, 01, 01);
 
-            var sectors = assets.Select(a => a?.Profile?.Sector ?? "Unknown")
-                .Distinct().OrderBy(s => s).ToList();
+            _assetsFromMessari = RemoveBadAssets(allAssets);
+            ReproduceThePastWithDodgyOverrides(_assetsFromMessari, historicalAsOfDate);
 
-            const string nullString = "null";
-            _output.WriteLine($"\"{nameof(ComponentLine.Sector)}\"," +
-                              $"\"{nameof(ComponentLine.TokenType)}\"," +
-                              $"\"{nameof(ComponentLine.CoinbaseCustody)}\"," +
-                              $"\"{nameof(ComponentLine.MessariSymbol)}\"," +
-                              $"\"{nameof(ComponentLine.CoinGeckoSymbol)}\"," +
-                              $"\"{nameof(ComponentLine.MessariName)}\"," +
-                              $"\"{nameof(ComponentLine.CoinGeckoId)}\"," +
-                              $"\"{nameof(ComponentLine.CurrentMarketCapUsd)}\"," +
-                              $"\"{nameof(ComponentLine.CoinGeckoHistoricalUsdcMarketCap)}\"," +
-                              $"\"{nameof(ComponentLine.VolumeLast24Hours)}\"," +
-                              $"\"{nameof(ComponentLine.RealVolumeLast24Hours)}\"," +
-                              $"\"{nameof(ComponentLine.CoinGeckoHistoricalUsdcVolume)}\"," +
-                              $"\"{nameof(ComponentLine.TargetWeight)}\"," +
-                              $"\"{nameof(ComponentLine.MessariCurrentUsdPrice)}\"," +
-                              $"\"{nameof(ComponentLine.CoinGeckoHistoricalUsdcPrice)}\"," +
-                              $"\"{nameof(ComponentLine.ContractAddress)}\"," +
-                              $"\"{nameof(ComponentLine.Decimals)}\"");
+            WriteHeaderRow();
 
-            foreach (var sector in sectors.Where(s => s == "Scaling"))
-            //foreach (var sector in sectors.Where(s => s == "Asset Management"))
+            await OutputComponentLinesForSectorAndDate(historicalAsOfDate);
+        }
+
+        private async Task OutputComponentLinesForSectorAndDate(DateTime historicalAsOfDate, IEnumerable<string> sectors = default)
+        {
+            sectors ??= Constants.SectorSymbolBySector.Keys;
+            foreach (var sector in Constants.SectorSymbolBySector.Keys.Intersect(sectors))
             {
-                var components = assets.Where(a =>
+                var components = _assetsFromMessari.Where(a =>
                     a.Profile?.Sector != null
                     && a.Profile.Sector.Equals(sector, StringComparison.InvariantCultureIgnoreCase));
 
@@ -133,6 +134,7 @@ namespace Trakx.Data.Tests.Tools
                 {
                     var componentSymbol = component.Symbol;
                     if (string.IsNullOrWhiteSpace(componentSymbol)
+
                         && _coinGeckoClient.TryRetrieveSymbol(component.Name, out var symbol))
                     {
                         componentSymbol = symbol.ToUpper();
@@ -144,7 +146,7 @@ namespace Trakx.Data.Tests.Tools
                     _coinGeckoClient.RetrieveContractDetailsFromCoinSymbolName(componentSymbol, component.Name,
                         out var coinGeckoId, out var coinGeckoSymbol, out var contractAddress);
                     var marketData =
-                        await _coinGeckoClient.GetMarketDataAsOfFromId(coinGeckoId, new DateTime(2020, 1, 1));
+                        await _coinGeckoClient.GetMarketDataAsOfFromId(coinGeckoId, historicalAsOfDate);
 
                     AddMarketDataOverrides(marketData);
 
@@ -156,8 +158,8 @@ namespace Trakx.Data.Tests.Tools
                     {
                         CoinbaseCustody = coinbaseCustodied,
                         CoinGeckoHistoricalUsdcPrice = marketData.Price ?? 0,
-                        CoinGeckoId = coinGeckoId ?? nullString,
-                        CoinGeckoSymbol = coinGeckoSymbol ?? nullString,
+                        CoinGeckoId = coinGeckoId ?? NullString,
+                        CoinGeckoSymbol = coinGeckoSymbol ?? NullString,
                         CoinGeckoHistoricalUsdcMarketCap = marketData.MarketCap ?? 0,
                         CoinGeckoHistoricalUsdcVolume = marketData.Volume,
                         ContractAddress = contractAddress,
@@ -165,48 +167,91 @@ namespace Trakx.Data.Tests.Tools
                         Decimals = decimals,
                         LiquidMarketCapUsd = component.Metrics?.Marketcap?.LiquidMarketcapUsd ?? 0,
                         MessariCurrentUsdPrice = component.Metrics?.MarketData?.PriceUsd ?? 0,
-                        MessariName = component.Name ?? nullString,
-                        MessariSymbol = component.Symbol?.ToLower()?.Trim() ?? nullString,
+                        MessariName = component.Name ?? NullString,
+                        MessariSymbol = component.Symbol?.ToLower()?.Trim() ?? NullString,
                         RealVolumeLast24Hours = component.Metrics?.MarketData?.RealVolumeLast24_Hours ?? 0,
                         Sector = sector,
-                        TokenType = component.Profile?.TokenDetails?.Type?.Trim() ?? nullString,
+                        TokenType = component.Profile?.TokenDetails?.Type?.Trim() ?? NullString,
                         VolumeLast24Hours = component.Metrics?.MarketData?.VolumeLast24_Hours ?? 0,
                         VolumeLast24HoursOverstatementMultiple =
                             component.Metrics?.MarketData?.VolumeLast24_HoursOverstatementMultiple ?? 0,
                         VolumeTurnoverLast24HoursPercent =
-                            component.Metrics?.Marketcap?.VolumeTurnoverLast24_HoursPercent ?? 0
+                            component.Metrics?.Marketcap?.VolumeTurnoverLast24_HoursPercent ?? 0,
+                        SectorSymbol = Constants.SectorSymbolBySector[sector],
+                        HistoricalAsOfDate = historicalAsOfDate
                     });
                 }
-                
+
                 AssignComponentWeights(componentLines, 0.3m);
 
-                foreach (var component in componentLines)
+                foreach (var component in componentLines.Where(c => c.TargetWeight != 0))
                 {
-                    _output.WriteLine($"\"{component.Sector}\"," +
-                                      $"\"{component.TokenType}\"," +
-                                      $"\"{component.CoinbaseCustody}\"," +
-                                      $"\"{component.MessariSymbol}\"," +
-                                      $"\"{component.CoinGeckoSymbol}\"," +
-                                      $"\"{component.MessariName}\"," +
-                                      $"\"{component.CoinGeckoId}\"," +
-                                      $"\"{component.CurrentMarketCapUsd}\"," +
-                                      $"\"{component.CoinGeckoHistoricalUsdcMarketCap}\"," +
-                                      $"\"{component.VolumeLast24Hours}\"," +
-                                      $"\"{component.RealVolumeLast24Hours}\"," +
-                                      $"\"{component.CoinGeckoHistoricalUsdcVolume}\"," +
-                                      $"\"{component.TargetWeight}\"," +
-                                      $"\"{component.MessariCurrentUsdPrice}\"," +
-                                      $"\"{component.CoinGeckoHistoricalUsdcPrice}\"," +
-                                      $"\"{component.ContractAddress}\"," +
-                                      $"\"{component.Decimals}\"");
+                    WriteComponentRow(component);
                 }
             }
         }
 
+        private void WriteComponentRow(ComponentLine component)
+        {
+            _output.WriteLine($"\"{component.Sector}\"," +
+                              $"\"{component.TokenType}\"," +
+                              $"\"{component.CoinbaseCustody}\"," +
+                              $"\"{component.MessariName}\"," +
+                              $"\"{component.MessariSymbol}\"," +
+                              $"\"{component.CoinGeckoSymbol}\"," +
+                              $"\"{component.CoinGeckoId}\"," +
+                              $"\"{component.CurrentMarketCapUsd}\"," +
+                              $"\"{component.CoinGeckoHistoricalUsdcMarketCap}\"," +
+                              $"\"{component.VolumeLast24Hours}\"," +
+                              $"\"{component.RealVolumeLast24Hours}\"," +
+                              $"\"{component.CoinGeckoHistoricalUsdcVolume}\"," +
+                              $"\"{component.TargetWeight}\"," +
+                              $"\"{component.MessariCurrentUsdPrice}\"," +
+                              $"\"{component.CoinGeckoHistoricalUsdcPrice}\"," +
+                              $"\"{component.ContractAddress}\"," +
+                              $"\"{component.SectorSymbol}\"," +
+                              $"\"{component.HistoricalAsOfDate:dd-MMM-yyyy}\"," +
+                              $"\"{component.Decimals}\"");
+        }
+
+        private void WriteHeaderRow()
+        {
+            _output.WriteLine($"\"{nameof(ComponentLine.Sector)}\"," +
+                              $"\"{nameof(ComponentLine.TokenType)}\"," +
+                              $"\"{nameof(ComponentLine.CoinbaseCustody)}\"," +
+                              $"\"{nameof(ComponentLine.MessariName)}\"," +
+                              $"\"{nameof(ComponentLine.MessariSymbol)}\"," +
+                              $"\"{nameof(ComponentLine.CoinGeckoSymbol)}\"," +
+                              $"\"{nameof(ComponentLine.CoinGeckoId)}\"," +
+                              $"\"{nameof(ComponentLine.CurrentMarketCapUsd)}\"," +
+                              $"\"{nameof(ComponentLine.CoinGeckoHistoricalUsdcMarketCap)}\"," +
+                              $"\"{nameof(ComponentLine.VolumeLast24Hours)}\"," +
+                              $"\"{nameof(ComponentLine.RealVolumeLast24Hours)}\"," +
+                              $"\"{nameof(ComponentLine.CoinGeckoHistoricalUsdcVolume)}\"," +
+                              $"\"{nameof(ComponentLine.TargetWeight)}\"," +
+                              $"\"{nameof(ComponentLine.MessariCurrentUsdPrice)}\"," +
+                              $"\"{nameof(ComponentLine.CoinGeckoHistoricalUsdcPrice)}\"," +
+                              $"\"{nameof(ComponentLine.ContractAddress)}\"," +
+                              $"\"{nameof(ComponentLine.SectorSymbol)}\"," +
+                              $"\"{nameof(ComponentLine.HistoricalAsOfDate)}\"," +
+                              $"\"{nameof(ComponentLine.Decimals)}\"");
+        }
+
         public List<Asset> RemoveBadAssets(List<Asset> assetsToFilter)
         {
-            var filtered = assetsToFilter.Where(a => !BadAssetNames.Contains(a?.Name?.Trim()?.ToLower())).ToList();
+            
+            var filtered = assetsToFilter.Where(a => 
+                !BadAssetNames.Contains(a?.Name?.Trim()?.ToLower())
+            ).ToList();
             return filtered;
+        }
+
+        public void ReproduceThePastWithDodgyOverrides(List<Asset> assets, DateTime historicalAsOfDate)
+        {
+            var firstJan = new DateTime(2020, 01, 01);
+            if (historicalAsOfDate > firstJan) return;
+
+            assets.RemoveAll(a => a.Name == "ROOBEE");
         }
 
         public void AddMarketDataOverrides(MarketData marketData)

@@ -7,6 +7,8 @@ dotnet ef migrations add "CreateIndexRepository" --context IndexRepositoryContex
 ```
 
 or, from package manager console
+// docker start "7c9b9d8565559d803b3fa07413c69b4aa6935b7d902179806d4aa8b26007f272"
 ```
 add-migration "CreateIndexRepository" -project Trakx.Data.Persistence -startupProject Trakx.Data.Market.Server -Context IndexRepositoryContext
+add-migration "RemoveComponentWeightsAdd" -project Trakx.Data.Persistence -startupProject Trakx.Data.Market.Server -Context IndexRepositoryContext
 ```

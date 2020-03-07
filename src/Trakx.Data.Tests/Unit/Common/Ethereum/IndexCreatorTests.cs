@@ -11,6 +11,7 @@ using NSubstitute;
 using Trakx.Contracts.Set;
 using Trakx.Contracts.Set.Core;
 using Trakx.Data.Common.Ethereum;
+using Trakx.Data.Common.Extensions;
 using Trakx.Data.Common.Interfaces.Index;
 using Xunit;
 using Xunit.Abstractions;
@@ -45,8 +46,8 @@ namespace Trakx.Data.Tests.Unit.Common.Ethereum
                 Substitute.For<ILogger<CompositionCreator>>());
             
             var expectedComponents = new []{ _indexComposition.Address }.ToList();
-            var expectedQuantities = new[] { new BigInteger(Math.Pow(10, _indexComposition.IndexDefinition.NaturalUnit)) }.ToList();
-            var expectedNaturalUnit = new BigInteger(Math.Pow(10, 10));
+            var expectedQuantities = new[] { _indexComposition.IndexDefinition.NaturalUnit.AsAPowerOf10() }.ToList();
+            var expectedNaturalUnit = ((ushort)10).AsAPowerOf10();
 
             var expectedCallData = $"0x000000000000000000000000{_accountAddress.Substring(2)}" +
                                       "0000000000000000000000000000000000000000000000000000000000000000" +

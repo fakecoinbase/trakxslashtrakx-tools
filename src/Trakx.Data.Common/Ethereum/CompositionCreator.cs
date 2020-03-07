@@ -8,6 +8,7 @@ using Microsoft.Extensions.Logging;
 using Nethereum.ABI.Encoders;
 using Trakx.Contracts.Set;
 using Trakx.Contracts.Set.Core;
+using Trakx.Data.Common.Extensions;
 using Trakx.Data.Common.Interfaces.Index;
 [assembly:InternalsVisibleTo("Trakx.Data.Tests")]
 
@@ -41,8 +42,8 @@ namespace Trakx.Data.Common.Ethereum
                 var receipt = await _coreService.CreateSetRequestAndWaitForReceiptAsync(setTokenFactoryAddress,
             composition.ComponentQuantities.Select(q => q.ComponentDefinition.Address).ToList(),
                 composition.ComponentQuantities.Select(q =>
-                    new BigInteger(q.Quantity * (decimal)Math.Pow(10, q.ComponentDefinition.Decimals + composition.IndexDefinition.NaturalUnit - 18))).ToList(),
-                    new BigInteger(Math.Pow(10, composition.IndexDefinition.NaturalUnit)),
+                    new BigInteger(q.Quantity.DescaleComponentQuantity(q.ComponentDefinition.Decimals, composition.IndexDefinition.NaturalUnit))).ToList(),
+                    composition.IndexDefinition.NaturalUnit.AsAPowerOf10(),
                     stringTypeEncoder.EncodePacked(composition.IndexDefinition.Name),
                     stringTypeEncoder.EncodePacked(composition.Symbol),
                     stringTypeEncoder.Encode("0x0"),
