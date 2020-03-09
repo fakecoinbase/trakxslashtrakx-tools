@@ -27,6 +27,46 @@ namespace Trakx.Data.Common.Pricing
 
         private readonly ILogger<NavCalculator> _logger;
 
+
+        #region Implementation of INavCalculator
+
+        /// <inheritdoc />
+        public async Task<decimal> CalculateNav(IIndexComposition index,
+            DateTime? asOf = default,
+            string quoteCurrency = Constants.DefaultQuoteCurrency)
+        {
+            var valuation = await GetIndexValuation(index, asOf, quoteCurrency)
+                .ConfigureAwait(false);
+            return valuation.NetAssetValue;
+        }
+
+        /// <inheritdoc />
+        public async Task<IIndexValuation> GetIndexValuation(IIndexComposition composition,
+            DateTime? asOf = default,
+            string quoteCurrency = Constants.DefaultQuoteCurrency)
+        {
+            var utcNow = DateTime.UtcNow;
+            asOf ??= utcNow;
+            var utcTimeStamp = asOf.Value.ToUniversalTime();
+            var getPricesTasks = composition.ComponentQuantities.Select(quantity => 
+                asOf == utcNow ? GetLatestUsdPrice(quantity) : GetUsdPriceAsOf(quantity, asOf.Value)).ToArray();
+
+            await Task.WhenAll(getPricesTasks).ConfigureAwait(false);
+            var componentValuations = composition.ComponentQuantities.Select(
+                c =>
+                {
+                    var sourcedPrice = getPricesTasks.Single(t => t.Result.Key.Equals(c.ComponentDefinition.Symbol)).Result.Value;
+                    var valuation = new ComponentValuation(c, quoteCurrency, sourcedPrice.Price, sourcedPrice.Source, asOf.Value);
+                    return (IComponentValuation)valuation;
+                }).ToList();
+
+            var indexValuation = new IndexValuation(composition, componentValuations, utcTimeStamp);
+
+            return indexValuation;
+        }
+
+        #endregion
+
         private struct SourcedPrice
         {
             public SourcedPrice(string source, decimal price)
@@ -40,7 +80,7 @@ namespace Trakx.Data.Common.Pricing
         }
 
 
-        private async Task<KeyValuePair<string, SourcedPrice>> GetUsdPrice(IComponentQuantity c)
+        private async Task<KeyValuePair<string, SourcedPrice>> GetLatestUsdPrice(IComponentQuantity c)
         {
             try
             {
@@ -54,7 +94,7 @@ namespace Trakx.Data.Common.Pricing
 
             try
             {
-                var result = await GetCoinGeckoUsdPrice(c.ComponentDefinition);
+                var result = await GetLatestCoinGeckoUsdPrice(c.ComponentDefinition);
                 if (result.Value.Price != default) return result;
             }
             catch (Exception e)
@@ -65,6 +105,21 @@ namespace Trakx.Data.Common.Pricing
             throw new FailedToRetrievePriceException($"Failed to retrieve price for component {c.ComponentDefinition.Symbol}");
         }
 
+        private async Task<KeyValuePair<string, SourcedPrice>> GetUsdPriceAsOf(IComponentQuantity quantity, DateTime asOf)
+        {
+            try
+            {
+                var result = await GetCoinGeckoUsdPriceAsOf(quantity.ComponentDefinition, asOf);
+                if (result.Value.Price != default) return result;
+            }
+            catch (Exception e)
+            {
+                _logger.LogWarning(e, "Failed to retrieve price from CoinGecko");
+            }
+            throw new FailedToRetrievePriceException($"Failed to retrieve price for component {quantity.ComponentDefinition.Symbol} as of {asOf}");
+        }
+
+
         private async Task<KeyValuePair<string, SourcedPrice>> GetMessariPrice(IComponentDefinition c)
         {
             var price = await _messariClient.GetLatestPrice(c.Symbol).ConfigureAwait(false);
@@ -73,9 +128,17 @@ namespace Trakx.Data.Common.Pricing
                 : new KeyValuePair<string, SourcedPrice>(c.Symbol, new SourcedPrice("messari", price.Value));
         }
 
-        private async Task<KeyValuePair<string, SourcedPrice>> GetCoinGeckoUsdPrice(IComponentDefinition c)
+        private async Task<KeyValuePair<string, SourcedPrice>> GetLatestCoinGeckoUsdPrice(IComponentDefinition c)
         {
             var price = await _coinGeckoClient.GetLatestPrice(c.CoinGeckoId).ConfigureAwait(false);
+            return price == default
+                ? default
+                : new KeyValuePair<string, SourcedPrice>(c.Symbol, new SourcedPrice("coinGecko", price.Value));
+        }
+
+        private async Task<KeyValuePair<string, SourcedPrice>> GetCoinGeckoUsdPriceAsOf(IComponentDefinition c, DateTime asOf)
+        {
+            var price = await _coinGeckoClient.GetPriceAsOf(c.CoinGeckoId, asOf).ConfigureAwait(false);
             return price == default
                 ? default
                 : new KeyValuePair<string, SourcedPrice>(c.Symbol, new SourcedPrice("coinGecko", price.Value));
@@ -85,41 +148,5 @@ namespace Trakx.Data.Common.Pricing
         {
             public FailedToRetrievePriceException(string message) : base(message) { }
         };
-
-        #region Implementation of INavCalculator
-
-        /// <inheritdoc />
-        public async Task<decimal> CalculateNav(IIndexComposition index,
-            DateTime? asOf = default, 
-            string quoteCurrency = Constants.DefaultQuoteCurrency)
-        {
-            var valuation = await GetIndexValuation(index, asOf, quoteCurrency)
-                .ConfigureAwait(false);
-            return valuation.NetAssetValue;
-        }
-
-        /// <inheritdoc />
-        public async Task<IIndexValuation> GetIndexValuation(IIndexComposition composition,
-            DateTime? asOf = default, 
-            string quoteCurrency = Constants.DefaultQuoteCurrency)
-        {
-            var utcTimeStamp = asOf?.ToUniversalTime() ?? DateTime.UtcNow;
-            var getPricesTasks = composition.ComponentQuantities.Select(GetUsdPrice).ToArray();
-            
-            await Task.WhenAll(getPricesTasks).ConfigureAwait(false);
-            var componentValuations = composition.ComponentQuantities.Select(
-                c =>
-                {
-                    var sourcedPrice = getPricesTasks.Single(t => t.Result.Key.Equals(c.ComponentDefinition.Symbol)).Result.Value;
-                    var valuation = new ComponentValuation(c, quoteCurrency, sourcedPrice.Price, sourcedPrice.Source, DateTime.UtcNow);
-                    return (IComponentValuation) valuation;
-                }).ToList();
-
-            var indexValuation = new IndexValuation(composition, componentValuations, utcTimeStamp);
-
-            return indexValuation;
-        }
-
-        #endregion
     }
 }

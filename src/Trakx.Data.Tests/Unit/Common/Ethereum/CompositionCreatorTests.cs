@@ -10,6 +10,7 @@ using Trakx.Contracts.Set;
 using Trakx.Contracts.Set.Core;
 using Trakx.Data.Common.Ethereum;
 using Trakx.Data.Common.Extensions;
+using Trakx.Data.Tests.Data;
 using Xunit;
 
 namespace Trakx.Data.Tests.Unit.Common.Ethereum

@@ -13,6 +13,7 @@ using Trakx.Contracts.Set.Core;
 using Trakx.Data.Common.Ethereum;
 using Trakx.Data.Common.Extensions;
 using Trakx.Data.Common.Interfaces.Index;
+using Trakx.Data.Tests.Data;
 using Xunit;
 using Xunit.Abstractions;
 
