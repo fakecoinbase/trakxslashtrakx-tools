@@ -321,9 +321,9 @@ namespace Trakx.Data.Tests.Tools
             {
                 var marketCaps = new List<decimal[]>
                 {
-                    new decimal[] {10, 10, 20, 0, 50},
-                    new decimal[] {10, 10, 10, 0, 10},
-                    new decimal[] {10, 10, 20, 0, 6, 5, 10, 10},
+                    new decimal[] {10m, 10m, 20m, 0m, 50m},
+                    new decimal[] {10m, 10m, 10m, 0m, 10m},
+                    new decimal[] {10m, 10m, 20m, 0m, 6m, 5m, 10m, 10m},
                 };
                 marketCaps.ForEach(caps =>
                 {

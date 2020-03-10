@@ -37,7 +37,9 @@ namespace Trakx.Data.Market.Server.Controllers
         /// Returns the USDc Net Asset Value of a given index.
         /// </summary>
         /// <param name="indexOrCompositionSymbol">The symbol for the index on which data is requested.</param>
-        /// <param name="compositionAsOf">DateTime as of which the composition of the index is retrieved.</param>
+        /// <param name="compositionAsOf">DateTime as of which the composition of the index is retrieved.
+        /// This is ignored if <see cref="indexOrCompositionSymbol"/> is used to specify a given composition.</param>
+        /// <param name="componentPricesAsOf">DateTime as of which the prices of the components are retrieved.</param>
         /// <param name="maxRandomVariation">
         /// [DEVELOPMENT ONLY] Adds a random variation to the NAV.
         /// This was created to allow trading to happen by getting different hummingbots to get slightly dissimilar prices.</param>
@@ -45,11 +47,12 @@ namespace Trakx.Data.Market.Server.Controllers
         /// <returns></returns>
         [HttpGet]
         public async Task<ActionResult<string>> GetUsdNetAssetValue([FromQuery] string indexOrCompositionSymbol, 
+            [FromQuery]DateTime? componentPricesAsOf = default,
             [FromQuery]DateTime? compositionAsOf = default,
             [FromQuery]decimal maxRandomVariation = 0,
             CancellationToken cancellationToken = default)
         {
-            compositionAsOf ??= DateTime.UtcNow;
+            componentPricesAsOf ??= DateTime.UtcNow;
             var composition = indexOrCompositionSymbol.IsCompositionSymbol()
                 ? await _indexProvider.GetCompositionFromSymbol(indexOrCompositionSymbol, cancellationToken)
                 : indexOrCompositionSymbol.IsIndexSymbol()
@@ -59,7 +62,7 @@ namespace Trakx.Data.Market.Server.Controllers
             if (composition == default)
                 return $"failed to retrieve composition for index {indexOrCompositionSymbol}";
 
-            var currentValuation = await _navCalculator.GetIndexValuation(composition)
+            var currentValuation = await _navCalculator.GetIndexValuation(composition, componentPricesAsOf)
                 .ConfigureAwait(false);
 
             return new JsonResult(currentValuation.NetAssetValue.AddRandomVariation(maxRandomVariation));

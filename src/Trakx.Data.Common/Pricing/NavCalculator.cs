@@ -138,7 +138,7 @@ namespace Trakx.Data.Common.Pricing
 
         private async Task<KeyValuePair<string, SourcedPrice>> GetCoinGeckoUsdPriceAsOf(IComponentDefinition c, DateTime asOf)
         {
-            var price = await _coinGeckoClient.GetPriceAsOf(c.CoinGeckoId, asOf).ConfigureAwait(false);
+            var price = await _coinGeckoClient.GetPriceAsOfFromId(c.CoinGeckoId, asOf).ConfigureAwait(false);
             return price == default
                 ? default
                 : new KeyValuePair<string, SourcedPrice>(c.Symbol, new SourcedPrice("coinGecko", price.Value));

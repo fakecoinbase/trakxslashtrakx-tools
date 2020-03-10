@@ -35,7 +35,7 @@ namespace Trakx.Data.Tests.Unit.Common.Ethereum
             _coreService = Substitute.For<ICoreService>();
 
             var mockCreator = new MockCreator();
-            _indexComposition = mockCreator.GetIndexComposition();
+            _indexComposition = mockCreator.GetIndexComposition(3);
         }
 
         [Fact]

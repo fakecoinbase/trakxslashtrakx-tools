@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.Linq;
 
 namespace Trakx.Data.Common.Interfaces.Index
 {
@@ -40,5 +41,18 @@ namespace Trakx.Data.Common.Interfaces.Index
         /// Date at which the composition was created.
         /// </summary>
         DateTime CreationDate { get; }
+    }
+
+    public static class IndexCompositionExtensions
+    {
+        public static List<string> GetComponentSymbols(this IIndexComposition composition)
+        {
+            return composition.ComponentQuantities.Select(s => s.ComponentDefinition.Symbol).ToList();
+        }
+
+        public static List<string> GetComponentCoinGeckoIds(this IIndexComposition composition)
+        {
+            return composition.ComponentQuantities.Select(s => s.ComponentDefinition.CoinGeckoId).ToList();
+        }
     }
 }

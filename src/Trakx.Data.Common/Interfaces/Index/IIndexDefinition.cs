@@ -1,6 +1,7 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Linq;
+using System.Security.Cryptography.X509Certificates;
 
 namespace Trakx.Data.Common.Interfaces.Index
 {
@@ -43,5 +44,11 @@ namespace Trakx.Data.Common.Interfaces.Index
         /// Date at which the index was created.
         /// </summary>
         DateTime? CreationDate { get; }
+    }
+
+    public static class IndexDefinitionExtensions
+    {
+        public static string GetCompositionSymbol(this IIndexDefinition indexDefinition, DateTime issueDate)
+                => $"{indexDefinition.Symbol}{issueDate:yyMM}";
     }
 }

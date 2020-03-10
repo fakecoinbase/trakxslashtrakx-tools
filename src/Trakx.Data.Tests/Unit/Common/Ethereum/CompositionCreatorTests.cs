@@ -31,7 +31,7 @@ namespace Trakx.Data.Tests.Unit.Common.Ethereum
 
             var compositionCreator = new CompositionCreator(_coreService, Substitute.For<ILogger<CompositionCreator>>());
 
-            var composition = new MockCreator().GetIndexComposition();
+            var composition = new MockCreator().GetIndexComposition(3);
 
             var expectedComponents = composition.ComponentQuantities.Select(q => q.ComponentDefinition.Address).ToList();
             var expectedQuantities = composition.ComponentQuantities.Select(q =>

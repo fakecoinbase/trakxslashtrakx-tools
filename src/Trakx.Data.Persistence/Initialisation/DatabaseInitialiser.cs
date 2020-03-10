@@ -141,7 +141,7 @@ namespace Trakx.Data.Persistence.Initialisation
             await dbContext.SaveChangesAsync(cancellationToken);
         }
 
-        internal static async Task CreateIndexDefinitions(IndexRepositoryContext dbCOntext, CancellationToken cancellationToken)
+        internal static async Task CreateIndexDefinitions(IndexRepositoryContext dbContext, CancellationToken cancellationToken)
         {
             var firstJan = new DateTime(2020, 1, 1);
             var indexDefinitions = new List<IndexDefinitionDao>
@@ -167,8 +167,8 @@ namespace Trakx.Data.Persistence.Initialisation
                     10,
                     "", firstJan)
             };
-            await dbCOntext.AddRangeAsync(indexDefinitions, cancellationToken);
-            await dbCOntext.SaveChangesAsync(cancellationToken);
+            await dbContext.AddRangeAsync(indexDefinitions, cancellationToken);
+            await dbContext.SaveChangesAsync(cancellationToken);
         }
 
         public struct CompositionData
@@ -329,8 +329,10 @@ namespace Trakx.Data.Persistence.Initialisation
             CancellationToken cancellationToken)
         {
             var priceAndTargetWeights = compositionData.ToDictionary(c => (IComponentDefinition)c.ComponentDefinition, c => c.PriceAndWeight);
+            var compositionSymbol = indexDefinitionDao.GetCompositionSymbol(historicalAsOfDate);
+            var targetIndexPrice = TargetIssuePriceByCompositionSymbol.TryGetValue(compositionSymbol, out var issuePrice) ? issuePrice : 100m;
             var compositions = IndexCompositionCalculator.CalculateIndexComposition(indexDefinitionDao,
-                priceAndTargetWeights, 100m, version, historicalAsOfDate);
+                priceAndTargetWeights, targetIndexPrice, version, historicalAsOfDate);
 
             var compositionDao = mapper.Map<IndexCompositionDao>(compositions);
             compositionDao.ComponentQuantityDaos.ForEach(q => q.LinkToIndexComposition(compositionDao));
@@ -346,5 +348,15 @@ namespace Trakx.Data.Persistence.Initialisation
             var indexValuation = new IndexValuationDao(componentValuations);
             await dbContext.IndexValuations.AddAsync(indexValuation, cancellationToken);
         }
+
+        private static readonly Dictionary<string, decimal> TargetIssuePriceByCompositionSymbol =
+            new Dictionary<string, decimal>
+            {
+                {"l1amg2003", 98.97800110188538m},
+                {"l1cex2003", 166.89063577270502m},
+                {"l1dex2003", 153.70073834097101m},
+                {"l1len2003", 139.0771988505805m},
+                {"l1sca2003", 119.5404179914274m},
+            };
     }
 }

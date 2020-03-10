@@ -12,11 +12,11 @@ namespace Trakx.Data.Tests.Data
         private const string AddressChars = "abcdef01234566789";
         private const string Alphabet = "abcdefghijklmnopqrstuvwxyz";
 
-        public string GetRandomAddressEthereum() => "0x" + new string(Enumerable.Repeat(
-            Random.Next(0, AddressChars.Length), 40).Select(i => AddressChars[i]).ToArray());
+        public string GetRandomAddressEthereum() => "0x" + new string(Enumerable.Range(0, 40)
+            .Select(_ => AddressChars[Random.Next(0, AddressChars.Length)]).ToArray());
 
-        public string GetRandomString(int size) => new string(Enumerable.Repeat(
-            Random.Next(0, Alphabet.Length), size).Select(i => Alphabet[i]).ToArray());
+        public string GetRandomString(int size) => new string(Enumerable.Range(0, 40)
+            .Select(_ => Alphabet[Random.Next(0, Alphabet.Length)]).ToArray());
 
         public string GetRandomIndexSymbol(string indexShortName = default) => (Random.Next(1) < 1 ? "l" : "s")
                                                                       + Random.Next(1, 20)
@@ -30,16 +30,11 @@ namespace Trakx.Data.Tests.Data
             return $"{Random.Next(20, 36)}{Random.Next(1, 13)}";
         }
 
-        public IIndexComposition GetIndexComposition()
+        public IIndexComposition GetIndexComposition(int componentCount)
         {
-            var indexDefinition = GetRandomIndexDefinition();
-
-            var componentQuantities = new List<IComponentQuantity>
-            {
-                GetComponentQuantity(),
-                GetComponentQuantity(),
-                GetComponentQuantity(),
-            };
+            var componentQuantities = Enumerable.Range(0, componentCount)
+                .Select(i => GetComponentQuantity(symbol: $"sym{i}", coinGeckoId: $"id-{i}"))
+                .ToList();
 
             var indexComposition = Substitute.For<IIndexComposition>();
             indexComposition.ComponentQuantities.Returns(componentQuantities);
@@ -58,8 +53,8 @@ namespace Trakx.Data.Tests.Data
             indexDefinition.Symbol.Returns(indexSymbol);
             name ??= "index name " + GetRandomString(15);
             indexDefinition.Name.Returns(name);
-            name ??= "description " + GetRandomString(15);
-            indexDefinition.Description.Returns(name);
+            var description = "description " + GetRandomString(15);
+            indexDefinition.Description.Returns(description);
             return indexDefinition;
         }
 
