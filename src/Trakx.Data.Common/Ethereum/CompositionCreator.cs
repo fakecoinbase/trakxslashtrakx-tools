@@ -1,4 +1,4 @@
-﻿using System; 
+﻿using System;
 using System.Linq;
 using System.Numerics;
 using System.Runtime.CompilerServices;
@@ -10,7 +10,7 @@ using Trakx.Contracts.Set;
 using Trakx.Contracts.Set.Core;
 using Trakx.Data.Common.Extensions;
 using Trakx.Data.Common.Interfaces.Index;
-[assembly:InternalsVisibleTo("Trakx.Data.Tests")]
+[assembly: InternalsVisibleTo("Trakx.Data.Tests")]
 
 namespace Trakx.Data.Common.Ethereum
 {
@@ -39,10 +39,16 @@ namespace Trakx.Data.Common.Ethereum
 
             try
             {
+                var units = composition.ComponentQuantities.Select(q =>
+                    new BigInteger(q.Quantity
+                        .DescaleComponentQuantity(q.ComponentDefinition.Decimals, composition.IndexDefinition.NaturalUnit)))
+                    .ToList();
+
+                var addresses = composition.ComponentQuantities.Select(q => q.ComponentDefinition.Address).ToList();
+                
                 var receipt = await _coreService.CreateSetRequestAndWaitForReceiptAsync(setTokenFactoryAddress,
-            composition.ComponentQuantities.Select(q => q.ComponentDefinition.Address).ToList(),
-                composition.ComponentQuantities.Select(q =>
-                    new BigInteger(q.Quantity.DescaleComponentQuantity(q.ComponentDefinition.Decimals, composition.IndexDefinition.NaturalUnit))).ToList(),
+                    addresses,
+                    units,
                     composition.IndexDefinition.NaturalUnit.AsAPowerOf10(),
                     stringTypeEncoder.EncodePacked(composition.IndexDefinition.Name),
                     stringTypeEncoder.EncodePacked(composition.Symbol),

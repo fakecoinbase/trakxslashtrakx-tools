@@ -3,7 +3,6 @@ using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Logging;
 using System;
 using System.Collections.Generic;
-using System.Globalization;
 using System.Linq;
 using System.Runtime.CompilerServices;
 using System.Threading;
@@ -148,23 +147,23 @@ namespace Trakx.Data.Persistence.Initialisation
             {
                 new IndexDefinitionDao("l1len", "Lending",
                     "Index composed of tokens from the Messari Lending sector",
-                    10,
+                    13,
                     "", firstJan),
                 new IndexDefinitionDao("l1amg", "Asset Management",
                     "Index composed of tokens from the Messari Asset Management sector",
-                    10,
+                    13,
                     "", firstJan),
                 new IndexDefinitionDao("l1dex", "Decentralised Exchanges",
                     "Index composed of tokens from the Messari Decentralised Exchange sector",
-                    10,
+                    13,
                     "", firstJan),
                 new IndexDefinitionDao("l1cex", "Decentralised Exchanges",
                     "Index composed of tokens from the Messari Centralised Exchange sector",
-                    10,
+                    13,
                     "", firstJan),
                 new IndexDefinitionDao("l1sca", "Scalability",
                     "Index composed of tokens from the Messari Scalability sector",
-                    10,
+                    13,
                     "", firstJan)
             };
             await dbContext.AddRangeAsync(indexDefinitions, cancellationToken);
