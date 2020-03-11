@@ -6,6 +6,7 @@ using System.Threading;
 using System.Threading.Tasks;
 using Microsoft.Extensions.Logging;
 using Nethereum.ABI.Encoders;
+using Newtonsoft.Json;
 using Trakx.Contracts.Set;
 using Trakx.Contracts.Set.Core;
 using Trakx.Data.Common.Extensions;
@@ -40,12 +41,12 @@ namespace Trakx.Data.Common.Ethereum
             try
             {
                 var units = composition.ComponentQuantities.Select(q =>
-                    new BigInteger(q.Quantity
-                        .DescaleComponentQuantity(q.ComponentDefinition.Decimals, composition.IndexDefinition.NaturalUnit)))
+                    new BigInteger(q.Quantity.DescaleComponentQuantity(
+                        q.ComponentDefinition.Decimals, composition.IndexDefinition.NaturalUnit)))
                     .ToList();
 
                 var addresses = composition.ComponentQuantities.Select(q => q.ComponentDefinition.Address).ToList();
-                
+
                 var receipt = await _coreService.CreateSetRequestAndWaitForReceiptAsync(setTokenFactoryAddress,
                     addresses,
                     units,
@@ -56,7 +57,7 @@ namespace Trakx.Data.Common.Ethereum
                     cancellationTokenSource);
                 _logger.LogInformation("Saved composition on chain with transaction {0}", receipt.TransactionHash);
 
-                return receipt.TransactionHash;
+                return receipt.Logs[0].ToString(Formatting.Indented);
             }
             catch (Exception ex)
             {

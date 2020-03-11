@@ -109,7 +109,7 @@ namespace Trakx.Data.Tests.Tools
         public async Task GetCompositionCsv()
         {
             var allAssets = await _messariClient.GetAllAssets().ConfigureAwait(false);
-            var historicalAsOfDate = new DateTime(2020, 01, 01);
+            var historicalAsOfDate = new DateTime(2020, 03, 01);
 
             _assetsFromMessari = RemoveBadAssets(allAssets);
             ReproduceThePastWithDodgyOverrides(_assetsFromMessari, historicalAsOfDate);
@@ -272,9 +272,11 @@ namespace Trakx.Data.Tests.Tools
         private static void AssignComponentWeights(List<ComponentLine> componentLines, decimal weightCap)
         {
             var erc20s = componentLines.Where(c => c.IsErc20).ToList();
-            var nonNullMarketCaps = erc20s.Count(c => c.CoinGeckoHistoricalUsdcMarketCap != 0);
+            var top10erc20sByMarketCap = erc20s.OrderByDescending(c => c.CoinGeckoHistoricalUsdcMarketCap).Take(10).ToList();
+            var minMarketCap = top10erc20sByMarketCap.Any() ? top10erc20sByMarketCap.Last().CoinGeckoHistoricalUsdcMarketCap : 0;
+            var nonNullMarketCaps = top10erc20sByMarketCap.Count(c => c.CoinGeckoHistoricalUsdcMarketCap != 0);
 
-            var totalMarketCap = erc20s.Sum(c => c.CoinGeckoHistoricalUsdcMarketCap);
+            var totalMarketCap = top10erc20sByMarketCap.Sum(c => c.CoinGeckoHistoricalUsdcMarketCap);
 
             if (nonNullMarketCaps == 0) weightCap = 0;
 
@@ -287,8 +289,8 @@ namespace Trakx.Data.Tests.Tools
             do
             {
                 var componentsAcceptingMoreWeight = componentLines.Count(c =>
-                    !c.TargetWeight.HasValue || 
-                    (c.IsErc20 && c.TargetWeight != 0 && c.TargetWeight < weightCap));
+                    !c.TargetWeight.HasValue ||
+                    c.IsErc20 && c.TargetWeight != 0 && c.TargetWeight < weightCap);
 
                 if (componentsAcceptingMoreWeight == 0) return;
                 var weightToReassign = unassigned / componentsAcceptingMoreWeight;
@@ -297,7 +299,7 @@ namespace Trakx.Data.Tests.Tools
                 {
                     if (!component.TargetWeight.HasValue)
                     {
-                        var rawWeight = component.IsErc20
+                        var rawWeight = component.IsErc20 && component.CoinGeckoHistoricalUsdcMarketCap >= minMarketCap
                             ? component.CoinGeckoHistoricalUsdcMarketCap / totalMarketCap
                             : 0;
                         component.TargetWeight = Math.Min(rawWeight, 0.3m);
@@ -321,9 +323,9 @@ namespace Trakx.Data.Tests.Tools
             {
                 var marketCaps = new List<decimal[]>
                 {
-                    new decimal[] {10m, 10m, 20m, 0m, 50m},
-                    new decimal[] {10m, 10m, 10m, 0m, 10m},
-                    new decimal[] {10m, 10m, 20m, 0m, 6m, 5m, 10m, 10m},
+                    new [] {10m, 10m, 20m, 0m, 50m},
+                    new [] {10m, 10m, 10m, 0m, 10m},
+                    new [] {10m, 10m, 20m, 0m, 6m, 5m, 10m, 10m},
                 };
                 marketCaps.ForEach(caps =>
                 {
