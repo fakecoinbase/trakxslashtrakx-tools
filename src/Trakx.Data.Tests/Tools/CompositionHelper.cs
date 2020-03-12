@@ -59,7 +59,7 @@ namespace Trakx.Data.Tests.Tools
             serviceCollection.AddCoinbaseClient();
             serviceCollection.AddCoinGeckoClient();
             serviceCollection.AddMemoryCache();
-            serviceCollection.AddEthereumInteraction(AddYourSecretsHere.InfuraApiKey);
+            serviceCollection.AddEthereumInteraction(Secrets.InfuraApiKey);
 
             _serviceProvider = serviceCollection.BuildServiceProvider();
             var conf = _serviceProvider.GetService<IConfiguration>();
