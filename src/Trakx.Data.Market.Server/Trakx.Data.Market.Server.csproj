@@ -4,6 +4,7 @@
     <TargetFramework>netcoreapp3.1</TargetFramework>
     <UserSecretsId>aspnet-Trakx.Data.Market.Server-DC5159C2-8CF7-4353-A8EC-24774AF097FE</UserSecretsId>
     <DockerDefaultTargetOS>Linux</DockerDefaultTargetOS>
+    <DockerfileFile>../Server.Dockerfile</DockerfileFile>
     <LangVersion>8</LangVersion>
     <YarnWorkingDir>$(MSBuildProjectDirectory)/wwwroot/npm-libs/</YarnWorkingDir>
     <YarnBuildCommand>install</YarnBuildCommand>
