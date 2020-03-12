@@ -7,11 +7,11 @@ RUN apt-get update -y
 RUN curl -sL https://deb.nodesource.com/setup_10.x | bash --debug
 RUN apt-get install nodejs -yq
 WORKDIR /src
-COPY ["Trakx.Data.Market.Server/Trakx.Data.Market.Server.csproj", "Trakx.Data.Market.Server/"]
+COPY ./src .
 RUN dotnet restore "Trakx.Data.Market.Server/Trakx.Data.Market.Server.csproj"
-COPY . .
+
 WORKDIR "/src/Trakx.Data.Market.Server"
-RUN dotnet build "Trakx.Data.Market.Server.csproj" -c Release -o /app/build -v d
+RUN dotnet build "Trakx.Data.Market.Server.csproj" -c Release -o /app/build
 
 FROM build AS publish
 RUN dotnet publish "Trakx.Data.Market.Server.csproj" -c Release -o /app/publish
