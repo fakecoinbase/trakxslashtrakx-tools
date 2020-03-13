@@ -308,7 +308,7 @@ namespace Trakx.Data.Persistence.Initialisation
         {
             var priceAndTargetWeights = compositionData.ToDictionary(c => (IComponentDefinition)c.ComponentDefinition, c => c.PriceAndWeight);
             var compositionSymbol = indexDefinitionDao.GetCompositionSymbol(historicalAsOfDate);
-            var targetIndexPrice = TargetIssuePriceByCompositionSymbol.TryGetValue(compositionSymbol, out var issuePrice) ? issuePrice : 100m;
+            var targetIndexPrice = GetTargetIssuePrice(compositionSymbol);
             var compositions = IndexCompositionCalculator.CalculateIndexComposition(indexDefinitionDao,
                 priceAndTargetWeights, targetIndexPrice, version, historicalAsOfDate);
 
@@ -327,14 +327,19 @@ namespace Trakx.Data.Persistence.Initialisation
             await dbContext.IndexValuations.AddAsync(indexValuation, cancellationToken);
         }
 
+        internal static decimal GetTargetIssuePrice(string compositionSymbol)
+        {
+            return TargetIssuePriceByCompositionSymbol.TryGetValue(compositionSymbol, out var issuePrice) ? issuePrice : 100m;
+        }
+
         private static readonly Dictionary<string, decimal> TargetIssuePriceByCompositionSymbol =
             new Dictionary<string, decimal>
             {
-                {"l1amg2003", 98.97800110188538m},
-                {"l1cex2003", 166.89063577270502m},
-                {"l1dex2003", 153.70073834097101m},
-                {"l1len2003", 139.0771988505805m},
-                {"l1sca2003", 119.5404179914274m},
+                {"l1amg2003", 98.86270284826423718238911375m},
+                {"l1cex2003", 166.89063577270502672090053720m},
+                {"l1dex2003", 154.09934202440407023073376839m},
+                {"l1len2003", 139.07719885058049760491362928m},
+                {"l1sca2003", 119.54041799142740614271470609m},
             };
     }
 }

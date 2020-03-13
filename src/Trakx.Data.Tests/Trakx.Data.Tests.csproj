@@ -45,10 +45,6 @@
   </ItemGroup>
 
   <ItemGroup>
-    <Folder Include="Integration\" />
-  </ItemGroup>
-
-  <ItemGroup>
     <ProjectReference Include="..\Trakx.Data.Market.Server\Trakx.Data.Market.Server.csproj" />
   </ItemGroup>
 

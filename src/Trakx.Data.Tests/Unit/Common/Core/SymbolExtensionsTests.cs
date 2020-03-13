@@ -47,6 +47,7 @@ namespace Trakx.Data.Tests.Unit.Common.Core
             "l1len2006".IsCompositionSymbol().Should().BeTrue();
             "s2amg2308".IsCompositionSymbol().Should().BeTrue();
             "s2amg2312".IsCompositionSymbol().Should().BeTrue();
+            "l9ibi3310".IsCompositionSymbol().Should().BeTrue();
         }
     }
 }
