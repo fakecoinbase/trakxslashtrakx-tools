@@ -15,19 +15,19 @@ namespace Trakx.Data.Tests.Data
         public string GetRandomAddressEthereum() => "0x" + new string(Enumerable.Range(0, 40)
             .Select(_ => AddressChars[Random.Next(0, AddressChars.Length)]).ToArray());
 
-        public string GetRandomString(int size) => new string(Enumerable.Range(0, 40)
+        public string GetRandomString(int size) => new string(Enumerable.Range(0, size)
             .Select(_ => Alphabet[Random.Next(0, Alphabet.Length)]).ToArray());
 
         public string GetRandomIndexSymbol(string indexShortName = default) => (Random.Next(1) < 1 ? "l" : "s")
                                                                       + Random.Next(1, 20)
-                                                                      + indexShortName ?? GetRandomString(3);
+                                                                      + (indexShortName ?? GetRandomString(3));
 
         public string GetRandomCompositionSymbol(string indexShortName = default)
             => GetRandomIndexSymbol(indexShortName) + GetRandomYearMonthSuffix();
 
         public string GetRandomYearMonthSuffix()
         {
-            return $"{Random.Next(20, 36)}{Random.Next(1, 13)}";
+            return $"{Random.Next(20, 36):00}{Random.Next(1, 13):00}";
         }
 
         public IIndexComposition GetIndexComposition(int componentCount)

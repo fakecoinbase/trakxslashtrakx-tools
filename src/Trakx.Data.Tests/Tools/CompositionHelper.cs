@@ -1,11 +1,11 @@
-﻿using System;
+﻿using FluentAssertions;
+using Microsoft.Extensions.Configuration;
+using Microsoft.Extensions.DependencyInjection;
+using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Net.Http;
 using System.Threading.Tasks;
-using FluentAssertions;
-using Microsoft.Extensions.Configuration;
-using Microsoft.Extensions.DependencyInjection;
 using Trakx.Data.Common.Ethereum;
 using Trakx.Data.Common.Sources.Coinbase;
 using Trakx.Data.Common.Sources.CoinGecko;

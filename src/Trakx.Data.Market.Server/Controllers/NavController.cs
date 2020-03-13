@@ -1,5 +1,4 @@
 ﻿using System;
-using System.Diagnostics;
 using System.Threading;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.Extensions.Logging;
@@ -23,14 +22,17 @@ namespace Trakx.Data.Market.Server.Controllers
         private readonly IIndexDataProvider _indexProvider;
         private readonly ILogger<NavController> _logger;
         private readonly INavCalculator _navCalculator;
+        private readonly IDateTimeProvider _dateTimeProvider;
 
         public NavController(IIndexDataProvider indexProvider, 
             INavCalculator navCalculator,
+            IDateTimeProvider dateTimeProvider,
             ILogger<NavController> logger)
         {
             _indexProvider = indexProvider;
             _logger = logger;
             _navCalculator = navCalculator;
+            _dateTimeProvider = dateTimeProvider;
         }
 
         /// <summary>
@@ -52,7 +54,12 @@ namespace Trakx.Data.Market.Server.Controllers
             [FromQuery]decimal maxRandomVariation = 0,
             CancellationToken cancellationToken = default)
         {
-            componentPricesAsOf ??= DateTime.UtcNow;
+            if(!indexOrCompositionSymbol.IsIndexSymbol() && !indexOrCompositionSymbol.IsCompositionSymbol())
+                return new JsonResult($"{indexOrCompositionSymbol} is not a valid symbol.");
+
+            var utcNow = _dateTimeProvider.UtcNow;
+            componentPricesAsOf ??= utcNow;
+            compositionAsOf ??= utcNow;
             var composition = indexOrCompositionSymbol.IsCompositionSymbol()
                 ? await _indexProvider.GetCompositionFromSymbol(indexOrCompositionSymbol, cancellationToken)
                 : indexOrCompositionSymbol.IsIndexSymbol()
@@ -60,7 +67,7 @@ namespace Trakx.Data.Market.Server.Controllers
                     : default;
 
             if (composition == default)
-                return $"failed to retrieve composition for index {indexOrCompositionSymbol}";
+                return new JsonResult($"failed to retrieve composition for index {indexOrCompositionSymbol}.");
 
             var currentValuation = await _navCalculator.GetIndexValuation(composition, componentPricesAsOf)
                 .ConfigureAwait(false);
