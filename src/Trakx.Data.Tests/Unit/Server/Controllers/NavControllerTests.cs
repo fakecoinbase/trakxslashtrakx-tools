@@ -1,10 +1,10 @@
-﻿using System;
-using System.Threading;
-using System.Threading.Tasks;
-using FluentAssertions;
+﻿using FluentAssertions;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.Extensions.Logging;
 using NSubstitute;
+using System;
+using System.Threading;
+using System.Threading.Tasks;
 using Trakx.Data.Common.Interfaces;
 using Trakx.Data.Common.Interfaces.Index;
 using Trakx.Data.Common.Interfaces.Pricing;

@@ -5,14 +5,13 @@ using Trakx.Data.Persistence.Initialisation;
 
 namespace Trakx.Data.Tests.Unit.Models
 {
-    public sealed class TestIndexRepositoryContext : IndexRepositoryContext
+    public sealed class InMemoryIndexRepositoryContext : IndexRepositoryContext
     {
-        public TestIndexRepositoryContext(IMapper mapper) : base(
+        public InMemoryIndexRepositoryContext(IMapper mapper) : base(
             new DbContextOptionsBuilder<IndexRepositoryContext>()
             .UseInMemoryDatabase(databaseName: "IndexRepository")
             .Options)
         {
-            
             var components = DatabaseInitialiser.AddKnownIndexes(this, mapper);
         }
 
@@ -22,9 +21,10 @@ namespace Trakx.Data.Tests.Unit.Models
         protected override void OnModelCreating(ModelBuilder modelBuilder)
         {
             base.OnModelCreating(modelBuilder);
-            
         }
 
         #endregion
     }
+
+
 }

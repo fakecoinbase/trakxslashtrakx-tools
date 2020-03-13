@@ -3,7 +3,7 @@ using Trakx.Data.Persistence.DAO;
 
 namespace Trakx.Data.Persistence
 {
-    public class IndexRepositoryContext : DbContext
+    public partial class IndexRepositoryContext : DbContext
     {
         /// <inheritdoc />
         public IndexRepositoryContext(DbContextOptions options) 
