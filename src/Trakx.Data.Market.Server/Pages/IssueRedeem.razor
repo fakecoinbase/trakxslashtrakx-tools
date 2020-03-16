@@ -1,0 +1,48 @@
+﻿@page "/issue-redeem"
+@using Microsoft.AspNetCore.SignalR.Client;
+@using Trakx.Data.Common.Interfaces
+@using Trakx.Data.Common.Interfaces.Index
+@inject NavigationManager NavigationManager
+@inject IIndexDataProvider IndexDataProvider
+
+<h1>Issue and Redeem indices</h1>
+
+<MatBlazor.MatList SingleSelection="true" >
+    <MatBlazor.MatListItem OnClick="IndexSymbolChanged" />
+</MatBlazor.MatList>
+
+@code {
+    private Uri _liveNavUri;
+    private HubConnection _connection;
+
+    private string _compositionSymbol = string.Empty;
+    private string _indexSymbol = string.Empty;
+
+    public List<string> IndexSymbolList { get; private set; } 
+    public IList<DateTime> CompositionDates { get; private set; }
+
+    #region Overrides of ComponentBase
+
+    /// <inheritdoc />
+    protected override async Task OnInitializedAsync()
+    {
+        await base.OnInitializedAsync();
+        IndexSymbolList = await IndexDataProvider.GetAllIndexSymbols();
+    }
+
+    #endregion
+
+    private async Task IndexSymbolChanged()
+    {
+        CompositionDates = (await IndexDataProvider.GetCompositionSymbolsFromIndex(_indexSymbol))
+            .Select(SymbolExtensions.GetDateFromCompositionSymbol)
+            .OrderByDescending(d => d)
+            .ToList();
+    }
+
+    private async Task GetCompositionComponents(string compositionSymbol)
+    {
+        await IndexDataProvider.GetCompositionFromSymbol(compositionSymbol);
+    }
+
+}

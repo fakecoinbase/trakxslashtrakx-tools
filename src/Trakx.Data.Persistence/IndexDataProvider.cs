@@ -1,4 +1,5 @@
 ﻿using System;
+using System.Collections.Generic;
 using System.Linq;
 using System.Threading;
 using System.Threading.Tasks;
@@ -26,6 +27,26 @@ namespace Trakx.Data.Persistence
             _dbContext = dbContext;
             _memoryCache = memoryCache;
             _logger = logger;
+        }
+
+        /// <inheritdoc />
+        public async Task<List<string>> GetAllIndexSymbols(CancellationToken cancellationToken = default)
+        {
+            var indexSymbols = await _dbContext.IndexDefinitions.AsNoTracking().Select(i => i.Symbol)
+                .ToListAsync(cancellationToken);
+            return indexSymbols;
+        }
+
+        /// <inheritdoc />
+        public async Task<List<string>> GetCompositionSymbolsFromIndex(string indexSymbol, CancellationToken cancellationToken = default)
+        {
+            var indexDefinition = await _dbContext.IndexDefinitions
+                .Include(i => i.IndexCompositionDaos)
+                .SingleAsync(i => i.Symbol.Equals(indexSymbol, StringComparison.InvariantCultureIgnoreCase), 
+                    cancellationToken);
+
+            var symbols = indexDefinition.IndexCompositionDaos.Select(c => c.Symbol).ToList();
+            return symbols;
         }
 
         /// <inheritdoc />
