@@ -12,19 +12,7 @@ namespace Trakx.Data.Tests.Unit.Models
             .UseInMemoryDatabase(databaseName: "IndexRepository")
             .Options)
         {
-            var components = DatabaseInitialiser.AddKnownIndexes(this, mapper);
+            DatabaseInitialiser.AddKnownIndexes(this, mapper);
         }
-
-        #region Overrides of IndexRepositoryContext
-
-        /// <inheritdoc />
-        protected override void OnModelCreating(ModelBuilder modelBuilder)
-        {
-            base.OnModelCreating(modelBuilder);
-        }
-
-        #endregion
     }
-
-
 }

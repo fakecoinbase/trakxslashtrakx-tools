@@ -239,7 +239,7 @@ namespace Trakx.Data.Persistence.Initialisation
                 new CompositionData(indexBySymbols["l1sca"], DateTime.Parse("01-Jan-2020"), componentsBySymbols["matic"], 0.013721005734545m, 0.3m),
                 new CompositionData(indexBySymbols["l1sca"], DateTime.Parse("01-Jan-2020"), componentsBySymbols["rdn"], 0.114910875756317m, 0.163366783037182m),
                 #endregion
-                 
+
                 #region Mar 2020
                 new CompositionData(indexBySymbols["l1amg"], DateTime.Parse("01-Mar-2020"), componentsBySymbols["bnk"], 0.00179927067940598m, 0.017049061090947m),
                 new CompositionData(indexBySymbols["l1amg"], DateTime.Parse("01-Mar-2020"), componentsBySymbols["bcv"], 0.00652393360098039m, 0.0185961747318891m),
@@ -302,7 +302,7 @@ namespace Trakx.Data.Persistence.Initialisation
             await dbContext.SaveChangesAsync(cancellationToken);
         }
 
-        private static async Task AddCompositionAndInitialValuations(IndexRepositoryContext dbContext, IMapper mapper,
+        internal static async Task AddCompositionAndInitialValuations(IndexRepositoryContext dbContext, IMapper mapper,
             DateTime historicalAsOfDate, uint version, IndexDefinitionDao indexDefinitionDao, List<CompositionData> compositionData,
             CancellationToken cancellationToken)
         {
