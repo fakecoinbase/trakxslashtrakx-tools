@@ -4,9 +4,7 @@ using System.Numerics;
 using System.Threading.Tasks;
 using FluentAssertions;
 using Microsoft.EntityFrameworkCore;
-using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
-using Nethereum.Web3;
 using Trakx.Data.Common.Ethereum;
 using Trakx.Data.Common.Extensions;
 using Trakx.Data.Common.Sources.Coinbase;
@@ -42,19 +40,27 @@ namespace Trakx.Data.Tests.Tools
             _serviceProvider = serviceCollection.BuildServiceProvider();
         }
 
-        [Fact(Skip = "not a test")]
-        //[Fact]
-        public async Task CreateCompositionOnChain()
+        [Theory(Skip = "not a test")]
+        //[Theory]
+        //[InlineData("l1amg2001")]
+        //[InlineData("l1cex2001")]
+        //[InlineData("l1dex2001")]
+        //[InlineData("l1len2001")]
+        //[InlineData("l1sca2001")]
+        //[InlineData("l1amg2003")]
+        //[InlineData("l1cex2003")]
+        //[InlineData("l1dex2003")]
+        //[InlineData("l1len2003")]
+        [InlineData("l1sca2003")]
+        public async Task CreateCompositionOnChain(string compositionSymbol)
         {
             var compositionCreator = _serviceProvider.GetRequiredService<ICompositionCreator>();
-
-            var symbol = "l1amg2001";
 
             var composition = await _fixture.Context
                 .IndexCompositions.Include(c => c.IndexDefinitionDao)
                 .Include(c => c.ComponentQuantityDaos)
                 .ThenInclude(q => q.ComponentDefinitionDao)
-                .FirstAsync(c => c.Symbol == symbol);
+                .FirstAsync(c => c.Symbol == compositionSymbol);
 
             OutputSetCallArguments(composition);
 
@@ -79,6 +85,27 @@ namespace Trakx.Data.Tests.Tools
             _output.WriteLine($"new BigNumber({composition.IndexDefinition.NaturalUnit.AsAPowerOf10()}),");
             _output.WriteLine($"\"{composition.IndexDefinitionDao.Name}\",");
             _output.WriteLine($"\"{composition.Symbol}\",");
+        }
+
+        [Theory(Skip = "not a test")]
+        //[Theory]
+        //[InlineData("l1amg2001")]
+        //[InlineData("l1cex2001")]
+        //[InlineData("l1dex2001")]
+        //[InlineData("l1len2001")]
+        [InlineData("l1sca2001")]
+        public async Task CreateIndexFromCompositionOnChain(string compositionSymbol)
+        {
+            var indexCreator = _serviceProvider.GetRequiredService<IIndexCreator>();
+
+            var composition = await _fixture.Context
+                .IndexCompositions.Include(c => c.IndexDefinitionDao)
+                .FirstAsync(c => c.Symbol == compositionSymbol);
+
+            var result = await indexCreator.SaveIndexOnChain(composition);
+            _output.WriteLine(result);
+
+            result.Should().NotBeNullOrEmpty();
         }
     }
 }

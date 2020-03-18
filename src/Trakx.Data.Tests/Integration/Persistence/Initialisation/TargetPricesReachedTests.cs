@@ -2,6 +2,7 @@
 using System.Linq;
 using System.Threading.Tasks;
 using FluentAssertions;
+using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.DependencyInjection;
 using Trakx.Data.Common.Interfaces.Pricing;
 using Trakx.Data.Common.Pricing;
@@ -20,7 +21,6 @@ namespace Trakx.Data.Tests.Integration.Persistence.Initialisation
     {
         private readonly InMemoryIndexRepositoryContext _dbContext;
         private readonly ITestOutputHelper _output;
-        private readonly ServiceProvider _serviceProvider;
         private readonly INavCalculator _navCalculator;
 
         public TargetPricesReachedTests(DbContextFixture fixture, ITestOutputHelper output)
@@ -36,8 +36,8 @@ namespace Trakx.Data.Tests.Integration.Persistence.Initialisation
             serviceCollection.AddMemoryCache();
             serviceCollection.AddPricing();
 
-            _serviceProvider = serviceCollection.BuildServiceProvider();
-            _navCalculator = _serviceProvider.GetRequiredService<INavCalculator>();
+            var serviceProvider = serviceCollection.BuildServiceProvider();
+            _navCalculator = serviceProvider.GetRequiredService<INavCalculator>();
 
         }
 
@@ -61,7 +61,7 @@ namespace Trakx.Data.Tests.Integration.Persistence.Initialisation
         [Fact]
         public async Task DatabaseInitialiser_should_issue_rebalancings_at_previous_composition_actual_nav()
         {
-            var compositionPairs = _dbContext.IndexCompositions.ToList().GroupBy(c => c.IndexDefinition.Symbol);
+            var compositionPairs = (await _dbContext.IndexCompositions.ToListAsync()).GroupBy(c => c.IndexDefinition.Symbol);
             foreach (var compositionPair in compositionPairs)
             {
                 var orderedCompositions = compositionPair.OrderBy(c => c.CreationDate).ToList();
@@ -76,8 +76,8 @@ namespace Trakx.Data.Tests.Integration.Persistence.Initialisation
                                   $"expected issue nav {expectedIssueNav}{Environment.NewLine}" +
                                   $"rebalance issued nav {rebalanceIssueNav}{Environment.NewLine}");
 
-                //((double)rebalanceIssueNav).Should().BeApproximately((double)expectedIssueNav, 1e-5,
-                //    "otherwise holders will have a pnl jump.");
+                ((double)rebalanceIssueNav).Should().BeApproximately((double)expectedIssueNav, 1e-5,
+                    "otherwise holders will have a pnl jump.");
             }
         }
     }

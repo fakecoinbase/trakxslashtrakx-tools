@@ -34,6 +34,7 @@ namespace Trakx.Data.Common.Ethereum
             serviceCollection.AddTransient<ICoreService, CoreService>(serviceProvider
                 => new CoreService(serviceProvider.GetService<IWeb3>(), DeployedContractAddresses.Core));
             serviceCollection.AddSingleton<ICompositionCreator, CompositionCreator>();
+            serviceCollection.AddSingleton<IIndexCreator, IndexCreator>();
             return serviceCollection;
         }
     }

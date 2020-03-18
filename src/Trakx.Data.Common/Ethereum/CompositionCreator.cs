@@ -35,7 +35,7 @@ namespace Trakx.Data.Common.Ethereum
         {
             var stringTypeEncoder = new StringTypeEncoder();
 
-            using var cancellationTokenSource = new CancellationTokenSource(TimeSpan.FromSeconds(120));
+            using var cancellationTokenSource = new CancellationTokenSource(TimeSpan.FromMinutes(5));
             _logger.LogInformation("Saving composition on chain...");
 
             try
@@ -62,7 +62,7 @@ namespace Trakx.Data.Common.Ethereum
             catch (Exception ex)
             {
                 _logger.LogError(ex, "Failed to save composition on chain.");
-                return "";
+                throw;
             }
         }
 

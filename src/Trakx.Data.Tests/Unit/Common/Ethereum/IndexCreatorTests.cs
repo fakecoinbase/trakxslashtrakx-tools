@@ -6,6 +6,7 @@ using FluentAssertions;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Logging;
 using Nethereum.ABI.Encoders;
+using Nethereum.Hex.HexConvertors.Extensions;
 using Nethereum.Web3;
 using NSubstitute;
 using Trakx.Contracts.Set;
@@ -52,7 +53,7 @@ namespace Trakx.Data.Tests.Unit.Common.Ethereum
 
             var expectedCallData = $"0x000000000000000000000000{_accountAddress.Substring(2)}" +
                                       "0000000000000000000000000000000000000000000000000000000000000000" +
-                                      "000000000000000000000000000000000000000000000000000000000024ea00";
+                                      "0000000000000000000000000000000000000000000000000000000000015180";
 
             _ = await compositionCreator.SaveIndexOnChain(_indexComposition);
 
@@ -65,7 +66,7 @@ namespace Trakx.Data.Tests.Unit.Common.Ethereum
             arguments[3].Should().BeEquivalentTo(expectedNaturalUnit);
             arguments[4].Should().BeEquivalentTo(stringTypeEncoder.EncodePacked(_indexComposition.IndexDefinition.Name));
             arguments[5].Should().BeEquivalentTo(stringTypeEncoder.EncodePacked(_indexComposition.IndexDefinition.Symbol));
-            arguments[6].Should().BeEquivalentTo(stringTypeEncoder.EncodePacked(expectedCallData));
+            arguments[6].Should().BeEquivalentTo(expectedCallData.HexToByteArray());
         }
     }
 }

@@ -21,7 +21,7 @@ namespace Trakx.Data.Tests.Unit.Models.Index
             var indexVersions = 2;
             _expectedCompositionCount = _expectedIndexCount * indexVersions;
             _expectedComponentCount = 54;
-            _expectedQuantitiesCount = 44 + 44;
+            _expectedQuantitiesCount = 52 + 53;
         }
 
         [Fact]
@@ -63,8 +63,8 @@ namespace Trakx.Data.Tests.Unit.Models.Index
         {
             var indexCompositions = _fixture.Context.IndexCompositions;
             indexCompositions.Count().Should().Be(_expectedCompositionCount);
-            indexCompositions.Where(i => i.Version == 1).Sum(i => i.ComponentQuantityDaos.Count).Should().Be(44);
-            indexCompositions.Where(i => i.Version == 2).Sum(i => i.ComponentQuantityDaos.Count).Should().Be(44);
+            indexCompositions.Where(i => i.Version == 1).Sum(i => i.ComponentQuantityDaos.Count).Should().Be(52);
+            indexCompositions.Where(i => i.Version == 2).Sum(i => i.ComponentQuantityDaos.Count).Should().Be(53);
             foreach (var indexCompositionDao in indexCompositions)
             {
                 indexCompositionDao.IsValid().Should().BeTrue();

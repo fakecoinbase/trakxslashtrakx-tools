@@ -30,7 +30,7 @@ namespace Trakx.Data.Tests.Tools
         private ICoinbaseClient _coinbaseClient;
         private ICoinGeckoClient _coinGeckoClient;
         private IWeb3Client _web3Client;
-        private static readonly List<string> BadAssetNames = new List<string>() {"uniswap", "metacartel ventures", "tari" };
+        private static readonly List<string> BadAssetNames = new List<string>() {"uniswap", "metacartel ventures", "tari", "synthetix network token" };
 
         private static readonly Dictionary<string, MarketData> MarketDataOverridesByCoinGeckoIdAndDate = new Dictionary<string, MarketData>
         {
@@ -116,7 +116,7 @@ namespace Trakx.Data.Tests.Tools
 
             WriteHeaderRow();
 
-            await OutputComponentLinesForSectorAndDate(historicalAsOfDate);
+            await OutputComponentLinesForSectorAndDate(historicalAsOfDate/*, new []{"Asset Management"}*/);
         }
 
         private async Task OutputComponentLinesForSectorAndDate(DateTime historicalAsOfDate, IEnumerable<string> sectors = default)
@@ -272,11 +272,10 @@ namespace Trakx.Data.Tests.Tools
         private static void AssignComponentWeights(List<ComponentLine> componentLines, decimal weightCap)
         {
             var erc20s = componentLines.Where(c => c.IsErc20).ToList();
-            var top10erc20sByMarketCap = erc20s.OrderByDescending(c => c.CoinGeckoHistoricalUsdcMarketCap).Take(10).ToList();
-            var minMarketCap = top10erc20sByMarketCap.Any() ? top10erc20sByMarketCap.Last().CoinGeckoHistoricalUsdcMarketCap : 0;
-            var nonNullMarketCaps = top10erc20sByMarketCap.Count(c => c.CoinGeckoHistoricalUsdcMarketCap != 0);
+            
+            var nonNullMarketCaps = erc20s.Count(c => c.CoinGeckoHistoricalUsdcMarketCap != 0);
 
-            var totalMarketCap = top10erc20sByMarketCap.Sum(c => c.CoinGeckoHistoricalUsdcMarketCap);
+            var totalMarketCap = erc20s.Sum(c => c.CoinGeckoHistoricalUsdcMarketCap);
 
             if (nonNullMarketCaps == 0) weightCap = 0;
 
@@ -299,7 +298,7 @@ namespace Trakx.Data.Tests.Tools
                 {
                     if (!component.TargetWeight.HasValue)
                     {
-                        var rawWeight = component.IsErc20 && component.CoinGeckoHistoricalUsdcMarketCap >= minMarketCap
+                        var rawWeight = component.IsErc20
                             ? component.CoinGeckoHistoricalUsdcMarketCap / totalMarketCap
                             : 0;
                         component.TargetWeight = Math.Min(rawWeight, 0.3m);

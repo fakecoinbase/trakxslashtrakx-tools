@@ -1,8 +1,6 @@
 ﻿using System;
-using System.Collections.Generic;
 using System.IO;
 using System.Linq;
-using System.Numerics;
 using System.Runtime.CompilerServices;
 using System.Threading;
 using System.Threading.Tasks;
@@ -13,6 +11,7 @@ using Nethereum.Hex.HexConvertors.Extensions;
 using Nethereum.Hex.HexTypes;
 using Nethereum.Util;
 using Nethereum.Web3;
+using Newtonsoft.Json;
 using Trakx.Contracts.Set;
 using Trakx.Contracts.Set.Core;
 using Trakx.Data.Common.Extensions;
@@ -45,9 +44,9 @@ namespace Trakx.Data.Common.Ethereum
             var stringTypeEncoder = new StringTypeEncoder();
 
             var callData = GenerateRebalancingCallData(_web3.TransactionManager.Account.Address,
-                TimeSpan.Zero, TimeSpan.FromDays(28));
+                TimeSpan.Zero, TimeSpan.FromDays(1));
 
-            var cancellationTokenSource = new CancellationTokenSource(TimeSpan.FromSeconds(120));
+            var cancellationTokenSource = new CancellationTokenSource(TimeSpan.FromMinutes(5));
             _logger.LogInformation("Saving rebalancing index on chain...");
 
             try
@@ -55,20 +54,20 @@ namespace Trakx.Data.Common.Ethereum
                 var receipt = await _coreService.CreateSetRequestAndWaitForReceiptAsync(rebalancingFactoryAddress, 
                     new []{ initialComposition.Address }.ToList(),
                     new[] { initialComposition.IndexDefinition.NaturalUnit.AsAPowerOf10() }.ToList(),
-                    ((ushort)10).AsAPowerOf10(),
+                    initialComposition.IndexDefinition.NaturalUnit.AsAPowerOf10(),
                     stringTypeEncoder.EncodePacked(initialComposition.IndexDefinition.Name),
                     stringTypeEncoder.EncodePacked(initialComposition.IndexDefinition.Symbol),
-                    stringTypeEncoder.EncodePacked(callData),
+                    callData.HexToByteArray(),
                     cancellationTokenSource);
 
                 _logger.LogInformation("Saved rebalancing index on chain with transaction {0}", receipt.TransactionHash);
 
-                return receipt.TransactionHash;
+                return receipt.Logs[0].ToString(Formatting.Indented);
             }
             catch (Exception ex)
             {
                 _logger.LogError(ex, "Failed to save rebalancing index on chain.");
-                return "";
+                throw;
             }
         }
 

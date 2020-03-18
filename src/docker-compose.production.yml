@@ -6,9 +6,7 @@ services:
       driver: "json-file"
       options:
         max-size: "50m"
-    build:
-      context: .
-      dockerfile: ./Trakx.Data.Market.Server/Dockerfile
+    image: docker.pkg.github.com/trakx/data-market/trakx-data-market-server:latest
     depends_on:
       - sqlserver
     environment:
