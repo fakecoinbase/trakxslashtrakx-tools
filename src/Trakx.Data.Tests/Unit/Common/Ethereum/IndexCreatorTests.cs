@@ -1,9 +1,6 @@
-﻿using System;
-using System.Linq;
-using System.Numerics;
+﻿using System.Linq;
 using System.Threading.Tasks;
 using FluentAssertions;
-using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Logging;
 using Nethereum.ABI.Encoders;
 using Nethereum.Hex.HexConvertors.Extensions;
@@ -30,12 +27,17 @@ namespace Trakx.Data.Tests.Unit.Common.Ethereum
 
         public IndexCreatorTests(ITestOutputHelper output)
         {
+            var mockCreator = new MockCreator();
             _web3 = Substitute.For<IWeb3>();
-            _accountAddress = "0x43cE8afa6985C86485640c7FEC81bc8FDd66E95f";
+            _accountAddress = mockCreator.GetRandomAddressEthereum();
             _web3.TransactionManager.Account.Address.Returns(_accountAddress);
             _coreService = Substitute.For<ICoreService>();
 
-            var mockCreator = new MockCreator();
+            var transactionReceipt = mockCreator.GetTransactionReceipt();
+            _coreService.CreateSetRequestAndWaitForReceiptAsync(default,
+                    default, default, default, default, default, default)
+                .ReturnsForAnyArgs(transactionReceipt);
+
             _indexComposition = mockCreator.GetIndexComposition(3);
         }
 

@@ -1,7 +1,5 @@
 ﻿using FluentAssertions;
 using Nethereum.Util;
-using NSubstitute;
-using Trakx.Data.Common.Extensions;
 using Xunit;
 
 namespace Trakx.Data.Tests.Unit.Common

@@ -58,7 +58,6 @@ namespace Trakx.Data.Market.Server.Controllers
                 return new JsonResult($"{indexOrCompositionSymbol} is not a valid symbol.");
 
             var utcNow = _dateTimeProvider.UtcNow;
-            componentPricesAsOf ??= utcNow;
             compositionAsOf ??= utcNow;
             var composition = indexOrCompositionSymbol.IsCompositionSymbol()
                 ? await _indexProvider.GetCompositionFromSymbol(indexOrCompositionSymbol, cancellationToken)

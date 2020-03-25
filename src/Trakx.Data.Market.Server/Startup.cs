@@ -16,7 +16,6 @@ using Trakx.Data.Common.Interfaces;
 using Trakx.Data.Common.Pricing;
 using Trakx.Data.Common.Sources.CoinGecko;
 using Trakx.Data.Common.Sources.Messari.Client;
-using Trakx.Data.Common.Sources.Web3;
 using Trakx.Data.Market.Server.Areas.Identity;
 using Trakx.Data.Market.Server.Data;
 using Trakx.Data.Market.Server.Hubs;
@@ -64,7 +63,7 @@ namespace Trakx.Data.Market.Server
                 c.IncludeXmlComments(xmlPath);
             });
 
-
+            services.AddSingleton<IDateTimeProvider, DateTimeProvider>();
             services.AddScoped<IIndexDataProvider, IndexDataProvider>();
             services.AddScoped<NavHub>();
             services.AddPricing();

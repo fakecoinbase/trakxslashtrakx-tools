@@ -1,5 +1,4 @@
-﻿using System;
-using System.Linq;
+﻿using System.Linq;
 using Ardalis.GuardClauses;
 
 namespace Trakx.Data.Common.Interfaces.Index

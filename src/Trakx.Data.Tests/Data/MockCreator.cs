@@ -1,6 +1,7 @@
 ﻿using System;
-using System.Collections.Generic;
 using System.Linq;
+using Nethereum.RPC.Eth.DTOs;
+using Newtonsoft.Json.Linq;
 using NSubstitute;
 using Trakx.Data.Common.Interfaces.Index;
 
@@ -25,9 +26,16 @@ namespace Trakx.Data.Tests.Data
         public string GetRandomCompositionSymbol(string indexShortName = default)
             => GetRandomIndexSymbol(indexShortName) + GetRandomYearMonthSuffix();
 
-        public string GetRandomYearMonthSuffix()
+        public string GetRandomYearMonthSuffix() => $"{Random.Next(20, 36):00}{Random.Next(1, 13):00}";
+
+        public DateTime GetRandomDateTime()
         {
-            return $"{Random.Next(20, 36):00}{Random.Next(1, 13):00}";
+            var firstJan2020 = new DateTime(2020, 01, 01);
+            var firstJan2050 = new DateTime(2050, 01, 01);
+            var timeBetween2020And2050 = firstJan2050.Subtract(firstJan2020);
+
+            var randomDay = firstJan2020 + TimeSpan.FromDays(Random.Next(0, (int)timeBetween2020And2050.TotalDays));
+            return randomDay;
         }
 
         public IIndexComposition GetIndexComposition(int componentCount)
@@ -42,6 +50,7 @@ namespace Trakx.Data.Tests.Data
             indexComposition.IndexDefinition.Returns(randomIndexDefinition);
             indexComposition.Address.Returns(GetRandomAddressEthereum());
             indexComposition.Symbol.Returns(randomIndexDefinition.Symbol + GetRandomYearMonthSuffix());
+            indexComposition.CreationDate.Returns(GetRandomDateTime());
             return indexComposition;
         }
 
@@ -55,6 +64,8 @@ namespace Trakx.Data.Tests.Data
             indexDefinition.Name.Returns(name);
             var description = "description " + GetRandomString(15);
             indexDefinition.Description.Returns(description);
+            indexDefinition.Address.Returns(GetRandomAddressEthereum());
+            indexDefinition.CreationDate.Returns(GetRandomDateTime());
             return indexDefinition;
         }
 
@@ -80,6 +91,32 @@ namespace Trakx.Data.Tests.Data
             componentQuantity.ComponentDefinition.CoinGeckoId.Returns(coinGeckoId);
 
             return componentQuantity;
+        }
+
+        public TransactionReceipt GetTransactionReceipt()
+        {
+            var transactionReceipt = new TransactionReceipt()
+            {
+                TransactionHash = "0x123456789",
+                Logs = JArray.Parse(
+                    "[\r\n" +
+                    "  {\r\n" +
+                    "    \"address\": \"0xf55186cc537e7067ea616f2aae007b4427a120c8\",\r\n" +
+                    "    \"blockHash\": \"0x6c54a6c04c3971e4fb5e4a4c84ee25148ab776a15ff44ce8b79148e4a70ca4a9\",\r\n" +
+                    "    \"blockNumber\": \"0x93edb6\",\r\n" +
+                    "    \"data\": \"0x000000000000000000000000e1cd722575800055\",\r\n" +
+                    "    \"logIndex\": \"0x46\",\r\n" +
+                    "    \"removed\": false,\r\n" +
+                    "    \"topics\": [\r\n" +
+                    "      \"0xa31e381e140096a837a20ba16eb64e32a4011fda0697adbfd7a8f7341c56aa94\",\r\n" +
+                    "      \"0x000000000000000000000000ae81ae0179b38588e05f404e05882a3965d1b415\"\r\n" +
+                    "    ],\r\n" +
+                    "    \"transactionHash\": \"0x2e39c249e929b8d2dcd2560bd33e1ebd17570742972866b46060bc42bf7c4052\",\r\n" +
+                    "    \"transactionIndex\": \"0x80\"\r\n" +
+                    "  }" +
+                    "\r\n]")
+            };
+            return transactionReceipt;
         }
     }
 }

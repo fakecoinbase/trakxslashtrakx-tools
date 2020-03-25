@@ -103,9 +103,8 @@ namespace Trakx.Data.Tests.Unit.Server.Controllers
         public async Task GetUsdNetAssetValue_should_retrieve_prices_asOf_utcNow_if_pricesAsOf_unspecified()
         {
             var cancellationToken = new CancellationToken();
-            var utcNow = new DateTime(2020, 03, 11);
+            var valuationAsOf = default(DateTime?);
             var compositionAsOf = new DateTime(2020, 03, 01);
-            _dateTimeProvider.UtcNow.Returns(utcNow);
 
             var composition = _mockCreator.GetIndexComposition(3);
             _indexProvider.GetCompositionAtDate(Arg.Any<string>(), compositionAsOf, cancellationToken)
@@ -114,7 +113,7 @@ namespace Trakx.Data.Tests.Unit.Server.Controllers
             var mockValuation = Substitute.For<IIndexValuation>();
             var nav = 78.9m;
             mockValuation.NetAssetValue.Returns(nav);
-            _navCalculator.GetIndexValuation(composition, utcNow).Returns(mockValuation);
+            _navCalculator.GetIndexValuation(composition, valuationAsOf).Returns(mockValuation);
 
             var indexSymbol = _mockCreator.GetRandomIndexSymbol();
 
@@ -122,7 +121,7 @@ namespace Trakx.Data.Tests.Unit.Server.Controllers
                 default, compositionAsOf, 0, cancellationToken);
 
             await _indexProvider.Received(1).GetCompositionAtDate(indexSymbol, compositionAsOf, cancellationToken);
-            await _navCalculator.Received(1).GetIndexValuation(composition, utcNow);
+            await _navCalculator.Received(1).GetIndexValuation(composition, default);
 
             ((JsonResult)result.Result).Value.Should().Be(nav);
         }

@@ -1,10 +1,8 @@
 ﻿using System;
-using System.Configuration;
 using System.Linq;
 using System.Threading.Tasks;
 using FluentAssertions;
 using Microsoft.Extensions.Logging;
-using Nethereum.Util;
 using NSubstitute;
 using Trakx.Data.Common.Interfaces.Index;
 using Trakx.Data.Common.Pricing;

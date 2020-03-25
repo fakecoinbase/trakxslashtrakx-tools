@@ -1,7 +1,5 @@
 ﻿using System;
-using System.Numerics;
 using FluentAssertions;
-using NSubstitute.ExceptionExtensions;
 using Trakx.Data.Common.Extensions;
 using Xunit;
 

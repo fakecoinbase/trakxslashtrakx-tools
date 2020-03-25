@@ -2,7 +2,6 @@
 using System.Collections.Generic;
 using System.Linq;
 using FluentAssertions;
-using NSubstitute;
 using Trakx.Data.Common.Composition;
 using Trakx.Data.Common.Core;
 using Trakx.Data.Common.Interfaces.Index;
