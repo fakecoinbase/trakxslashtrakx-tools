@@ -1,8 +1,5 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Net.WebSockets;
+﻿using System.Net.WebSockets;
 using System.Reactive.Linq;
-using System.Text;
 using System.Threading;
 using System.Threading.Tasks;
 using FluentAssertions;
@@ -24,7 +21,8 @@ namespace Trakx.Data.Tests.Integration.Common.Sources.CryptoCompare
             _client = new WebSocketClient(Secrets.CryptoCompareApiKey);
         }
 
-        [Fact(Skip = "needs a key")]
+        //[Fact(Skip = "needs a key")]
+        [Fact]
         public async Task WebSocketClient_should_receive_updates()
         {
             await _client.Connect();
@@ -32,7 +30,7 @@ namespace Trakx.Data.Tests.Integration.Common.Sources.CryptoCompare
              
             using var cancellationTokenSource = new CancellationTokenSource();
 
-            await _client.AddSubscription(cancellationTokenSource.Token).ConfigureAwait(false);
+            await _client.AddSubscription("5~CCCAGG~BTC~USD").ConfigureAwait(false);
             var message = await _client.IncommingMessageStream.FirstAsync();
             _output.WriteLine(message);
 
