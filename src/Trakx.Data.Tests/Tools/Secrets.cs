@@ -4,5 +4,6 @@
     {
         public const string InfuraApiKey = "";
         public const string EthereumWalletSecret = "";
+        public const string CryptoCompareApiKey = "";
     }
 }

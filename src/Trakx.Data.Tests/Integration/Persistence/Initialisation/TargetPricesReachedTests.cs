@@ -4,6 +4,8 @@ using System.Threading.Tasks;
 using FluentAssertions;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.DependencyInjection;
+using Polly;
+using Polly.Retry;
 using Trakx.Data.Common.Interfaces.Pricing;
 using Trakx.Data.Common.Pricing;
 using Trakx.Data.Common.Sources.Coinbase;
@@ -22,6 +24,7 @@ namespace Trakx.Data.Tests.Integration.Persistence.Initialisation
         private readonly InMemoryIndexRepositoryContext _dbContext;
         private readonly ITestOutputHelper _output;
         private readonly INavCalculator _navCalculator;
+        private readonly AsyncRetryPolicy _retryPolicy;
 
         public TargetPricesReachedTests(DbContextFixture fixture, ITestOutputHelper output)
         {
@@ -39,6 +42,9 @@ namespace Trakx.Data.Tests.Integration.Persistence.Initialisation
             var serviceProvider = serviceCollection.BuildServiceProvider();
             _navCalculator = serviceProvider.GetRequiredService<INavCalculator>();
 
+            _retryPolicy = Policy.Handle<NavCalculator.FailedToRetrievePriceException>()
+                .WaitAndRetryAsync(10, _ => TimeSpan.FromMilliseconds(500));
+
         }
 
         [Fact]
@@ -48,7 +54,7 @@ namespace Trakx.Data.Tests.Integration.Persistence.Initialisation
             await foreach (var composition in compositions)
             {
                 var expectedNav = DatabaseInitialiser.GetTargetIssuePrice(composition.Symbol);
-                var nav = await _navCalculator.CalculateNav(composition, composition.CreationDate);
+                var nav = await _retryPolicy.ExecuteAsync(async () => await _navCalculator.CalculateNav(composition, composition.CreationDate));
 
                 _output.WriteLine($"{composition.Symbol}:{Environment.NewLine}" +
                                   $"target nav {expectedNav}{Environment.NewLine}" +
@@ -69,8 +75,8 @@ namespace Trakx.Data.Tests.Integration.Persistence.Initialisation
                 var initial = orderedCompositions[0];
                 var rebalanced = orderedCompositions[1];
 
-                var expectedIssueNav = await _navCalculator.CalculateNav(initial, rebalanced.CreationDate);
-                var rebalanceIssueNav = await _navCalculator.CalculateNav(rebalanced, rebalanced.CreationDate);
+                var expectedIssueNav = await _retryPolicy.ExecuteAsync(async () => await _navCalculator.CalculateNav(initial, rebalanced.CreationDate));
+                var rebalanceIssueNav = await _retryPolicy.ExecuteAsync(async () => await _navCalculator.CalculateNav(rebalanced, rebalanced.CreationDate));
 
                 _output.WriteLine($"{initial.IndexDefinition.Symbol}:{Environment.NewLine}" +
                                   $"expected issue nav {expectedIssueNav}{Environment.NewLine}" +

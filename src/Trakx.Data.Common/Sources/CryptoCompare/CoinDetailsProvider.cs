@@ -1,4 +1,6 @@
-﻿using System.Collections.Generic;
+﻿using System;
+using System.Collections.Generic;
+using System.Linq;
 using System.Text.Json;
 using System.Threading.Tasks;
 
@@ -16,6 +18,13 @@ namespace Trakx.Data.Common.Sources.CryptoCompare
                     $"{typeof(CoinDetailsProvider).Namespace}.coinDetails.json");
             var response = await JsonSerializer.DeserializeAsync<AllCoinsResponse>(stream);
             return response;
+        }
+        public List<string> GetAllErc20Symbols()
+        {
+            var smartContractCoins = CoinDetailsBySymbol.Values.Where(c =>
+                c.SmartContractAddress.StartsWith("0x", StringComparison.InvariantCultureIgnoreCase));
+
+            return smartContractCoins.Select(c => c.Symbol).ToList();
         }
     }
 }
