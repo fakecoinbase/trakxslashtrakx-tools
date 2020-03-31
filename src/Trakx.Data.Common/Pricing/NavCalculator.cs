@@ -3,6 +3,8 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
 using Microsoft.Extensions.Logging;
+using Polly;
+using Polly.Retry;
 using Trakx.Data.Common.Core;
 using Trakx.Data.Common.Interfaces.Index;
 using Trakx.Data.Common.Interfaces.Pricing;
@@ -15,6 +17,8 @@ namespace Trakx.Data.Common.Pricing
     {
         private readonly IMessariClient _messariClient;
         private readonly ICoinGeckoClient _coinGeckoClient;
+        private readonly ILogger<NavCalculator> _logger;
+        private readonly AsyncRetryPolicy _historicalPriceRetryPolicy;
 
         public NavCalculator(IMessariClient messariClient,
             ICoinGeckoClient coinGeckoClient,
@@ -23,11 +27,10 @@ namespace Trakx.Data.Common.Pricing
             _messariClient = messariClient;
             _coinGeckoClient = coinGeckoClient;
             _logger = logger;
+            _historicalPriceRetryPolicy = Policy.Handle<Exception>()
+                .WaitAndRetryAsync(3, i => TimeSpan.FromMilliseconds(50 * i));
         }
-
-        private readonly ILogger<NavCalculator> _logger;
-
-
+        
         #region Implementation of INavCalculator
 
         /// <inheritdoc />
@@ -107,16 +110,13 @@ namespace Trakx.Data.Common.Pricing
 
         private async Task<KeyValuePair<string, SourcedPrice>> GetUsdPriceAsOf(IComponentQuantity quantity, DateTime asOf)
         {
-            try
-            {
-                var result = await GetCoinGeckoUsdPriceAsOf(quantity.ComponentDefinition, asOf);
-                if (result.Value.Price != default) return result;
-            }
-            catch (Exception e)
-            {
-                _logger.LogWarning(e, "Failed to retrieve price from CoinGecko");
-            }
-            throw new FailedToRetrievePriceException($"Failed to retrieve price for component {quantity.ComponentDefinition.Symbol} as of {asOf}");
+            var result = await _historicalPriceRetryPolicy
+                .ExecuteAndCaptureAsync(async () => await GetCoinGeckoUsdPriceAsOf(quantity.ComponentDefinition, asOf));
+
+            if (result.Outcome == OutcomeType.Successful && result.Result.Value.Price != default) 
+                return result.Result;
+
+            throw new FailedToRetrievePriceException($"Failed to retrieve price for component {quantity.ComponentDefinition.Symbol} as of {asOf}", result.FinalException);
         }
 
 
@@ -147,6 +147,7 @@ namespace Trakx.Data.Common.Pricing
         public class FailedToRetrievePriceException : Exception
         {
             public FailedToRetrievePriceException(string message) : base(message) { }
+            public FailedToRetrievePriceException(string message, Exception innerException) : base(message, innerException) { }
         };
     }
 }
