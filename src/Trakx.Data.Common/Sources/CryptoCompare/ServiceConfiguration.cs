@@ -2,6 +2,7 @@
 using CryptoCompare;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
+using Trakx.Data.Common.Interfaces;
 
 namespace Trakx.Data.Common.Sources.CryptoCompare
 {
@@ -14,6 +15,8 @@ namespace Trakx.Data.Common.Sources.CryptoCompare
                 var apiKey = GetApiKeyFromConfiguration(provider);
                 return new CryptoCompareClient(apiKey);
             });
+
+            services.AddTransient<IClientWebsocket, WrappedClientWebsocket>();
             services.AddTransient<IWebSocketStreamer, WebSocketStreamer>();
             services.AddSingleton<IApiDetailsProvider, ApiDetailsProvider>();
             services.AddSingleton<WebSocketClient>();

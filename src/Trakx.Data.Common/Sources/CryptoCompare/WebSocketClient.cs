@@ -1,11 +1,13 @@
 ﻿using System;
 using System.Linq;
 using System.Net.WebSockets;
+using System.Runtime.InteropServices.ComTypes;
 using System.Text;
 using System.Text.Json;
 using System.Threading;
 using System.Threading.Tasks;
 using Microsoft.Extensions.Logging;
+using Trakx.Data.Common.Interfaces;
 using Trakx.Data.Common.Sources.CryptoCompare.DTOs;
 
 namespace Trakx.Data.Common.Sources.CryptoCompare
@@ -13,7 +15,7 @@ namespace Trakx.Data.Common.Sources.CryptoCompare
     public class WebSocketClient : IAsyncDisposable
     {
         private readonly IApiDetailsProvider _apiDetailsProvider;
-        private readonly ClientWebSocket _client;
+        private readonly IClientWebsocket _client;
         private readonly CancellationTokenSource _cancellationTokenSource;
 
         private readonly ILogger<WebSocketClient> _logger;
@@ -21,12 +23,15 @@ namespace Trakx.Data.Common.Sources.CryptoCompare
 
         public IWebSocketStreamer WebSocketStreamer { get; }
 
-        public WebSocketClient(IApiDetailsProvider apiDetailsProvider, IWebSocketStreamer webSocketStreamer, ILogger<WebSocketClient> logger)
+        public WebSocketClient(IClientWebsocket clientWebSocket, 
+            IApiDetailsProvider apiDetailsProvider, 
+            IWebSocketStreamer webSocketStreamer, 
+            ILogger<WebSocketClient> logger)
         {
             _apiDetailsProvider = apiDetailsProvider;
+            _client = clientWebSocket;
             WebSocketStreamer = webSocketStreamer;
             _logger = logger;
-            _client = new ClientWebSocket();
             _cancellationTokenSource = new CancellationTokenSource();
         }
 
@@ -39,6 +44,7 @@ namespace Trakx.Data.Common.Sources.CryptoCompare
         }
 
         public WebSocketState State => _client.State;
+        public TaskStatus? ListenInboundMessagesTaskStatus => _listenToWebSocketTask?.Status;
 
         public async Task AddSubscription(string subscription)
         {
@@ -79,28 +85,29 @@ namespace Trakx.Data.Common.Sources.CryptoCompare
 
                     if (!string.IsNullOrWhiteSpace(result)) WebSocketStreamer.PublishInboundMessageOnStream(result);
                 }
-            }, cancellationToken, TaskCreationOptions.LongRunning, TaskScheduler.Default);
-            _logger.LogInformation("Listening to incoming messages");
+            }, cancellationToken, TaskCreationOptions.LongRunning, TaskScheduler.Default).ConfigureAwait(false);
+            _logger.LogInformation("Listening to incoming messages");   
         }
 
         private async Task StopListening()
         {
             _cancellationTokenSource.Cancel();
-            while (!_listenToWebSocketTask?.IsCanceled ?? false)
+            while (_listenToWebSocketTask != null && _listenToWebSocketTask.Status < TaskStatus.RanToCompletion)
             {
                 await Task.Delay(100).ConfigureAwait(false);
             }
             _logger.LogInformation("Stopped listening to incoming messages");
         }
 
-
         #region IDisposable
 
         protected virtual async ValueTask DisposeAsync(bool disposing)
         { 
             if (!disposing) return;
-            await StopListening();
-            _client?.Dispose();
+            await StopListening().ConfigureAwait(false);
+            await _client.CloseAsync(WebSocketCloseStatus.NormalClosure, 
+                "CryptoCompare WebClient getting disposed.", 
+                _cancellationTokenSource.Token);
             _cancellationTokenSource?.Dispose();
         }
 

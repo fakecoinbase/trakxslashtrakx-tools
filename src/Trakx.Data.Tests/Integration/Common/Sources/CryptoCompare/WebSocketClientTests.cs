@@ -7,6 +7,7 @@ using System.Reactive.Linq;
 using System.Text.Json;
 using System.Threading.Tasks;
 using FluentAssertions;
+using Trakx.Data.Common.Interfaces;
 using Trakx.Data.Common.Sources.CryptoCompare;
 using Trakx.Data.Common.Sources.CryptoCompare.DTOs;
 using Trakx.Data.Tests.Tools;
@@ -26,10 +27,10 @@ namespace Trakx.Data.Tests.Integration.Common.Sources.CryptoCompare
             var logger = output.ToLogger<WebSocketClient>();
             var streamer = new WebSocketStreamer(output.ToLogger<WebSocketStreamer>());
             var apiDetailsProvider = new ApiDetailsProvider(Secrets.CryptoCompareApiKey);
-            _client = new WebSocketClient(apiDetailsProvider, streamer, logger);
+            var clientWebSocket = new WrappedClientWebsocket();
+            _client = new WebSocketClient(clientWebSocket, apiDetailsProvider, streamer, logger);
         }
 
-        //[Fact(Skip = "needs a key")]
         [Fact]
         public async Task WebSocketClient_should_receive_updates()
         {
