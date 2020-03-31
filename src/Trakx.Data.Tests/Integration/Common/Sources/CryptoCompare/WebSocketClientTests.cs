@@ -25,7 +25,8 @@ namespace Trakx.Data.Tests.Integration.Common.Sources.CryptoCompare
             _output = output;
             var logger = output.ToLogger<WebSocketClient>();
             var streamer = new WebSocketStreamer(output.ToLogger<WebSocketStreamer>());
-            _client = new WebSocketClient(Secrets.CryptoCompareApiKey, streamer, logger);
+            var apiDetailsProvider = new ApiDetailsProvider(Secrets.CryptoCompareApiKey);
+            _client = new WebSocketClient(apiDetailsProvider, streamer, logger);
         }
 
         //[Fact(Skip = "needs a key")]

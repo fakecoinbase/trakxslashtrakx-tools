@@ -12,18 +12,18 @@ namespace Trakx.Data.Common.Sources.CryptoCompare
 {
     public class WebSocketClient : IAsyncDisposable
     {
-        private readonly string _apiKey;
+        private readonly IApiDetailsProvider _apiDetailsProvider;
         private readonly ClientWebSocket _client;
         private readonly CancellationTokenSource _cancellationTokenSource;
 
         private readonly ILogger<WebSocketClient> _logger;
-        private Task _listenToWebSocketTask;
+        private Task? _listenToWebSocketTask;
 
         public IWebSocketStreamer WebSocketStreamer { get; }
 
-        public WebSocketClient(string apiKey, IWebSocketStreamer webSocketStreamer, ILogger<WebSocketClient> logger)
+        public WebSocketClient(IApiDetailsProvider apiDetailsProvider, IWebSocketStreamer webSocketStreamer, ILogger<WebSocketClient> logger)
         {
-            _apiKey = apiKey;
+            _apiDetailsProvider = apiDetailsProvider;
             WebSocketStreamer = webSocketStreamer;
             _logger = logger;
             _client = new ClientWebSocket();
@@ -33,8 +33,7 @@ namespace Trakx.Data.Common.Sources.CryptoCompare
         public async Task Connect()
         {
             _logger.LogInformation("Connecting to CryptoCompare websocket");
-            await _client.ConnectAsync(new Uri($"wss://streamer.cryptocompare.com/v2?api_key={_apiKey}"), 
-                CancellationToken.None).ConfigureAwait(false);
+            await _client.ConnectAsync(_apiDetailsProvider.WebSocketEndpoint, _cancellationTokenSource.Token).ConfigureAwait(false);
             _logger.LogInformation("CryptoCompare websocket state {0}", State);
             await StartListening(_cancellationTokenSource.Token).ConfigureAwait(false);
         }
