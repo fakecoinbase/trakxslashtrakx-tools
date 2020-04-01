@@ -36,6 +36,7 @@ namespace Trakx.Data.Common.Sources.CryptoCompare
         public IObservable<Trade> TradeStream => _incomingMessageSubject.Cast<Trade>().AsObservable();
         public IObservable<Ticker> TickerStream => _incomingMessageSubject.Cast<Ticker>().AsObservable();
         public IObservable<AggregateIndex> AggregateIndexStream => _incomingMessageSubject.Cast<AggregateIndex>().AsObservable();
+        public IObservable<Ohlc> OhlcStream => _incomingMessageSubject.Cast<Ohlc>().AsObservable();
         public IObservable<SubscribeComplete> SubscribeCompleteStream => _incomingMessageSubject.Cast<SubscribeComplete>().AsObservable();
         public IObservable<UnsubscribeComplete> UnsubscribeCompleteStream => _incomingMessageSubject.Cast<UnsubscribeComplete>().AsObservable();
         public IObservable<LoadComplete> LoadCompleteStream => _incomingMessageSubject.Cast<LoadComplete>().AsObservable();
@@ -58,6 +59,9 @@ namespace Trakx.Data.Common.Sources.CryptoCompare
                         break;
                     case AggregateIndex.TypeValue:
                         _incomingMessageSubject.OnNext(JsonSerializer.Deserialize<AggregateIndex>(rawMessage));
+                        break;
+                    case Ohlc.TypeValue:
+                        _incomingMessageSubject.OnNext(JsonSerializer.Deserialize<Ohlc>(rawMessage));
                         break;
                     case SubscribeComplete.TypeValue:
                         _incomingMessageSubject.OnNext(JsonSerializer.Deserialize<SubscribeComplete>(rawMessage));

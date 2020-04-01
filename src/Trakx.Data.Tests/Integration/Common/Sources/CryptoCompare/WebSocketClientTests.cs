@@ -43,7 +43,7 @@ namespace Trakx.Data.Tests.Integration.Common.Sources.CryptoCompare
         [Fact]
         public async Task WebSocketClient_should_receive_Ticker_updates()
         {
-            var btcUsdSubscription = new TickerSubscription("Coinbase", "btc", "usd").ToString();
+            var btcUsdSubscription = new TickerSubscription("Bitfinex", "eth", "usd").ToString();
             await RunTestForSubscriptionType<Ticker>(btcUsdSubscription);
         }
 
@@ -54,7 +54,12 @@ namespace Trakx.Data.Tests.Integration.Common.Sources.CryptoCompare
             await RunTestForSubscriptionType<AggregateIndex>(btcUsdSubscription);
         }
 
-
+        [Fact]
+        public async Task WebSocketClient_should_receive_Ohlc_updates()
+        {
+            var btcUsdSubscription = new OhlcSubscription("CCCAGG", "eth", "usd", TimeSpan.FromHours(1)).ToString();
+            await RunTestForSubscriptionType<Ohlc>(btcUsdSubscription);
+        }
 
         private async Task RunTestForSubscriptionType<T>(string subscriptionString)
         {

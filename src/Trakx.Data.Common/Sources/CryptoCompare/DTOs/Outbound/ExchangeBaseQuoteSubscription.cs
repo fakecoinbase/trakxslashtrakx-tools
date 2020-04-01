@@ -1,4 +1,5 @@
-﻿using Trakx.Data.Common.Sources.CryptoCompare.DTOs.Inbound;
+﻿using System;
+using Trakx.Data.Common.Sources.CryptoCompare.DTOs.Inbound;
 
 namespace Trakx.Data.Common.Sources.CryptoCompare.DTOs.Outbound
 {
@@ -62,8 +63,27 @@ namespace Trakx.Data.Common.Sources.CryptoCompare.DTOs.Outbound
     {
         public const string TypeValue = AggregateIndex.TypeValue;
 
+        public string Peridocity { get; }
+
         /// <inheritdoc />
-        public OhlcSubscription(string exchange, string baseCurrency, string quoteCurrency)
-            : base("24", exchange, baseCurrency, quoteCurrency) { }
+        public OhlcSubscription(string exchange, string baseCurrency, string quoteCurrency, TimeSpan peridocity = default)
+            : base("24", exchange, baseCurrency, quoteCurrency)
+        {
+            Peridocity = peridocity.TotalMilliseconds >= TimeSpan.FromDays(1).TotalSeconds
+                ? "D"
+                : peridocity.TotalMilliseconds >= TimeSpan.FromHours(1).TotalSeconds
+                    ? "H"
+                    : "m";
+        }
+
+        #region Overrides of ExchangeBaseQuoteSubscription
+
+        /// <inheritdoc />
+        public override string ToString()
+        {
+            return $"{base.ToString()}~{Peridocity}";
+        }
+
+        #endregion
     }
 }
