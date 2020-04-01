@@ -5,5 +5,12 @@ A small web service providing info about Trakx indices and usefull live calculat
 Data sources used for the calculations are currently CoinGecko and CryptoCompare.
 
 # Running version
+A running version can be found at preprod.marketdata.trakx.io
 
-A running version can be found at marketdata.trakx.io
+# Avoid committing you secrets and keys
+In order to be able to run some integration tests, the file 
+src\Trakx.Data.Tests\Tools\Secrets.cs should be modified to include your own api keys and other secrets, 
+to avoid accidental commits to GitHub, it is a good idea to ignore local changes to that file using by running
+```
+git update-index --skip-worktree src\Trakx.Data.Tests\Tools\Secrets.cs
+```
