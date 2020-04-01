@@ -1,14 +1,13 @@
 ﻿using System;
 using System.Linq;
 using System.Net.WebSockets;
-using System.Runtime.InteropServices.ComTypes;
 using System.Text;
 using System.Text.Json;
 using System.Threading;
 using System.Threading.Tasks;
 using Microsoft.Extensions.Logging;
 using Trakx.Data.Common.Interfaces;
-using Trakx.Data.Common.Sources.CryptoCompare.DTOs;
+using Trakx.Data.Common.Sources.CryptoCompare.DTOs.Outbound;
 
 namespace Trakx.Data.Common.Sources.CryptoCompare
 {
@@ -37,8 +36,9 @@ namespace Trakx.Data.Common.Sources.CryptoCompare
 
         public async Task Connect()
         {
-            _logger.LogInformation("Connecting to CryptoCompare websocket");
-            await _client.ConnectAsync(_apiDetailsProvider.WebSocketEndpoint, _cancellationTokenSource.Token).ConfigureAwait(false);
+            _logger.LogInformation("Opening CryptoCompare websocket");
+            if (_client.State != WebSocketState.Open) 
+                await _client.ConnectAsync(_apiDetailsProvider.WebSocketEndpoint, _cancellationTokenSource.Token).ConfigureAwait(false);
             _logger.LogInformation("CryptoCompare websocket state {0}", State);
             await StartListening(_cancellationTokenSource.Token).ConfigureAwait(false);
         }
@@ -80,6 +80,7 @@ namespace Trakx.Data.Common.Sources.CryptoCompare
                 {
                     var buffer = new ArraySegment<byte>(new byte[4096]);
                     var receiveResult = await _client.ReceiveAsync(buffer, cancellationToken).ConfigureAwait(false);
+                    if (receiveResult.MessageType == WebSocketMessageType.Close) break;
                     var msgBytes = buffer.Skip(buffer.Offset).Take(receiveResult.Count).ToArray();
                     var result = Encoding.UTF8.GetString(msgBytes);
 
@@ -89,14 +90,22 @@ namespace Trakx.Data.Common.Sources.CryptoCompare
             _logger.LogInformation("Listening to incoming messages");   
         }
 
+        public async Task Disconnect()
+        {
+            _logger.LogInformation("Closing CryptoCompare websocket");
+            await _client.CloseAsync(WebSocketCloseStatus.NormalClosure,
+                "CryptoCompare WebClient getting disposed.",
+                _cancellationTokenSource.Token);
+            _logger.LogInformation("Closing CryptoCompare websocket");
+        }
+
         private async Task StopListening()
         {
-            _cancellationTokenSource.Cancel();
             while (_listenToWebSocketTask != null && _listenToWebSocketTask.Status < TaskStatus.RanToCompletion)
             {
-                await Task.Delay(100).ConfigureAwait(false);
+                await Task.Delay(100, _cancellationTokenSource.Token).ConfigureAwait(false);
             }
-            _logger.LogInformation("Stopped listening to incoming messages");
+            _logger.LogInformation("CryptoCompare websocket state {0}", State);
         }
 
         #region IDisposable
@@ -104,10 +113,10 @@ namespace Trakx.Data.Common.Sources.CryptoCompare
         protected virtual async ValueTask DisposeAsync(bool disposing)
         { 
             if (!disposing) return;
+            _cancellationTokenSource.CancelAfter(TimeSpan.FromSeconds(5));
+            await Disconnect().ConfigureAwait(false);
             await StopListening().ConfigureAwait(false);
-            await _client.CloseAsync(WebSocketCloseStatus.NormalClosure, 
-                "CryptoCompare WebClient getting disposed.", 
-                _cancellationTokenSource.Token);
+
             _cancellationTokenSource?.Dispose();
         }
 

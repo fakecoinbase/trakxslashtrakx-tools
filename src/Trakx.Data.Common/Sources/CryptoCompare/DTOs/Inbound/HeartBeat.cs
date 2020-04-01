@@ -1,8 +1,8 @@
 ﻿using System.Text.Json.Serialization;
 
-namespace Trakx.Data.Common.Sources.CryptoCompare.DTOs
+namespace Trakx.Data.Common.Sources.CryptoCompare.DTOs.Inbound
 {
-    public class HeartBeatMessage : WebSocketInboundMessage
+    public class HeartBeat : InboundMessageBase
     {
         public const string TypeValue = "999";
         [JsonPropertyName("MESSAGE")] public string Message { get; set; }

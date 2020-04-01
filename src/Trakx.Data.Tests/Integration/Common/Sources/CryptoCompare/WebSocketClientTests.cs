@@ -9,14 +9,16 @@ using System.Threading.Tasks;
 using FluentAssertions;
 using Trakx.Data.Common.Interfaces;
 using Trakx.Data.Common.Sources.CryptoCompare;
-using Trakx.Data.Common.Sources.CryptoCompare.DTOs;
+using Trakx.Data.Common.Sources.CryptoCompare.DTOs.Inbound;
+using Trakx.Data.Common.Sources.CryptoCompare.DTOs.Outbound;
 using Trakx.Data.Tests.Tools;
 using Xunit;
 using Xunit.Abstractions;
 
 namespace Trakx.Data.Tests.Integration.Common.Sources.CryptoCompare
 {
-    public sealed class WebSocketClientTests : IAsyncDisposable
+    //AsyncDispose not yet supported by XUnit so let's implement both...
+    public sealed class WebSocketClientTests : IAsyncDisposable, IDisposable
     {
         private readonly ITestOutputHelper _output;
         private readonly WebSocketClient _client;
@@ -32,40 +34,64 @@ namespace Trakx.Data.Tests.Integration.Common.Sources.CryptoCompare
         }
 
         [Fact]
-        public async Task WebSocketClient_should_receive_updates()
+        public async Task WebSocketClient_should_receive_Trade_updates()
+        {
+            var btcUsdSubscription = new TradeSubscription("Coinbase", "btc", "usd").ToString();
+            await RunTestForSubscriptionType<Trade>(btcUsdSubscription);
+        }
+
+        [Fact]
+        public async Task WebSocketClient_should_receive_Ticker_updates()
+        {
+            var btcUsdSubscription = new TickerSubscription("Coinbase", "btc", "usd").ToString();
+            await RunTestForSubscriptionType<Ticker>(btcUsdSubscription);
+        }
+
+        [Fact]
+        public async Task WebSocketClient_should_receive_AggregateIndex_updates()
+        {
+            var btcUsdSubscription = new AggregateIndexSubscription("btc", "usd").ToString();
+            await RunTestForSubscriptionType<AggregateIndex>(btcUsdSubscription);
+        }
+
+
+
+        private async Task RunTestForSubscriptionType<T>(string subscriptionString)
         {
             await _client.Connect();
             _client.State.Should().Be(WebSocketState.Open);
 
-            var messagesReceived = new List<WebSocketInboundMessage>();
+            var messagesReceived = new List<InboundMessageBase>();
 
             using var subscription = _client.WebSocketStreamer.AllInboundMessagesStream
                 .SubscribeOn(Scheduler.Default)
-                .Take(10)
+                .Take(50)
                 .Subscribe(m =>
                 {
                     _output.WriteLine(JsonSerializer.Serialize(m));
                     messagesReceived.Add(m);
                 });
 
-            var btcUsdSubscription = "5~CCCAGG~BTC~USD";
-            await _client.AddSubscription(btcUsdSubscription).ConfigureAwait(false);
 
+            await _client.AddSubscription(subscriptionString).ConfigureAwait(false);
             await Task.Delay(TimeSpan.FromMilliseconds(500));
 
             messagesReceived.Count.Should().BeGreaterOrEqualTo(3);
 
-            messagesReceived.OfType<AggregateIndexResponse>().Count().Should().BeGreaterOrEqualTo(1);
-            messagesReceived.OfType<SubscribeCompleteMessage>().Count().Should().BeGreaterOrEqualTo(1);
-            messagesReceived.OfType<LoadCompleteMessage>().Count().Should().BeGreaterOrEqualTo(1);
+            messagesReceived.OfType<T>().Count().Should().BeGreaterOrEqualTo(1);
+            messagesReceived.OfType<SubscribeComplete>().Count().Should().BeGreaterOrEqualTo(1);
+            messagesReceived.OfType<LoadComplete>().Count().Should().BeGreaterOrEqualTo(1);
 
 
-            await _client.RemoveSubscription(btcUsdSubscription).ConfigureAwait(false);
+            await _client.RemoveSubscription(subscriptionString).ConfigureAwait(false);
             await Task.Delay(TimeSpan.FromMilliseconds(500));
 
             messagesReceived.Count.Should().BeGreaterOrEqualTo(5);
-            messagesReceived.OfType<SubscribeCompleteMessage>().Count().Should().BeGreaterOrEqualTo(1);
-            messagesReceived.OfType<LoadCompleteMessage>().Count().Should().BeGreaterOrEqualTo(1);
+            messagesReceived.OfType<SubscribeComplete>().Count().Should().BeGreaterOrEqualTo(1);
+            messagesReceived.OfType<LoadComplete>().Count().Should().BeGreaterOrEqualTo(1);
+
+            await _client.DisposeAsync();
+            _client.State.Should().Be(WebSocketState.Closed);
         }
 
         #region IDisposable
@@ -73,7 +99,17 @@ namespace Trakx.Data.Tests.Integration.Common.Sources.CryptoCompare
         /// <inheritdoc />
         public async ValueTask DisposeAsync()
         {
-            await _client.DisposeAsync();
+            //await _client.DisposeAsync();
+        }
+
+        #endregion
+
+        #region IDisposable
+
+        /// <inheritdoc />
+        public void Dispose()
+        {
+            DisposeAsync().GetAwaiter().GetResult();
         }
 
         #endregion

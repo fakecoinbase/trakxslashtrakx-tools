@@ -1,10 +1,10 @@
 ﻿using System.Text.Json.Serialization;
 
-namespace Trakx.Data.Common.Sources.CryptoCompare.DTOs
+namespace Trakx.Data.Common.Sources.CryptoCompare.DTOs.Inbound
 {
-    public class LoadCompleteMessage : WebSocketInboundMessage
+    public class SubscribeComplete : InboundMessageBase
     {
-        public const string TypeValue = "3";
+        public const string TypeValue = "16";
         [JsonPropertyName("MESSAGE")] public string Message { get; set; }
         [JsonPropertyName("SUB")] public string Subscription { get; set; }
     }

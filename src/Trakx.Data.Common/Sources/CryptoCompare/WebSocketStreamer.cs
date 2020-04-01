@@ -3,69 +3,79 @@ using System.Reactive.Linq;
 using System.Reactive.Subjects;
 using System.Text.Json;
 using Microsoft.Extensions.Logging;
-using Trakx.Data.Common.Sources.CryptoCompare.DTOs;
+using Trakx.Data.Common.Sources.CryptoCompare.DTOs.Inbound;
 
 namespace Trakx.Data.Common.Sources.CryptoCompare
 {
     public interface IWebSocketStreamer
     {
-        IObservable<WebSocketInboundMessage> AllInboundMessagesStream { get; }
-        IObservable<AggregateIndexResponse> AggregateIndexStream { get; }
-        IObservable<SubscribeCompleteMessage> SubscribeCompleteStream { get; }
-        IObservable<UnsubscribeCompleteMessage> UnsubscribeCompleteStream { get; }
-        IObservable<LoadCompleteMessage> LoadCompleteStream { get; }
-        IObservable<UnsubscribeAllCompleteMessage> UnsubscribeAllCompleteStream { get; }
-        IObservable<HeartBeatMessage> HeartBeatStream { get; }
+        IObservable<InboundMessageBase> AllInboundMessagesStream { get; }
+        IObservable<Trade> TradeStream { get; }
+        IObservable<Ticker> TickerStream { get; }
+        IObservable<AggregateIndex> AggregateIndexStream { get; }
+        IObservable<SubscribeComplete> SubscribeCompleteStream { get; }
+        IObservable<UnsubscribeComplete> UnsubscribeCompleteStream { get; }
+        IObservable<LoadComplete> LoadCompleteStream { get; }
+        IObservable<UnsubscribeAllComplete> UnsubscribeAllCompleteStream { get; }
+        IObservable<HeartBeat> HeartBeatStream { get; }
         void PublishInboundMessageOnStream(string rawMessage);
     }
 
     public class WebSocketStreamer : IWebSocketStreamer
     {
         private readonly ILogger<WebSocketStreamer> _logger;
-        private readonly ISubject<WebSocketInboundMessage> _incomingMessageSubject;
+        private readonly ISubject<InboundMessageBase> _incomingMessageSubject;
         
         public WebSocketStreamer(ILogger<WebSocketStreamer> logger)
         {
             _logger = logger;
-            _incomingMessageSubject = new ReplaySubject<WebSocketInboundMessage>(1);
+            _incomingMessageSubject = new ReplaySubject<InboundMessageBase>(1);
         }
 
-        public IObservable<WebSocketInboundMessage> AllInboundMessagesStream => _incomingMessageSubject.AsObservable();
-        public IObservable<AggregateIndexResponse> AggregateIndexStream => _incomingMessageSubject.Cast<AggregateIndexResponse>().AsObservable();
-        public IObservable<SubscribeCompleteMessage> SubscribeCompleteStream => _incomingMessageSubject.Cast<SubscribeCompleteMessage>().AsObservable();
-        public IObservable<UnsubscribeCompleteMessage> UnsubscribeCompleteStream => _incomingMessageSubject.Cast<UnsubscribeCompleteMessage>().AsObservable();
-        public IObservable<LoadCompleteMessage> LoadCompleteStream => _incomingMessageSubject.Cast<LoadCompleteMessage>().AsObservable();
-        public IObservable<UnsubscribeAllCompleteMessage> UnsubscribeAllCompleteStream => _incomingMessageSubject.Cast<UnsubscribeAllCompleteMessage>().AsObservable();
-        public IObservable<HeartBeatMessage> HeartBeatStream => _incomingMessageSubject.Cast<HeartBeatMessage>().AsObservable();
+        public IObservable<InboundMessageBase> AllInboundMessagesStream => _incomingMessageSubject.AsObservable();
+        public IObservable<Trade> TradeStream => _incomingMessageSubject.Cast<Trade>().AsObservable();
+        public IObservable<Ticker> TickerStream => _incomingMessageSubject.Cast<Ticker>().AsObservable();
+        public IObservable<AggregateIndex> AggregateIndexStream => _incomingMessageSubject.Cast<AggregateIndex>().AsObservable();
+        public IObservable<SubscribeComplete> SubscribeCompleteStream => _incomingMessageSubject.Cast<SubscribeComplete>().AsObservable();
+        public IObservable<UnsubscribeComplete> UnsubscribeCompleteStream => _incomingMessageSubject.Cast<UnsubscribeComplete>().AsObservable();
+        public IObservable<LoadComplete> LoadCompleteStream => _incomingMessageSubject.Cast<LoadComplete>().AsObservable();
+        public IObservable<UnsubscribeAllComplete> UnsubscribeAllCompleteStream => _incomingMessageSubject.Cast<UnsubscribeAllComplete>().AsObservable();
+        public IObservable<HeartBeat> HeartBeatStream => _incomingMessageSubject.Cast<HeartBeat>().AsObservable();
 
         public void PublishInboundMessageOnStream(string rawMessage)
         {
             try
             {
                 _logger.LogTrace("Received WebSocketInboundMessage {0}{1}", Environment.NewLine, rawMessage);
-                var message = JsonSerializer.Deserialize<WebSocketInboundMessage>(rawMessage);
+                var message = JsonSerializer.Deserialize<InboundMessageBase>(rawMessage);
                 switch (message.Type)
                 {
-                    case AggregateIndexResponse.TypeValue:
-                        _incomingMessageSubject.OnNext(JsonSerializer.Deserialize<AggregateIndexResponse>(rawMessage));
+                    case Trade.TypeValue:
+                        _incomingMessageSubject.OnNext(JsonSerializer.Deserialize<Trade>(rawMessage));
                         break;
-                    case SubscribeCompleteMessage.TypeValue:
-                        _incomingMessageSubject.OnNext(JsonSerializer.Deserialize<SubscribeCompleteMessage>(rawMessage));
+                    case Ticker.TypeValue:
+                        _incomingMessageSubject.OnNext(JsonSerializer.Deserialize<Ticker>(rawMessage));
                         break;
-                    case UnsubscribeCompleteMessage.TypeValue:
-                        _incomingMessageSubject.OnNext(JsonSerializer.Deserialize<SubscribeCompleteMessage>(rawMessage));
+                    case AggregateIndex.TypeValue:
+                        _incomingMessageSubject.OnNext(JsonSerializer.Deserialize<AggregateIndex>(rawMessage));
                         break;
-                    case LoadCompleteMessage.TypeValue:
-                        _incomingMessageSubject.OnNext(JsonSerializer.Deserialize<LoadCompleteMessage>(rawMessage));
+                    case SubscribeComplete.TypeValue:
+                        _incomingMessageSubject.OnNext(JsonSerializer.Deserialize<SubscribeComplete>(rawMessage));
                         break;
-                    case UnsubscribeAllCompleteMessage.TypeValue:
-                        _incomingMessageSubject.OnNext(JsonSerializer.Deserialize<SubscribeCompleteMessage>(rawMessage));
+                    case UnsubscribeComplete.TypeValue:
+                        _incomingMessageSubject.OnNext(JsonSerializer.Deserialize<SubscribeComplete>(rawMessage));
                         break;
-                    case HeartBeatMessage.TypeValue:
-                        _incomingMessageSubject.OnNext(JsonSerializer.Deserialize<HeartBeatMessage>(rawMessage));
+                    case LoadComplete.TypeValue:
+                        _incomingMessageSubject.OnNext(JsonSerializer.Deserialize<LoadComplete>(rawMessage));
                         break;
-                    case ErrorMessage.TypeValue:
-                        _incomingMessageSubject.OnNext(JsonSerializer.Deserialize<ErrorMessage>(rawMessage));
+                    case UnsubscribeAllComplete.TypeValue:
+                        _incomingMessageSubject.OnNext(JsonSerializer.Deserialize<SubscribeComplete>(rawMessage));
+                        break;
+                    case HeartBeat.TypeValue:
+                        _incomingMessageSubject.OnNext(JsonSerializer.Deserialize<HeartBeat>(rawMessage));
+                        break;
+                    case Error.TypeValue:
+                        _incomingMessageSubject.OnNext(JsonSerializer.Deserialize<Error>(rawMessage));
                         break;
                     default:
                         return;

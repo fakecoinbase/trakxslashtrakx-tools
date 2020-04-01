@@ -1,7 +1,8 @@
 ﻿using System.Collections.Generic;
 using System.Text.Json.Serialization;
+using Trakx.Data.Common.Sources.CryptoCompare.DTOs.Inbound;
 
-namespace Trakx.Data.Common.Sources.CryptoCompare.DTOs
+namespace Trakx.Data.Common.Sources.CryptoCompare.DTOs.Outbound
 {
     public class WebSocketSubscriptionMessage
     {

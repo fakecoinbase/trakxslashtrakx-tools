@@ -1,17 +1,14 @@
 ﻿using System;
 using System.Linq;
 using System.Net.WebSockets;
-using System.Reflection;
 using System.Text;
 using System.Threading;
 using System.Threading.Tasks;
 using FluentAssertions;
 using NSubstitute;
-using NSubstitute.ExceptionExtensions;
-using NSubstitute.ReceivedExtensions;
 using Trakx.Data.Common.Interfaces;
 using Trakx.Data.Common.Sources.CryptoCompare;
-using Trakx.Data.Common.Sources.CryptoCompare.DTOs;
+using Trakx.Data.Common.Sources.CryptoCompare.DTOs.Outbound;
 using Xunit;
 using Xunit.Abstractions;
 
@@ -59,7 +56,7 @@ namespace Trakx.Data.Tests.Unit.Common.Sources.CryptoCompare
         [InlineData(WebSocketState.CloseReceived)]
         [InlineData(WebSocketState.Closed)]
         [InlineData(WebSocketState.Connecting)]
-        public async Task Connect_should_not_start_listening_task_when_websocket_not_open(WebSocketState state)
+        public async Task Connect_should_not_start_listening_loop_task_when_websocket_not_open(WebSocketState state)
         {
             _innerClient.State.Returns(state);
             await _webSocketClient.Connect();
@@ -76,7 +73,7 @@ namespace Trakx.Data.Tests.Unit.Common.Sources.CryptoCompare
         [Fact]
         public async Task StartListening_should_forward_UTF8_content_to_WebSocketStreamer()
         {
-            _innerClient.State.Returns(WebSocketState.Open, WebSocketState.Open, WebSocketState.Closed);
+            _innerClient.State.Returns(WebSocketState.Open, WebSocketState.Open, WebSocketState.Open, WebSocketState.Closed);
             var rawMessage = "message";
             SetupFakeMessageReception(rawMessage);
             await _webSocketClient.Connect();
@@ -102,13 +99,14 @@ namespace Trakx.Data.Tests.Unit.Common.Sources.CryptoCompare
         {
             _innerClient.State.Returns(WebSocketState.Open);
             SetupFakeMessageReception("hello");
+            SetupFakeCloseSideEffect();
+
             await _webSocketClient.Connect();
 
             while (!_webSocketClient.WebSocketStreamer.ReceivedCalls().Any())
             {
                 await Task.Delay(10);
             }
-
 
             await _webSocketClient.DisposeAsync();
 
@@ -117,7 +115,7 @@ namespace Trakx.Data.Tests.Unit.Common.Sources.CryptoCompare
                 Arg.Any<string>(), Arg.Any<CancellationToken>());
         }
 
-        private void SetupFakeMessageReception(string rawMessage)
+        private void SetupFakeMessageReception(string rawMessage, bool isCloseMessage = false)
         {
             var messageBytes = Encoding.UTF8.GetBytes(rawMessage).AsMemory();
             _innerClient.ReceiveAsync(Arg.Any<ArraySegment<byte>>(), Arg.Any<CancellationToken>())
@@ -125,13 +123,21 @@ namespace Trakx.Data.Tests.Unit.Common.Sources.CryptoCompare
                 {
                     ((CancellationToken)ci[1]).ThrowIfCancellationRequested();
                     await Task.Delay(100).ConfigureAwait(false);
-                    return new WebSocketReceiveResult(messageBytes.Length, WebSocketMessageType.Text, true);
+                    var webSocketMessageType = isCloseMessage ? WebSocketMessageType.Close : WebSocketMessageType.Text;
+                    return new WebSocketReceiveResult(messageBytes.Length, webSocketMessageType, true);
                 })
                 .AndDoes(ci =>
                 {
                     var buffer = (ArraySegment<byte>) ci[0];
                     messageBytes.TryCopyTo(buffer);
                 });
+        }
+
+        private void SetupFakeCloseSideEffect()
+        {
+            _innerClient.CloseAsync(Arg.Any<WebSocketCloseStatus>(), Arg.Any<string>(), Arg.Any<CancellationToken>())
+                .Returns(Task.CompletedTask)
+                .AndDoes(ci => SetupFakeMessageReception("bye", true));
         }
 
         [Fact]

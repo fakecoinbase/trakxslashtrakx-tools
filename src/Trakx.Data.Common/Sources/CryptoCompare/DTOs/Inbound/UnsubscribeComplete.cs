@@ -1,8 +1,8 @@
 ﻿using System.Text.Json.Serialization;
 
-namespace Trakx.Data.Common.Sources.CryptoCompare.DTOs
+namespace Trakx.Data.Common.Sources.CryptoCompare.DTOs.Inbound
 {
-    public class UnsubscribeCompleteMessage : WebSocketInboundMessage
+    public class UnsubscribeComplete : InboundMessageBase
     {
         public const string TypeValue = "17";
         [JsonPropertyName("MESSAGE")] public string Message { get; set; }

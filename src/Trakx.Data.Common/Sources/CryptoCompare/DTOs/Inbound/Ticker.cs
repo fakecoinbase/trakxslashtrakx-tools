@@ -1,21 +1,18 @@
 ﻿using System.Text.Json.Serialization;
 using Trakx.Data.Common.Serialisation.Converters;
 
-namespace Trakx.Data.Common.Sources.CryptoCompare.DTOs
+namespace Trakx.Data.Common.Sources.CryptoCompare.DTOs.Inbound
 {
-    public class AggregateIndexResponse : WebSocketInboundMessage
+    public class Ticker : InboundMessageBase
     {
-        public const string TypeValue = "5";
+        public const string TypeValue = "2";
+
         [JsonPropertyName("MARKET")] public string Market { get; set; }
         [JsonPropertyName("FROMSYMBOL")] public string FromSymbol { get; set; }
         [JsonPropertyName("TOSYMBOL")] public string ToSymbol { get; set; }
-
-        [JsonPropertyName("FLAGS"), JsonConverter(typeof(ULongOrStringConverter))]
-        public ulong Flags { get; set; }
-
+        [JsonPropertyName("FLAGS"), JsonConverter(typeof(ULongOrStringConverter))] public ulong Flags { get; set; }
         [JsonPropertyName("PRICE")] public decimal Price { get; set; }
         [JsonPropertyName("LASTUPDATE")] public long LastUpdate { get; set; }
-        [JsonPropertyName("MEDIAN")] public decimal Median { get; set; }
         [JsonPropertyName("LASTVOLUME")] public decimal LastVolume { get; set; }
         [JsonPropertyName("LASTVOLUMETO")] public decimal LastVolumeTo { get; set; }
         [JsonPropertyName("LASTTRADEID")] public string LastTradeId { get; set; }
@@ -29,13 +26,30 @@ namespace Trakx.Data.Common.Sources.CryptoCompare.DTOs
         [JsonPropertyName("OPEN24HOUR")] public decimal Open24Hour { get; set; }
         [JsonPropertyName("HIGH24HOUR")] public decimal High24Hour { get; set; }
         [JsonPropertyName("LOW24HOUR")] public decimal Low24Hour { get; set; }
-        [JsonPropertyName("LASTMARKET")] public string LastMarket { get; set; }
         [JsonPropertyName("VOLUMEHOUR")] public decimal VolumeHour { get; set; }
         [JsonPropertyName("VOLUMEHOURTO")] public decimal VolumeHourTo { get; set; }
         [JsonPropertyName("OPENHOUR")] public decimal OpenHour { get; set; }
         [JsonPropertyName("HIGHHOUR")] public decimal HighHour { get; set; }
         [JsonPropertyName("LOWHOUR")] public decimal LowHour { get; set; }
-        [JsonPropertyName("TOPTIERVOLUME24HOUR")] public decimal TopTierVolume24Hour { get; set; }
-        [JsonPropertyName("TOPTIERVOLUME24HOURTO")] public decimal TopTierVolume24HourTo { get; set; }
+    }
+
+    public class Trade : InboundMessageBase
+    {
+        public const string TypeValue = "0";
+        [JsonPropertyName("M")] public string Market { get; set; }
+        [JsonPropertyName("FSYM")] public string FromSymbol { get; set; }
+        [JsonPropertyName("TSYM")] public string ToSymbol { get; set; }
+        [JsonPropertyName("F"), JsonConverter(typeof(ULongOrStringConverter))] public ulong Flags { get; set; }
+        [JsonPropertyName("ID")] public string Id { get; set; }
+
+        [JsonPropertyName("TS"), JsonConverter(typeof(ULongOrStringConverter))] public ulong TimeStamp { get; set; }
+
+        [JsonPropertyName("Q")] public decimal Quantity { get; set; }
+
+        [JsonPropertyName("P")] public decimal Price { get; set; }
+
+        [JsonPropertyName("TOTAL")] public decimal Total { get; set; }
+
+        [JsonPropertyName("RTS"), JsonConverter(typeof(ULongOrStringConverter))] public ulong RTimestamp { get; set; }
     }
 }
