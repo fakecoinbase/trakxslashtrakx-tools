@@ -1,6 +1,6 @@
-[![Build status](https://dev.azure.com/trakx-io/data-market/_apis/build/status/data-market-ASP.NET%20Core-CI)](https://dev.azure.com/trakx-io/data-market/_build/latest?definitionId=1)
+[![Build Status](https://dev.azure.com/trakx-io/index-manager/_apis/build/status/data-market-ASP.NET%20Core-CI?branchName=dev)](https://dev.azure.com/trakx-io/index-manager/_build/latest?definitionId=1&branchName=dev)
 
-# Trakx data-market
+# Trakx index-manager
 A small web service providing info about Trakx indices and usefull live calculations.
 Data sources used for the calculations are currently CoinGecko and CryptoCompare.
 
