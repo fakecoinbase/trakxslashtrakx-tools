@@ -4,7 +4,7 @@ namespace Trakx.Data.Common.Sources.CryptoCompare.DTOs.Inbound
 {
     public class AggregateIndex : Ticker
     {
-        public const string TypeValue = "5";
+        internal const string TypeValue = "5";
         [JsonPropertyName("MEDIAN")] public decimal Median { get; set; }
         [JsonPropertyName("LASTMARKET")] public string LastMarket { get; set; }
         [JsonPropertyName("TOPTIERVOLUME24HOUR")] public decimal TopTierVolume24Hour { get; set; }

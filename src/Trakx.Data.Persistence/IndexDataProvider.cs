@@ -160,7 +160,7 @@ namespace Trakx.Data.Persistence
 
         /// <inheritdoc />
         public async Task<IIndexValuation> GetInitialValuation(IIndexComposition composition, 
-            string quoteCurrency = Constants.DefaultQuoteCurrency,
+            string quoteCurrency = "usdc",
             CancellationToken cancellationToken = default)
         {
             var issueDate = composition.CreationDate;

@@ -9,7 +9,6 @@ using System.Threading;
 using System.Threading.Tasks;
 using Trakx.Data.Common.Composition;
 using Trakx.Data.Common.Interfaces.Index;
-using Trakx.Data.Common.Pricing;
 using Trakx.Data.Persistence.DAO;
 
 [assembly: InternalsVisibleTo("Trakx.Data.Tests")]
@@ -21,7 +20,7 @@ namespace Trakx.Data.Persistence.Initialisation
         private readonly IndexRepositoryContext _dbContext;
         private readonly IMapper _mapper;
         private readonly ILogger<DatabaseInitialiser> _logger;
-        private const string Usdc = Constants.DefaultQuoteCurrency;
+        private const string Usdc = "usdc";
 
         public DatabaseInitialiser(IndexRepositoryContext dbContext,
             IMapper mapper,

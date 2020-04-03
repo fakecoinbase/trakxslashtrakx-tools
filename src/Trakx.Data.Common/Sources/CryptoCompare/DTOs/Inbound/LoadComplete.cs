@@ -4,7 +4,7 @@ namespace Trakx.Data.Common.Sources.CryptoCompare.DTOs.Inbound
 {
     public class LoadComplete : InboundMessageBase
     {
-        public const string TypeValue = "3";
+        internal const string TypeValue = "3";
         [JsonPropertyName("MESSAGE")] public string Message { get; set; }
         [JsonPropertyName("SUB")] public string Subscription { get; set; }
     }

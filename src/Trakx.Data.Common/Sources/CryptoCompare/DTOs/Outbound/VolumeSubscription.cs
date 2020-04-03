@@ -1,6 +1,6 @@
 ﻿namespace Trakx.Data.Common.Sources.CryptoCompare.DTOs.Outbound
 {
-    public abstract class VolumeSubscription
+    public abstract class VolumeSubscription : ICryptoCompareSubscription
     {
         protected VolumeSubscription(string type, string baseCurrency)
         {
@@ -20,7 +20,6 @@
 
         #region Overrides of Object
 
-        /// <inheritdoc />
         public override string ToString()
         {
             return $"{Type}~{BaseCurrency}";
@@ -29,17 +28,21 @@
         #endregion
     }
 
-    public class FullVolumeSubscription : VolumeSubscription
+    public sealed class FullVolumeSubscription : VolumeSubscription
     {
+        internal const string TypeValue = "11";
+        
         /// <inheritdoc />
         public FullVolumeSubscription(string baseCurrency) 
-            : base("11", baseCurrency) {}
+            : base(TypeValue, baseCurrency) {}
     }
 
-    public class FullTopTierVolumeSubscription : VolumeSubscription
+    public sealed class FullTopTierVolumeSubscription : VolumeSubscription
     {
+        internal const string TypeValue = "21";
+
         /// <inheritdoc />
         public FullTopTierVolumeSubscription(string baseCurrency)
-            : base("21", baseCurrency) { }
+            : base(TypeValue, baseCurrency) { }
     }
 }

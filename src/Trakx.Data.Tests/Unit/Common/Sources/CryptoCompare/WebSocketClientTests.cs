@@ -143,29 +143,29 @@ namespace Trakx.Data.Tests.Unit.Common.Sources.CryptoCompare
         [Fact]
         public async Task AddSubscription_should_send_correct_outbound_message()
         {
-            var subscription = "subscription_to_add";
-            await _webSocketClient.AddSubscription(subscription);
+            var subscription = new AggregateIndexSubscription("ETH", "usd");
+            await _webSocketClient.AddSubscriptions(subscription);
 
             await _innerClient.Received(1).SendAsync(Arg.Any<ArraySegment<byte>>(), WebSocketMessageType.Text, true, Arg.Any<CancellationToken>());
             var bytes = (ArraySegment<byte>) _innerClient.ReceivedCalls()
                 .Single(c => c.GetMethodInfo().Name == nameof(_innerClient.SendAsync)).GetArguments().First();
             var utf8 = Encoding.UTF8.GetString(bytes);
             utf8.Should().Contain(AddSubscriptionMessage.SubAdd);
-            utf8.Should().Contain(subscription);
+            utf8.Should().Contain(subscription.ToString());
         }
 
         [Fact]
         public async Task RemoveSubscription_should_send_correct_outbound_message()
         {
-            var subscription = "subscription_to_remove";
-            await _webSocketClient.RemoveSubscription(subscription);
+            var subscription = new TickerSubscription("Binance", "eth", "usd");
+            await _webSocketClient.RemoveSubscriptions(subscription);
 
             await _innerClient.Received(1).SendAsync(Arg.Any<ArraySegment<byte>>(), WebSocketMessageType.Text, true, Arg.Any<CancellationToken>());
-            var bytes = (ArraySegment<byte>)_innerClient.ReceivedCalls()
+            var bytes = (ArraySegment<byte>)_innerClient.ReceivedCalls() 
                 .Single(c => c.GetMethodInfo().Name == nameof(_innerClient.SendAsync)).GetArguments().First();
             var utf8 = Encoding.UTF8.GetString(bytes);
             utf8.Should().Contain(RemoveSubscriptionMessage.SubRemove);
-            utf8.Should().Contain(subscription);
+            utf8.Should().Contain(subscription.ToString());
         }
     }
 }

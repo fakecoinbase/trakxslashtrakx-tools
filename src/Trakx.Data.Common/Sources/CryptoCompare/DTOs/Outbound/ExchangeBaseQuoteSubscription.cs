@@ -34,34 +34,36 @@ namespace Trakx.Data.Common.Sources.CryptoCompare.DTOs.Outbound
         #endregion
     }
 
-    public class AggregateIndexSubscription : ExchangeBaseQuoteSubscription
+    public sealed class AggregateIndexSubscription : ExchangeBaseQuoteSubscription
     {
+        internal const string TypeValue = AggregateIndex.TypeValue;
+        
         /// <inheritdoc />
         public AggregateIndexSubscription(string baseCurrency, string quoteCurrency)
             : base(AggregateIndex.TypeValue, "CCCAGG", baseCurrency, quoteCurrency) { }
     }
 
-    public class TradeSubscription : ExchangeBaseQuoteSubscription
+    public sealed class TradeSubscription : ExchangeBaseQuoteSubscription
     {
-        public const string TypeValue = AggregateIndex.TypeValue;
+        internal const string TypeValue = Trade.TypeValue;
 
         /// <inheritdoc />
         public TradeSubscription(string exchange, string baseCurrency, string quoteCurrency)
             : base(Trade.TypeValue, exchange, baseCurrency, quoteCurrency) { }
     }
 
-    public class TickerSubscription : ExchangeBaseQuoteSubscription
+    public sealed class TickerSubscription : ExchangeBaseQuoteSubscription
     {
-        public const string TypeValue = AggregateIndex.TypeValue;
+        internal const string TypeValue = Ticker.TypeValue;
 
         /// <inheritdoc />
         public TickerSubscription(string exchange, string baseCurrency, string quoteCurrency)
             : base(Ticker.TypeValue, exchange, baseCurrency, quoteCurrency) { }
     }
 
-    public class OhlcSubscription : ExchangeBaseQuoteSubscription
+    public sealed class OhlcSubscription : ExchangeBaseQuoteSubscription
     {
-        public const string TypeValue = AggregateIndex.TypeValue;
+        internal const string TypeValue = Ohlc.TypeValue;
 
         public string Peridocity { get; }
 

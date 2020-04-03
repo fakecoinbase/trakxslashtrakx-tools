@@ -11,7 +11,7 @@ using Trakx.Data.Common.Sources.CryptoCompare.DTOs.Outbound;
 
 namespace Trakx.Data.Common.Sources.CryptoCompare
 {
-    public class WebSocketClient : IAsyncDisposable
+    public class WebSocketClient : IAsyncDisposable, ICryptoCompareWebSocketClient, IDisposable
     {
         private readonly IApiDetailsProvider _apiDetailsProvider;
         private readonly IClientWebsocket _client;
@@ -46,28 +46,16 @@ namespace Trakx.Data.Common.Sources.CryptoCompare
         public WebSocketState State => _client.State;
         public TaskStatus? ListenInboundMessagesTaskStatus => _listenToWebSocketTask?.Status;
 
-        public async Task AddSubscription(string subscription)
+        public async Task AddSubscriptions(params ICryptoCompareSubscription[] subscriptions)
         {
-            await AddSubscriptions(new[] {subscription});
-        }
-
-        public async Task AddSubscriptions(string[] subscriptions)
-        {
-            var message = new AddSubscriptionMessage();
-            message.Subscriptions.AddRange(subscriptions);
+            var message = new AddSubscriptionMessage(subscriptions);
             await _client.SendAsync(Encoding.UTF8.GetBytes(JsonSerializer.Serialize(message)),
                 WebSocketMessageType.Text, true, CancellationToken.None);
         }
 
-        public async Task RemoveSubscription(string subscription)
+        public async Task RemoveSubscriptions(params ICryptoCompareSubscription[] subscriptions)
         {
-            await RemoveSubscriptions(new[] { subscription });
-        }
-
-        public async Task RemoveSubscriptions(string[] subscriptions)
-        {
-            var message = new RemoveSubscriptionMessage();
-            message.Subscriptions.AddRange(subscriptions);
+            var message = new RemoveSubscriptionMessage(subscriptions);
             await _client.SendAsync(Encoding.UTF8.GetBytes(JsonSerializer.Serialize(message)),
                 WebSocketMessageType.Text, true, CancellationToken.None);
         }
@@ -124,6 +112,22 @@ namespace Trakx.Data.Common.Sources.CryptoCompare
         public async ValueTask DisposeAsync()
         {
             await DisposeAsync(true);
+            GC.SuppressFinalize(this);
+        }
+
+        #endregion
+
+        #region IDisposable
+
+        protected virtual void Dispose(bool disposing)
+        {
+            DisposeAsync(disposing).GetAwaiter().GetResult();
+        }
+
+        /// <inheritdoc />
+        public void Dispose()
+        {
+            Dispose(true);
             GC.SuppressFinalize(this);
         }
 

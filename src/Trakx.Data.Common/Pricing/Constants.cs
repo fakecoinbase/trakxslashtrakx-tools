@@ -1,8 +1,8 @@
 ﻿namespace Trakx.Data.Common.Pricing
 {
-    public static class Constants
+    internal static class Constants
     {
-        public const string DefaultQuoteCurrency = "usdc";
-        public const string Usd = "usd";
+        internal const string DefaultQuoteCurrency = "usdc";
+        internal const string Usd = "usd";
     }
 }

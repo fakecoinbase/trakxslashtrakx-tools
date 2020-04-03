@@ -5,8 +5,7 @@ namespace Trakx.Data.Common.Sources.CryptoCompare.DTOs.Inbound
 {
     public class Ticker : InboundMessageBase
     {
-        public const string TypeValue = "2";
-
+        internal const string TypeValue = "2";
         [JsonPropertyName("MARKET")] public string Market { get; set; }
         [JsonPropertyName("FROMSYMBOL")] public string FromSymbol { get; set; }
         [JsonPropertyName("TOSYMBOL")] public string ToSymbol { get; set; }

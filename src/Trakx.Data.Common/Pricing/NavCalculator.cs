@@ -70,19 +70,6 @@ namespace Trakx.Data.Common.Pricing
 
         #endregion
 
-        private struct SourcedPrice
-        {
-            public SourcedPrice(string source, decimal price)
-            {
-                Source = source;
-                Price = price;
-            }
-
-            public string Source { get; }
-            public decimal Price { get; }
-        }
-
-
         private async Task<KeyValuePair<string, SourcedPrice>> GetLatestUsdPrice(IComponentQuantity c)
         {
             try
@@ -125,7 +112,7 @@ namespace Trakx.Data.Common.Pricing
             var price = await _messariClient.GetLatestPrice(c.Symbol).ConfigureAwait(false);
             return price == default 
                 ? default
-                : new KeyValuePair<string, SourcedPrice>(c.Symbol, new SourcedPrice("messari", price.Value));
+                : new KeyValuePair<string, SourcedPrice>(c.Symbol, new SourcedPrice(c.Symbol, "messari", price.Value));
         }
 
         private async Task<KeyValuePair<string, SourcedPrice>> GetLatestCoinGeckoUsdPrice(IComponentDefinition c)
@@ -133,7 +120,7 @@ namespace Trakx.Data.Common.Pricing
             var price = await _coinGeckoClient.GetLatestPrice(c.CoinGeckoId).ConfigureAwait(false);
             return price == default
                 ? default
-                : new KeyValuePair<string, SourcedPrice>(c.Symbol, new SourcedPrice("coinGecko", price.Value));
+                : new KeyValuePair<string, SourcedPrice>(c.Symbol, new SourcedPrice(c.Symbol, "coinGecko", price.Value));
         }
 
         private async Task<KeyValuePair<string, SourcedPrice>> GetCoinGeckoUsdPriceAsOf(IComponentDefinition c, DateTime asOf)
@@ -141,7 +128,7 @@ namespace Trakx.Data.Common.Pricing
             var price = await _coinGeckoClient.GetPriceAsOfFromId(c.CoinGeckoId, asOf).ConfigureAwait(false);
             return price == default
                 ? default
-                : new KeyValuePair<string, SourcedPrice>(c.Symbol, new SourcedPrice("coinGecko", price.Value));
+                : new KeyValuePair<string, SourcedPrice>(c.Symbol, new SourcedPrice(c.Symbol, "coinGecko", price.Value));
         }
 
         public class FailedToRetrievePriceException : Exception

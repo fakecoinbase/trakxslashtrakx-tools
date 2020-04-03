@@ -1,22 +1,23 @@
 ﻿using System.Collections.Generic;
 using System.Text.Json.Serialization;
-using Trakx.Data.Common.Sources.CryptoCompare.DTOs.Inbound;
 
 namespace Trakx.Data.Common.Sources.CryptoCompare.DTOs.Outbound
 {
-    public class WebSocketSubscriptionMessage
+    public abstract class WebSocketSubscriptionMessage
     {
-        protected internal WebSocketSubscriptionMessage(string action, string format = "streamer")
+        protected WebSocketSubscriptionMessage(string action, params ICryptoCompareSubscription[] subscriptions)
         {
             Action = action;
-            Format = format;
+            Format = "streamer";
+            var subscriptionList = new List<ICryptoCompareSubscription>(subscriptions);
+            Subscriptions = subscriptionList.AsReadOnly();
         }
         
         [JsonPropertyName("action")]
         public string Action { get; set; }
 
-        [JsonPropertyName("subs")]
-        public List<string> Subscriptions { get; } = new List<string>();
+        [JsonPropertyName("subs"), JsonConverter(typeof(CryptoCompareSubscriptionListConverter))]
+        public IReadOnlyList<ICryptoCompareSubscription> Subscriptions { get; }
 
         [JsonPropertyName("format")] 
         public string Format { get; set; }
@@ -24,17 +25,17 @@ namespace Trakx.Data.Common.Sources.CryptoCompare.DTOs.Outbound
 
     public sealed class AddSubscriptionMessage : WebSocketSubscriptionMessage
     {
-        public const string SubAdd = "SubAdd";
+        internal const string SubAdd = "SubAdd";
 
         /// <inheritdoc />
-        public AddSubscriptionMessage(string format = "streamer") : base(SubAdd, format) {}
+        public AddSubscriptionMessage(params ICryptoCompareSubscription[] subscriptions) : base(SubAdd, subscriptions) { }
     }
 
     public sealed class RemoveSubscriptionMessage : WebSocketSubscriptionMessage
     {
-        public const string SubRemove = "SubRemove";
+        internal const string SubRemove = "SubRemove";
 
         /// <inheritdoc />
-        public RemoveSubscriptionMessage(string format = "streamer") : base(SubRemove, format) { }
+        public RemoveSubscriptionMessage(params ICryptoCompareSubscription[] subscriptions) : base(SubRemove, subscriptions) { }
     }
 }

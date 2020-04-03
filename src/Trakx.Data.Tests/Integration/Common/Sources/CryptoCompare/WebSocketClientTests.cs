@@ -36,39 +36,39 @@ namespace Trakx.Data.Tests.Integration.Common.Sources.CryptoCompare
         [Fact]
         public async Task WebSocketClient_should_receive_Trade_updates()
         {
-            var btcUsdSubscription = new TradeSubscription("Coinbase", "btc", "usd").ToString();
+            var btcUsdSubscription = new TradeSubscription("Coinbase", "btc", "usd");
             await RunTestForSubscriptionType<Trade>(btcUsdSubscription);
         }
 
         [Fact]
         public async Task WebSocketClient_should_receive_Ticker_updates()
         {
-            var btcUsdSubscription = new TickerSubscription("Bitfinex", "eth", "usd").ToString();
+            var btcUsdSubscription = new TickerSubscription("Bitfinex", "eth", "usd");
             await RunTestForSubscriptionType<Ticker>(btcUsdSubscription);
         }
 
         [Fact]
         public async Task WebSocketClient_should_receive_AggregateIndex_updates()
         {
-            var btcUsdSubscription = new AggregateIndexSubscription("btc", "usd").ToString();
+            var btcUsdSubscription = new AggregateIndexSubscription("btc", "usd");
             await RunTestForSubscriptionType<AggregateIndex>(btcUsdSubscription);
         }
 
         [Fact]
         public async Task WebSocketClient_should_receive_Ohlc_updates()
         {
-            var btcUsdSubscription = new OhlcSubscription("CCCAGG", "eth", "usd", TimeSpan.FromHours(1)).ToString();
+            var btcUsdSubscription = new OhlcSubscription("CCCAGG", "eth", "usd", TimeSpan.FromHours(1));
             await RunTestForSubscriptionType<Ohlc>(btcUsdSubscription);
         }
 
-        private async Task RunTestForSubscriptionType<T>(string subscriptionString)
+        private async Task RunTestForSubscriptionType<T>(ICryptoCompareSubscription subscription)
         {
             await _client.Connect();
             _client.State.Should().Be(WebSocketState.Open);
 
             var messagesReceived = new List<InboundMessageBase>();
 
-            using var subscription = _client.WebSocketStreamer.AllInboundMessagesStream
+            using var inboundMessageStream = _client.WebSocketStreamer.AllInboundMessagesStream
                 .SubscribeOn(Scheduler.Default)
                 .Take(50)
                 .Subscribe(m =>
@@ -78,7 +78,7 @@ namespace Trakx.Data.Tests.Integration.Common.Sources.CryptoCompare
                 });
 
 
-            await _client.AddSubscription(subscriptionString).ConfigureAwait(false);
+            await _client.AddSubscriptions(subscription).ConfigureAwait(false);
             await Task.Delay(TimeSpan.FromMilliseconds(500));
 
             messagesReceived.Count.Should().BeGreaterOrEqualTo(3);
@@ -88,7 +88,7 @@ namespace Trakx.Data.Tests.Integration.Common.Sources.CryptoCompare
             messagesReceived.OfType<LoadComplete>().Count().Should().BeGreaterOrEqualTo(1);
 
 
-            await _client.RemoveSubscription(subscriptionString).ConfigureAwait(false);
+            await _client.RemoveSubscriptions(subscription).ConfigureAwait(false);
             await Task.Delay(TimeSpan.FromMilliseconds(500));
 
             messagesReceived.Count.Should().BeGreaterOrEqualTo(5);
