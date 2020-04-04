@@ -1,7 +1,7 @@
 ﻿using System;
 using System.Numerics;
 
-namespace Trakx.Data.Common.Extensions
+namespace Trakx.Common.Extensions
 {
     public static class NumberExtensions
     {

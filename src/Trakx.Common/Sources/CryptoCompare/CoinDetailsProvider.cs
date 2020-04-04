@@ -4,7 +4,7 @@ using System.Linq;
 using System.Text.Json;
 using System.Threading.Tasks;
 
-namespace Trakx.Data.Common.Sources.CryptoCompare
+namespace Trakx.Common.Sources.CryptoCompare
 {
     public class CoinDetailsProvider
     {

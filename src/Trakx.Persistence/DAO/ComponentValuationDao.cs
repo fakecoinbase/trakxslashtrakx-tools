@@ -1,9 +1,9 @@
 ﻿using System;
 using System.ComponentModel.DataAnnotations;
 using System.ComponentModel.DataAnnotations.Schema;
-using Trakx.Data.Common.Interfaces.Index;
+using Trakx.Common.Interfaces.Index;
 
-namespace Trakx.Data.Persistence.DAO
+namespace Trakx.Persistence.DAO
 {
     /// <inheritdoc />
     public class ComponentValuationDao : IComponentValuation

@@ -1,9 +1,7 @@
-﻿
-
-using System.Threading.Tasks;
+﻿using System.Threading.Tasks;
 using Nethereum.Web3;
 
-namespace Trakx.Data.Common.Sources.Web3.Client
+namespace Trakx.Common.Sources.Web3.Client
 {
     public interface IWeb3Client
     {

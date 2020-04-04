@@ -1,7 +1,7 @@
 ﻿using System.Text.Json.Serialization;
-using Trakx.Data.Common.Serialisation.Converters;
+using Trakx.Common.Serialisation.Converters;
 
-namespace Trakx.Data.Common.Sources.CryptoCompare.DTOs.Inbound
+namespace Trakx.Common.Sources.CryptoCompare.DTOs.Inbound
 {
     public class Trade : InboundMessageBase
     {

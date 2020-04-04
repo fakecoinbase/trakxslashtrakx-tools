@@ -1,10 +1,10 @@
 ﻿using System;
 using AutoMapper;
 using Microsoft.Extensions.DependencyInjection;
-using Trakx.Data.Market.Server.Models;
+using Trakx.MarketData.Server.Models;
 using Xunit;
 
-namespace Trakx.Data.Tests.Unit.Models
+namespace Trakx.Tests.Unit.Models
 {
     public sealed class DbContextFixture : IDisposable
     {

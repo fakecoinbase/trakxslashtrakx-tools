@@ -1,6 +1,6 @@
 ﻿using System.Text.Json.Serialization;
 
-namespace Trakx.Data.Common.Sources.CryptoCompare.DTOs.Inbound
+namespace Trakx.Common.Sources.CryptoCompare.DTOs.Inbound
 {
     public class LoadComplete : InboundMessageBase
     {

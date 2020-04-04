@@ -2,10 +2,10 @@
 using System.Collections.Generic;
 using System.Threading;
 using System.Threading.Tasks;
-using Trakx.Data.Common.Interfaces.Index;
-using Trakx.Data.Common.Pricing;
+using Trakx.Common.Interfaces.Index;
+using Trakx.Common.Pricing;
 
-namespace Trakx.Data.Common.Interfaces
+namespace Trakx.Common.Interfaces
 {
     public interface IIndexDataProvider
     {

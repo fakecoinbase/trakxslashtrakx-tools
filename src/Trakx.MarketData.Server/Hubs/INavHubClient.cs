@@ -1,7 +1,7 @@
 ﻿using System.Threading.Tasks;
-using Trakx.Data.Common.Pricing;
+using Trakx.Common.Pricing;
 
-namespace Trakx.Data.Market.Server.Hubs
+namespace Trakx.MarketData.Server.Hubs
 {
     public interface INavHubClient
     {

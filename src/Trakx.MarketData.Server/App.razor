@@ -1,4 +1,5 @@
-﻿<Router AppAssembly="@typeof(Program).Assembly">
+﻿@using Trakx.MarketData.Server.Shared
+<Router AppAssembly="@typeof(Program).Assembly">
     <Found Context="routeData">
         <AuthorizeRouteView RouteData="@routeData" DefaultLayout="@typeof(MainLayout)" />
     </Found>

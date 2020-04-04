@@ -1,7 +1,7 @@
 ﻿using Microsoft.AspNetCore.Identity.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore;
 
-namespace Trakx.Data.Market.Server.Data
+namespace Trakx.MarketData.Server.Data
 {
     public class ApplicationDbContext : IdentityDbContext
     {

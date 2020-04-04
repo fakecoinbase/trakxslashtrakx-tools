@@ -1,6 +1,6 @@
 ﻿using System;
 
-namespace Trakx.Data.Common.Utils
+namespace Trakx.Common.Utils
 {
     public static class RandomVariation
     {

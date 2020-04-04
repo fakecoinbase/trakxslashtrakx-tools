@@ -1,19 +1,19 @@
-﻿using AutoMapper;
-using Microsoft.EntityFrameworkCore;
-using Microsoft.Extensions.Logging;
-using System;
+﻿using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Runtime.CompilerServices;
 using System.Threading;
 using System.Threading.Tasks;
-using Trakx.Data.Common.Composition;
-using Trakx.Data.Common.Interfaces.Index;
-using Trakx.Data.Persistence.DAO;
+using AutoMapper;
+using Microsoft.EntityFrameworkCore;
+using Microsoft.Extensions.Logging;
+using Trakx.Common.Composition;
+using Trakx.Common.Interfaces.Index;
+using Trakx.Persistence.DAO;
 
-[assembly: InternalsVisibleTo("Trakx.Data.Tests")]
+[assembly: InternalsVisibleTo("Trakx.Tests")]
 
-namespace Trakx.Data.Persistence.Initialisation
+namespace Trakx.Persistence.Initialisation
 {
     public class DatabaseInitialiser : IDatabaseInitialiser
     {

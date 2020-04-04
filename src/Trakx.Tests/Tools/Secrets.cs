@@ -1,6 +1,6 @@
-﻿namespace Trakx.Data.Tests.Tools
+﻿namespace Trakx.Tests.Tools
 {
-    internal class Secrets
+    internal static class Secrets
     {
         public const string InfuraApiKey = "";
         public const string EthereumWalletSecret = "";

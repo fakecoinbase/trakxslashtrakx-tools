@@ -1,7 +1,7 @@
 ﻿using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
 
-namespace Trakx.Data.Common.Sources.Messari.Client
+namespace Trakx.Common.Sources.Messari.Client
 {
     public static class ServiceConfiguration
     {

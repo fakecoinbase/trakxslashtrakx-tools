@@ -1,8 +1,8 @@
 ﻿using System;
 using System.Text.Json.Serialization;
-using Trakx.Data.Common.Serialisation.Converters;
+using Trakx.Common.Serialisation.Converters;
 
-namespace Trakx.Data.Common.Sources.Messari.DTOs
+namespace Trakx.Common.Sources.Messari.DTOs
 {
     public partial class MarketData
     {

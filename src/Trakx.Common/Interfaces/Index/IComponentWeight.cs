@@ -1,4 +1,4 @@
-﻿namespace Trakx.Data.Common.Interfaces.Index
+﻿namespace Trakx.Common.Interfaces.Index
 {
     public interface IComponentWeight
     {

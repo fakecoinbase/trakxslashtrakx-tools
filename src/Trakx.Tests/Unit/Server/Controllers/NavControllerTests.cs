@@ -1,18 +1,18 @@
-﻿using FluentAssertions;
+﻿using System;
+using System.Threading;
+using System.Threading.Tasks;
+using FluentAssertions;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.Extensions.Logging;
 using NSubstitute;
-using System;
-using System.Threading;
-using System.Threading.Tasks;
-using Trakx.Data.Common.Interfaces;
-using Trakx.Data.Common.Interfaces.Index;
-using Trakx.Data.Common.Interfaces.Pricing;
-using Trakx.Data.Market.Server.Controllers;
-using Trakx.Data.Tests.Data;
+using Trakx.Common.Interfaces;
+using Trakx.Common.Interfaces.Index;
+using Trakx.Common.Interfaces.Pricing;
+using Trakx.MarketData.Server.Controllers;
+using Trakx.Tests.Data;
 using Xunit;
 
-namespace Trakx.Data.Tests.Unit.Server.Controllers
+namespace Trakx.Tests.Unit.Server.Controllers
 {
     public class NavControllerTests
     {

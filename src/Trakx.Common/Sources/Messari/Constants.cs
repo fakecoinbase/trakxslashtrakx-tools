@@ -1,6 +1,6 @@
 ﻿using System.Collections.Generic;
 
-namespace Trakx.Data.Common.Sources.Messari
+namespace Trakx.Common.Sources.Messari
 {
     internal static class Constants
     {

@@ -1,4 +1,4 @@
-﻿namespace Trakx.Data.Common.Sources.Messari.DTOs
+﻿namespace Trakx.Common.Sources.Messari.DTOs
 {
     public enum CategoryElement { Currency, Financial, Infrastructure, Services };
 

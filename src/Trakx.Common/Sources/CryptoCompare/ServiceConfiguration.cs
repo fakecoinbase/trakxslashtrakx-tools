@@ -2,9 +2,9 @@
 using CryptoCompare;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
-using Trakx.Data.Common.Interfaces;
+using Trakx.Common.Interfaces;
 
-namespace Trakx.Data.Common.Sources.CryptoCompare
+namespace Trakx.Common.Sources.CryptoCompare
 {
     public static class ServiceConfiguration
     {

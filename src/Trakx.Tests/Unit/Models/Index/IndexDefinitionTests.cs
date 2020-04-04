@@ -1,9 +1,9 @@
 ﻿using System.Linq;
 using FluentAssertions;
-using Trakx.Data.Common.Interfaces.Index;
+using Trakx.Common.Interfaces.Index;
 using Xunit;
 
-namespace Trakx.Data.Tests.Unit.Models.Index
+namespace Trakx.Tests.Unit.Models.Index
 {
     [Collection(nameof(DbContextCollection))]
     public class IndexDefinitionTests

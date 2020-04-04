@@ -4,14 +4,14 @@ using System.Threading.Tasks;
 using FluentAssertions;
 using Microsoft.Extensions.Logging;
 using NSubstitute;
-using Trakx.Data.Common.Interfaces.Index;
-using Trakx.Data.Common.Pricing;
-using Trakx.Data.Common.Sources.CoinGecko;
-using Trakx.Data.Common.Sources.Messari.Client;
-using Trakx.Data.Tests.Data;
+using Trakx.Common.Interfaces.Index;
+using Trakx.Common.Pricing;
+using Trakx.Common.Sources.CoinGecko;
+using Trakx.Common.Sources.Messari.Client;
+using Trakx.Tests.Data;
 using Xunit;
 
-namespace Trakx.Data.Tests.Unit.Common.Pricing
+namespace Trakx.Tests.Unit.Common.Pricing
 {
     public class NavCalculatorTests
     {

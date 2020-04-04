@@ -9,10 +9,10 @@ using Microsoft.Extensions.Caching.Memory;
 using Microsoft.Extensions.Logging;
 using Polly;
 using Polly.Retry;
-using Trakx.Data.Common.Pricing;
-using Trakx.Data.Common.Utils;
+using Trakx.Common.Pricing;
+using Trakx.Common.Utils;
 
-namespace Trakx.Data.Common.Sources.CoinGecko
+namespace Trakx.Common.Sources.CoinGecko
 {
     public class CoinGeckoClient : ICoinGeckoClient
     {

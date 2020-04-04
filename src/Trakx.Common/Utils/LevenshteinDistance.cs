@@ -2,7 +2,7 @@
 using System.Collections.Generic;
 using System.Linq;
 
-namespace Trakx.Data.Common.Utils
+namespace Trakx.Common.Utils
 {
     /// <summary>
     /// Contains approximate string matching utils

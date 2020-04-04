@@ -5,14 +5,14 @@ using FluentAssertions;
 using Microsoft.Extensions.Logging;
 using Nethereum.ABI.Encoders;
 using NSubstitute;
+using Trakx.Common.Ethereum;
+using Trakx.Common.Extensions;
 using Trakx.Contracts.Set;
 using Trakx.Contracts.Set.Core;
-using Trakx.Data.Common.Ethereum;
-using Trakx.Data.Common.Extensions;
-using Trakx.Data.Tests.Data;
+using Trakx.Tests.Data;
 using Xunit;
 
-namespace Trakx.Data.Tests.Unit.Common.Ethereum
+namespace Trakx.Tests.Unit.Common.Ethereum
 {
     public class CompositionCreatorTests
     {

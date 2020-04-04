@@ -1,8 +1,8 @@
 ﻿using System.ComponentModel.DataAnnotations;
 using System.Diagnostics;
-using Trakx.Data.Common.Interfaces.Index;
+using Trakx.Common.Interfaces.Index;
 
-namespace Trakx.Data.Persistence.DAO
+namespace Trakx.Persistence.DAO
 {
     public class ComponentDefinitionDao : IComponentDefinition
     {

@@ -3,7 +3,7 @@ Microsoft Visual Studio Solution File, Format Version 12.00
 # Visual Studio Version 16
 VisualStudioVersion = 16.0.29326.143
 MinimumVisualStudioVersion = 10.0.40219.1
-Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Trakx.Data.Market.Server", "Trakx.Data.Market.Server\Trakx.Data.Market.Server.csproj", "{802A7FB2-F8C2-41C6-A001-382AEAD6FF19}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Trakx.MarketData.Server", "Trakx.MarketData.Server\Trakx.MarketData.Server.csproj", "{802A7FB2-F8C2-41C6-A001-382AEAD6FF19}"
 EndProject
 Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "SolutionItems", "SolutionItems", "{AD1E845A-8787-487F-BDF9-95FDCF9135B4}"
 	ProjectSection(SolutionItems) = preProject
@@ -23,11 +23,11 @@ Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "nginx", "nginx", "{2F26BA78
 		nginx\nginx.conf = nginx\nginx.conf
 	EndProjectSection
 EndProject
-Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Trakx.Data.Persistence", "Trakx.Data.Persistence\Trakx.Data.Persistence.csproj", "{2BF4978C-2B17-4ED8-B663-1BD4C19A2E5D}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Trakx.Persistence", "Trakx.Persistence\Trakx.Persistence.csproj", "{2BF4978C-2B17-4ED8-B663-1BD4C19A2E5D}"
 EndProject
-Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Trakx.Data.Common", "Trakx.Data.Common\Trakx.Data.Common.csproj", "{E80103D1-6C34-40F0-9DBD-7288BC446A07}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Trakx.Common", "Trakx.Common\Trakx.Common.csproj", "{E80103D1-6C34-40F0-9DBD-7288BC446A07}"
 EndProject
-Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Trakx.Data.Tests", "Trakx.Data.Tests\Trakx.Data.Tests.csproj", "{E87FD654-38C1-4F82-A5DE-6AF6392F11F2}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Trakx.Tests", "Trakx.Tests\Trakx.Tests.csproj", "{E87FD654-38C1-4F82-A5DE-6AF6392F11F2}"
 EndProject
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Trakx.Contracts", "Trakx.Contracts\Trakx.Contracts.csproj", "{62ECC51D-2CA0-4DF3-BE12-ABC397CA45EB}"
 EndProject

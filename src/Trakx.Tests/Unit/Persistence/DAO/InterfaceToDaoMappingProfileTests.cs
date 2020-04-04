@@ -1,10 +1,10 @@
 ﻿using AutoMapper;
 using FluentAssertions;
-using Trakx.Data.Common.Core;
-using Trakx.Data.Persistence.DAO;
+using Trakx.Common.Core;
+using Trakx.Persistence.DAO;
 using Xunit;
 
-namespace Trakx.Data.Tests.Unit.Persistence.DAO
+namespace Trakx.Tests.Unit.Persistence.DAO
 {
     public class InterfaceToDaoMappingProfileTests
     {

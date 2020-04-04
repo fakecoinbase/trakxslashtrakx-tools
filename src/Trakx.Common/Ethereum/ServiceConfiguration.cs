@@ -2,11 +2,11 @@
 using Microsoft.Extensions.DependencyInjection;
 using Nethereum.Web3;
 using Nethereum.Web3.Accounts;
+using Trakx.Common.Sources.Web3;
 using Trakx.Contracts.Set;
 using Trakx.Contracts.Set.Core;
-using Trakx.Data.Common.Sources.Web3;
 
-namespace Trakx.Data.Common.Ethereum
+namespace Trakx.Common.Ethereum
 {
     public static class ServiceConfiguration
     {

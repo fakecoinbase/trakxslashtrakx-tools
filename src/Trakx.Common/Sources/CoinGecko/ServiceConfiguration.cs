@@ -1,6 +1,6 @@
 ﻿using Microsoft.Extensions.DependencyInjection;
 
-namespace Trakx.Data.Common.Sources.CoinGecko
+namespace Trakx.Common.Sources.CoinGecko
 {
     public static class ServiceConfiguration
     {

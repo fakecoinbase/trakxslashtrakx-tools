@@ -1,7 +1,7 @@
 ﻿using System.Threading.Tasks;
 using Microsoft.JSInterop;
 
-namespace Trakx.Data.Market.Server.Data
+namespace Trakx.MarketData.Server.Data
 {
     public class JsInterop
     {

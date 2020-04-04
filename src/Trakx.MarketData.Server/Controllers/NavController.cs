@@ -1,14 +1,14 @@
 ﻿using System;
 using System.Threading;
+using System.Threading.Tasks;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.Extensions.Logging;
-using System.Threading.Tasks;
-using Trakx.Data.Common.Interfaces;
-using Trakx.Data.Common.Interfaces.Index;
-using Trakx.Data.Common.Interfaces.Pricing;
-using Trakx.Data.Common.Utils;
+using Trakx.Common.Interfaces;
+using Trakx.Common.Interfaces.Index;
+using Trakx.Common.Interfaces.Pricing;
+using Trakx.Common.Utils;
 
-namespace Trakx.Data.Market.Server.Controllers
+namespace Trakx.MarketData.Server.Controllers
 {
     /// <summary>
     /// Provides methods to get information about the Net Asset Value (NAV) of indexes.

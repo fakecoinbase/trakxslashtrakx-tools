@@ -1,6 +1,6 @@
 ﻿using System;
 
-namespace Trakx.Data.Common.Pricing
+namespace Trakx.Common.Pricing
 {
     public struct SourcedPrice :IEquatable<SourcedPrice>
     {

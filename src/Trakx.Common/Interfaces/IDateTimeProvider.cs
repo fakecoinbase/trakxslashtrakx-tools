@@ -1,6 +1,6 @@
 ﻿using System;
 
-namespace Trakx.Data.Common.Interfaces
+namespace Trakx.Common.Interfaces
 {
     /// <summary>
     /// Allows easier testing, by setting fixed return values.

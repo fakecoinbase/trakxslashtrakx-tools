@@ -6,10 +6,10 @@ using System.Text.Json;
 using System.Threading;
 using System.Threading.Tasks;
 using Microsoft.Extensions.Logging;
-using Trakx.Data.Common.Interfaces;
-using Trakx.Data.Common.Sources.CryptoCompare.DTOs.Outbound;
+using Trakx.Common.Interfaces;
+using Trakx.Common.Sources.CryptoCompare.DTOs.Outbound;
 
-namespace Trakx.Data.Common.Sources.CryptoCompare
+namespace Trakx.Common.Sources.CryptoCompare
 {
     public class WebSocketClient : IAsyncDisposable, ICryptoCompareWebSocketClient, IDisposable
     {

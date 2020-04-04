@@ -1,4 +1,4 @@
-﻿namespace Trakx.Data.Common.Sources.CryptoCompare
+﻿namespace Trakx.Common.Sources.CryptoCompare
 {
     public interface ICryptoCompareSubscription {}
 }

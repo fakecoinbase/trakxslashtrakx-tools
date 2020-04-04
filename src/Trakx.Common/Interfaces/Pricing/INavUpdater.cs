@@ -1,8 +1,8 @@
 ﻿using System;
-using Trakx.Data.Common.Interfaces.Index;
-using Trakx.Data.Common.Pricing;
+using Trakx.Common.Interfaces.Index;
+using Trakx.Common.Pricing;
 
-namespace Trakx.Data.Common.Interfaces.Pricing
+namespace Trakx.Common.Interfaces.Pricing
 {
     public interface INavUpdater
     {

@@ -3,9 +3,9 @@ using System.Linq;
 using Nethereum.RPC.Eth.DTOs;
 using Newtonsoft.Json.Linq;
 using NSubstitute;
-using Trakx.Data.Common.Interfaces.Index;
+using Trakx.Common.Interfaces.Index;
 
-namespace Trakx.Data.Tests.Data
+namespace Trakx.Tests.Data
 {
     public class MockCreator
     {

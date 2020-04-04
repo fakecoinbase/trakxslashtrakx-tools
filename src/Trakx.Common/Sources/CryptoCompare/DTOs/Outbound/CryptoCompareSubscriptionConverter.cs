@@ -4,7 +4,7 @@ using System.IO;
 using System.Text.Json;
 using System.Text.Json.Serialization;
 
-namespace Trakx.Data.Common.Sources.CryptoCompare.DTOs.Outbound
+namespace Trakx.Common.Sources.CryptoCompare.DTOs.Outbound
 {
     public class CryptoCompareSubscriptionConverter : JsonConverter<ICryptoCompareSubscription>
     {

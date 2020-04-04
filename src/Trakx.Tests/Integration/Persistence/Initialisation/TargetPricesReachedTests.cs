@@ -6,17 +6,17 @@ using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.DependencyInjection;
 using Polly;
 using Polly.Retry;
-using Trakx.Data.Common.Interfaces.Pricing;
-using Trakx.Data.Common.Pricing;
-using Trakx.Data.Common.Sources.Coinbase;
-using Trakx.Data.Common.Sources.CoinGecko;
-using Trakx.Data.Common.Sources.Messari.Client;
-using Trakx.Data.Persistence.Initialisation;
-using Trakx.Data.Tests.Unit.Models;
+using Trakx.Common.Interfaces.Pricing;
+using Trakx.Common.Pricing;
+using Trakx.Common.Sources.Coinbase;
+using Trakx.Common.Sources.CoinGecko;
+using Trakx.Common.Sources.Messari.Client;
+using Trakx.Persistence.Initialisation;
+using Trakx.Tests.Unit.Models;
 using Xunit;
 using Xunit.Abstractions;
 
-namespace Trakx.Data.Tests.Integration.Persistence.Initialisation
+namespace Trakx.Tests.Integration.Persistence.Initialisation
 {
     [Collection(nameof(DbContextCollection))]
     public class TargetPricesReachedTests

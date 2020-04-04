@@ -3,7 +3,7 @@ using System.Net.WebSockets;
 using System.Threading;
 using System.Threading.Tasks;
 
-namespace Trakx.Data.Common.Interfaces
+namespace Trakx.Common.Interfaces
 {
     /// <summary>
     /// Simple wrapper around native <see cref="System.Net.WebSockets.ClientWebSocket" /> to allow

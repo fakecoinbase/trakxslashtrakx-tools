@@ -1,7 +1,7 @@
 ﻿using AutoMapper.Configuration;
-using Trakx.Data.Common.Core;
+using Trakx.Common.Core;
 
-namespace Trakx.Data.Persistence.DAO
+namespace Trakx.Persistence.DAO
 {
     public class InterfaceToDaoMappingProfile : MapperConfigurationExpression
     {

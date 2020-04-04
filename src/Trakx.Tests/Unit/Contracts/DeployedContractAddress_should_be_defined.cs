@@ -3,7 +3,7 @@ using FluentAssertions;
 using Trakx.Contracts.Set;
 using Xunit;
 
-namespace Trakx.Data.Tests.Unit.Contracts
+namespace Trakx.Tests.Unit.Contracts
 {
     public class DeployedContractAddressesTests
     {

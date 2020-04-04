@@ -4,11 +4,11 @@ using System.Threading.Tasks;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.Extensions.Hosting;
 using Microsoft.Extensions.Logging;
-using Trakx.Data.Common.Interfaces;
-using Trakx.Data.Common.Interfaces.Pricing;
-using Trakx.Data.Market.Server.Models;
+using Trakx.Common.Interfaces;
+using Trakx.Common.Interfaces.Pricing;
+using Trakx.MarketData.Server.Models;
 
-namespace Trakx.Data.Market.Server.Controllers
+namespace Trakx.MarketData.Server.Controllers
 {
     /// <summary>
     /// Provides endpoints related index information

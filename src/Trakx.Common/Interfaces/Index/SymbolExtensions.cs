@@ -1,7 +1,7 @@
 ﻿using System;
 using System.Text.RegularExpressions;
 
-namespace Trakx.Data.Common.Interfaces.Index
+namespace Trakx.Common.Interfaces.Index
 {
     public static class SymbolExtensions
     {

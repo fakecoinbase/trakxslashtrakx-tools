@@ -3,13 +3,13 @@
 @using System.Text.Json
 @using Microsoft.AspNetCore.SignalR.Client;
 @using Microsoft.Extensions.DependencyInjection
-@using Trakx.Data.Common.Interfaces
-@using Trakx.Data.Common.Pricing
-@using Trakx.Data.Market.Server.Hubs
+@using Trakx.Common.Interfaces
+@using Trakx.Common.Pricing
+@using Trakx.MarketData.Server.Hubs
 @inject NavigationManager NavigationManager
 @inject IIndexDataProvider IndexDataProvider
 @implements IDisposable
-@implements INavHubClient
+@implements Trakx.MarketData.Server.Hubs.INavHubClient
 
 <h1>Live Index NAV</h1>
 

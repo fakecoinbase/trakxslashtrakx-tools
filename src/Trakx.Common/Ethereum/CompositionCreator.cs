@@ -7,13 +7,14 @@ using System.Threading.Tasks;
 using Microsoft.Extensions.Logging;
 using Nethereum.ABI.Encoders;
 using Newtonsoft.Json;
+using Trakx.Common.Extensions;
+using Trakx.Common.Interfaces.Index;
 using Trakx.Contracts.Set;
 using Trakx.Contracts.Set.Core;
-using Trakx.Data.Common.Extensions;
-using Trakx.Data.Common.Interfaces.Index;
-[assembly: InternalsVisibleTo("Trakx.Data.Tests")]
 
-namespace Trakx.Data.Common.Ethereum
+[assembly: InternalsVisibleTo("Trakx.Tests")]
+
+namespace Trakx.Common.Ethereum
 {
     public interface ICompositionCreator
     {

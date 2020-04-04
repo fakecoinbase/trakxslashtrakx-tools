@@ -1,7 +1,7 @@
 ﻿using System;
 using Microsoft.Extensions.Configuration;
 
-namespace Trakx.Data.Common.Sources.CryptoCompare
+namespace Trakx.Common.Sources.CryptoCompare
 {
     public interface IApiDetailsProvider
     {

@@ -1,15 +1,15 @@
-﻿using HtmlAgilityPack;
-using Microsoft.Extensions.DependencyInjection;
-using System;
+﻿using System;
 using System.IO;
 using System.Net.Http;
 using System.Reflection;
 using System.Threading.Tasks;
+using HtmlAgilityPack;
+using Microsoft.Extensions.DependencyInjection;
 using Trakx.Contracts.Set;
 using Xunit;
 using Xunit.Abstractions;
 
-namespace Trakx.Data.Tests.Tools
+namespace Trakx.Tests.Tools
 {
     public class SmartContractAbiAndBinDownloader
     {

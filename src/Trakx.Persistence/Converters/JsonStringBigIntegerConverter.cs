@@ -3,7 +3,7 @@ using System.Numerics;
 using System.Text.Json;
 using System.Text.Json.Serialization;
 
-namespace Trakx.Data.Persistence.Converters
+namespace Trakx.Persistence.Converters
 {
     public sealed class JsonStringBigIntegerConverter : JsonConverter<BigInteger>
     {

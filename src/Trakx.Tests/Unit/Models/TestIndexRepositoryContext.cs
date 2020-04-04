@@ -4,12 +4,12 @@ using System.Linq;
 using System.Threading;
 using AutoMapper;
 using Microsoft.EntityFrameworkCore;
-using Trakx.Data.Common.Interfaces.Index;
-using Trakx.Data.Persistence;
-using Trakx.Data.Persistence.DAO;
-using Trakx.Data.Persistence.Initialisation;
+using Trakx.Common.Interfaces.Index;
+using Trakx.Persistence;
+using Trakx.Persistence.DAO;
+using Trakx.Persistence.Initialisation;
 
-namespace Trakx.Data.Tests.Unit.Models
+namespace Trakx.Tests.Unit.Models
 {
     /// <summary>
     /// Simplified fake database with predictable content, mostly aimed at testing IndexDataProvider

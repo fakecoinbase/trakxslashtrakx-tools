@@ -2,13 +2,13 @@
 using System.Collections.Generic;
 using System.Linq;
 using FluentAssertions;
-using Trakx.Data.Common.Composition;
-using Trakx.Data.Common.Core;
-using Trakx.Data.Common.Interfaces.Index;
+using Trakx.Common.Composition;
+using Trakx.Common.Core;
+using Trakx.Common.Interfaces.Index;
 using Xunit;
 using Xunit.Abstractions;
 
-namespace Trakx.Data.Tests.Unit.Common.Composition
+namespace Trakx.Tests.Unit.Common.Composition
 {
     public class IndexCompositionCalculatorTests
     {

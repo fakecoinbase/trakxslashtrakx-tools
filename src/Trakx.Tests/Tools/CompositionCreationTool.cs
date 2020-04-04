@@ -5,17 +5,17 @@ using System.Threading.Tasks;
 using FluentAssertions;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.DependencyInjection;
-using Trakx.Data.Common.Ethereum;
-using Trakx.Data.Common.Extensions;
-using Trakx.Data.Common.Sources.Coinbase;
-using Trakx.Data.Common.Sources.CoinGecko;
-using Trakx.Data.Common.Sources.Messari.Client;
-using Trakx.Data.Persistence.DAO;
-using Trakx.Data.Tests.Unit.Models;
+using Trakx.Common.Ethereum;
+using Trakx.Common.Extensions;
+using Trakx.Common.Sources.Coinbase;
+using Trakx.Common.Sources.CoinGecko;
+using Trakx.Common.Sources.Messari.Client;
+using Trakx.Persistence.DAO;
+using Trakx.Tests.Unit.Models;
 using Xunit;
 using Xunit.Abstractions;
 
-namespace Trakx.Data.Tests.Tools
+namespace Trakx.Tests.Tools
 {
     [Collection(nameof(DbContextCollection))]
     public class CompositionCreationTool : IClassFixture<DbContextFixture>

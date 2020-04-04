@@ -1,8 +1,7 @@
-﻿using System.Collections.Generic;
-using System.Net.WebSockets;
+﻿using System.Net.WebSockets;
 using System.Threading.Tasks;
 
-namespace Trakx.Data.Common.Sources.CryptoCompare
+namespace Trakx.Common.Sources.CryptoCompare
 {
     public interface ICryptoCompareWebSocketClient
     {

@@ -1,8 +1,8 @@
 ﻿using System.Linq;
-using Trakx.Data.Common.Core;
+using Trakx.Common.Core;
 using Xunit;
 
-namespace Trakx.Data.Tests.Unit.Server.Model
+namespace Trakx.Tests.Unit.Server.Model
 {
     public class IndexPricedMoldelTests
     {

@@ -3,9 +3,9 @@ using System.Collections.Generic;
 using System.Diagnostics;
 using System.Linq;
 using Ardalis.GuardClauses;
-using Trakx.Data.Common.Interfaces.Index;
+using Trakx.Common.Interfaces.Index;
 
-namespace Trakx.Data.Market.Server.Models
+namespace Trakx.MarketData.Server.Models
 {
     public partial class IndexPricedModel
     {

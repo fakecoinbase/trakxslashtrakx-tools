@@ -2,7 +2,7 @@
 using System.Collections.Generic;
 using System.Linq;
 
-namespace Trakx.Data.Common.Interfaces.Index
+namespace Trakx.Common.Interfaces.Index
 {
     /// <summary>
     /// Represents the composition of an index, which results from its definition (where the weighing per

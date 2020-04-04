@@ -1,4 +1,4 @@
-﻿namespace Trakx.Data.Common.Interfaces.Index
+﻿namespace Trakx.Common.Interfaces.Index
 {
     /// <summary>
     /// Component definition, attached to the index for which it is a component

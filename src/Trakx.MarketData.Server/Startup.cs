@@ -3,28 +3,28 @@ using System.IO;
 using System.Reflection;
 using Microsoft.AspNetCore.Builder;
 using Microsoft.AspNetCore.Components.Authorization;
-using Microsoft.AspNetCore.Identity;
 using Microsoft.AspNetCore.Hosting;
 using Microsoft.AspNetCore.HttpOverrides;
+using Microsoft.AspNetCore.Identity;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Hosting;
 using Microsoft.OpenApi.Models;
-using Trakx.Data.Common.Ethereum;
-using Trakx.Data.Common.Interfaces;
-using Trakx.Data.Common.Pricing;
-using Trakx.Data.Common.Sources.CoinGecko;
-using Trakx.Data.Common.Sources.CryptoCompare;
-using Trakx.Data.Common.Sources.Messari.Client;
-using Trakx.Data.Market.Server.Areas.Identity;
-using Trakx.Data.Market.Server.Data;
-using Trakx.Data.Market.Server.Hubs;
-using Trakx.Data.Market.Server.Models;
-using Trakx.Data.Persistence;
-using Trakx.Data.Persistence.Initialisation;
+using Trakx.Common.Ethereum;
+using Trakx.Common.Interfaces;
+using Trakx.Common.Pricing;
+using Trakx.Common.Sources.CoinGecko;
+using Trakx.Common.Sources.CryptoCompare;
+using Trakx.Common.Sources.Messari.Client;
+using Trakx.MarketData.Server.Areas.Identity;
+using Trakx.MarketData.Server.Data;
+using Trakx.MarketData.Server.Hubs;
+using Trakx.MarketData.Server.Models;
+using Trakx.Persistence;
+using Trakx.Persistence.Initialisation;
 
-namespace Trakx.Data.Market.Server
+namespace Trakx.MarketData.Server
 {
     public class Startup
     {

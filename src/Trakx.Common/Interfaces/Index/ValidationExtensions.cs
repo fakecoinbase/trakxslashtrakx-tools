@@ -1,7 +1,7 @@
 ﻿using System.Linq;
 using Ardalis.GuardClauses;
 
-namespace Trakx.Data.Common.Interfaces.Index
+namespace Trakx.Common.Interfaces.Index
 {
     /// <summary>
     /// Convenience methods to ensure the various object involved in representing the indexes are valid.

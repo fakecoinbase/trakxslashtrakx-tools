@@ -1,9 +1,9 @@
 ﻿using AutoMapper;
 using Microsoft.EntityFrameworkCore;
-using Trakx.Data.Persistence;
-using Trakx.Data.Persistence.Initialisation;
+using Trakx.Persistence;
+using Trakx.Persistence.Initialisation;
 
-namespace Trakx.Data.Tests.Unit.Models
+namespace Trakx.Tests.Unit.Models
 {
     public sealed class InMemoryIndexRepositoryContext : IndexRepositoryContext
     {

@@ -1,8 +1,8 @@
 ﻿using FluentAssertions;
-using Trakx.Data.Common.Utils;
+using Trakx.Common.Utils;
 using Xunit;
 
-namespace Trakx.Data.Tests.Unit.Common.Utils
+namespace Trakx.Tests.Unit.Common.Utils
 {
     public class LevenshteinDistanceTests
     {

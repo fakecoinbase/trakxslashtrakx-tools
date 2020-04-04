@@ -1,7 +1,7 @@
 ﻿using System;
 using System.Collections.Generic;
 
-namespace Trakx.Data.Common.Interfaces.Index
+namespace Trakx.Common.Interfaces.Index
 {
     /// <summary>
     /// Represents a valuation of the index, for a given composition, and at

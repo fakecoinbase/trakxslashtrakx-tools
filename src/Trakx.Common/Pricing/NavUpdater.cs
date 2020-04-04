@@ -6,11 +6,11 @@ using System.Reactive.Subjects;
 using System.Reactive.Threading.Tasks;
 using System.Threading;
 using Microsoft.Extensions.Logging;
-using Trakx.Data.Common.Interfaces.Index;
-using Trakx.Data.Common.Interfaces.Pricing;
+using Trakx.Common.Interfaces.Index;
+using Trakx.Common.Interfaces.Pricing;
 using Guid = System.Guid;
 
-namespace Trakx.Data.Common.Pricing
+namespace Trakx.Common.Pricing
 {
     public class NavUpdater : INavUpdater
     {

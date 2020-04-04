@@ -5,11 +5,11 @@ using FluentAssertions;
 using Microsoft.Extensions.Caching.Memory;
 using Microsoft.Extensions.Logging;
 using NSubstitute;
-using Trakx.Data.Persistence;
-using Trakx.Data.Tests.Unit.Models;
+using Trakx.Persistence;
+using Trakx.Tests.Unit.Models;
 using Xunit;
 
-namespace Trakx.Data.Tests.Unit.Persistence
+namespace Trakx.Tests.Unit.Persistence
 {
     [Collection(nameof(TestDbContextCollection))]
     public class IndexDataProviderTests

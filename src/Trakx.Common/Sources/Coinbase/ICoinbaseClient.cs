@@ -1,6 +1,6 @@
 ﻿using System.Collections.Generic;
 
-namespace Trakx.Data.Common.Sources.Coinbase
+namespace Trakx.Common.Sources.Coinbase
 {
     public interface ICoinbaseClient
     {

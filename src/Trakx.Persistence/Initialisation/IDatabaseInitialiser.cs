@@ -1,6 +1,6 @@
 ﻿using System.Threading.Tasks;
 
-namespace Trakx.Data.Persistence.Initialisation
+namespace Trakx.Persistence.Initialisation
 {
     public interface IDatabaseInitialiser
     {

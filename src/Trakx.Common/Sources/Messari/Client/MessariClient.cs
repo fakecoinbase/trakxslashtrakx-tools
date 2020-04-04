@@ -4,9 +4,9 @@ using System.Linq;
 using System.Threading;
 using System.Threading.Tasks;
 using Ardalis.GuardClauses;
-using Trakx.Data.Common.Sources.Messari.DTOs;
+using Trakx.Common.Sources.Messari.DTOs;
 
-namespace Trakx.Data.Common.Sources.Messari.Client
+namespace Trakx.Common.Sources.Messari.Client
 {
     public class MessariClient : IMessariClient
     {

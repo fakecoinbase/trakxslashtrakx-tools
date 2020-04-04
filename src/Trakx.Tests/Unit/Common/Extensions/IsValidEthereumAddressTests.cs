@@ -2,7 +2,7 @@
 using Nethereum.Util;
 using Xunit;
 
-namespace Trakx.Data.Tests.Unit.Common
+namespace Trakx.Tests.Unit.Common.Extensions
 {
     public class IsValidEthereumAddressTests
     {

@@ -4,11 +4,11 @@ using System.Threading.Tasks;
 using Microsoft.AspNetCore.SignalR;
 using Microsoft.Extensions.Caching.Memory;
 using Microsoft.Extensions.Logging;
-using Trakx.Data.Common.Interfaces;
-using Trakx.Data.Common.Interfaces.Pricing;
-using Trakx.Data.Common.Pricing;
+using Trakx.Common.Interfaces;
+using Trakx.Common.Interfaces.Pricing;
+using Trakx.Common.Pricing;
 
-namespace Trakx.Data.Market.Server.Hubs
+namespace Trakx.MarketData.Server.Hubs
 {
     public sealed class NavHub : Hub
     {

@@ -1,7 +1,7 @@
 ﻿using Microsoft.Extensions.DependencyInjection;
-using Trakx.Data.Common.Interfaces.Pricing;
+using Trakx.Common.Interfaces.Pricing;
 
-namespace Trakx.Data.Common.Pricing
+namespace Trakx.Common.Pricing
 {
     public static class ServiceConfiguration
     {

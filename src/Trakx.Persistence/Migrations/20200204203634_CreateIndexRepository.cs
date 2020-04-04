@@ -1,7 +1,7 @@
 ﻿using System;
 using Microsoft.EntityFrameworkCore.Migrations;
 
-namespace Trakx.Data.Persistence.Migrations
+namespace Trakx.Persistence.Migrations
 {
     public partial class CreateIndexRepository : Migration
     {

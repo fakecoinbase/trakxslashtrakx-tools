@@ -2,9 +2,9 @@
 using System.Collections.Generic;
 using System.ComponentModel.DataAnnotations.Schema;
 using System.Linq;
-using Trakx.Data.Common.Interfaces.Index;
+using Trakx.Common.Interfaces.Index;
 
-namespace Trakx.Data.Persistence.DAO
+namespace Trakx.Persistence.DAO
 {
     public class IndexValuationDao : IIndexValuation
     {

@@ -2,8 +2,8 @@
 	<s:String x:Key="/Default/CodeEditing/GenerateMemberBody/DocumentationGenerationKind/@EntryValue">Inherit</s:String>
 	<s:Boolean x:Key="/Default/CodeEditing/GenerateMemberBody/WrapIntoRegions/@EntryValue">True</s:Boolean>
 	<s:Boolean x:Key="/Default/InstalledDictionaries/InstalledDictionaries/=C_003A_005CUsers_005Cmatthieu_005CDownloads_005Cen_005FGB_002Edic/@EntryIndexedValue">False</s:Boolean>
-	<s:Boolean x:Key="/Default/InstalledDictionaries/InstalledDictionaries/=C_003A_005CUsers_005Cmatthieu_005C_002Espelling_005Cen_005FGB_002Edic/@EntryIndexedValue">True</s:Boolean>
 	<s:Boolean x:Key="/Default/InstalledDictionaries/InstalledDictionaries/=C_003A_005CUsers_005Cmatthieu_005CDownloads_005Cen_005FGB_002Edic/@EntryIndexRemoved">True</s:Boolean>
+	<s:Boolean x:Key="/Default/InstalledDictionaries/InstalledDictionaries/=C_003A_005CUsers_005Cmatthieu_005C_002Espelling_005Cen_005FGB_002Edic/@EntryIndexedValue">True</s:Boolean>
 	<s:Boolean x:Key="/Default/ReSpeller/DocCommentsUseMemberModifiers/@EntryValue">True</s:Boolean>
 	<s:Boolean x:Key="/Default/UserDictionary/Words/=centralised/@EntryIndexedValue">True</s:Boolean>
 	<s:Boolean x:Key="/Default/UserDictionary/Words/=decentralised/@EntryIndexedValue">True</s:Boolean>

@@ -6,13 +6,13 @@ using System.Threading;
 using System.Threading.Tasks;
 using FluentAssertions;
 using NSubstitute;
-using Trakx.Data.Common.Interfaces;
-using Trakx.Data.Common.Sources.CryptoCompare;
-using Trakx.Data.Common.Sources.CryptoCompare.DTOs.Outbound;
+using Trakx.Common.Interfaces;
+using Trakx.Common.Sources.CryptoCompare;
+using Trakx.Common.Sources.CryptoCompare.DTOs.Outbound;
 using Xunit;
 using Xunit.Abstractions;
 
-namespace Trakx.Data.Tests.Unit.Common.Sources.CryptoCompare
+namespace Trakx.Tests.Unit.Common.Sources.CryptoCompare
 {
     public class WebSocketClientTests
     {

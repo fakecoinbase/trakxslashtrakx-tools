@@ -1,6 +1,6 @@
 ﻿using System;
 
-namespace Trakx.Data.Common.Sources.CoinGecko
+namespace Trakx.Common.Sources.CoinGecko
 {
     public class MarketData
     {

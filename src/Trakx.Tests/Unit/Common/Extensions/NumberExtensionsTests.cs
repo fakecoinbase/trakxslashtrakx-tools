@@ -1,9 +1,9 @@
 ﻿using System;
 using FluentAssertions;
-using Trakx.Data.Common.Extensions;
+using Trakx.Common.Extensions;
 using Xunit;
 
-namespace Trakx.Data.Tests.Unit.Common.Extensions
+namespace Trakx.Tests.Unit.Common.Extensions
 {
     public class NumberExtensionsTests
     {

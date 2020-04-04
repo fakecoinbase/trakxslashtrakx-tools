@@ -1,6 +1,6 @@
 ﻿using System;
 
-namespace Trakx.Data.Common.Interfaces.Index
+namespace Trakx.Common.Interfaces.Index
 {
     /// <summary>
     /// Represents an index with an immutable definition. Not to be confused with

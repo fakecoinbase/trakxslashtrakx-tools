@@ -4,10 +4,10 @@ using System.Reflection;
 using System.Text.Json;
 using System.Threading.Tasks;
 using FluentAssertions;
-using Trakx.Data.Common.Sources.Messari.DTOs;
+using Trakx.Common.Sources.Messari.DTOs;
 using Xunit;
 
-namespace Trakx.Data.Tests.Data.Messari
+namespace Trakx.Tests.Data.Messari
 {
     public class MessariReader
     {

@@ -4,7 +4,7 @@ using System.Buffers.Text;
 using System.Text.Json;
 using System.Text.Json.Serialization;
 
-namespace Trakx.Data.Common.Serialisation.Converters
+namespace Trakx.Common.Serialisation.Converters
 {
     public class LongStringConverter : JsonConverter<long>
     {

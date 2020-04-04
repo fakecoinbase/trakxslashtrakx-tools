@@ -1,8 +1,8 @@
 ﻿using System;
 using System.Diagnostics;
-using Trakx.Data.Common.Interfaces.Index;
+using Trakx.Common.Interfaces.Index;
 
-namespace Trakx.Data.Common.Core
+namespace Trakx.Common.Core
 {
     /// <inheritdoc />
     public class ComponentValuation : IComponentValuation

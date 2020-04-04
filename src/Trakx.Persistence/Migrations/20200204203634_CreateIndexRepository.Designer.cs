@@ -5,9 +5,9 @@ using Microsoft.EntityFrameworkCore.Infrastructure;
 using Microsoft.EntityFrameworkCore.Metadata;
 using Microsoft.EntityFrameworkCore.Migrations;
 using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
-using Trakx.Data.Persistence;
+using Trakx.Persistence;
 
-namespace Trakx.Data.Persistence.Migrations
+namespace Trakx.Persistence.Migrations
 {
     [DbContext(typeof(IndexRepositoryContext))]
     [Migration("20200204203634_CreateIndexRepository")]

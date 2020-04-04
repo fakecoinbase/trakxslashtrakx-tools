@@ -2,9 +2,9 @@
 using System.Collections.Generic;
 using System.Threading.Tasks;
 using CoinGecko.Entities.Response.Coins;
-using Trakx.Data.Common.Pricing;
+using Trakx.Common.Pricing;
 
-namespace Trakx.Data.Common.Sources.CoinGecko
+namespace Trakx.Common.Sources.CoinGecko
 {
     public interface ICoinGeckoClient
     {

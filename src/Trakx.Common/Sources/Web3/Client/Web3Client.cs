@@ -4,7 +4,7 @@ using Microsoft.Extensions.Logging;
 using Nethereum.StandardTokenEIP20;
 using Nethereum.Web3;
 
-namespace Trakx.Data.Common.Sources.Web3.Client
+namespace Trakx.Common.Sources.Web3.Client
 {
     public class Web3Client : IWeb3Client
     {

@@ -6,16 +6,16 @@ using Nethereum.ABI.Encoders;
 using Nethereum.Hex.HexConvertors.Extensions;
 using Nethereum.Web3;
 using NSubstitute;
+using Trakx.Common.Ethereum;
+using Trakx.Common.Extensions;
+using Trakx.Common.Interfaces.Index;
 using Trakx.Contracts.Set;
 using Trakx.Contracts.Set.Core;
-using Trakx.Data.Common.Ethereum;
-using Trakx.Data.Common.Extensions;
-using Trakx.Data.Common.Interfaces.Index;
-using Trakx.Data.Tests.Data;
+using Trakx.Tests.Data;
 using Xunit;
 using Xunit.Abstractions;
 
-namespace Trakx.Data.Tests.Unit.Common.Ethereum
+namespace Trakx.Tests.Unit.Common.Ethereum
 {
     public class IndexCreatorTests
     {

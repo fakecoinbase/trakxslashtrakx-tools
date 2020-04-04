@@ -1,4 +1,4 @@
-﻿namespace Trakx.Data.Common.Interfaces.Index
+﻿namespace Trakx.Common.Interfaces.Index
 {
     /// <summary>
     /// Represents an ERC20 compatible token which can be used as a component in an index.

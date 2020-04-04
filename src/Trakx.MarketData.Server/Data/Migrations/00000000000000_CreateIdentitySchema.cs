@@ -2,7 +2,7 @@
 using Microsoft.EntityFrameworkCore.Metadata;
 using Microsoft.EntityFrameworkCore.Migrations;
 
-namespace Trakx.Data.Market.Server.Data.Migrations
+namespace Trakx.MarketData.Server.Data.Migrations
 {
     public partial class CreateIdentitySchema : Migration
     {

@@ -1,7 +1,7 @@
 ﻿using Microsoft.Extensions.DependencyInjection;
-using Trakx.Data.Common.Sources.Web3.Client;
+using Trakx.Common.Sources.Web3.Client;
 
-namespace Trakx.Data.Common.Sources.Web3
+namespace Trakx.Common.Sources.Web3
 {
     public static class ServiceConfiguration
     {

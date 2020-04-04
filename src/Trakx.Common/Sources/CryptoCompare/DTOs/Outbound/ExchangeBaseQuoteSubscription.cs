@@ -1,7 +1,7 @@
 ﻿using System;
-using Trakx.Data.Common.Sources.CryptoCompare.DTOs.Inbound;
+using Trakx.Common.Sources.CryptoCompare.DTOs.Inbound;
 
-namespace Trakx.Data.Common.Sources.CryptoCompare.DTOs.Outbound
+namespace Trakx.Common.Sources.CryptoCompare.DTOs.Outbound
 {
     public abstract class ExchangeBaseQuoteSubscription : VolumeSubscription
     {

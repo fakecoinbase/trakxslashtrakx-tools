@@ -1,4 +1,4 @@
-﻿namespace Trakx.Data.Common.Sources.CryptoCompare.DTOs.Outbound
+﻿namespace Trakx.Common.Sources.CryptoCompare.DTOs.Outbound
 {
     public abstract class VolumeSubscription : ICryptoCompareSubscription
     {

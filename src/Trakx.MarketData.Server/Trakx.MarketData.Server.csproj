@@ -41,8 +41,8 @@
   </ItemGroup>
 
   <ItemGroup>
-    <ProjectReference Include="..\Trakx.Data.Common\Trakx.Data.Common.csproj" />
-    <ProjectReference Include="..\Trakx.Data.Persistence\Trakx.Data.Persistence.csproj" />
+    <ProjectReference Include="..\Trakx.Common\Trakx.Common.csproj" />
+    <ProjectReference Include="..\Trakx.Persistence\Trakx.Persistence.csproj" />
   </ItemGroup>
 
   <ItemGroup>

@@ -1,6 +1,6 @@
 ﻿using Microsoft.EntityFrameworkCore.Migrations;
 
-namespace Trakx.Data.Persistence.Migrations
+namespace Trakx.Persistence.Migrations
 {
     public partial class AddCompositionAddressAndSymbol : Migration
     {

@@ -1,11 +1,11 @@
 ﻿using System;
 using AutoMapper;
 using Microsoft.Extensions.DependencyInjection;
-using Trakx.Data.Market.Server.Models;
-using Trakx.Data.Persistence;
+using Trakx.MarketData.Server.Models;
+using Trakx.Persistence;
 using Xunit;
 
-namespace Trakx.Data.Tests.Unit.Models
+namespace Trakx.Tests.Unit.Models
 {
     /// <summary>
     /// Use this context to get a simplified set of data aimed at testing.

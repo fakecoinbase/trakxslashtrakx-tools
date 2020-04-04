@@ -3,9 +3,9 @@ using System.Reactive.Linq;
 using System.Reactive.Subjects;
 using System.Text.Json;
 using Microsoft.Extensions.Logging;
-using Trakx.Data.Common.Sources.CryptoCompare.DTOs.Inbound;
+using Trakx.Common.Sources.CryptoCompare.DTOs.Inbound;
 
-namespace Trakx.Data.Common.Sources.CryptoCompare
+namespace Trakx.Common.Sources.CryptoCompare
 {
     public interface IWebSocketStreamer
     {

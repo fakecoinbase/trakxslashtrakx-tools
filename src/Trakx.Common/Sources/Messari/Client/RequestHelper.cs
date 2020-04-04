@@ -7,9 +7,9 @@ using System.Threading;
 using System.Threading.Tasks;
 using Microsoft.AspNetCore.WebUtilities;
 using Microsoft.Extensions.Logging;
-using Trakx.Data.Common.Sources.Messari.DTOs;
+using Trakx.Common.Sources.Messari.DTOs;
 
-namespace Trakx.Data.Common.Sources.Messari.Client
+namespace Trakx.Common.Sources.Messari.Client
 {
     public class RequestHelper
     {

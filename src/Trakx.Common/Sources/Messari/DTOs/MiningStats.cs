@@ -1,6 +1,6 @@
 ﻿using System.Text.Json.Serialization;
 
-namespace Trakx.Data.Common.Sources.Messari.DTOs
+namespace Trakx.Common.Sources.Messari.DTOs
 {
     public partial class MiningStats
     {

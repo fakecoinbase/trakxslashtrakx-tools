@@ -1,8 +1,8 @@
 ﻿using System.Linq;
 using Microsoft.EntityFrameworkCore;
-using Trakx.Data.Persistence.DAO;
+using Trakx.Persistence.DAO;
 
-namespace Trakx.Data.Persistence
+namespace Trakx.Persistence
 {
     public static class DbContextExtensions
     {

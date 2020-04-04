@@ -5,13 +5,13 @@ using System.Threading.Tasks;
 using Microsoft.Extensions.Logging;
 using Polly;
 using Polly.Retry;
-using Trakx.Data.Common.Core;
-using Trakx.Data.Common.Interfaces.Index;
-using Trakx.Data.Common.Interfaces.Pricing;
-using Trakx.Data.Common.Sources.CoinGecko;
-using Trakx.Data.Common.Sources.Messari.Client;
+using Trakx.Common.Core;
+using Trakx.Common.Interfaces.Index;
+using Trakx.Common.Interfaces.Pricing;
+using Trakx.Common.Sources.CoinGecko;
+using Trakx.Common.Sources.Messari.Client;
 
-namespace Trakx.Data.Common.Pricing
+namespace Trakx.Common.Pricing
 {
     public class NavCalculator : INavCalculator
     {

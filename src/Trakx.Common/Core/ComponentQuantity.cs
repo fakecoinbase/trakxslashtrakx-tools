@@ -1,9 +1,9 @@
 ﻿using System.Diagnostics;
 using Ardalis.GuardClauses;
-using Trakx.Data.Common.Extensions;
-using Trakx.Data.Common.Interfaces.Index;
+using Trakx.Common.Extensions;
+using Trakx.Common.Interfaces.Index;
 
-namespace Trakx.Data.Common.Core
+namespace Trakx.Common.Core
 {
     /// <inheritdoc />
     public class ComponentQuantity : IComponentQuantity

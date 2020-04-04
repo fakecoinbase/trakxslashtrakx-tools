@@ -1,6 +1,6 @@
 ﻿using Microsoft.Extensions.DependencyInjection;
 
-namespace Trakx.Data.Common.Sources.Coinbase
+namespace Trakx.Common.Sources.Coinbase
 {
     public static class ServiceConfiguration
     {

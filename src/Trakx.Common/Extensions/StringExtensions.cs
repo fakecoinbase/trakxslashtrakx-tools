@@ -1,7 +1,7 @@
 ﻿using System.Text.Encodings.Web;
 using System.Text.RegularExpressions;
 
-namespace Trakx.Data.Common.Extensions
+namespace Trakx.Common.Extensions
 {
     public static class StringExtensions
     {

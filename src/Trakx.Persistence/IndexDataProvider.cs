@@ -6,11 +6,10 @@ using System.Threading.Tasks;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Caching.Memory;
 using Microsoft.Extensions.Logging;
-using Trakx.Data.Common.Interfaces;
-using Trakx.Data.Common.Interfaces.Index;
-using Trakx.Data.Common.Pricing;
+using Trakx.Common.Interfaces;
+using Trakx.Common.Interfaces.Index;
 
-namespace Trakx.Data.Persistence
+namespace Trakx.Persistence
 {
     public class IndexDataProvider : IIndexDataProvider
     {

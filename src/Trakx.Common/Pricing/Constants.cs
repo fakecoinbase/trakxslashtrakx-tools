@@ -1,4 +1,4 @@
-﻿namespace Trakx.Data.Common.Pricing
+﻿namespace Trakx.Common.Pricing
 {
     internal static class Constants
     {

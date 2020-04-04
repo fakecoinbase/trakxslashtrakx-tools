@@ -1,11 +1,11 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Linq;
-using Trakx.Data.Common.Core;
-using Trakx.Data.Common.Extensions;
-using Trakx.Data.Common.Interfaces.Index;
+using Trakx.Common.Core;
+using Trakx.Common.Extensions;
+using Trakx.Common.Interfaces.Index;
 
-namespace Trakx.Data.Common.Composition
+namespace Trakx.Common.Composition
 {
     public struct PriceAndTargetWeight
     {

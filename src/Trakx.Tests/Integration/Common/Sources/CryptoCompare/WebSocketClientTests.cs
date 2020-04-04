@@ -7,15 +7,15 @@ using System.Reactive.Linq;
 using System.Text.Json;
 using System.Threading.Tasks;
 using FluentAssertions;
-using Trakx.Data.Common.Interfaces;
-using Trakx.Data.Common.Sources.CryptoCompare;
-using Trakx.Data.Common.Sources.CryptoCompare.DTOs.Inbound;
-using Trakx.Data.Common.Sources.CryptoCompare.DTOs.Outbound;
-using Trakx.Data.Tests.Tools;
+using Trakx.Common.Interfaces;
+using Trakx.Common.Sources.CryptoCompare;
+using Trakx.Common.Sources.CryptoCompare.DTOs.Inbound;
+using Trakx.Common.Sources.CryptoCompare.DTOs.Outbound;
+using Trakx.Tests.Tools;
 using Xunit;
 using Xunit.Abstractions;
 
-namespace Trakx.Data.Tests.Integration.Common.Sources.CryptoCompare
+namespace Trakx.Tests.Integration.Common.Sources.CryptoCompare
 {
     //AsyncDispose not yet supported by XUnit so let's implement both...
     public sealed class WebSocketClientTests : IAsyncDisposable, IDisposable

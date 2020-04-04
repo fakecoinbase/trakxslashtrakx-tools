@@ -1,8 +1,8 @@
 ﻿using FluentAssertions;
+using Trakx.Common.Interfaces.Index;
 using Xunit;
-using Trakx.Data.Common.Interfaces.Index;
 
-namespace Trakx.Data.Tests.Unit.Common.Core
+namespace Trakx.Tests.Unit.Common.Core
 {
     public class SymbolExtensionsTests
     {

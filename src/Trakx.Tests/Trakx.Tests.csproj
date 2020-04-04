@@ -53,7 +53,7 @@
   </ItemGroup>
 
   <ItemGroup>
-    <ProjectReference Include="..\Trakx.Data.Market.Server\Trakx.Data.Market.Server.csproj" />
+    <ProjectReference Include="..\Trakx.MarketData.Server\Trakx.MarketData.Server.csproj" />
   </ItemGroup>
 
 </Project>

@@ -1,7 +1,7 @@
 ﻿using System;
 using Microsoft.Extensions.DependencyInjection;
 
-namespace Trakx.Data.Common.Sources.Messari.Client
+namespace Trakx.Common.Sources.Messari.Client
 {
     public class RequestHelperFactory
     {

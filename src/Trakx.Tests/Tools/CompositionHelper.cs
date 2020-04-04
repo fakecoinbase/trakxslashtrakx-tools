@@ -1,23 +1,23 @@
-﻿using FluentAssertions;
-using Microsoft.Extensions.Configuration;
-using Microsoft.Extensions.DependencyInjection;
-using System;
+﻿using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Net.Http;
 using System.Threading.Tasks;
-using Trakx.Data.Common.Ethereum;
-using Trakx.Data.Common.Sources.Coinbase;
-using Trakx.Data.Common.Sources.CoinGecko;
-using Trakx.Data.Common.Sources.Messari;
-using Trakx.Data.Common.Sources.Messari.Client;
-using Trakx.Data.Common.Sources.Messari.DTOs;
-using Trakx.Data.Common.Sources.Web3.Client;
+using FluentAssertions;
+using Microsoft.Extensions.Configuration;
+using Microsoft.Extensions.DependencyInjection;
+using Trakx.Common.Ethereum;
+using Trakx.Common.Sources.Coinbase;
+using Trakx.Common.Sources.CoinGecko;
+using Trakx.Common.Sources.Messari;
+using Trakx.Common.Sources.Messari.Client;
+using Trakx.Common.Sources.Messari.DTOs;
+using Trakx.Common.Sources.Web3.Client;
 using Xunit;
 using Xunit.Abstractions;
-using MarketData = Trakx.Data.Common.Sources.CoinGecko.MarketData;
+using CgMarketData = Trakx.Common.Sources.CoinGecko.MarketData;
 
-namespace Trakx.Data.Tests.Tools
+namespace Trakx.Tests.Tools
 {
     public class CompositionHelper : IDisposable
     {
@@ -32,20 +32,20 @@ namespace Trakx.Data.Tests.Tools
         private IWeb3Client _web3Client;
         private static readonly List<string> BadAssetNames = new List<string>() {"uniswap", "metacartel ventures", "tari", "synthetix network token" };
 
-        private static readonly Dictionary<string, MarketData> MarketDataOverridesByCoinGeckoIdAndDate = new Dictionary<string, MarketData>
+        private static readonly Dictionary<string, CgMarketData> MarketDataOverridesByCoinGeckoIdAndDate = new Dictionary<string, CgMarketData>
         {
-            {"swissborg|20200101", new MarketData {MarketCap = 8_488_127m}},
-            {"molecular-future|20200101", new MarketData {MarketCap = 75_298_069m}},
-            {"rublix|20200101", new MarketData {MarketCap = 2_584_608m}},
-            {"nectar-token|20200101", new MarketData {MarketCap = 6_833_195m}},
-            {"mixin|20200101", new MarketData {MarketCap = 79_918_720m}},
+            {"swissborg|20200101", new CgMarketData {MarketCap = 8_488_127m}},
+            {"molecular-future|20200101", new CgMarketData {MarketCap = 75_298_069m}},
+            {"rublix|20200101", new CgMarketData {MarketCap = 2_584_608m}},
+            {"nectar-token|20200101", new CgMarketData {MarketCap = 6_833_195m}},
+            {"mixin|20200101", new CgMarketData {MarketCap = 79_918_720m}},
 
-            {"bankera|20200301", new MarketData {MarketCap = 5_003_707m}},
-            {"swissborg|20200301", new MarketData {MarketCap = 16_065_760m}},
-            {"molecular-future|20200301", new MarketData {MarketCap = 50_620_349m}},
-            {"rublix|20200301", new MarketData {MarketCap = 3_179_674m}},
-            {"nectar-token|20200301", new MarketData {MarketCap = 6_926_546m}},
-            {"mixin|20200301", new MarketData {MarketCap = 119_758_436m}},
+            {"bankera|20200301", new CgMarketData {MarketCap = 5_003_707m}},
+            {"swissborg|20200301", new CgMarketData {MarketCap = 16_065_760m}},
+            {"molecular-future|20200301", new CgMarketData {MarketCap = 50_620_349m}},
+            {"rublix|20200301", new CgMarketData {MarketCap = 3_179_674m}},
+            {"nectar-token|20200301", new CgMarketData {MarketCap = 6_926_546m}},
+            {"mixin|20200301", new CgMarketData {MarketCap = 119_758_436m}},
         };
 
         private List<Asset> _assetsFromMessari;
@@ -254,7 +254,7 @@ namespace Trakx.Data.Tests.Tools
             assets.RemoveAll(a => a.Name == "ROOBEE");
         }
 
-        public void AddMarketDataOverrides(MarketData marketData)
+        public void AddMarketDataOverrides(CgMarketData marketData)
         {
             if (!MarketDataOverridesByCoinGeckoIdAndDate.TryGetValue($"{marketData.CoinId}|{marketData.AsOf:yyyyMMdd}",
                 out var overrides))

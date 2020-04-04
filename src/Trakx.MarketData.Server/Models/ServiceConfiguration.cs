@@ -1,8 +1,8 @@
 ﻿using AutoMapper;
 using Microsoft.Extensions.DependencyInjection;
-using Trakx.Data.Persistence.DAO;
+using Trakx.Persistence.DAO;
 
-namespace Trakx.Data.Market.Server.Models
+namespace Trakx.MarketData.Server.Models
 {
     public static class ServiceConfiguration
     {
