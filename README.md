@@ -26,3 +26,6 @@ git update-index --skip-worktree src/Trakx.Tests/Tools/Secrets.cs
 
 ## Trakx.Tests.Tools namespace
 This is home to parts of code that have been used to run as one-offs, in order to build indices compositions, publish indices on chain, test rebalancings, etc. A project is currently ongoing to give access to these parts of the code to non technical users through a website.
+
+## Localisation
+Please make sure that you are running the solution with EN-GB localisation.
