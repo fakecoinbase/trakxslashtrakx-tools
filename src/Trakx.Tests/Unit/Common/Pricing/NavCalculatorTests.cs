@@ -2,7 +2,7 @@
 using System.Linq;
 using System.Threading.Tasks;
 using FluentAssertions;
-using Microsoft.Extensions.Logging;
+using Microsoft.Extensions.Caching.Distributed;
 using NSubstitute;
 using Trakx.Common.Interfaces.Index;
 using Trakx.Common.Pricing;
@@ -10,6 +10,7 @@ using Trakx.Common.Sources.CoinGecko;
 using Trakx.Common.Sources.Messari.Client;
 using Trakx.Tests.Data;
 using Xunit;
+using Xunit.Abstractions;
 
 namespace Trakx.Tests.Unit.Common.Pricing
 {
@@ -21,12 +22,13 @@ namespace Trakx.Tests.Unit.Common.Pricing
         private readonly MockCreator _mockCreator;
         private static readonly Task<decimal?> FailedFetchPriceResult = Task.FromResult<decimal?>(default);
 
-        public NavCalculatorTests()
+        public NavCalculatorTests(ITestOutputHelper output)
         {
             _messariClient = Substitute.For<IMessariClient>();
             _coinGeckoClient = Substitute.For<ICoinGeckoClient>();
+            var cache = Substitute.For<IDistributedCache>();
             _navCalculator =
-                new NavCalculator(_messariClient, _coinGeckoClient, Substitute.For<ILogger<NavCalculator>>());
+                new NavCalculator(_messariClient, _coinGeckoClient, cache, output.ToLogger<NavCalculator>());
             _mockCreator = new MockCreator();
         }
 

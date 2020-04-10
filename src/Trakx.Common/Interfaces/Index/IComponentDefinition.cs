@@ -1,4 +1,6 @@
-﻿namespace Trakx.Common.Interfaces.Index
+﻿using System.Globalization;
+
+namespace Trakx.Common.Interfaces.Index
 {
     /// <summary>
     /// Represents an ERC20 compatible token which can be used as a component in an index.
@@ -29,5 +31,15 @@
         /// The Id of the token on the CoinGeckoApi
         /// </summary>
         string? CoinGeckoId { get; }
+    }
+
+    public static class ComponentDefinitionExtensions
+    {
+        public static string GetLatestPriceCacheKey(this string componentSymbol, string quoteSymbol) =>
+            $"{componentSymbol.ToLowerInvariant()}|{quoteSymbol.ToLowerInvariant()}|LatestPrice";
+
+        public static string
+            GetLatestPriceCacheKey(this IComponentDefinition componentDefinition, string quoteSymbol) =>
+            GetLatestPriceCacheKey(componentDefinition.Symbol, quoteSymbol);
     }
 }

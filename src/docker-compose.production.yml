@@ -11,7 +11,7 @@ services:
       - sqlserver
     environment:
       - ASPNETCORE_ENVIRONMENT=Production
-      - ConnectionStrings__ContainerConnection=Server=sqlserver;Database=data_market;Trusted_Connection=True;MultipleActiveResultSets=true;User=sa;Password=(@REPLACE_WITH_SQL_PASSWORD);Integrated Security=false
+      - ConnectionStrings__SqlServerConnection=Server=sqlserver;Database=data_market;Trusted_Connection=True;MultipleActiveResultSets=true;User=sa;Password=(@REPLACE_WITH_SQL_PASSWORD);Integrated Security=false
       - ApiKeys__CryptoCompare=abcd1234567890
     networks:
       - marketdata

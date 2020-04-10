@@ -17,8 +17,6 @@ namespace Trakx.Persistence
         private readonly IMemoryCache _memoryCache;
         private readonly ILogger<IndexDataProvider> _logger;
 
-        private const string CurrentCompositionCacheKeyTemplate = "{0}|current";
-
         public IndexDataProvider(IndexRepositoryContext dbContext, 
             IMemoryCache memoryCache,
             ILogger<IndexDataProvider> logger)
@@ -97,43 +95,14 @@ namespace Trakx.Persistence
 
                 return def;
             }
-            catch (Exception ex)
+            catch (KeyNotFoundException ex)
             {
                 _logger.LogError(ex, "Failed to retrieve composition with symbol {0}", compositionSymbol);
                 return default;
             }
         }
 
-        public string GetCacheKeyForCurrentComposition(string indexSymbol)
-        {
-            return string.Format(CurrentCompositionCacheKeyTemplate, indexSymbol);
-        }
-
-        public async Task<string?> CacheCurrentComposition(string indexSymbol, CancellationToken cancellationToken)
-        {
-            try
-            {
-                var cacheKey = GetCacheKeyForCurrentComposition(indexSymbol);
-                await _memoryCache.GetOrCreateAsync(cacheKey, async entry =>
-                {
-                    entry.SetSlidingExpiration(TimeSpan.FromSeconds(20));
-
-                    var version = await GetVersionAtDate(indexSymbol, DateTime.UtcNow, cancellationToken);
-                    var composition = await RetrieveFullComposition(indexSymbol, version.Value, cancellationToken);
-                    return composition;
-                });
-
-                return cacheKey;
-            }
-            catch (Exception ex)
-            {
-                _logger.LogError(ex, "Failed to retrieve current composition for {0}", indexSymbol);
-                return default;
-            }
-        }
-
-        /// <inheritdoc />
-        public async Task<uint?> GetVersionAtDate(string indexSymbol, DateTime asOfUtc, CancellationToken cancellationToken = default)
+        private async Task<uint?> GetVersionAtDate(string indexSymbol, DateTime asOfUtc, CancellationToken cancellationToken = default)
         {
             var compositions = _dbContext.IndexCompositions;
             var result = await compositions
@@ -152,12 +121,6 @@ namespace Trakx.Persistence
         }
 
         /// <inheritdoc />
-        public async Task<uint?> GetCurrentVersion(string indexSymbol, CancellationToken cancellationToken = default)
-        {
-            return await GetVersionAtDate(indexSymbol, DateTime.UtcNow, cancellationToken);
-        }
-
-        /// <inheritdoc />
         public async Task<IIndexValuation> GetInitialValuation(IIndexComposition composition, 
             string quoteCurrency = "usdc",
             CancellationToken cancellationToken = default)
@@ -171,6 +134,20 @@ namespace Trakx.Persistence
                 .AsNoTracking()
                 .SingleOrDefaultAsync(cancellationToken);
             return valuation;
+        }
+
+        /// <inheritdoc />
+        public IAsyncEnumerable<IComponentDefinition> GetAllComponentsFromCurrentCompositions(CancellationToken cancellationToken = default)
+        {
+            var components = _dbContext.IndexDefinitions
+                .Include(i => i.IndexCompositionDaos)
+                .ThenInclude(c => c.ComponentQuantityDaos)
+                .ThenInclude(q => q.ComponentDefinitionDao)
+                .AsNoTracking()
+                .SelectMany(d => d.IndexCompositionDaos
+                    .OrderByDescending(c => c.Symbol).First().ComponentQuantities)
+                .Select(q => q.ComponentDefinition);
+            return components.AsAsyncEnumerable();
         }
 
         private async Task<IIndexComposition> RetrieveFullComposition(string indexSymbol, uint version, 

@@ -13,16 +13,10 @@ namespace Trakx.Common.Interfaces
         Task<List<string>> GetCompositionSymbolsFromIndex(string indexSymbol, CancellationToken cancellationToken = default);
         Task<IIndexComposition?> GetCompositionAtDate(string indexSymbol, DateTime asOfUtc, CancellationToken cancellationToken = default);
         Task<IIndexComposition?> GetCompositionFromSymbol(string compositionSymbol, CancellationToken cancellationToken = default);
-        Task<uint?> GetVersionAtDate(string indexSymbol, DateTime asOfUtc, CancellationToken cancellationToken = default);
-
         Task<IIndexComposition?> GetCurrentComposition(string indexSymbol, CancellationToken cancellationToken = default);
-        Task<uint?> GetCurrentVersion(string indexSymbol, CancellationToken cancellationToken = default);
-
         Task<IIndexValuation> GetInitialValuation(IIndexComposition composition,
             string quoteCurrency = Constants.DefaultQuoteCurrency,
             CancellationToken cancellationToken = default);
-
-        string GetCacheKeyForCurrentComposition(string indexSymbol);
-        Task<string?> CacheCurrentComposition(string indexSymbol, CancellationToken cancellationToken);
+        IAsyncEnumerable<IComponentDefinition> GetAllComponentsFromCurrentCompositions(CancellationToken cancellationToken = default);
     }
 }

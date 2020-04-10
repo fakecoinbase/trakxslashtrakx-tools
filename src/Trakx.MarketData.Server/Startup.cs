@@ -11,11 +11,11 @@ using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Hosting;
 using Microsoft.OpenApi.Models;
+using StackExchange.Redis;
 using Trakx.Common.Ethereum;
 using Trakx.Common.Interfaces;
 using Trakx.Common.Pricing;
 using Trakx.Common.Sources.CoinGecko;
-using Trakx.Common.Sources.CryptoCompare;
 using Trakx.Common.Sources.Messari.Client;
 using Trakx.MarketData.Server.Areas.Identity;
 using Trakx.MarketData.Server.Data;
@@ -43,11 +43,11 @@ namespace Trakx.MarketData.Server
         public void ConfigureServices(IServiceCollection services)
         {
             services.AddDbContext<ApplicationDbContext>(options =>
-                options.UseSqlServer(Configuration.GetConnectionString("ContainerConnection")));
+                options.UseSqlServer(Configuration.GetConnectionString("SqlServerConnection")));
             
             services.AddDefaultIdentity<IdentityUser>().AddEntityFrameworkStores<ApplicationDbContext>();
             services.AddDbContext<IndexRepositoryContext>(options =>
-                options.UseSqlServer(Configuration.GetConnectionString("ContainerConnection")));
+                options.UseSqlServer(Configuration.GetConnectionString("SqlServerConnection")));
 
             services.AddRazorPages();
             services.AddServerSideBlazor();
@@ -72,7 +72,12 @@ namespace Trakx.MarketData.Server
             services.AddMessariClient();
             services.AddEthereumInteraction();
             services.AddMappings();
-            services.AddCryptoCompareClient();
+
+            services.AddDistributedRedisCache(options =>
+                {
+                    options.Configuration = Configuration.GetConnectionString("RedisConnection");
+                    options.ConfigurationOptions.ReconnectRetryPolicy = new ExponentialRetry(100, 120_000);
+                });
 
             services.AddMemoryCache();
 

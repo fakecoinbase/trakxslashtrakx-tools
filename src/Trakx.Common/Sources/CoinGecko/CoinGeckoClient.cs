@@ -78,18 +78,6 @@ namespace Trakx.Common.Sources.CoinGecko
         }
 
         /// <inheritdoc />
-        public async Task<decimal?> GetPriceAsOf(string symbol, DateTime asOf, string quoteCurrency = Constants.DefaultQuoteCurrency)
-        {
-            var id = await GetCoinGeckoIdFromSymbol(symbol);
-            if (id == default) return 0;
-
-            var quoteId = await GetCoinGeckoIdFromSymbol(quoteCurrency);
-
-            return await GetPriceAsOfFromId(id, asOf, quoteId)
-                .ConfigureAwait(false);
-        }
-
-        /// <inheritdoc />
         public async Task<decimal?> GetPriceAsOfFromId(string id, DateTime asOf, string quoteCurrencyId = "usd-coin")
         {
             try

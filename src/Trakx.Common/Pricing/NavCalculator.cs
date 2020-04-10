@@ -2,6 +2,7 @@
 using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
+using Microsoft.Extensions.Caching.Distributed;
 using Microsoft.Extensions.Logging;
 using Polly;
 using Polly.Retry;
@@ -10,6 +11,7 @@ using Trakx.Common.Interfaces.Index;
 using Trakx.Common.Interfaces.Pricing;
 using Trakx.Common.Sources.CoinGecko;
 using Trakx.Common.Sources.Messari.Client;
+using Trakx.Common.Utils;
 
 namespace Trakx.Common.Pricing
 {
@@ -17,15 +19,18 @@ namespace Trakx.Common.Pricing
     {
         private readonly IMessariClient _messariClient;
         private readonly ICoinGeckoClient _coinGeckoClient;
+        private readonly IDistributedCache _cache;
         private readonly ILogger<NavCalculator> _logger;
         private readonly AsyncRetryPolicy _historicalPriceRetryPolicy;
 
         public NavCalculator(IMessariClient messariClient,
             ICoinGeckoClient coinGeckoClient,
+            IDistributedCache cache,
             ILogger<NavCalculator> logger)
         {
             _messariClient = messariClient;
             _coinGeckoClient = coinGeckoClient;
+            _cache = cache;
             _logger = logger;
             _historicalPriceRetryPolicy = Policy.Handle<Exception>()
                 .WaitAndRetryAsync(3, i => TimeSpan.FromMilliseconds(50 * i));
@@ -74,6 +79,16 @@ namespace Trakx.Common.Pricing
         {
             try
             {
+                var result = await GetCachedPrice(c.ComponentDefinition);
+                if (result.Value.Price != default) return result;
+            }
+            catch (Exception e)
+            {
+                _logger.LogWarning(e, "Failed to retrieve price from Cache");
+            }
+
+            try
+            {
                 var result = await GetMessariPrice(c.ComponentDefinition);
                 if (result.Value.Price != default) return result;
             }
@@ -106,8 +121,7 @@ namespace Trakx.Common.Pricing
             throw new FailedToRetrievePriceException($"Failed to retrieve price for component {quantity.ComponentDefinition.Symbol} as of {asOf}", result.FinalException);
         }
 
-
-        private async Task<KeyValuePair<string, SourcedPrice>> GetMessariPrice(IComponentDefinition c)
+        private async Task<KeyValuePair<string, SourcedPrice>>  GetMessariPrice(IComponentDefinition c)
         {
             var price = await _messariClient.GetLatestPrice(c.Symbol).ConfigureAwait(false);
             return price == default 
@@ -115,7 +129,15 @@ namespace Trakx.Common.Pricing
                 : new KeyValuePair<string, SourcedPrice>(c.Symbol, new SourcedPrice(c.Symbol, "messari", price.Value));
         }
 
-        private async Task<KeyValuePair<string, SourcedPrice>> GetLatestCoinGeckoUsdPrice(IComponentDefinition c)
+        private async ValueTask<KeyValuePair<string, SourcedPrice>> GetCachedPrice(IComponentDefinition c)
+        {
+            var priceBytes = await _cache.GetAsync(c.GetLatestPriceCacheKey("usdc")).ConfigureAwait(false);
+            return priceBytes == default
+                ? default
+                : new KeyValuePair<string, SourcedPrice>(c.Symbol, new SourcedPrice(c.Symbol, "cryptoCompare", priceBytes.ToDecimal()));
+        }
+
+        private async ValueTask<KeyValuePair<string, SourcedPrice>> GetLatestCoinGeckoUsdPrice(IComponentDefinition c)
         {
             var price = await _coinGeckoClient.GetLatestPrice(c.CoinGeckoId).ConfigureAwait(false);
             return price == default
@@ -123,7 +145,7 @@ namespace Trakx.Common.Pricing
                 : new KeyValuePair<string, SourcedPrice>(c.Symbol, new SourcedPrice(c.Symbol, "coinGecko", price.Value));
         }
 
-        private async Task<KeyValuePair<string, SourcedPrice>> GetCoinGeckoUsdPriceAsOf(IComponentDefinition c, DateTime asOf)
+        private async ValueTask<KeyValuePair<string, SourcedPrice>> GetCoinGeckoUsdPriceAsOf(IComponentDefinition c, DateTime asOf)
         {
             var price = await _coinGeckoClient.GetPriceAsOfFromId(c.CoinGeckoId, asOf).ConfigureAwait(false);
             return price == default

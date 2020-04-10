@@ -1,0 +1,33 @@
+﻿<Project Sdk="Microsoft.NET.Sdk.Worker">
+
+  <PropertyGroup>
+    <TargetFramework>netcoreapp3.1</TargetFramework>
+    <UserSecretsId>dotnet-Trakx.MarketData.Collector-AD327AD5-4BE2-406F-A9D9-EF72235ED16C</UserSecretsId>
+    <DockerDefaultTargetOS>Linux</DockerDefaultTargetOS>
+    <Platforms>AnyCPU;x86</Platforms>
+  </PropertyGroup>
+  <Import Project="../Common.Projects.props" />
+
+  <ItemGroup>
+    <Content Remove="CryptoCompare\coinDetails.json" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <EmbeddedResource Include="CryptoCompare\coinDetails.json" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <PackageReference Include="CryptoCompare" Version="1.4.0" />
+    <PackageReference Include="Microsoft.Extensions.Caching.Abstractions" Version="3.1.3" />
+    <PackageReference Include="Microsoft.Extensions.Caching.Redis" Version="2.2.0" />
+    <PackageReference Include="Microsoft.Extensions.Hosting" Version="3.1.3" />
+    <PackageReference Include="Microsoft.VisualStudio.Azure.Containers.Tools.Targets" Version="1.9.10" />
+    <PackageReference Include="System.Configuration.ConfigurationManager" Version="4.5.0" />
+    <PackageReference Include="System.Linq.Async" Version="4.1.1" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <ProjectReference Include="..\Trakx.Common\Trakx.Common.csproj" />
+    <ProjectReference Include="..\Trakx.Persistence\Trakx.Persistence.csproj" />
+  </ItemGroup>
+</Project>

@@ -9,7 +9,6 @@ namespace Trakx.Common.Sources.CoinGecko
     public interface ICoinGeckoClient
     {
         Task<decimal?> GetLatestPrice(string coinGeckoId, string quoteCurrency = Constants.DefaultQuoteCurrency);
-        Task<decimal?> GetPriceAsOf(string symbol, DateTime asOf, string quoteCurrency = Constants.DefaultQuoteCurrency);
         bool TryRetrieveSymbol(string coinName, out string? symbol);
         Task<decimal?> GetPriceAsOfFromId(string id, DateTime asOf, string quoteCurrencyId = "usd-coin");
         Task<MarketData> GetMarketDataAsOfFromId(string id, DateTime asOf, string quoteCurrencyId = "usd-coin");

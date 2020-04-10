@@ -5,30 +5,23 @@
     <LangVersion>8</LangVersion>
   </PropertyGroup>
   <Import Project="../Common.Projects.props" />
-  <ItemGroup>
-    <None Remove="Sources\CryptoCompare\coinDetails.json" />
-  </ItemGroup>
 
   <ItemGroup>
-    <EmbeddedResource Include="Sources\CryptoCompare\coinDetails.json" />
-  </ItemGroup>
-
-  <ItemGroup>
-    <PackageReference Include="Ardalis.GuardClauses" Version="1.3.3" />
+    <PackageReference Include="Ardalis.GuardClauses" Version="1.4.2" />
     <PackageReference Include="AutoMapper" Version="9.0.0" />
     <PackageReference Include="AutoMapper.Extensions.Microsoft.DependencyInjection" Version="7.0.0" />
     <PackageReference Include="CoinGeckoAsyncApi" Version="1.2.6" />
     <PackageReference Include="CryptoCompare" Version="1.4.0" />
-    <PackageReference Include="CsvHelper" Version="15.0.0" />
+    <PackageReference Include="CsvHelper" Version="15.0.4" />
     <PackageReference Include="Microsoft.AspNetCore.Http.Extensions" Version="2.2.0" />
     <PackageReference Include="Microsoft.AspNetCore.WebUtilities" Version="2.2.0" />
-    <PackageReference Include="Microsoft.Extensions.Caching.Abstractions" Version="3.1.2" />
-    <PackageReference Include="Microsoft.Extensions.DependencyInjection.Abstractions" Version="3.1.1" />
-    <PackageReference Include="Microsoft.Extensions.Http" Version="3.1.1" />
+    <PackageReference Include="Microsoft.Extensions.Caching.Abstractions" Version="3.1.3" />
+    <PackageReference Include="Microsoft.Extensions.DependencyInjection.Abstractions" Version="3.1.3" />
+    <PackageReference Include="Microsoft.Extensions.Http" Version="3.1.3" />
     <PackageReference Include="Nethereum.StandardTokenEIP20" Version="3.7.1" />
     <PackageReference Include="Nethereum.Web3" Version="3.7.1" />
     <PackageReference Include="Polly" Version="7.2.0" />
-    <PackageReference Include="System.Reactive" Version="4.3.2" />
+    <PackageReference Include="System.Reactive" Version="4.4.1" />
   </ItemGroup>
 
   <ItemGroup>

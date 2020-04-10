@@ -9,9 +9,11 @@ services:
     image: docker.pkg.github.com/trakx/trakx-tools/trakx-market-data-server:latest
     depends_on:
       - sqlserver
+      - redis
     environment:
       - ASPNETCORE_ENVIRONMENT=Development #Consider changing this in Production
-      - ConnectionStrings__ContainerConnection=Server=sqlserver;Database=data_market;Trusted_Connection=True;MultipleActiveResultSets=true;User=sa;Password=oh_no_this-needs_toChange4Real;Integrated Security=false
+      - ConnectionStrings__SqlServerConnection=Server=sqlserver;Database=data_market;Trusted_Connection=True;MultipleActiveResultSets=true;User=sa;Password=changeme;Integrated Security=false
+      - ConnectionStrings__RedisConnection="redis:6379;abortConnect=False"
       - ApiKeys__CryptoCompare=abcd1234567890
     networks:
       - marketdata
@@ -26,13 +28,18 @@ services:
     volumes:
       - sqlvolume:/var/opt/mssql
     environment:
-      - SA_PASSWORD=oh_no_this-needs_toChange4Real
+      - SA_PASSWORD=changeme
       - ACCEPT_EULA=Y
     ports:
       - 1533:1433 #expose port, so can connect to it using host: 'localhost,1533' | user: sa, password: oh_no_this-needs_toChange4Real
     networks:
       - marketdata
     restart: always
+
+  redis:
+    image: redis
+    ports:
+      - "6379:6379"
 
   proxy:
     logging:
