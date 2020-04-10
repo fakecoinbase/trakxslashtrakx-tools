@@ -159,5 +159,21 @@ namespace Trakx.Tests.Unit.Common.Pricing
                 .Should().BeCloseTo(TimeSpan.Zero, TimeSpan.FromMilliseconds(100));
 
         }
+
+        [Fact]
+        public async Task GetIndexValuation_EvenIf_GeckoClient_GetPriceAsOfFromId_failed_On_First_Call()
+        {
+            var composition = _mockCreator.GetIndexComposition(3);
+            var asOf = new DateTime(2020, 04, 13);
+
+            //first call failed
+            _coinGeckoClient.GetPriceAsOfFromId(Arg.Any<string>(), Arg.Any<DateTime>())
+                .Returns(x => { throw new Exception(); }, x => 101.23m);
+
+            var valuation = await _navCalculator.GetIndexValuation(composition, asOf);
+
+            valuation.ComponentValuations.Select(c => c.Price).All(p => p == 101.23m).Should().BeTrue();
+            await _coinGeckoClient.Received(4).GetPriceAsOfFromId(Arg.Any<string>(), asOf, Arg.Any<string>());
+        }
     }
 }
