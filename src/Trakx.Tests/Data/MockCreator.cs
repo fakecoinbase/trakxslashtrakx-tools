@@ -3,6 +3,7 @@ using System.Linq;
 using Nethereum.RPC.Eth.DTOs;
 using Newtonsoft.Json.Linq;
 using NSubstitute;
+using Trakx.Common.Core;
 using Trakx.Common.Interfaces.Index;
 
 namespace Trakx.Tests.Data
@@ -117,6 +118,19 @@ namespace Trakx.Tests.Data
                     "\r\n]")
             };
             return transactionReceipt;
+        }
+
+        public static IIndexValuation GetIndexValuation(IIndexComposition composition, string quoteCurrency = "usdc")
+        {
+            var componentValuations = composition.ComponentQuantities.Select(
+                c =>
+                {
+                    var valuation = new ComponentValuation(c, quoteCurrency, (decimal)202.23,"coingecko", DateTime.Now);
+                    return (IComponentValuation)valuation;
+                }).ToList();
+
+            var indexValuation = new IndexValuation(composition, componentValuations, DateTime.Now);
+            return indexValuation;
         }
     }
 }

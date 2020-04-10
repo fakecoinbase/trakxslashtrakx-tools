@@ -48,7 +48,7 @@ namespace Trakx.MarketData.Server.Controllers
             var composition = await _indexProvider.GetCurrentComposition(indexSymbol);
             
             if (composition == default)
-                return $"failed to retrieve details for index {indexSymbol}";
+                return new JsonResult($"failed to retrieve details for index {indexSymbol}");
 
             var currentValuation = await _navCalculator.GetIndexValuation(composition)
                 .ConfigureAwait(false);
@@ -70,7 +70,6 @@ namespace Trakx.MarketData.Server.Controllers
 
             var indexPriced = IndexPricedModel.FromIndexValuations(issuanceValuation, currentValuation);
             indexPriced.ComponentDefinitions.ForEach(d => d.IconUrl = iconBySymbol[d.Symbol.ToLower()]);
-
             return new JsonResult(indexPriced);
         }
     }
