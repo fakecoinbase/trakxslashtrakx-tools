@@ -1,4 +1,4 @@
-name: Docker
+name: Docker Build and Publish MarketData Service
 
 on:
   push:
@@ -11,7 +11,7 @@ on:
 
 env:
   IMAGE_NAME: "trakx-marketdata-server"
-  BASE_VERSION: "0.1.3"
+  BASE_VERSION: "0.1.4"
 
 jobs:
   # Run tests.
