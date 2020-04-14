@@ -1,0 +1,76 @@
+pool:
+  name: Azure Pipelines
+
+variables:
+  CRYPTOCOMPARE_API_KEY: $(cryptocompare.api.key)
+
+steps:
+- task: UseDotNet@2
+  displayName: 'Use .Net Core sdk 3.1.x'
+  inputs:
+    version: 3.1.x
+
+- task: DotNetCoreCLI@2
+  displayName: Restore
+  inputs:
+    command: restore
+    projects: '$(Parameters.RestoreBuildProjects)'
+
+- task: DotNetCoreCLI@2
+  displayName: Build
+  inputs:
+    projects: '$(Parameters.RestoreBuildProjects)'
+    arguments: '--configuration $(BuildConfiguration)'
+
+- task: DotNetCoreCLI@2
+  displayName: 'Test and Cover'
+  inputs:
+    command: test
+    projects: '$(Parameters.TestProjects)'
+    arguments: '--configuration Debug /p:CollectCoverage=true "/p:CoverletOutputFormat=\"opencover,cobertura\"" /p:UserSourceLink=true'
+
+- task: UseDotNet@2
+  displayName: 'Install .Net Core sdk 2.1.x for Coverall tool'
+  inputs:
+    version: 2.1.x
+
+- script: |
+   dotnet tool install -g coveralls.net
+   csmacnz.Coveralls --opencover -i "src/Trakx.Tests/coverage.opencover.xml" --repoToken $(coveralls.repo.token) --commitId $(Build.SourceVersion) --commitBranch $(Build.SourceBranch)
+   
+  displayName: 'Publish Coveralls Coverage Reports'
+
+- script: |
+   export CODACY_PROJECT_TOKEN=$(codacy.coverage.token)
+   bash <(curl -Ls https://coverage.codacy.com/get.sh) report -l csharp -r "src/Trakx.Tests/coverage.opencover.xml" --partial
+   bash <(curl -Ls https://coverage.codacy.com/get.sh) final
+  displayName: 'Publish Codacy Coverage Reports'
+
+- script: |
+   dotnet tool install --global dotnet-reportgenerator-globaltool
+   reportgenerator "-reports:src/**/coverage.cobertura.xml" "-targetdir:$(Build.ArtifactStagingDirectory)" "-reporttypes:HtmlInline_AzurePipelines;Cobertura;SonarQube;Badges" "-assemblyfilters:+Trakx.*;+Trakx.*;"
+   
+  displayName: 'Generate Pipeline Coverage reports'
+
+- task: PublishCodeCoverageResults@1
+  displayName: 'Publish code coverage from Cobertura.xml on pipeline'
+  inputs:
+    codeCoverageTool: Cobertura
+    summaryFileLocation: '$(Build.ArtifactStagingDirectory)/Cobertura.xml'
+    reportDirectory: '$(Build.ArtifactStagingDirectory)'
+
+- task: DotNetCoreCLI@2
+  displayName: Publish
+  inputs:
+    command: publish
+    publishWebProjects: True
+    arguments: '--configuration $(BuildConfiguration) --output $(build.artifactstagingdirectory)'
+    zipAfterPublish: True
+  enabled: false
+
+- task: PublishBuildArtifacts@1
+  displayName: 'Publish Artifact'
+  inputs:
+    PathtoPublish: '$(build.artifactstagingdirectory)'
+  condition: succeededOrFailed()
+  
