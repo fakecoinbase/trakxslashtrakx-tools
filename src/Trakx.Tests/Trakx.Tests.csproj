@@ -36,6 +36,7 @@
       <PrivateAssets>all</PrivateAssets>
       <IncludeAssets>runtime; build; native; contentfiles; analyzers; buildtransitive</IncludeAssets>
     </PackageReference>
+    <PackageReference Include="DotNetEnv" Version="1.4.0" />
     <PackageReference Include="FluentAssertions" Version="5.10.3" />
     <PackageReference Include="HtmlAgilityPack" Version="1.11.23" />
     <PackageReference Include="MartinCostello.Logging.XUnit" Version="0.1.0" />

@@ -16,13 +16,14 @@ A solution grouping several tools used at Trakx for creation, rebalancing, and p
 ## Market Data Server Running version 
 A running version can be found at preprod.marketdata.trakx.io
 
-## Avoid committing you secrets and keys
-In order to be able to run some integration tests, the file 
-src/Trakx.Tests/Tools/Secrets.cs should be modified to include your own api keys and other secrets, 
-to avoid accidental commits to GitHub, it is a good idea to ignore local changes to that file using by running:
-```
-git update-index --skip-worktree src/Trakx.Tests/Tools/Secrets.cs
-```
+## Avoid committing you secrets and keys 
+
+In order to be able to run some integration tests, you should create a .env file with the following items : 
+-   CRYPTOCOMPARE_API_KEY
+-   INFURA_API_KEY
+-   ETHERWALLET
+
+And put the path of the file in src/Trakx.Tests/Tools/Secrets.cs
 
 ## Trakx.Tests.Tools namespace
 This is home to parts of code that have been used to run as one-offs, in order to build indices compositions, publish indices on chain, test rebalancings, etc. A project is currently ongoing to give access to these parts of the code to non technical users through a website.
