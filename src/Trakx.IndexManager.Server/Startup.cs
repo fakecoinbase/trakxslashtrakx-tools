@@ -1,4 +1,6 @@
 using System;
+using System.IO;
+using System.Reflection;
 using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
@@ -9,12 +11,23 @@ using Microsoft.AspNetCore.Mvc;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Hosting;
+using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Logging;
+using Microsoft.AspNetCore.Components.Authorization;
+using Microsoft.AspNetCore.HttpOverrides;
+using Microsoft.AspNetCore.Identity;
+using Microsoft.OpenApi.Models;
+using StackExchange.Redis;
+using Trakx.IndexManager.Server.Data;
+using Trakx.Persistence;
+
 
 namespace Trakx.IndexManager.Server
 {
     public class Startup
     {
+        private const string ApiName = "Trakx Index Manager Api";
+        private const string ApiVersion = "v0.1";
         public Startup(IConfiguration configuration)
         {
             Configuration = configuration;
@@ -25,6 +38,12 @@ namespace Trakx.IndexManager.Server
         // This method gets called by the runtime. Use this method to add services to the container.
         public void ConfigureServices(IServiceCollection services)
         {
+            services.AddDbContext<ApplicationDbContext>(options =>
+                options.UseSqlServer(Configuration.GetConnectionString("SqlServerConnection")));
+
+            services.AddDbContext<IndexRepositoryContext>(options =>
+                options.UseSqlServer(Configuration.GetConnectionString("SqlServerConnection")));
+
             services.AddControllers();
         }
 
