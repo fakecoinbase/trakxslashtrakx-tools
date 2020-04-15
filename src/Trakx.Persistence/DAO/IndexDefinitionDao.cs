@@ -1,8 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.ComponentModel.DataAnnotations;
-using System.ComponentModel.DataAnnotations.Schema;
-using System.Linq;
 using Trakx.Common.Interfaces.Index;
 
 namespace Trakx.Persistence.DAO
@@ -16,14 +14,12 @@ namespace Trakx.Persistence.DAO
             Symbol = symbol;
             Name = name;
             Description = description;
-            ComponentWeightDaos = new List<ComponentWeightDao>();
             NaturalUnit = naturalUnit;
             Address = address;
             CreationDate = creationDate;
             IndexCompositionDaos = new List<IndexCompositionDao>();
         }
 
-        public List<ComponentWeightDao> ComponentWeightDaos { get; set; }
         public List<IndexCompositionDao> IndexCompositionDaos { get; set; }
 
         /// <inheritdoc />
@@ -37,11 +33,6 @@ namespace Trakx.Persistence.DAO
         /// <inheritdoc />
         [Required]
         public string Description { get; set; }
-
-        /// <inheritdoc />
-        [NotMapped]
-        public List<IComponentWeight> ComponentWeights => 
-            ComponentWeightDaos.Cast<IComponentWeight>().ToList();
 
         /// <inheritdoc />
         [MaxLength(256)]

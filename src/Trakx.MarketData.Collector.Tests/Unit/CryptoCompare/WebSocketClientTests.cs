@@ -19,16 +19,16 @@ namespace Trakx.MarketData.Collector.Tests.Unit.CryptoCompare
         private readonly IApiDetailsProvider _apiDetailsProvider;
         private readonly IClientWebsocket _innerClient;
         private readonly IWebSocketStreamer _webSocketStreamer;
-        private readonly WebSocketClient _webSocketClient;
+        private readonly CryptoCompareWebSocketClient _webSocketClient;
 
         public WebSocketClientTests(ITestOutputHelper output)
         {
             _apiDetailsProvider = Substitute.For<IApiDetailsProvider>();
             _innerClient = Substitute.For<IClientWebsocket>();
             _webSocketStreamer = Substitute.For<IWebSocketStreamer>();
-            var logger = output.ToLogger<WebSocketClient>();
+            var logger = output.ToLogger<CryptoCompareWebSocketClient>();
 
-            _webSocketClient = new WebSocketClient(_innerClient, _apiDetailsProvider, _webSocketStreamer, logger);
+            _webSocketClient = new CryptoCompareWebSocketClient(_innerClient, _apiDetailsProvider, _webSocketStreamer, logger);
         }
 
         [Fact]

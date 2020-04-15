@@ -30,3 +30,21 @@ This is home to parts of code that have been used to run as one-offs, in order t
 
 ## Localisation
 Please make sure that you are running the solution with EN-GB localisation.
+
+## Running locally
+Get a local SQL running
+```bash
+docker pull mcr.microsoft.com/mssql/server:2019-GA-ubuntu-16.04
+docker run -e "ACCEPT_EULA=Y" -e "SA_PASSWORD=changeme" -p 1433:1433 --name index-repository -d mcr.microsoft.com/mssql/server:latest
+```
+Get a local redis instance running
+```bash 
+docker pull redis
+docker run --name maketdata-price-cache -d redis -p 6379:6379
+```
+
+## Running docker-compose
+From the root folder run 
+```bash 
+docker-compose --file src/docker-compose.local.yml up --build &
+```

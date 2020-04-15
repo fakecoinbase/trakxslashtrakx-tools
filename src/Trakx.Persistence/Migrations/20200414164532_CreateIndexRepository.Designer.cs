@@ -10,18 +10,18 @@ using Trakx.Persistence;
 namespace Trakx.Persistence.Migrations
 {
     [DbContext(typeof(IndexRepositoryContext))]
-    [Migration("20200304173236_AddCompositionAddressAndSymbol")]
-    partial class AddCompositionAddressAndSymbol
+    [Migration("20200414164532_CreateIndexRepository")]
+    partial class CreateIndexRepository
     {
         protected override void BuildTargetModel(ModelBuilder modelBuilder)
         {
 #pragma warning disable 612, 618
             modelBuilder
-                .HasAnnotation("ProductVersion", "3.1.1")
+                .HasAnnotation("ProductVersion", "3.1.3")
                 .HasAnnotation("Relational:MaxIdentifierLength", 128)
                 .HasAnnotation("SqlServer:ValueGenerationStrategy", SqlServerValueGenerationStrategy.IdentityColumn);
 
-            modelBuilder.Entity("Trakx.Data.Persistence.DAO.ComponentDefinitionDao", b =>
+            modelBuilder.Entity("Trakx.Persistence.DAO.ComponentDefinitionDao", b =>
                 {
                     b.Property<string>("Address")
                         .HasColumnType("nvarchar(256)")
@@ -50,7 +50,7 @@ namespace Trakx.Persistence.Migrations
                     b.ToTable("ComponentDefinitions");
                 });
 
-            modelBuilder.Entity("Trakx.Data.Persistence.DAO.ComponentQuantityDao", b =>
+            modelBuilder.Entity("Trakx.Persistence.DAO.ComponentQuantityDao", b =>
                 {
                     b.Property<string>("Id")
                         .HasColumnType("nvarchar(450)");
@@ -75,7 +75,7 @@ namespace Trakx.Persistence.Migrations
                     b.ToTable("ComponentQuantities");
                 });
 
-            modelBuilder.Entity("Trakx.Data.Persistence.DAO.ComponentValuationDao", b =>
+            modelBuilder.Entity("Trakx.Persistence.DAO.ComponentValuationDao", b =>
                 {
                     b.Property<string>("Id")
                         .HasColumnType("nvarchar(450)");
@@ -118,32 +118,7 @@ namespace Trakx.Persistence.Migrations
                     b.ToTable("ComponentValuations");
                 });
 
-            modelBuilder.Entity("Trakx.Data.Persistence.DAO.ComponentWeightDao", b =>
-                {
-                    b.Property<string>("Id")
-                        .HasColumnType("nvarchar(450)");
-
-                    b.Property<string>("ComponentDefinitionDaoAddress")
-                        .IsRequired()
-                        .HasColumnType("nvarchar(256)");
-
-                    b.Property<string>("IndexDefinitionDaoSymbol")
-                        .IsRequired()
-                        .HasColumnType("nvarchar(50)");
-
-                    b.Property<decimal>("Weight")
-                        .HasColumnType("decimal(10, 10)");
-
-                    b.HasKey("Id");
-
-                    b.HasIndex("ComponentDefinitionDaoAddress");
-
-                    b.HasIndex("IndexDefinitionDaoSymbol");
-
-                    b.ToTable("ComponentWeights");
-                });
-
-            modelBuilder.Entity("Trakx.Data.Persistence.DAO.IndexCompositionDao", b =>
+            modelBuilder.Entity("Trakx.Persistence.DAO.IndexCompositionDao", b =>
                 {
                     b.Property<string>("Id")
                         .HasColumnType("nvarchar(450)");
@@ -173,7 +148,7 @@ namespace Trakx.Persistence.Migrations
                     b.ToTable("IndexCompositions");
                 });
 
-            modelBuilder.Entity("Trakx.Data.Persistence.DAO.IndexDefinitionDao", b =>
+            modelBuilder.Entity("Trakx.Persistence.DAO.IndexDefinitionDao", b =>
                 {
                     b.Property<string>("Symbol")
                         .HasColumnType("nvarchar(50)")
@@ -204,7 +179,7 @@ namespace Trakx.Persistence.Migrations
                     b.ToTable("IndexDefinitions");
                 });
 
-            modelBuilder.Entity("Trakx.Data.Persistence.DAO.IndexValuationDao", b =>
+            modelBuilder.Entity("Trakx.Persistence.DAO.IndexValuationDao", b =>
                 {
                     b.Property<string>("Id")
                         .HasColumnType("nvarchar(450)");
@@ -230,61 +205,46 @@ namespace Trakx.Persistence.Migrations
                     b.ToTable("IndexValuations");
                 });
 
-            modelBuilder.Entity("Trakx.Data.Persistence.DAO.ComponentQuantityDao", b =>
+            modelBuilder.Entity("Trakx.Persistence.DAO.ComponentQuantityDao", b =>
                 {
-                    b.HasOne("Trakx.Data.Persistence.DAO.ComponentDefinitionDao", "ComponentDefinitionDao")
+                    b.HasOne("Trakx.Persistence.DAO.ComponentDefinitionDao", "ComponentDefinitionDao")
                         .WithMany()
                         .HasForeignKey("ComponentDefinitionDaoAddress")
                         .OnDelete(DeleteBehavior.Cascade)
                         .IsRequired();
 
-                    b.HasOne("Trakx.Data.Persistence.DAO.IndexCompositionDao", "IndexCompositionDao")
+                    b.HasOne("Trakx.Persistence.DAO.IndexCompositionDao", "IndexCompositionDao")
                         .WithMany("ComponentQuantityDaos")
                         .HasForeignKey("IndexCompositionDaoId")
                         .OnDelete(DeleteBehavior.Cascade)
                         .IsRequired();
                 });
 
-            modelBuilder.Entity("Trakx.Data.Persistence.DAO.ComponentValuationDao", b =>
+            modelBuilder.Entity("Trakx.Persistence.DAO.ComponentValuationDao", b =>
                 {
-                    b.HasOne("Trakx.Data.Persistence.DAO.ComponentQuantityDao", "ComponentQuantityDao")
+                    b.HasOne("Trakx.Persistence.DAO.ComponentQuantityDao", "ComponentQuantityDao")
                         .WithMany()
                         .HasForeignKey("ComponentQuantityDaoId")
                         .OnDelete(DeleteBehavior.Cascade)
                         .IsRequired();
 
-                    b.HasOne("Trakx.Data.Persistence.DAO.IndexValuationDao", null)
+                    b.HasOne("Trakx.Persistence.DAO.IndexValuationDao", null)
                         .WithMany("ComponentValuationDaos")
                         .HasForeignKey("IndexValuationDaoId");
                 });
 
-            modelBuilder.Entity("Trakx.Data.Persistence.DAO.ComponentWeightDao", b =>
+            modelBuilder.Entity("Trakx.Persistence.DAO.IndexCompositionDao", b =>
                 {
-                    b.HasOne("Trakx.Data.Persistence.DAO.ComponentDefinitionDao", "ComponentDefinitionDao")
-                        .WithMany()
-                        .HasForeignKey("ComponentDefinitionDaoAddress")
-                        .OnDelete(DeleteBehavior.Cascade)
-                        .IsRequired();
-
-                    b.HasOne("Trakx.Data.Persistence.DAO.IndexDefinitionDao", "IndexDefinitionDao")
-                        .WithMany("ComponentWeightDaos")
-                        .HasForeignKey("IndexDefinitionDaoSymbol")
-                        .OnDelete(DeleteBehavior.Cascade)
-                        .IsRequired();
-                });
-
-            modelBuilder.Entity("Trakx.Data.Persistence.DAO.IndexCompositionDao", b =>
-                {
-                    b.HasOne("Trakx.Data.Persistence.DAO.IndexDefinitionDao", "IndexDefinitionDao")
+                    b.HasOne("Trakx.Persistence.DAO.IndexDefinitionDao", "IndexDefinitionDao")
                         .WithMany("IndexCompositionDaos")
                         .HasForeignKey("IndexDefinitionDaoSymbol")
                         .OnDelete(DeleteBehavior.Cascade)
                         .IsRequired();
                 });
 
-            modelBuilder.Entity("Trakx.Data.Persistence.DAO.IndexValuationDao", b =>
+            modelBuilder.Entity("Trakx.Persistence.DAO.IndexValuationDao", b =>
                 {
-                    b.HasOne("Trakx.Data.Persistence.DAO.IndexCompositionDao", "IndexCompositionDao")
+                    b.HasOne("Trakx.Persistence.DAO.IndexCompositionDao", "IndexCompositionDao")
                         .WithMany("IndexValuationDaos")
                         .HasForeignKey("IndexCompositionDaoId")
                         .OnDelete(DeleteBehavior.Cascade)

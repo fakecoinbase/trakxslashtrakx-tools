@@ -34,17 +34,19 @@ namespace Trakx.Persistence.Initialisation
         public async Task SeedDatabase()
         {
             await Migrate().ConfigureAwait(false);
-            await SeedIndexDefinitions().ConfigureAwait(false);
+            if(!_dbContext.IndexDefinitions.Any())
+                await SeedIndexDefinitions().ConfigureAwait(false);
         }
 
         private async Task Migrate()
         {
-            await _dbContext.Database.EnsureDeletedAsync();
+            _logger.LogInformation("Running Migrations.");
             await _dbContext.Database.MigrateAsync().ConfigureAwait(false);
         }
 
         private async Task SeedIndexDefinitions()
         {
+            _logger.LogInformation("Adding known indexes to database.");
             await AddKnownIndexes(_dbContext, _mapper).ConfigureAwait(false);
 
             await _dbContext.SaveChangesAsync().ConfigureAwait(false);

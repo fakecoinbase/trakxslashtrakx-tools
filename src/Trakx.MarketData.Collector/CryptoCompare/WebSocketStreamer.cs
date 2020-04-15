@@ -13,11 +13,13 @@ namespace Trakx.MarketData.Collector.CryptoCompare
         IObservable<Trade> TradeStream { get; }
         IObservable<Ticker> TickerStream { get; }
         IObservable<AggregateIndex> AggregateIndexStream { get; }
+        IObservable<Ohlc> OhlcStream { get; }
         IObservable<SubscribeComplete> SubscribeCompleteStream { get; }
         IObservable<UnsubscribeComplete> UnsubscribeCompleteStream { get; }
         IObservable<LoadComplete> LoadCompleteStream { get; }
         IObservable<UnsubscribeAllComplete> UnsubscribeAllCompleteStream { get; }
         IObservable<HeartBeat> HeartBeatStream { get; }
+        IObservable<Error> ErrorStream { get; }
         void PublishInboundMessageOnStream(string rawMessage);
     }
 
@@ -33,15 +35,16 @@ namespace Trakx.MarketData.Collector.CryptoCompare
         }
 
         public IObservable<InboundMessageBase> AllInboundMessagesStream => _incomingMessageSubject.AsObservable();
-        public IObservable<Trade> TradeStream => _incomingMessageSubject.Cast<Trade>().AsObservable();
-        public IObservable<Ticker> TickerStream => _incomingMessageSubject.Cast<Ticker>().AsObservable();
-        public IObservable<AggregateIndex> AggregateIndexStream => _incomingMessageSubject.Cast<AggregateIndex>().AsObservable();
-        public IObservable<Ohlc> OhlcStream => _incomingMessageSubject.Cast<Ohlc>().AsObservable();
-        public IObservable<SubscribeComplete> SubscribeCompleteStream => _incomingMessageSubject.Cast<SubscribeComplete>().AsObservable();
-        public IObservable<UnsubscribeComplete> UnsubscribeCompleteStream => _incomingMessageSubject.Cast<UnsubscribeComplete>().AsObservable();
-        public IObservable<LoadComplete> LoadCompleteStream => _incomingMessageSubject.Cast<LoadComplete>().AsObservable();
-        public IObservable<UnsubscribeAllComplete> UnsubscribeAllCompleteStream => _incomingMessageSubject.Cast<UnsubscribeAllComplete>().AsObservable();
-        public IObservable<HeartBeat> HeartBeatStream => _incomingMessageSubject.Cast<HeartBeat>().AsObservable();
+        public IObservable<Trade> TradeStream => _incomingMessageSubject.OfType<Trade>().AsObservable();
+        public IObservable<Ticker> TickerStream => _incomingMessageSubject.OfType<Ticker>().AsObservable();
+        public IObservable<AggregateIndex> AggregateIndexStream => _incomingMessageSubject.OfType<AggregateIndex>().AsObservable();
+        public IObservable<Ohlc> OhlcStream => _incomingMessageSubject.OfType<Ohlc>().AsObservable();
+        public IObservable<SubscribeComplete> SubscribeCompleteStream => _incomingMessageSubject.OfType<SubscribeComplete>().AsObservable();
+        public IObservable<UnsubscribeComplete> UnsubscribeCompleteStream => _incomingMessageSubject.OfType<UnsubscribeComplete>().AsObservable();
+        public IObservable<LoadComplete> LoadCompleteStream => _incomingMessageSubject.OfType<LoadComplete>().AsObservable();
+        public IObservable<UnsubscribeAllComplete> UnsubscribeAllCompleteStream => _incomingMessageSubject.OfType<UnsubscribeAllComplete>().AsObservable();
+        public IObservable<HeartBeat> HeartBeatStream => _incomingMessageSubject.OfType<HeartBeat>().AsObservable();
+        public IObservable<Error> ErrorStream => _incomingMessageSubject.OfType<Error>().AsObservable();
 
         public void PublishInboundMessageOnStream(string rawMessage)
         {

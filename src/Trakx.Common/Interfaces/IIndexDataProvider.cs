@@ -17,6 +17,6 @@ namespace Trakx.Common.Interfaces
         Task<IIndexValuation> GetInitialValuation(IIndexComposition composition,
             string quoteCurrency = Constants.DefaultQuoteCurrency,
             CancellationToken cancellationToken = default);
-        IAsyncEnumerable<IComponentDefinition> GetAllComponentsFromCurrentCompositions(CancellationToken cancellationToken = default);
+        Task<List<IComponentDefinition>> GetAllComponentsFromCurrentCompositions(CancellationToken cancellationToken = default);
     }
 }

@@ -6,15 +6,36 @@ services:
       driver: "json-file"
       options:
         max-size: "50m"
-    image: docker.pkg.github.com/trakx/trakx-tools/trakx-market-data-server:latest
-    depends_on:
-      - sqlserver
+    image: docker.pkg.github.com/trakx/trakx-tools/trakx-marketdata-server:latest
+    links:
       - redis
+      - sqlserver
     environment:
       - ASPNETCORE_ENVIRONMENT=Development #Consider changing this in Production
-      - ConnectionStrings__SqlServerConnection=Server=sqlserver;Database=data_market;Trusted_Connection=True;MultipleActiveResultSets=true;User=sa;Password=changeme;Integrated Security=false
-      - ConnectionStrings__RedisConnection="redis:6379;abortConnect=False"
-      - ApiKeys__CryptoCompare=abcd1234567890
+      - ConnectionStrings__SqlServerConnection=Server=sqlserver;Database=IndexRepository;Trusted_Connection=True;MultipleActiveResultSets=true;User=SA;Password=changeme;Integrated Security=false
+      - ConnectionStrings__RedisConnection=redis:6379,abortConnect=False
+      - CRYPTOCOMPARE_API_KEY=xxx
+    networks:
+      - marketdata
+    ports: 
+      - "3000:5000"
+    restart: always
+
+  collector:
+    logging:
+      driver: "json-file"
+      options:
+        max-size: "50m"
+    image: docker.pkg.github.com/trakx/trakx-tools/trakx-marketdata-collector:latest
+    environment:
+      - ConnectionStrings__SqlServerConnection=Server=sqlserver;Database=IndexRepository;Trusted_Connection=True;MultipleActiveResultSets=true;User=SA;Password=changeme;Integrated Security=false
+      - ConnectionStrings__RedisConnection=redis:6379,abortConnect=False
+      - CRYPTOCOMPARE_API_KEY=xxx
+    depends_on:
+      - aspnetcore_api
+    links:
+      - redis
+      - sqlserver
     networks:
       - marketdata
     restart: always
@@ -31,7 +52,7 @@ services:
       - SA_PASSWORD=changeme
       - ACCEPT_EULA=Y
     ports:
-      - 1533:1433 #expose port, so can connect to it using host: 'localhost,1533' | user: sa, password: oh_no_this-needs_toChange4Real
+      - "1433:1433"
     networks:
       - marketdata
     restart: always
@@ -40,6 +61,9 @@ services:
     image: redis
     ports:
       - "6379:6379"
+    networks:
+      - marketdata
+    restart: always
 
   proxy:
     logging:
@@ -52,6 +76,7 @@ services:
     ports:
       - "80:80"
       - "443:443"
+      - "5000:5000"
     networks:
       - marketdata        
     volumes:

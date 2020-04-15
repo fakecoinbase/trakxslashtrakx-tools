@@ -137,17 +137,11 @@ namespace Trakx.Persistence
         }
 
         /// <inheritdoc />
-        public IAsyncEnumerable<IComponentDefinition> GetAllComponentsFromCurrentCompositions(CancellationToken cancellationToken = default)
+        public async Task<List<IComponentDefinition>> GetAllComponentsFromCurrentCompositions(CancellationToken cancellationToken = default)
         {
-            var components = _dbContext.IndexDefinitions
-                .Include(i => i.IndexCompositionDaos)
-                .ThenInclude(c => c.ComponentQuantityDaos)
-                .ThenInclude(q => q.ComponentDefinitionDao)
-                .AsNoTracking()
-                .SelectMany(d => d.IndexCompositionDaos
-                    .OrderByDescending(c => c.Symbol).First().ComponentQuantities)
-                .Select(q => q.ComponentDefinition);
-            return components.AsAsyncEnumerable();
+            //TODO simplify that to exclude components not in use when they start to happen.
+            var components = await _dbContext.ComponentDefinitions.Select(c => (IComponentDefinition)c).ToListAsync(cancellationToken);
+            return components;
         }
 
         private async Task<IIndexComposition> RetrieveFullComposition(string indexSymbol, uint version, 

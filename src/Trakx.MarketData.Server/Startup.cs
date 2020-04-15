@@ -76,7 +76,6 @@ namespace Trakx.MarketData.Server
             services.AddDistributedRedisCache(options =>
                 {
                     options.Configuration = Configuration.GetConnectionString("RedisConnection");
-                    options.ConfigurationOptions.ReconnectRetryPolicy = new ExponentialRetry(100, 120_000);
                 });
 
             services.AddMemoryCache();

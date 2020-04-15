@@ -6,6 +6,7 @@ using System.Threading;
 using System.Threading.Tasks;
 using FluentAssertions;
 using Microsoft.Extensions.Caching.Distributed;
+using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Logging;
 using NSubstitute;
 using Trakx.Common.Interfaces;
@@ -20,7 +21,7 @@ using Xunit.Abstractions;
 
 namespace Trakx.MarketData.Collector.Tests.Unit
 {
-    public sealed class WorkerTests : IDisposable
+    public sealed class PriceCacheTests : IDisposable
     {
         private readonly IIndexDataProvider _indexDataProvider;
         private readonly ICryptoCompareWebSocketClient _webSocketClient;
@@ -28,9 +29,9 @@ namespace Trakx.MarketData.Collector.Tests.Unit
         private readonly MockCreator _mockCreator;
         private readonly CancellationToken _cancellationToken;
         private readonly CancellationTokenSource _cancellationTokenSource;
-        private readonly Worker _worker;
+        private readonly PriceCache _priceCache;
 
-        public WorkerTests(ITestOutputHelper output)
+        public PriceCacheTests(ITestOutputHelper output)
         {
             _indexDataProvider = Substitute.For<IIndexDataProvider>();
             _webSocketClient = Substitute.For<ICryptoCompareWebSocketClient>();
@@ -42,10 +43,26 @@ namespace Trakx.MarketData.Collector.Tests.Unit
             _cancellationTokenSource = new CancellationTokenSource();
             _cancellationToken = _cancellationTokenSource.Token;
 
-            var logger = Substitute.For<ILogger<Worker>>();
-            _worker = new Worker(_indexDataProvider, _webSocketClient, _cache, logger, TimeSpan.FromMilliseconds(50));
+            var logger = output.ToLogger<PriceCache>();
+
+            var serviceScopeFactory = PrepareScopeResolution();
+
+            _priceCache = new PriceCache(_webSocketClient, _cache, 
+                serviceScopeFactory, logger, 
+                TimeSpan.FromMilliseconds(50));
 
             _mockCreator = new MockCreator();
+        }
+
+        private IServiceScopeFactory PrepareScopeResolution()
+        {
+            var serviceProvider = Substitute.For<IServiceProvider>();
+            serviceProvider.GetService<IIndexDataProvider>().Returns(_indexDataProvider);
+            var serviceScope = Substitute.For<IServiceScope>();
+            serviceScope.ServiceProvider.Returns(serviceProvider);
+            var serviceScopeFactory = Substitute.For<IServiceScopeFactory>();
+            serviceScopeFactory.CreateScope().Returns(serviceScope);
+            return serviceScopeFactory;
         }
 
         [Fact]
@@ -57,7 +74,10 @@ namespace Trakx.MarketData.Collector.Tests.Unit
                     _ => new List<string>(),
                     _ => indexesEventuallyReturned);
 
-            await _worker.StartAsync(_cancellationToken);
+            _indexDataProvider.GetAllComponentsFromCurrentCompositions(_cancellationToken)
+                .Returns(new List<IComponentDefinition>());
+
+            await _priceCache.StartCaching(_cancellationToken);
 
             await _indexDataProvider.Received(3).GetAllIndexSymbols(_cancellationToken);
         }
@@ -67,7 +87,7 @@ namespace Trakx.MarketData.Collector.Tests.Unit
         {
             var expectedSymbols = PrepareIndexDataProviderExpectations();
 
-            await _worker.StartAsync(_cancellationToken);
+            await _priceCache.StartCaching(_cancellationToken);
 
             await _indexDataProvider.Received(1).GetAllIndexSymbols(_cancellationToken);
             _ = _indexDataProvider.Received(1).GetAllComponentsFromCurrentCompositions(_cancellationToken);
@@ -95,7 +115,7 @@ namespace Trakx.MarketData.Collector.Tests.Unit
             var message = new AggregateIndex { FromSymbol = "ABC", ToSymbol = "USD", Price = 1.2m };
             AddMessageToWebSocketStream(message);
 
-            await _worker.StartAsync(_cancellationToken);
+            await _priceCache.StartCaching(_cancellationToken);
 
             await CheckUpdateWasSetInCache(message, abcPrice/usdcPrice, "usdc");
 
@@ -112,7 +132,7 @@ namespace Trakx.MarketData.Collector.Tests.Unit
             var message = new AggregateIndex {FromSymbol = "ABC", ToSymbol = "EUR", Price = 1.2m};
             AddMessageToWebSocketStream(message);
 
-            await _worker.StartAsync(_cancellationToken);
+            await _priceCache.StartCaching(_cancellationToken);
 
             await CheckUpdateWasSetInCache(message, abcPrice);
         }
@@ -127,7 +147,7 @@ namespace Trakx.MarketData.Collector.Tests.Unit
             var message = new AggregateIndex {FromSymbol = "USDC", ToSymbol = "GBP", Price = usdcPrice};
             AddMessageToWebSocketStream(message);
 
-            await _worker.StartAsync(_cancellationToken);
+            await _priceCache.StartCaching(_cancellationToken);
 
             await CheckUpdateWasSetInCache(message, usdcPrice);
         }
@@ -138,9 +158,9 @@ namespace Trakx.MarketData.Collector.Tests.Unit
             _indexDataProvider.GetAllIndexSymbols(_cancellationToken).Returns(indexes);
 
             var components = _mockCreator.GetIndexComposition(3).ComponentQuantities
-                .Select(c => c.ComponentDefinition);
+                .Select(c => c.ComponentDefinition).ToList();
             _indexDataProvider.GetAllComponentsFromCurrentCompositions(_cancellationToken)
-                .Returns(components.ToAsyncEnumerable());
+                .Returns(components);
 
             var expectedSymbols = components.Select(c => c.Symbol.ToUpper()).Union(new[] {"USDC"});
             return expectedSymbols;

@@ -3,6 +3,7 @@
   <PropertyGroup>
     <TargetFramework>netcoreapp3.1</TargetFramework>
     <UserSecretsId>dotnet-Trakx.MarketData.Collector-AD327AD5-4BE2-406F-A9D9-EF72235ED16C</UserSecretsId>
+    <DockerfileFile>../Collector.Dockerfile</DockerfileFile>
     <DockerDefaultTargetOS>Linux</DockerDefaultTargetOS>
     <Platforms>AnyCPU;x86</Platforms>
   </PropertyGroup>

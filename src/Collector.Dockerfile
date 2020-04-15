@@ -7,7 +7,7 @@ FROM mcr.microsoft.com/dotnet/core/sdk:3.1-buster AS build
 WORKDIR /src
 COPY ./src .
 RUN dotnet restore "Trakx.MarketData.Collector/Trakx.MarketData.Collector.csproj"
-COPY . .
+
 WORKDIR "/src/Trakx.MarketData.Collector"
 RUN dotnet build "Trakx.MarketData.Collector.csproj" -c Release -o /app/build
 

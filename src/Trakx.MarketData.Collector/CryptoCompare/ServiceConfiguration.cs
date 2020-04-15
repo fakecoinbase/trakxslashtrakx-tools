@@ -1,6 +1,5 @@
 ﻿using System;
 using CryptoCompare;
-using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
 using Trakx.Common.Interfaces;
 
@@ -12,22 +11,17 @@ namespace Trakx.MarketData.Collector.CryptoCompare
         {
             services.AddSingleton(provider =>
             {
-                var apiKey = GetApiKeyFromConfiguration(provider);
+                var apiKey = Environment.GetEnvironmentVariable("CRYPTOCOMPARE_API_KEY");
                 return new CryptoCompareClient(apiKey);
             });
 
             services.AddTransient<IClientWebsocket, WrappedClientWebsocket>();
             services.AddTransient<IWebSocketStreamer, WebSocketStreamer>();
             services.AddSingleton<IApiDetailsProvider, ApiDetailsProvider>();
-            services.AddSingleton<WebSocketClient>();
+            services.AddSingleton<ICryptoCompareWebSocketClient, CryptoCompareWebSocketClient>();
+            services.AddSingleton<WrappedClientWebsocket>();
+            
             return services;
-        }
-
-        private static string GetApiKeyFromConfiguration(IServiceProvider provider)
-        {
-            var configuration = provider.GetService<IConfiguration>();
-            var apiKey = configuration.GetSection("ApiKeys").GetValue<string>("CryptoCompare");
-            return apiKey;
         }
     }
 }

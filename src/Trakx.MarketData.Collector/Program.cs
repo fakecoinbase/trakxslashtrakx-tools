@@ -22,14 +22,20 @@ namespace Trakx.MarketData.Collector
                 {
                     services.AddHostedService<Worker>();
                     services.AddCryptoCompareClient();
+
+                    services.AddSingleton<IPriceCache, PriceCache>();
+
                     services.AddDistributedRedisCache(options =>
                     {
                         options.Configuration = hostContext.Configuration.GetConnectionString("RedisConnection");
-                        options.ConfigurationOptions.ReconnectRetryPolicy = new ExponentialRetry(100, 120_000);
                     });
+                    
+                    services.AddMemoryCache();
+                    
                     services.AddDbContext<IndexRepositoryContext>(options =>
                         options.UseSqlServer(hostContext.Configuration.GetConnectionString("SqlServerConnection")));
-                    services.AddSingleton<IIndexDataProvider, IndexDataProvider>();
+
+                    services.AddScoped<IIndexDataProvider, IndexDataProvider>();
                 });
     }
 }

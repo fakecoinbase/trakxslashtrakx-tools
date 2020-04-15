@@ -14,7 +14,8 @@ namespace Trakx.Persistence.Migrations
                     Address = table.Column<string>(maxLength: 256, nullable: false),
                     Name = table.Column<string>(maxLength: 512, nullable: false),
                     Symbol = table.Column<string>(maxLength: 50, nullable: false),
-                    Decimals = table.Column<int>(nullable: false)
+                    Decimals = table.Column<int>(nullable: false),
+                    CoinGeckoId = table.Column<string>(maxLength: 256, nullable: false)
                 },
                 constraints: table =>
                 {
@@ -38,36 +39,12 @@ namespace Trakx.Persistence.Migrations
                 });
 
             migrationBuilder.CreateTable(
-                name: "ComponentWeights",
-                columns: table => new
-                {
-                    Id = table.Column<string>(nullable: false),
-                    ComponentDefinitionDaoAddress = table.Column<string>(nullable: false),
-                    IndexDefinitionDaoSymbol = table.Column<string>(nullable: false),
-                    Weight = table.Column<decimal>(type: "decimal(10, 10)", nullable: false)
-                },
-                constraints: table =>
-                {
-                    table.PrimaryKey("PK_ComponentWeights", x => x.Id);
-                    table.ForeignKey(
-                        name: "FK_ComponentWeights_ComponentDefinitions_ComponentDefinitionDaoAddress",
-                        column: x => x.ComponentDefinitionDaoAddress,
-                        principalTable: "ComponentDefinitions",
-                        principalColumn: "Address",
-                        onDelete: ReferentialAction.Cascade);
-                    table.ForeignKey(
-                        name: "FK_ComponentWeights_IndexDefinitions_IndexDefinitionDaoSymbol",
-                        column: x => x.IndexDefinitionDaoSymbol,
-                        principalTable: "IndexDefinitions",
-                        principalColumn: "Symbol",
-                        onDelete: ReferentialAction.Cascade);
-                });
-
-            migrationBuilder.CreateTable(
                 name: "IndexCompositions",
                 columns: table => new
                 {
                     Id = table.Column<string>(nullable: false),
+                    Address = table.Column<string>(nullable: false),
+                    Symbol = table.Column<string>(nullable: false),
                     IndexDefinitionDaoSymbol = table.Column<string>(nullable: false),
                     Version = table.Column<long>(nullable: false),
                     CreationDate = table.Column<DateTime>(nullable: false)
@@ -140,6 +117,7 @@ namespace Trakx.Persistence.Migrations
                     ComponentQuantityDaoId = table.Column<string>(nullable: false),
                     QuoteCurrency = table.Column<string>(maxLength: 50, nullable: false),
                     Price = table.Column<decimal>(type: "decimal(38, 18)", nullable: false),
+                    PriceSource = table.Column<string>(maxLength: 50, nullable: false),
                     Value = table.Column<decimal>(type: "decimal(38, 18)", nullable: false),
                     IndexValuationDaoId = table.Column<string>(nullable: true)
                 },
@@ -181,16 +159,6 @@ namespace Trakx.Persistence.Migrations
                 column: "IndexValuationDaoId");
 
             migrationBuilder.CreateIndex(
-                name: "IX_ComponentWeights_ComponentDefinitionDaoAddress",
-                table: "ComponentWeights",
-                column: "ComponentDefinitionDaoAddress");
-
-            migrationBuilder.CreateIndex(
-                name: "IX_ComponentWeights_IndexDefinitionDaoSymbol",
-                table: "ComponentWeights",
-                column: "IndexDefinitionDaoSymbol");
-
-            migrationBuilder.CreateIndex(
                 name: "IX_IndexCompositions_IndexDefinitionDaoSymbol",
                 table: "IndexCompositions",
                 column: "IndexDefinitionDaoSymbol");
@@ -205,9 +173,6 @@ namespace Trakx.Persistence.Migrations
         {
             migrationBuilder.DropTable(
                 name: "ComponentValuations");
-
-            migrationBuilder.DropTable(
-                name: "ComponentWeights");
 
             migrationBuilder.DropTable(
                 name: "ComponentQuantities");

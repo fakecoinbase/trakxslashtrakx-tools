@@ -11,21 +11,21 @@ using Trakx.MarketData.Collector.CryptoCompare.DTOs.Outbound;
 
 namespace Trakx.MarketData.Collector.CryptoCompare
 {
-    public class WebSocketClient : IAsyncDisposable, ICryptoCompareWebSocketClient, IDisposable
+    public class CryptoCompareWebSocketClient : IAsyncDisposable, ICryptoCompareWebSocketClient, IDisposable
     {
         private readonly IApiDetailsProvider _apiDetailsProvider;
         private readonly IClientWebsocket _client;
         private readonly CancellationTokenSource _cancellationTokenSource;
 
-        private readonly ILogger<WebSocketClient> _logger;
+        private readonly ILogger<CryptoCompareWebSocketClient> _logger;
         private Task? _listenToWebSocketTask;
 
         public IWebSocketStreamer WebSocketStreamer { get; }
 
-        public WebSocketClient(IClientWebsocket clientWebSocket, 
+        public CryptoCompareWebSocketClient(IClientWebsocket clientWebSocket, 
             IApiDetailsProvider apiDetailsProvider, 
             IWebSocketStreamer webSocketStreamer, 
-            ILogger<WebSocketClient> logger)
+            ILogger<CryptoCompareWebSocketClient> logger)
         {
             _apiDetailsProvider = apiDetailsProvider;
             _client = clientWebSocket;

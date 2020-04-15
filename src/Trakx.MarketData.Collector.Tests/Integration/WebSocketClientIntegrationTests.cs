@@ -20,16 +20,16 @@ namespace Trakx.MarketData.Collector.Tests.Integration
     public sealed class WebSocketClientIntegrationTests : IAsyncDisposable, IDisposable
     {
         private readonly ITestOutputHelper _output;
-        private readonly WebSocketClient _client;
+        private readonly CryptoCompareWebSocketClient _client;
 
         public WebSocketClientIntegrationTests(ITestOutputHelper output)
         {
             _output = output;
-            var logger = output.ToLogger<WebSocketClient>();
+            var logger = output.ToLogger<CryptoCompareWebSocketClient>();
             var streamer = new WebSocketStreamer(output.ToLogger<WebSocketStreamer>());
             var apiDetailsProvider = new ApiDetailsProvider(Trakx.Tests.Tools.Secrets.CryptoCompareApiKey);
             var clientWebSocket = new WrappedClientWebsocket();
-            _client = new WebSocketClient(clientWebSocket, apiDetailsProvider, streamer, logger);
+            _client = new CryptoCompareWebSocketClient(clientWebSocket, apiDetailsProvider, streamer, logger);
         }
 
         [Fact]
