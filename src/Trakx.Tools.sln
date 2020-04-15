@@ -12,8 +12,10 @@ Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "SolutionItems", "SolutionIt
 		Collector.Dockerfile = Collector.Dockerfile
 		Common.Projects.props = Common.Projects.props
 		..\.github\workflows\dockerpublish.collector.yml = ..\.github\workflows\dockerpublish.collector.yml
+		dockerpublish.IndexManager.yml = dockerpublish.IndexManager.yml
 		..\.github\workflows\dockerpublish.server.yml = ..\.github\workflows\dockerpublish.server.yml
 		generate-migrations.md = generate-migrations.md
+		IndexManager.Dockerfile = IndexManager.Dockerfile
 		..\LICENSE = ..\LICENSE
 		..\README.md = ..\README.md
 		Server.Dockerfile = Server.Dockerfile
@@ -38,6 +40,8 @@ EndProject
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Trakx.MarketData.Collector", "Trakx.MarketData.Collector\Trakx.MarketData.Collector.csproj", "{E1B60CFA-3AF2-4D86-A7EF-7448A8AD5380}"
 EndProject
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Trakx.MarketData.Collector.Tests", "Trakx.MarketData.Collector.Tests\Trakx.MarketData.Collector.Tests.csproj", "{AB86A222-0638-44F6-8278-BD0B4CA0B9C2}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Trakx.IndexManager.Server", "Trakx.IndexManager.Server\Trakx.IndexManager.Server.csproj", "{CD7E3575-E0A2-4720-A2BF-25B2769045C4}"
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
@@ -111,6 +115,14 @@ Global
 		{AB86A222-0638-44F6-8278-BD0B4CA0B9C2}.Release|Any CPU.Build.0 = Release|Any CPU
 		{AB86A222-0638-44F6-8278-BD0B4CA0B9C2}.Release|x86.ActiveCfg = Release|Any CPU
 		{AB86A222-0638-44F6-8278-BD0B4CA0B9C2}.Release|x86.Build.0 = Release|Any CPU
+		{CD7E3575-E0A2-4720-A2BF-25B2769045C4}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{CD7E3575-E0A2-4720-A2BF-25B2769045C4}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{CD7E3575-E0A2-4720-A2BF-25B2769045C4}.Debug|x86.ActiveCfg = Debug|Any CPU
+		{CD7E3575-E0A2-4720-A2BF-25B2769045C4}.Debug|x86.Build.0 = Debug|Any CPU
+		{CD7E3575-E0A2-4720-A2BF-25B2769045C4}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{CD7E3575-E0A2-4720-A2BF-25B2769045C4}.Release|Any CPU.Build.0 = Release|Any CPU
+		{CD7E3575-E0A2-4720-A2BF-25B2769045C4}.Release|x86.ActiveCfg = Release|Any CPU
+		{CD7E3575-E0A2-4720-A2BF-25B2769045C4}.Release|x86.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE
