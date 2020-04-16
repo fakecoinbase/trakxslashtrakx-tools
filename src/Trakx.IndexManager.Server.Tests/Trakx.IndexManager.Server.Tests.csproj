@@ -6,12 +6,7 @@
     <IsPackable>false</IsPackable>
   </PropertyGroup>
 
-  <ItemGroup>
-    <None Include="..\..\LICENSE" Link="LICENSE">
-      <PackagePath></PackagePath>
-      <Pack>true</Pack>
-    </None>
-  </ItemGroup>
+  <Import Project="../Common.Projects.props" />
 
   <ItemGroup>
     <PackageReference Include="nunit" Version="3.12.0" />
