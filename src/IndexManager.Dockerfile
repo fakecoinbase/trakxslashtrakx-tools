@@ -10,7 +10,7 @@ WORKDIR /src
 COPY ./src .
 RUN dotnet restore "Trakx.IndexManager.Server/Trakx.IndexManager.Server.csproj"
 
-WORKDIR "/src/Trakx.IndexManager.Server"
+WORKDIR /src/Trakx.IndexManager.Server
 RUN dotnet build "Trakx.IndexManager.Server.csproj" -c Release -o /app/build
 
 FROM build AS publish
