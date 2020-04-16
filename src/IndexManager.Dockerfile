@@ -3,7 +3,6 @@ WORKDIR /app
 EXPOSE 4000
 
 FROM mcr.microsoft.com/dotnet/core/sdk:3.1-buster AS build
-RUN apt-get update -y && rm -rf /var/lib/apt/lists/*
 WORKDIR /src
 COPY ./src .
 RUN dotnet restore "Trakx.IndexManager.Server/Trakx.IndexManager.Server.csproj"
