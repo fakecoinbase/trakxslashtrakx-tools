@@ -29,5 +29,9 @@
     <ProjectReference Include="..\Trakx.Persistence\Trakx.Persistence.csproj" />
   </ItemGroup>
 
+  <ItemGroup>
+    <Folder Include="Controllers\" />
+  </ItemGroup>
+
 
 </Project>
