@@ -4,8 +4,6 @@ EXPOSE 4000
 
 FROM mcr.microsoft.com/dotnet/core/sdk:3.1-buster AS build
 RUN apt-get update -y && rm -rf /var/lib/apt/lists/*
-RUN curl -sL https://deb.nodesource.com/setup_10.x | bash --debug
-RUN apt-get install --no-install-recommends nodejs -yq
 WORKDIR /src
 COPY ./src .
 RUN dotnet restore "Trakx.IndexManager.Server/Trakx.IndexManager.Server.csproj"
