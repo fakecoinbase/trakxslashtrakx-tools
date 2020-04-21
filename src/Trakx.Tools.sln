@@ -43,7 +43,9 @@ Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Trakx.MarketData.Collector.
 EndProject
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Trakx.IndexManager.Server", "Trakx.IndexManager.Server\Trakx.IndexManager.Server.csproj", "{CD7E3575-E0A2-4720-A2BF-25B2769045C4}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Trakx.IndexManager.Server.Tests", "Trakx.IndexManager.Server.Tests\Trakx.IndexManager.Server.Tests.csproj", "{1DEA2E9B-5E07-482F-9E64-98B4C72BC816}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Trakx.IndexManager.Server.Tests", "Trakx.IndexManager.Server.Tests\Trakx.IndexManager.Server.Tests.csproj", "{1DEA2E9B-5E07-482F-9E64-98B4C72BC816}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Trakx.IndexManager.Client", "Trakx.IndexManager.Client\Trakx.IndexManager.Client.csproj", "{04CE72AE-772C-475E-BB54-3FFFB6F29196}"
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
@@ -133,6 +135,14 @@ Global
 		{1DEA2E9B-5E07-482F-9E64-98B4C72BC816}.Release|Any CPU.Build.0 = Release|Any CPU
 		{1DEA2E9B-5E07-482F-9E64-98B4C72BC816}.Release|x86.ActiveCfg = Release|Any CPU
 		{1DEA2E9B-5E07-482F-9E64-98B4C72BC816}.Release|x86.Build.0 = Release|Any CPU
+		{04CE72AE-772C-475E-BB54-3FFFB6F29196}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{04CE72AE-772C-475E-BB54-3FFFB6F29196}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{04CE72AE-772C-475E-BB54-3FFFB6F29196}.Debug|x86.ActiveCfg = Debug|Any CPU
+		{04CE72AE-772C-475E-BB54-3FFFB6F29196}.Debug|x86.Build.0 = Debug|Any CPU
+		{04CE72AE-772C-475E-BB54-3FFFB6F29196}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{04CE72AE-772C-475E-BB54-3FFFB6F29196}.Release|Any CPU.Build.0 = Release|Any CPU
+		{04CE72AE-772C-475E-BB54-3FFFB6F29196}.Release|x86.ActiveCfg = Release|Any CPU
+		{04CE72AE-772C-475E-BB54-3FFFB6F29196}.Release|x86.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE
