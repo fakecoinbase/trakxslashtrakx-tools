@@ -1,10 +1,8 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Linq;
-using System.Net.Http;
 using System.Threading.Tasks;
 using FluentAssertions;
-using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
 using Trakx.Common.Ethereum;
 using Trakx.Common.Sources.Coinbase;
@@ -19,17 +17,14 @@ using CgMarketData = Trakx.Common.Sources.CoinGecko.MarketData;
 
 namespace Trakx.Tests.Tools
 {
-    public class CompositionHelper : IDisposable
+    public class CompositionHelper
     {
         private const string NullString = "null";
-        private readonly HttpClientHandler _httpClientHandler;
-        private readonly HttpClient _httpClient;
-        private ITestOutputHelper _output;
-        private ServiceProvider _serviceProvider;
-        private IMessariClient _messariClient;
-        private ICoinbaseClient _coinbaseClient;
-        private ICoinGeckoClient _coinGeckoClient;
-        private IWeb3Client _web3Client;
+        private readonly ITestOutputHelper _output;
+        private readonly IMessariClient _messariClient;
+        private readonly ICoinbaseClient _coinbaseClient;
+        private readonly ICoinGeckoClient _coinGeckoClient;
+        private readonly IWeb3Client _web3Client;
         private static readonly List<string> BadAssetNames = new List<string>() {"uniswap", "metacartel ventures", "tari", "synthetix network token" };
 
         private static readonly Dictionary<string, CgMarketData> MarketDataOverridesByCoinGeckoIdAndDate = new Dictionary<string, CgMarketData>
@@ -61,16 +56,16 @@ namespace Trakx.Tests.Tools
             serviceCollection.AddMemoryCache();
             serviceCollection.AddEthereumInteraction(Secrets.InfuraApiKey);
 
-            _serviceProvider = serviceCollection.BuildServiceProvider();
-            var conf = _serviceProvider.GetService<IConfiguration>();
-            _messariClient = _serviceProvider.GetRequiredService<IMessariClient>();
-            _coinbaseClient = _serviceProvider.GetRequiredService<ICoinbaseClient>();
-            _coinGeckoClient = _serviceProvider.GetRequiredService<ICoinGeckoClient>();
-            _web3Client = _serviceProvider.GetRequiredService<IWeb3Client>();
+            var serviceProvider = serviceCollection.BuildServiceProvider();
+            _messariClient = serviceProvider.GetRequiredService<IMessariClient>();
+            _coinbaseClient = serviceProvider.GetRequiredService<ICoinbaseClient>();
+            _coinGeckoClient = serviceProvider.GetRequiredService<ICoinGeckoClient>();
+            _web3Client = serviceProvider.GetRequiredService<IWeb3Client>();
         }
 
         internal class ComponentLine
         {
+            #pragma warning disable CS8618 // Non-nullable field is uninitialized. Consider declaring as nullable.
             public string Sector { get; set; }
             public string TokenType { get; set; }
             public bool CoinbaseCustody { get; set; }
@@ -95,6 +90,7 @@ namespace Trakx.Tests.Tools
             public DateTime HistoricalAsOfDate { get; set; }
             public bool IsErc20 => !string.IsNullOrWhiteSpace(ContractAddress)
                        && (TokenType?.Contains("ERC-20", StringComparison.InvariantCultureIgnoreCase) ?? false);
+            #pragma warning restore CS8618
         }
 
         [Fact]
@@ -109,7 +105,7 @@ namespace Trakx.Tests.Tools
         public async Task GetCompositionCsv()
         {
             var allAssets = await _messariClient.GetAllAssets().ConfigureAwait(false);
-            var historicalAsOfDate = new DateTime(2020, 03, 01);
+            var historicalAsOfDate = new DateTime(2020, 04, 01);
 
             _assetsFromMessari = RemoveBadAssets(allAssets);
             ReproduceThePastWithDodgyOverrides(_assetsFromMessari, historicalAsOfDate);
@@ -121,7 +117,7 @@ namespace Trakx.Tests.Tools
 
         private async Task OutputComponentLinesForSectorAndDate(DateTime historicalAsOfDate, IEnumerable<string> sectors = default)
         {
-            sectors ??= Constants.SectorSymbolBySector.Keys;
+            sectors = _assetsFromMessari.Select(a => a.Profile.Sector).ToList().Distinct();
             foreach (var sector in Constants.SectorSymbolBySector.Keys.Intersect(sectors))
             {
                 var components = _assetsFromMessari.Where(a =>
@@ -246,7 +242,7 @@ namespace Trakx.Tests.Tools
             return filtered;
         }
 
-        public void ReproduceThePastWithDodgyOverrides(List<Asset> assets, DateTime historicalAsOfDate)
+        private static void ReproduceThePastWithDodgyOverrides(List<Asset> assets, DateTime historicalAsOfDate)
         {
             var firstJan = new DateTime(2020, 01, 01);
             if (historicalAsOfDate > firstJan) return;
@@ -254,19 +250,13 @@ namespace Trakx.Tests.Tools
             assets.RemoveAll(a => a.Name == "ROOBEE");
         }
 
-        public void AddMarketDataOverrides(CgMarketData marketData)
+        private void AddMarketDataOverrides(CgMarketData marketData)
         {
             if (!MarketDataOverridesByCoinGeckoIdAndDate.TryGetValue($"{marketData.CoinId}|{marketData.AsOf:yyyyMMdd}",
                 out var overrides))
                 return;
             
             marketData.MarketCap = overrides.MarketCap;
-        }
-
-        public void Dispose()
-        {
-            _httpClient?.Dispose();
-            _httpClientHandler?.Dispose();
         }
 
         private static void AssignComponentWeights(List<ComponentLine> componentLines, decimal weightCap)

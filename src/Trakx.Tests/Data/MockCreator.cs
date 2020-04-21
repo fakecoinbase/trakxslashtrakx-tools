@@ -20,11 +20,11 @@ namespace Trakx.Tests.Data
         public string GetRandomString(int size) => new string(Enumerable.Range(0, size)
             .Select(_ => Alphabet[Random.Next(0, Alphabet.Length)]).ToArray());
 
-        public string GetRandomIndexSymbol(string indexShortName = default) => (Random.Next(1) < 1 ? "l" : "s")
+        public string GetRandomIndexSymbol(string? indexShortName = default) => (Random.Next(1) < 1 ? "l" : "s")
                                                                       + Random.Next(1, 20)
                                                                       + (indexShortName ?? GetRandomString(3));
 
-        public string GetRandomCompositionSymbol(string indexShortName = default)
+        public string GetRandomCompositionSymbol(string? indexShortName = default)
             => GetRandomIndexSymbol(indexShortName) + GetRandomYearMonthSuffix();
 
         public string GetRandomYearMonthSuffix() => $"{Random.Next(20, 36):00}{Random.Next(1, 13):00}";
@@ -55,7 +55,7 @@ namespace Trakx.Tests.Data
             return indexComposition;
         }
 
-        public IIndexDefinition GetRandomIndexDefinition(string indexSymbol = default, string name = default)
+        public IIndexDefinition GetRandomIndexDefinition(string? indexSymbol = default, string? name = default)
         {
             var indexDefinition = Substitute.For<IIndexDefinition>();
             indexDefinition.NaturalUnit.Returns((ushort)10);
@@ -70,10 +70,10 @@ namespace Trakx.Tests.Data
             return indexDefinition;
         }
 
-        public IComponentQuantity GetComponentQuantity(string address = default,
-            string symbol = default,
-            string name = default,
-            string coinGeckoId = default,
+        public IComponentQuantity GetComponentQuantity(string? address = default,
+            string? symbol = default,
+            string? name = default,
+            string? coinGeckoId = default,
             decimal? quantity = default,
             ushort? decimals = default)
         {

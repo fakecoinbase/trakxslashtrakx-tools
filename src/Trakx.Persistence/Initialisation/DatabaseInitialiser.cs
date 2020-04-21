@@ -164,6 +164,16 @@ namespace Trakx.Persistence.Initialisation
                 new ComponentDefinitionDao("0x7d1afa7b718fb893db30a3abc0cfc608aacfebb0", "Matic Network", "matic", "matic-network", 18),
                 new ComponentDefinitionDao("0x255aa6df07540cb5d3d297f0d0d4d84cb52bc8e6", "Raiden Network Token", "rdn", "raiden-network", 18),
                 #endregion
+
+                #region Wrapped Tokens
+                new ComponentDefinitionDao("0x2260fac5e5542a773aa44fbcfedf7c193bc2c599", "Wrapped BTC", "wbtc", "wrapped-bitcoin", 8),
+                new ComponentDefinitionDao("0xc02aaa39b223fe8d0a0e5c4f27ead9083c756cc2", "Wrapped ETH", "weth", "weth", 18),
+                #endregion
+                
+                new ComponentDefinitionDao("0x514910771af9ca656af840dff83e8264ecf986ca", "ChainLink Token", "link", "chainlink", 18),
+                new ComponentDefinitionDao("0xb1eef147028e9f480dbc5ccaa3277d417d1b85f0", "Seele Token", "seele", "seele", 18),
+                new ComponentDefinitionDao("0x0d8775f648430679a709e98d2b0cb6250d2887ef", "Basic Attention Token", "bat", "basic-attention-token", 18),
+                
             };
             await dbContext.ComponentDefinitions.AddRangeAsync(componentDefinitions, cancellationToken);
             await dbContext.SaveChangesAsync(cancellationToken);
@@ -172,6 +182,7 @@ namespace Trakx.Persistence.Initialisation
         internal static async Task CreateIndexDefinitions(IndexRepositoryContext dbContext, CancellationToken cancellationToken)
         {
             var firstJan = new DateTime(2020, 1, 1);
+            var firstApr = new DateTime(2020, 4, 1);
             var indexDefinitions = new List<IndexDefinitionDao>
             {
                 new IndexDefinitionDao("l1amg", "Asset Management",
@@ -179,11 +190,11 @@ namespace Trakx.Persistence.Initialisation
                     10,
                     "", firstJan),
                 new IndexDefinitionDao("l1cex", "Centralised Exchanges",
-                    "Index composed of tokens from the Messari Centralised Exchange sector",
+                    "Index composed of tokens from the Messari Centralised Exchange sector, capped at 30%",
                     13,
                     "", firstJan),
                 new IndexDefinitionDao("l1dex", "Decentralised Exchanges",
-                    "Index composed of tokens from the Messari Decentralised Exchange sector",
+                    "Index composed of tokens from the Messari Decentralised Exchange sector, capped at 50%",
                     14,
                     "", firstJan),
                 new IndexDefinitionDao("l1len", "Lending",
@@ -193,7 +204,15 @@ namespace Trakx.Persistence.Initialisation
                 new IndexDefinitionDao("l1sca", "Scalability",
                     "Index composed of tokens from the Messari Scalability sector",
                     11,
-                    "", firstJan)
+                    "", firstJan),
+                new IndexDefinitionDao("l1mcap10erc20", "Top 10 ERC-20 By Market Cap",
+                    "Index composed of the top 10 ERC20 by market cap, capped at 15%",
+                    11,
+                    "", firstApr),
+                new IndexDefinitionDao("l1btceth", "Equal Weight BTC ETH",
+                    "Index composed of half BTC and half ETH",
+                    8,
+                    "", firstApr),
             };
             await dbContext.AddRangeAsync(indexDefinitions, cancellationToken);
             await dbContext.SaveChangesAsync(cancellationToken);
@@ -331,6 +350,35 @@ namespace Trakx.Persistence.Initialisation
                 new CompositionData(indexBySymbols["l1sca"], DateTime.Parse("01-Mar-2020"), componentsBySymbols["loom"], 0.0189526689318092m, 0.283327216553418m),
                 new CompositionData(indexBySymbols["l1sca"], DateTime.Parse("01-Mar-2020"), componentsBySymbols["matic"], 0.0202222588096855m, 0.3m),
                 new CompositionData(indexBySymbols["l1sca"], DateTime.Parse("01-Mar-2020"), componentsBySymbols["rdn"], 0.120808864365804m, 0.17166672676778m),
+                #endregion
+
+                #region Apr 2020
+
+                new CompositionData(indexBySymbols["l1cex"], DateTime.Parse("01-Apr-2020"), componentsBySymbols["ftt"], 2.414m, 0.3m),
+                new CompositionData(indexBySymbols["l1cex"], DateTime.Parse("01-Apr-2020"), componentsBySymbols["ht"], 3.299m, 0.2918m),
+                new CompositionData(indexBySymbols["l1cex"], DateTime.Parse("01-Apr-2020"), componentsBySymbols["kcs"], 0.9446m, 0.0349m),
+                new CompositionData(indexBySymbols["l1cex"], DateTime.Parse("01-Apr-2020"), componentsBySymbols["leo"], 1.044m, 0.2697m),
+                new CompositionData(indexBySymbols["l1cex"], DateTime.Parse("01-Apr-2020"), componentsBySymbols["okb"], 4.271m, 0.1036m),
+                
+                new CompositionData(indexBySymbols["l1dex"], DateTime.Parse("01-Apr-2020"), componentsBySymbols["knc"], 0.4395m, 0.3848m),
+                new CompositionData(indexBySymbols["l1dex"], DateTime.Parse("01-Apr-2020"), componentsBySymbols["lrc"], 0.02635m, 0.132m),
+                new CompositionData(indexBySymbols["l1dex"], DateTime.Parse("01-Apr-2020"), componentsBySymbols["zrx"], 0.1521m, 0.4832m),
+
+                new CompositionData(indexBySymbols["l1mcap10erc20"], DateTime.Parse("01-Apr-2020"), componentsBySymbols["ftt"], 2.414m, 0.15m),
+                new CompositionData(indexBySymbols["l1mcap10erc20"], DateTime.Parse("01-Apr-2020"), componentsBySymbols["ht"], 3.299m, 0.15m),
+                new CompositionData(indexBySymbols["l1mcap10erc20"], DateTime.Parse("01-Apr-2020"), componentsBySymbols["mkr"], 295.02m, 0.0982m),
+                new CompositionData(indexBySymbols["l1mcap10erc20"], DateTime.Parse("01-Apr-2020"), componentsBySymbols["leo"], 1.044m, 0.15m),
+                new CompositionData(indexBySymbols["l1mcap10erc20"], DateTime.Parse("01-Apr-2020"), componentsBySymbols["okb"], 4.271m, 0.0883m),
+                new CompositionData(indexBySymbols["l1mcap10erc20"], DateTime.Parse("01-Apr-2020"), componentsBySymbols["link"], 2.209m, 0.15m),
+                new CompositionData(indexBySymbols["l1mcap10erc20"], DateTime.Parse("01-Apr-2020"), componentsBySymbols["knc"], 0.4395m, 0.0446m),
+                new CompositionData(indexBySymbols["l1mcap10erc20"], DateTime.Parse("01-Apr-2020"), componentsBySymbols["zrx"], 0.1521m, 0.0495m),
+                new CompositionData(indexBySymbols["l1mcap10erc20"], DateTime.Parse("01-Apr-2020"), componentsBySymbols["kcs"], 0.9446m, 0.0442m),
+                new CompositionData(indexBySymbols["l1mcap10erc20"], DateTime.Parse("01-Apr-2020"), componentsBySymbols["bat"], 0.1411m, 0.0753m),
+                
+                new CompositionData(indexBySymbols["l1btceth"], DateTime.Parse("01-Apr-2020"), componentsBySymbols["wbtc"], 6434.42m, 0.5m),
+                new CompositionData(indexBySymbols["l1btceth"], DateTime.Parse("01-Apr-2020"), componentsBySymbols["weth"], 132.88m, 0.5m),
+
+
                 #endregion
             };
 

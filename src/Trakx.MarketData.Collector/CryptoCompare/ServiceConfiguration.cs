@@ -9,7 +9,7 @@ namespace Trakx.MarketData.Collector.CryptoCompare
     {
         public static IServiceCollection AddCryptoCompareClient(this IServiceCollection services)
         {
-            services.AddSingleton(provider =>
+            services.AddSingleton<ICryptoCompareClient, CryptoCompareClient>(provider =>
             {
                 var apiKey = Environment.GetEnvironmentVariable("CRYPTOCOMPARE_API_KEY");
                 return new CryptoCompareClient(apiKey);

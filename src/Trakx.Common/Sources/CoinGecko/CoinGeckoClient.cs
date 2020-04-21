@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Text.RegularExpressions;
 using System.Threading.Tasks;
+using Ardalis.GuardClauses;
 using CoinGecko.Entities.Response.Coins;
 using CoinGecko.Interfaces;
 using Microsoft.Extensions.Caching.Memory;
@@ -36,8 +37,7 @@ namespace Trakx.Common.Sources.CoinGecko
             }
         }
 
-        private readonly Dictionary<string, CoinFullDataById> _coinFullDataByIds;
-        public Dictionary<string, CoinFullDataById> CoinFullDataByIds => _coinFullDataByIds;
+        public Dictionary<string, CoinFullDataById> CoinFullDataByIds { get; }
 
         private static readonly Regex etherscanTokenAddress = new Regex(@"https://etherscan.io/token/(?<address>0x\w{40})");
 
@@ -49,7 +49,7 @@ namespace Trakx.Common.Sources.CoinGecko
                 .WaitAndRetryAsync(3, c => TimeSpan.FromSeconds(c*c));
             _coinsClient = factory.CreateCoinsClient();
             _simpleClient = factory.CreateSimpleClient();
-            _coinFullDataByIds = new Dictionary<string, CoinFullDataById>();
+            CoinFullDataByIds = new Dictionary<string, CoinFullDataById>();
         }
 
         /// <inheritdoc />
@@ -100,16 +100,18 @@ namespace Trakx.Common.Sources.CoinGecko
 
         private async Task<decimal> GetUsdFxRate(string quoteCurrencyId, string date)
         {
-            var conversion = 1m;
-            if (quoteCurrencyId != default)
-            {
-                var quoteResponse = await _memoryCache.GetOrCreateAsync($"{date}|{quoteCurrencyId}",
-                    async entry => await _retryPolicy.ExecuteAsync(() =>
-                        _coinsClient.GetHistoryByCoinId(quoteCurrencyId, date, false.ToString())));
-                conversion = (decimal?) quoteResponse.MarketData.CurrentPrice[Constants.Usd] ?? 1m;
-            }
-
-            return conversion;
+            Guard.Against.NullOrWhiteSpace(quoteCurrencyId, nameof(quoteCurrencyId));
+            
+            var quoteResponse = await _memoryCache.GetOrCreateAsync($"{date}|{quoteCurrencyId}",
+                async entry => await _retryPolicy.ExecuteAsync(() =>
+                    _coinsClient.GetHistoryByCoinId(quoteCurrencyId, date, false.ToString())));
+            
+            var fxRate = quoteResponse.MarketData.CurrentPrice[Constants.Usd];
+            
+            if(fxRate == null) 
+                throw new NavCalculator.FailedToRetrievePriceException($"Failed to retrieve price of {quoteCurrencyId} as of {date}");
+            
+            return (decimal)fxRate;
         }
 
         /// <inheritdoc />
@@ -123,11 +125,11 @@ namespace Trakx.Common.Sources.CoinGecko
             {
                 AsOf = asOf,
                 CoinId = fullData.Id,
+                CoinSymbol = fullData.Symbol,
                 MarketCap = (decimal?) fullData.MarketData?.MarketCap[Constants.Usd] / fxRate,
                 Volume = (decimal?) fullData.MarketData?.TotalVolume[Constants.Usd] / fxRate,
                 Price = (decimal?)fullData.MarketData?.CurrentPrice[Constants.Usd] / fxRate,
                 QuoteCurrency = fullData.Symbol
-                
             };
             
             return marketData;

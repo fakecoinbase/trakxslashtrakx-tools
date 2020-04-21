@@ -6,13 +6,13 @@ namespace Trakx.Common.Interfaces.Index
     public static class SymbolExtensions
     {
         public static readonly Regex IndexSymbolRegex = new Regex(
-            @"^(?<longShort>l|s)(?<leverage>[0-9]+)(?<sectorTicker>[a-zA-z]{3,})$");
+            @"^(?<longShort>l|s)(?<leverage>[0-9]+)(?<sectorTicker>[a-zA-z]+[\w]*)$");
         public static readonly Regex CompositionSymbolRegex = new Regex(
-            @"^(?<longShort>l|s)(?<leverage>[0-9]+)(?<sectorTicker>[a-zA-z]{3,})(?<dateTicker>[0-9][0-9](0[1-9]|1[0-2]))$");
+            @"^(?<longShort>l|s)(?<leverage>[0-9]+)(?<sectorTicker>[a-zA-z]+[\w]*)(?<dateTicker>[0-9][0-9](0[1-9]|1[0-2]))$");
 
         public static bool IsIndexSymbol(this string candidateSymbol)
         {
-            return IndexSymbolRegex.IsMatch(candidateSymbol);
+            return !IsCompositionSymbol(candidateSymbol) && IndexSymbolRegex.IsMatch(candidateSymbol);
         }
 
         public static bool IsCompositionSymbol(this string candidateSymbol)
