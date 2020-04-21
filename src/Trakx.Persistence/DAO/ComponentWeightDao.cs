@@ -6,8 +6,12 @@ namespace Trakx.Persistence.DAO
 {
     /// <inheritdoc />
     public class ComponentWeightDao : IComponentWeight
-    {
+    {        
+        // Non-nullable field is uninitialized. Consider declaring as nullable.
+        // This constructor is for serialisation only
+        #pragma warning disable CS8618
         public ComponentWeightDao() {}
+        #pragma warning restore CS8618
 
         public ComponentWeightDao(IndexDefinitionDao indexDefinition, 
             ComponentDefinitionDao componentDefinition,

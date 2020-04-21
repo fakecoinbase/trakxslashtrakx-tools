@@ -141,6 +141,7 @@ namespace Trakx.Persistence
         {
             //TODO simplify that to exclude components not in use when they start to happen.
             var components = await _dbContext.ComponentDefinitions.Select(c => (IComponentDefinition)c).ToListAsync(cancellationToken);
+
             return components;
         }
 

@@ -8,7 +8,11 @@ namespace Trakx.Persistence.DAO
 {
     public class IndexValuationDao : IIndexValuation
     {
+        // Non-nullable field is uninitialized. Consider declaring as nullable.
+        // This constructor is for serialisation only
+        #pragma warning disable CS8618
         public IndexValuationDao() {}
+        #pragma warning restore CS8618
 
         public IndexValuationDao(List<ComponentValuationDao> componentValuations)
         {

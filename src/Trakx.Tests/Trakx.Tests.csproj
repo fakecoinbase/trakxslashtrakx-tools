@@ -6,6 +6,7 @@
   </PropertyGroup>
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Debug|AnyCPU'">
     <Optimize>false</Optimize>
+    <NoWarn>1701;1702;8625;8600</NoWarn>
   </PropertyGroup>
 
   <Import Project="../Common.Projects.props" />
@@ -53,6 +54,7 @@
   </ItemGroup>
 
   <ItemGroup>
+    <ProjectReference Include="..\Trakx.MarketData.Collector\Trakx.MarketData.Collector.csproj" />
     <ProjectReference Include="..\Trakx.MarketData.Server\Trakx.MarketData.Server.csproj" />
   </ItemGroup>
 

@@ -6,7 +6,11 @@ namespace Trakx.Persistence.DAO
 {
     public class ComponentDefinitionDao : IComponentDefinition
     {
+        // Non-nullable field is uninitialized. Consider declaring as nullable.
+        // This constructor is for serialisation only
+        #pragma warning disable CS8618
         public ComponentDefinitionDao() {}
+        #pragma warning restore CS8618 // Non-nullable field is uninitialized. Consider declaring as nullable.
 
         public ComponentDefinitionDao(string address, string name, string symbol, string coinGeckoId, ushort decimals)
         {

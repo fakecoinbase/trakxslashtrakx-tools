@@ -21,6 +21,26 @@ services:
       - "3000:5000"
     restart: always
 
+  indexmanager_api:
+    logging:
+      driver: "json-file"
+      options:
+        max-size: "50m"
+    image: docker.pkg.github.com/trakx/trakx-tools/trakx-indexmanager-server:latest
+    links:
+      - redis
+      - sqlserver
+    environment:
+      - ASPNETCORE_ENVIRONMENT=Development #Consider changing this in Production
+      - ConnectionStrings__SqlServerConnection=Server=sqlserver;Database=IndexRepository;Trusted_Connection=True;MultipleActiveResultSets=true;User=SA;Password=changeme;Integrated Security=false
+      - ConnectionStrings__RedisConnection=redis:6379,abortConnect=False
+      - CRYPTOCOMPARE_API_KEY=xxx    
+    networks:
+      - indexmanager
+    ports: 
+      - "3000:4000"
+    restart: always
+    
   collector:
     logging:
       driver: "json-file"
@@ -55,6 +75,7 @@ services:
       - "1433:1433"
     networks:
       - marketdata
+      - indexmanager
     restart: always
 
   redis:
@@ -63,6 +84,7 @@ services:
       - "6379:6379"
     networks:
       - marketdata
+      - indexmanager
     restart: always
 
   proxy:
@@ -77,12 +99,15 @@ services:
       - "80:80"
       - "443:443"
       - "5000:5000"
+      - "5000:4000"
     networks:
-      - marketdata        
+      - marketdata      
+      - indexmanager
     volumes:
       - /etc/letsencrypt/:/etc/letsencrypt/
     links:
       - aspnetcore_api
+      - indexmanager_api
     restart: always
 
 volumes:
@@ -91,5 +116,10 @@ volumes:
 networks:
   marketdata:
     name: marketdata_network
+    ipam:
+      driver: default
+
+  indexmanager:
+    name: indexmanager_network
     ipam:
       driver: default

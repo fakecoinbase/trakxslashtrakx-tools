@@ -9,11 +9,15 @@ namespace Trakx.Persistence.DAO
 {
     public class IndexCompositionDao : IIndexComposition
     {
+        // Non-nullable field is uninitialized. Consider declaring as nullable.
+        // This constructor is for serialisation only
+        #pragma warning disable CS8618
         public IndexCompositionDao(string address, string symbol)
         {
             Address = address;
             Symbol = symbol;
         }
+        #pragma warning restore CS8618
 
         public IndexCompositionDao(IndexDefinitionDao indexDefinition, 
             uint version, DateTime creationDate, string address, string symbol)

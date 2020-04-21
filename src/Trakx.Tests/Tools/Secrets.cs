@@ -13,9 +13,9 @@ namespace Trakx.Tests.Tools
             DotNetEnv.Env.Load(Path.Combine(srcPath?.FullName, ".env"));
         }
 
-        public static string CryptoCompareApiKey => GetEnvironmentVariable("CRYPTOCOMPARE_API_KEY");
-        public static string InfuraApiKey => GetEnvironmentVariable("INFURA_API_KEY");
-        public static string EthereumWalletSecret => GetEnvironmentVariable("ETHERWALLET");
+        public static string? CryptoCompareApiKey => GetEnvironmentVariable("CRYPTOCOMPARE_API_KEY");
+        public static string? InfuraApiKey => GetEnvironmentVariable("INFURA_API_KEY");
+        public static string? EthereumWalletSecret => GetEnvironmentVariable("ETHERWALLET");
     }
 
     public class ToBeDeleted
