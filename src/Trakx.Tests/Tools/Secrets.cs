@@ -5,7 +5,7 @@ using static System.Environment;
 
 namespace Trakx.Tests.Tools
 {
-    internal static class Secrets
+    public  static class Secrets
     {
         static Secrets()
         {

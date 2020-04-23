@@ -67,8 +67,8 @@ namespace Trakx.Common.Sources.CoinGecko
             var conversionToQuoteCurrency = tickerDetails[quoteCurrencyId][Constants.Usd];
             return (decimal?)(price / conversionToQuoteCurrency) ?? 0m;
         }
-
-        private async Task<string?> GetCoinGeckoIdFromSymbol(string symbol)
+        
+        public async Task<string?> GetCoinGeckoIdFromSymbol(string symbol)
         {
             var coinList = await GetCoinList();
 

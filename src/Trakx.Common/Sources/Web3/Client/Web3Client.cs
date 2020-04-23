@@ -34,5 +34,34 @@ namespace Trakx.Common.Sources.Web3.Client
                 return default;
             }
         }
+
+        public async Task<string?> GetNameFromContractAddress(string contractAddress)
+        {
+            try
+            {
+                var contractService = new StandardTokenService((Nethereum.Web3.Web3)_web3, contractAddress);
+                var name = await contractService.NameQueryAsync();
+                return name;
+            }
+            catch (Exception e)
+            {
+                _logger.LogWarning(e, "Failed to get name for contract {0}", contractAddress);
+                return default;
+            }
+        }
+        public async Task<string?> GetSymbolFromContractAddress(string contractAddress)
+        {
+            try
+            {
+                var contractService = new StandardTokenService((Nethereum.Web3.Web3)_web3, contractAddress);
+                var symbol = await contractService.SymbolQueryAsync();
+                return symbol;
+            }
+            catch (Exception e)
+            {
+                _logger.LogWarning(e, "Failed to get symbol for contract {0}", contractAddress);
+                return default;
+            }
+        }
     }
 }

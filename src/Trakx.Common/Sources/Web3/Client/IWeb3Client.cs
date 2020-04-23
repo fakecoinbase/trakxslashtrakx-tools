@@ -7,5 +7,7 @@ namespace Trakx.Common.Sources.Web3.Client
     {
         IWeb3 Web3 { get; }
         Task<ushort?> GetDecimalsFromContractAddress(string contractAddress);
+        Task<string?> GetSymbolFromContractAddress(string contractAddress);
+        Task<string?> GetNameFromContractAddress(string contractAddress);
     }
 }
