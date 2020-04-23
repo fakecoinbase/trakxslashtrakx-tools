@@ -4,7 +4,7 @@ using Nethereum.RPC.Eth.DTOs;
 using Newtonsoft.Json.Linq;
 using NSubstitute;
 using Trakx.Common.Core;
-using Trakx.Common.Interfaces.Index;
+using Trakx.Common.Interfaces.Indice;
 
 namespace Trakx.Tests.Data
 {
@@ -20,12 +20,12 @@ namespace Trakx.Tests.Data
         public string GetRandomString(int size) => new string(Enumerable.Range(0, size)
             .Select(_ => Alphabet[Random.Next(0, Alphabet.Length)]).ToArray());
 
-        public string GetRandomIndexSymbol(string? indexShortName = default) => (Random.Next(1) < 1 ? "l" : "s")
+        public string GetRandomIndiceSymbol(string? indiceShortName = default) => (Random.Next(1) < 1 ? "l" : "s")
                                                                       + Random.Next(1, 20)
-                                                                      + (indexShortName ?? GetRandomString(3));
+                                                                      + (indiceShortName ?? GetRandomString(3));
 
-        public string GetRandomCompositionSymbol(string? indexShortName = default)
-            => GetRandomIndexSymbol(indexShortName) + GetRandomYearMonthSuffix();
+        public string GetRandomCompositionSymbol(string? indiceShortName = default)
+            => GetRandomIndiceSymbol(indiceShortName) + GetRandomYearMonthSuffix();
 
         public string GetRandomYearMonthSuffix() => $"{Random.Next(20, 36):00}{Random.Next(1, 13):00}";
 
@@ -39,35 +39,35 @@ namespace Trakx.Tests.Data
             return randomDay;
         }
 
-        public IIndexComposition GetIndexComposition(int componentCount)
+        public IIndiceComposition GetIndiceComposition(int componentCount)
         {
             var componentQuantities = Enumerable.Range(0, componentCount)
                 .Select(i => GetComponentQuantity(symbol: $"sym{i}", coinGeckoId: $"id-{i}"))
                 .ToList();
 
-            var indexComposition = Substitute.For<IIndexComposition>();
-            indexComposition.ComponentQuantities.Returns(componentQuantities);
-            var randomIndexDefinition = GetRandomIndexDefinition();
-            indexComposition.IndexDefinition.Returns(randomIndexDefinition);
-            indexComposition.Address.Returns(GetRandomAddressEthereum());
-            indexComposition.Symbol.Returns(randomIndexDefinition.Symbol + GetRandomYearMonthSuffix());
-            indexComposition.CreationDate.Returns(GetRandomDateTime());
-            return indexComposition;
+            var indiceComposition = Substitute.For<IIndiceComposition>();
+            indiceComposition.ComponentQuantities.Returns(componentQuantities);
+            var randomIndiceDefinition = GetRandomIndiceDefinition();
+            indiceComposition.IndiceDefinition.Returns(randomIndiceDefinition);
+            indiceComposition.Address.Returns(GetRandomAddressEthereum());
+            indiceComposition.Symbol.Returns(randomIndiceDefinition.Symbol + GetRandomYearMonthSuffix());
+            indiceComposition.CreationDate.Returns(GetRandomDateTime());
+            return indiceComposition;
         }
 
-        public IIndexDefinition GetRandomIndexDefinition(string? indexSymbol = default, string? name = default)
+        public IIndiceDefinition GetRandomIndiceDefinition(string? indiceSymbol = default, string? name = default)
         {
-            var indexDefinition = Substitute.For<IIndexDefinition>();
-            indexDefinition.NaturalUnit.Returns((ushort)10);
-            indexSymbol ??= GetRandomIndexSymbol();
-            indexDefinition.Symbol.Returns(indexSymbol);
-            name ??= "index name " + GetRandomString(15);
-            indexDefinition.Name.Returns(name);
+            var indiceDefinition = Substitute.For<IIndiceDefinition>();
+            indiceDefinition.NaturalUnit.Returns((ushort)10);
+            indiceSymbol ??= GetRandomIndiceSymbol();
+            indiceDefinition.Symbol.Returns(indiceSymbol);
+            name ??= "indice name " + GetRandomString(15);
+            indiceDefinition.Name.Returns(name);
             var description = "description " + GetRandomString(15);
-            indexDefinition.Description.Returns(description);
-            indexDefinition.Address.Returns(GetRandomAddressEthereum());
-            indexDefinition.CreationDate.Returns(GetRandomDateTime());
-            return indexDefinition;
+            indiceDefinition.Description.Returns(description);
+            indiceDefinition.Address.Returns(GetRandomAddressEthereum());
+            indiceDefinition.CreationDate.Returns(GetRandomDateTime());
+            return indiceDefinition;
         }
 
         public IComponentQuantity GetComponentQuantity(string? address = default,
@@ -106,21 +106,21 @@ namespace Trakx.Tests.Data
                     "    \"blockHash\": \"0x6c54a6c04c3971e4fb5e4a4c84ee25148ab776a15ff44ce8b79148e4a70ca4a9\",\r\n" +
                     "    \"blockNumber\": \"0x93edb6\",\r\n" +
                     "    \"data\": \"0x000000000000000000000000e1cd722575800055\",\r\n" +
-                    "    \"logIndex\": \"0x46\",\r\n" +
+                    "    \"logIndice\": \"0x46\",\r\n" +
                     "    \"removed\": false,\r\n" +
                     "    \"topics\": [\r\n" +
                     "      \"0xa31e381e140096a837a20ba16eb64e32a4011fda0697adbfd7a8f7341c56aa94\",\r\n" +
                     "      \"0x000000000000000000000000ae81ae0179b38588e05f404e05882a3965d1b415\"\r\n" +
                     "    ],\r\n" +
                     "    \"transactionHash\": \"0x2e39c249e929b8d2dcd2560bd33e1ebd17570742972866b46060bc42bf7c4052\",\r\n" +
-                    "    \"transactionIndex\": \"0x80\"\r\n" +
+                    "    \"transactionIndice\": \"0x80\"\r\n" +
                     "  }" +
                     "\r\n]")
             };
             return transactionReceipt;
         }
 
-        public static IIndexValuation GetIndexValuation(IIndexComposition composition, string quoteCurrency = "usdc")
+        public static IIndiceValuation GetIndiceValuation(IIndiceComposition composition, string quoteCurrency = "usdc")
         {
             var componentValuations = composition.ComponentQuantities.Select(
                 c =>
@@ -129,8 +129,8 @@ namespace Trakx.Tests.Data
                     return (IComponentValuation)valuation;
                 }).ToList();
 
-            var indexValuation = new IndexValuation(composition, componentValuations, DateTime.Now);
-            return indexValuation;
+            var indiceValuation = new IndiceValuation(composition, componentValuations, DateTime.Now);
+            return indiceValuation;
         }
     }
 }

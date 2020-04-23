@@ -7,7 +7,7 @@ using Microsoft.Extensions.Logging;
 using Polly;
 using Polly.Retry;
 using Trakx.Common.Core;
-using Trakx.Common.Interfaces.Index;
+using Trakx.Common.Interfaces.Indice;
 using Trakx.Common.Interfaces.Pricing;
 using Trakx.Common.Sources.CoinGecko;
 using Trakx.Common.Sources.Messari.Client;
@@ -39,17 +39,17 @@ namespace Trakx.Common.Pricing
         #region Implementation of INavCalculator
 
         /// <inheritdoc />
-        public async Task<decimal> CalculateNav(IIndexComposition index,
+        public async Task<decimal> CalculateNav(IIndiceComposition indice,
             DateTime? asOf = default,
             string quoteCurrency = Constants.DefaultQuoteCurrency)
         {
-            var valuation = await GetIndexValuation(index, asOf, quoteCurrency)
+            var valuation = await GetIndiceValuation(indice, asOf, quoteCurrency)
                 .ConfigureAwait(false);
             return valuation.NetAssetValue;
         }
 
         /// <inheritdoc />
-        public async Task<IIndexValuation> GetIndexValuation(IIndexComposition composition,
+        public async Task<IIndiceValuation> GetIndiceValuation(IIndiceComposition composition,
             DateTime? asOf = default,
             string quoteCurrency = Constants.DefaultQuoteCurrency)
         {
@@ -68,9 +68,9 @@ namespace Trakx.Common.Pricing
                     return (IComponentValuation)valuation;
                 }).ToList();
 
-            var indexValuation = new IndexValuation(composition, componentValuations, utcTimeStamp);
+            var indiceValuation = new IndiceValuation(composition, componentValuations, utcTimeStamp);
 
-            return indexValuation;
+            return indiceValuation;
         }
 
         #endregion

@@ -12,7 +12,7 @@ namespace Trakx.Tests.Unit.Models
     /// </summary>
     public sealed class TestDbContextFixture : IDisposable
     {
-        public IndexRepositoryContext Context { get; private set; }
+        public IndiceRepositoryContext Context { get; private set; }
         
         public TestDbContextFixture()
         {
@@ -20,7 +20,7 @@ namespace Trakx.Tests.Unit.Models
             serviceCollection.AddMappings();
             var serviceProvider = serviceCollection.BuildServiceProvider();
             var mapper = serviceProvider.GetRequiredService<IMapper>();
-            Context = new TestIndexRepositoryContext(mapper);
+            Context = new TestIndiceRepositoryContext(mapper);
         }
 
         #region IDisposable

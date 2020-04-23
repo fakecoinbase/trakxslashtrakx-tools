@@ -8,7 +8,7 @@ using Microsoft.Extensions.Logging;
 using Nethereum.ABI.Encoders;
 using Newtonsoft.Json;
 using Trakx.Common.Extensions;
-using Trakx.Common.Interfaces.Index;
+using Trakx.Common.Interfaces.Indice;
 using Trakx.Contracts.Set;
 using Trakx.Contracts.Set.Core;
 
@@ -18,7 +18,7 @@ namespace Trakx.Common.Ethereum
 {
     public interface ICompositionCreator
     {
-        Task<string> SaveCompositionOnChain(IIndexComposition composition);
+        Task<string> SaveCompositionOnChain(IIndiceComposition composition);
     }
 
     public class CompositionCreator : ICompositionCreator
@@ -32,7 +32,7 @@ namespace Trakx.Common.Ethereum
             _coreService = coreService;
         }
 
-        internal async Task<string> SaveCompositionOnChain(IIndexComposition composition, string setTokenFactoryAddress)
+        internal async Task<string> SaveCompositionOnChain(IIndiceComposition composition, string setTokenFactoryAddress)
         {
             var stringTypeEncoder = new StringTypeEncoder();
 
@@ -43,7 +43,7 @@ namespace Trakx.Common.Ethereum
             {
                 var units = composition.ComponentQuantities.Select(q =>
                     new BigInteger(q.Quantity.DescaleComponentQuantity(
-                        q.ComponentDefinition.Decimals, composition.IndexDefinition.NaturalUnit)))
+                        q.ComponentDefinition.Decimals, composition.IndiceDefinition.NaturalUnit)))
                     .ToList();
 
                 var addresses = composition.ComponentQuantities.Select(q => q.ComponentDefinition.Address).ToList();
@@ -51,8 +51,8 @@ namespace Trakx.Common.Ethereum
                 var receipt = await _coreService.CreateSetRequestAndWaitForReceiptAsync(setTokenFactoryAddress,
                     addresses,
                     units,
-                    composition.IndexDefinition.NaturalUnit.AsAPowerOf10(),
-                    stringTypeEncoder.EncodePacked(composition.IndexDefinition.Name),
+                    composition.IndiceDefinition.NaturalUnit.AsAPowerOf10(),
+                    stringTypeEncoder.EncodePacked(composition.IndiceDefinition.Name),
                     stringTypeEncoder.EncodePacked(composition.Symbol),
                     stringTypeEncoder.Encode("0x0"),
                     cancellationTokenSource);
@@ -67,7 +67,7 @@ namespace Trakx.Common.Ethereum
             }
         }
 
-        public async Task<string> SaveCompositionOnChain(IIndexComposition composition)
+        public async Task<string> SaveCompositionOnChain(IIndiceComposition composition)
         {
             return await SaveCompositionOnChain(composition,
                     DeployedContractAddresses.SetTokenFactory)

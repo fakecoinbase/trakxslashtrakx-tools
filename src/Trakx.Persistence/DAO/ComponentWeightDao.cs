@@ -1,6 +1,6 @@
 ﻿using System.ComponentModel.DataAnnotations;
 using System.ComponentModel.DataAnnotations.Schema;
-using Trakx.Common.Interfaces.Index;
+using Trakx.Common.Interfaces.Indice;
 
 namespace Trakx.Persistence.DAO
 {
@@ -13,13 +13,13 @@ namespace Trakx.Persistence.DAO
         public ComponentWeightDao() {}
         #pragma warning restore CS8618
 
-        public ComponentWeightDao(IndexDefinitionDao indexDefinition, 
+        public ComponentWeightDao(IndiceDefinitionDao indiceDefinition, 
             ComponentDefinitionDao componentDefinition,
             decimal weight)
         {
-            Id = $"{indexDefinition.Symbol}|{componentDefinition.Symbol}";
+            Id = $"{indiceDefinition.Symbol}|{componentDefinition.Symbol}";
             ComponentDefinitionDao = componentDefinition;
-            IndexDefinitionDao = indexDefinition;
+            IndiceDefinitionDao = indiceDefinition;
             Weight = weight;
         }
 
@@ -31,7 +31,7 @@ namespace Trakx.Persistence.DAO
 
         public ComponentDefinitionDao ComponentDefinitionDao { get; set; }
 
-        public IndexDefinitionDao IndexDefinitionDao { get; set; }
+        public IndiceDefinitionDao IndiceDefinitionDao { get; set; }
 
         #region Implementation of IComponentWeight
 

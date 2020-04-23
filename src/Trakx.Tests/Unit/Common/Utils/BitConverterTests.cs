@@ -23,7 +23,7 @@ namespace Trakx.Tests.Unit.Common.Utils
         [Theory]
         [InlineData("123456789012345")] //too short
         [InlineData("12345678901234567")] //too long
-        public void BitConverter_should_throw_IndexOutOfRange_on_invalid_input_size(string bytesSeed)
+        public void BitConverter_should_throw_IndiceOutOfRange_on_invalid_input_size(string bytesSeed)
         {
             var bytes = Encoding.UTF8.GetBytes(bytesSeed);
             bytes.Length.Should().NotBe(16);

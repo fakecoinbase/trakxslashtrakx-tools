@@ -32,10 +32,10 @@ namespace Trakx.MarketData.Collector
                     
                     services.AddMemoryCache();
                     
-                    services.AddDbContext<IndexRepositoryContext>(options =>
+                    services.AddDbContext<IndiceRepositoryContext>(options =>
                         options.UseSqlServer(hostContext.Configuration.GetConnectionString("SqlServerConnection")));
 
-                    services.AddScoped<IIndexDataProvider, IndexDataProvider>();
+                    services.AddScoped<IIndiceDataProvider, IndiceDataProvider>();
                 });
     }
 }

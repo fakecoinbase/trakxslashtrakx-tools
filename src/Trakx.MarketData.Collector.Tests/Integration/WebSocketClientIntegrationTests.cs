@@ -47,10 +47,10 @@ namespace Trakx.MarketData.Collector.Tests.Integration
         }
 
         [Fact]
-        public async Task WebSocketClient_should_receive_AggregateIndex_updates()
+        public async Task WebSocketClient_should_receive_AggregateIndice_updates()
         {
-            var btcUsdSubscription = new AggregateIndexSubscription("btc", "usd");
-            await RunTestForSubscriptionType<AggregateIndex>(btcUsdSubscription);
+            var btcUsdSubscription = new AggregateIndiceSubscription("btc", "usd");
+            await RunTestForSubscriptionType<AggregateIndice>(btcUsdSubscription);
         }
 
         [Fact]

@@ -7,11 +7,11 @@
 @using Trakx.Common.Pricing
 @using Trakx.MarketData.Server.Hubs
 @inject NavigationManager NavigationManager
-@inject IIndexDataProvider IndexDataProvider
+@inject IIndiceDataProvider IndiceDataProvider
 @implements IDisposable
 @implements Trakx.MarketData.Server.Hubs.INavHubClient
 
-<h1>Live Index NAV</h1>
+<h1>Live Indice NAV</h1>
 
 <input id="symbol" @onchange="ChangeSymbol" />
 <button class="btn btn-primary" id="addSymbol" @onclick="AddSymbol">Add</button>
@@ -49,7 +49,7 @@
     private HubConnection _connection;
 
     private string _symbol = string.Empty;
-    private string _message = "Register for updates by adding and index symbol above";
+    private string _message = "Register for updates by adding and indice symbol above";
 
     private readonly ConcurrentDictionary<string, NavUpdate> _updatesBySymbol = new ConcurrentDictionary<string, NavUpdate>();
     private readonly Guid _clientId = Guid.NewGuid();

@@ -12,10 +12,10 @@ Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "SolutionItems", "SolutionIt
 		Collector.Dockerfile = Collector.Dockerfile
 		Common.Projects.props = Common.Projects.props
 		..\.github\workflows\dockerpublish.collector.yml = ..\.github\workflows\dockerpublish.collector.yml
-		dockerpublish.IndexManager.yml = dockerpublish.IndexManager.yml
+		dockerpublish.IndiceManager.yml = dockerpublish.IndiceManager.yml
 		..\.github\workflows\dockerpublish.server.yml = ..\.github\workflows\dockerpublish.server.yml
 		generate-migrations.md = generate-migrations.md
-		IndexManager.Dockerfile = IndexManager.Dockerfile
+		IndiceManager.Dockerfile = IndiceManager.Dockerfile
 		..\LICENSE = ..\LICENSE
 		..\README.md = ..\README.md
 		Server.Dockerfile = Server.Dockerfile
@@ -41,11 +41,11 @@ Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Trakx.MarketData.Collector"
 EndProject
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Trakx.MarketData.Collector.Tests", "Trakx.MarketData.Collector.Tests\Trakx.MarketData.Collector.Tests.csproj", "{AB86A222-0638-44F6-8278-BD0B4CA0B9C2}"
 EndProject
-Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Trakx.IndexManager.Server", "Trakx.IndexManager.Server\Trakx.IndexManager.Server.csproj", "{CD7E3575-E0A2-4720-A2BF-25B2769045C4}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Trakx.IndiceManager.Server", "Trakx.IndiceManager.Server\Trakx.IndiceManager.Server.csproj", "{CD7E3575-E0A2-4720-A2BF-25B2769045C4}"
 EndProject
-Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Trakx.IndexManager.Server.Tests", "Trakx.IndexManager.Server.Tests\Trakx.IndexManager.Server.Tests.csproj", "{1DEA2E9B-5E07-482F-9E64-98B4C72BC816}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Trakx.IndiceManager.Server.Tests", "Trakx.IndiceManager.Server.Tests\Trakx.IndiceManager.Server.Tests.csproj", "{1DEA2E9B-5E07-482F-9E64-98B4C72BC816}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Trakx.IndexManager.Client", "Trakx.IndexManager.Client\Trakx.IndexManager.Client.csproj", "{04CE72AE-772C-475E-BB54-3FFFB6F29196}"
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Trakx.IndiceManager.Client", "Trakx.IndiceManager.Client\Trakx.IndiceManager.Client.csproj", "{04CE72AE-772C-475E-BB54-3FFFB6F29196}"
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution

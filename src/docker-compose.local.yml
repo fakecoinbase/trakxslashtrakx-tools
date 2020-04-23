@@ -15,7 +15,7 @@ services:
       - sqlserver
     environment:
       - ASPNETCORE_ENVIRONMENT=Development #Consider changing this in Production
-      - ConnectionStrings__SqlServerConnection=Server=sqlserver;Database=IndexRepository;Trusted_Connection=True;MultipleActiveResultSets=true;User=SA;Password=changeme;Integrated Security=false
+      - ConnectionStrings__SqlServerConnection=Server=sqlserver;Database=IndiceRepository;Trusted_Connection=True;MultipleActiveResultSets=true;User=SA;Password=changeme;Integrated Security=false
       - ConnectionStrings__RedisConnection=redis:6379,abortConnect=False
       - CRYPTOCOMPARE_API_KEY=xxx
     networks:
@@ -24,25 +24,25 @@ services:
       - "3000:5000"
     restart: always
 
-  indexmanager_api:
+  indicemanager_api:
     logging:
       driver: "json-file"
       options:
         max-size: "50m"
-    #image: docker.pkg.github.com/trakx/trakx-tools/trakx-indexmanager-server:latest
+    #image: docker.pkg.github.com/trakx/trakx-tools/trakx-indicemanager-server:latest
     build:
       context: ./..
-      dockerfile: ./src/IndexManager.Dockerfile
+      dockerfile: ./src/IndiceManager.Dockerfile
     links:
       - redis
       - sqlserver
     environment:
       - ASPNETCORE_ENVIRONMENT=Development #Consider changing this in Production
-      - ConnectionStrings__SqlServerConnection=Server=sqlserver;Database=IndexRepository;Trusted_Connection=True;MultipleActiveResultSets=true;User=SA;Password=changeme;Integrated Security=false
+      - ConnectionStrings__SqlServerConnection=Server=sqlserver;Database=IndiceRepository;Trusted_Connection=True;MultipleActiveResultSets=true;User=SA;Password=changeme;Integrated Security=false
       - ConnectionStrings__RedisConnection=redis:6379,abortConnect=False
       - CRYPTOCOMPARE_API_KEY=xxx    
     networks:
-      - indexmanager
+      - indicemanager
     ports: 
       - "3000:4000"
     restart: always
@@ -54,7 +54,7 @@ services:
         max-size: "50m"
     image: docker.pkg.github.com/trakx/trakx-tools/trakx-marketdata-collector:latest
     environment:
-      - ConnectionStrings__SqlServerConnection=Server=sqlserver;Database=IndexRepository;Trusted_Connection=True;MultipleActiveResultSets=true;User=SA;Password=changeme;Integrated Security=false
+      - ConnectionStrings__SqlServerConnection=Server=sqlserver;Database=IndiceRepository;Trusted_Connection=True;MultipleActiveResultSets=true;User=SA;Password=changeme;Integrated Security=false
       - ConnectionStrings__RedisConnection=redis:6379,abortConnect=False
       - CRYPTOCOMPARE_API_KEY=xxx
     depends_on:
@@ -81,7 +81,7 @@ services:
       - "1433:1433"
     networks:
       - marketdata
-      - indexmanager
+      - indicemanager
     restart: always
 
   redis:
@@ -90,7 +90,7 @@ services:
       - "6379:6379"
     networks:
       - marketdata
-      - indexmanager
+      - indicemanager
     restart: always
 
   proxy:
@@ -108,12 +108,12 @@ services:
       - "5000:4000"
     networks:
       - marketdata      
-      - indexmanager
+      - indicemanager
     volumes:
       - /etc/letsencrypt/:/etc/letsencrypt/
     links:
       - aspnetcore_api
-      - indexmanager_api
+      - indicemanager_api
     restart: always
 
 volumes:
@@ -125,7 +125,7 @@ networks:
     ipam:
       driver: default
 
-  indexmanager:
-    name: indexmanager_network
+  indicemanager:
+    name: indicemanager_network
     ipam:
       driver: default

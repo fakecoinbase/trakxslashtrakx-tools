@@ -46,7 +46,7 @@ namespace Trakx.MarketData.Server
                 options.UseSqlServer(Configuration.GetConnectionString("SqlServerConnection")));
             
             services.AddDefaultIdentity<IdentityUser>().AddEntityFrameworkStores<ApplicationDbContext>();
-            services.AddDbContext<IndexRepositoryContext>(options =>
+            services.AddDbContext<IndiceRepositoryContext>(options =>
                 options.UseSqlServer(Configuration.GetConnectionString("SqlServerConnection")));
 
             services.AddRazorPages();
@@ -65,7 +65,7 @@ namespace Trakx.MarketData.Server
             });
 
             services.AddSingleton<IDateTimeProvider, DateTimeProvider>();
-            services.AddScoped<IIndexDataProvider, IndexDataProvider>();
+            services.AddScoped<IIndiceDataProvider, IndiceDataProvider>();
             services.AddScoped<NavHub>();
             services.AddPricing();
             services.AddCoinGeckoClient();
@@ -131,6 +131,7 @@ namespace Trakx.MarketData.Server
         {
             using var serviceScope = app.ApplicationServices.GetRequiredService<IServiceScopeFactory>().CreateScope();
             var databaseInitializer = serviceScope.ServiceProvider.GetService<IDatabaseInitialiser>();
+            
             databaseInitializer.SeedDatabase().Wait();
         }
     }

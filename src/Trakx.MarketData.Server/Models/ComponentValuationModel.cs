@@ -1,5 +1,5 @@
 ﻿using System;
-using Trakx.Common.Interfaces.Index;
+using Trakx.Common.Interfaces.Indice;
 
 namespace Trakx.MarketData.Server.Models
 {

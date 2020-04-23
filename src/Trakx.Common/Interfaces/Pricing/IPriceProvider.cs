@@ -2,7 +2,7 @@
 using System.Collections.Generic;
 using System.Threading.Tasks;
 using Microsoft.Extensions.Caching.Memory;
-using Trakx.Common.Interfaces.Index;
+using Trakx.Common.Interfaces.Indice;
 using Trakx.Common.Pricing;
 
 namespace Trakx.Common.Interfaces.Pricing

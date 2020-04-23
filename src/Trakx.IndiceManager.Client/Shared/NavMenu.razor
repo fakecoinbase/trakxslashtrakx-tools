@@ -1,0 +1,98 @@
+﻿@using Microsoft.AspNetCore.Components;
+@inject NavigationManager navigationManager
+
+<MatNavMenu Multi="true" Class="app-sidebar">
+    <MatNavSubMenu>
+        <MatNavSubMenuHeader>
+            <MatNavItem AllowSelection="false">
+            @*<MatNavItem AllowSelection="false" >*@
+                <MatIcon Style="color: white;">monetization_on</MatIcon>
+                <span class="miniHover"> Wrapping</span>
+            </MatNavItem>
+        </MatNavSubMenuHeader>
+        <MatNavSubMenuList>
+            <MatNavItem Href="@navigationManager.ToAbsoluteUri("Wrapping/wrapping_balance").AbsoluteUri" >
+                <MatIcon Style="color: white;">account_balance</MatIcon> <span class="miniHover">Wrapping Balances</span>
+
+            </MatNavItem>
+            <MatNavItem Href="@navigationManager.ToAbsoluteUri("Wrapping/wrap_unwrap_token").AbsoluteUri" >
+                <MatIcon Style="color: white;">swap_horiz</MatIcon> <span class="miniHover">Wrap/Unwrap Tokens</span>
+            </MatNavItem>
+            <MatNavItem Href="@navigationManager.ToAbsoluteUri("Wrapping/wrapping_history").AbsoluteUri" >
+                <MatIcon Style="color: white;">history</MatIcon> <span class="miniHover">Wrapping History</span>
+            </MatNavItem>
+        </MatNavSubMenuList>
+    </MatNavSubMenu>
+
+    <MatNavSubMenu>
+        <MatNavSubMenuHeader>
+            <MatNavItem AllowSelection="false" >
+                <MatIcon Style="color: white;">pie_chart</MatIcon>
+                <span class="miniHover"> Indices Composition</span>
+
+            </MatNavItem>
+        </MatNavSubMenuHeader>
+        <MatNavSubMenuList>
+            <MatNavItem Href="@navigationManager.ToAbsoluteUri("IndiceComposition/indice_list").AbsoluteUri" >
+                <MatIcon Style="color: white;">list</MatIcon> <span class="miniHover">Indices List</span>
+
+            </MatNavItem>
+            <MatNavItem Href="@navigationManager.ToAbsoluteUri("IndiceComposition/indice_creation").AbsoluteUri" >
+                <MatIcon Style="color: white;">create</MatIcon> <span class="miniHover">Indice Creation</span>
+
+            </MatNavItem>
+            <MatNavItem Href="@navigationManager.ToAbsoluteUri("IndiceComposition/add_erc20").AbsoluteUri" >
+                <MatIcon Style="color: white;">add</MatIcon> <span class="miniHover">Add New ERC20 Component</span>
+
+            </MatNavItem>
+        </MatNavSubMenuList>
+    </MatNavSubMenu>
+
+    <MatNavSubMenu>
+        <MatNavSubMenuHeader>
+            <MatNavItem AllowSelection="false" >
+                <MatIcon Style="color: white;">add_shopping_cart</MatIcon>@*insert_chart_outlined*@
+                <span class="miniHover"> Indices Marketplace</span>
+
+            </MatNavItem>
+        </MatNavSubMenuHeader>
+        <MatNavSubMenuList>
+            <MatNavItem Href="@navigationManager.ToAbsoluteUri("IndiceMarketplace/issue_redeem_indice").AbsoluteUri" >
+                <MatIcon Style="color: white;">swap_vert</MatIcon> <span class="miniHover">Issue/Redeem Indice</span>
+
+            </MatNavItem>
+            <MatNavItem Href="@navigationManager.ToAbsoluteUri("IndiceMarketplace/indice_history").AbsoluteUri" >
+                <MatIcon Style="color: white;">history</MatIcon> <span class="miniHover">Indices History</span>
+
+            </MatNavItem>
+        </MatNavSubMenuList>
+    </MatNavSubMenu>
+
+    <MatNavItem Href="@navigationManager.ToAbsoluteUri("user_wallet").AbsoluteUri" AllowSelection="false" >
+        <MatIcon Style="color: white;">account_balance_wallet</MatIcon> <span class="miniHover">My Wallet</span>
+    </MatNavItem>
+</MatNavMenu>
+
+@code {
+    public bool IsLoggedIn = false;
+
+    [CascadingParameter]
+    Task<AuthenticationState> authenticationStateTask { get; set; }
+
+    protected override async Task OnParametersSetAsync()
+    {
+        IsLoggedIn = false;
+        var user = (await authenticationStateTask).User;
+
+        if (user.Identity.IsAuthenticated)
+        {
+            IsLoggedIn = true;
+        }
+
+        if (user.IsInRole("Administrator"))
+        {
+            // Perform some action only available to users in the 'admin' role
+            //Console.WriteLine("Administrator");
+        }
+    }
+}

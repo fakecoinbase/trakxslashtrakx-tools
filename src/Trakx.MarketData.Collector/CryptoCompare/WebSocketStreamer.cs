@@ -12,7 +12,7 @@ namespace Trakx.MarketData.Collector.CryptoCompare
         IObservable<InboundMessageBase> AllInboundMessagesStream { get; }
         IObservable<Trade> TradeStream { get; }
         IObservable<Ticker> TickerStream { get; }
-        IObservable<AggregateIndex> AggregateIndexStream { get; }
+        IObservable<AggregateIndice> AggregateIndiceStream { get; }
         IObservable<Ohlc> OhlcStream { get; }
         IObservable<SubscribeComplete> SubscribeCompleteStream { get; }
         IObservable<UnsubscribeComplete> UnsubscribeCompleteStream { get; }
@@ -37,7 +37,7 @@ namespace Trakx.MarketData.Collector.CryptoCompare
         public IObservable<InboundMessageBase> AllInboundMessagesStream => _incomingMessageSubject.AsObservable();
         public IObservable<Trade> TradeStream => _incomingMessageSubject.OfType<Trade>().AsObservable();
         public IObservable<Ticker> TickerStream => _incomingMessageSubject.OfType<Ticker>().AsObservable();
-        public IObservable<AggregateIndex> AggregateIndexStream => _incomingMessageSubject.OfType<AggregateIndex>().AsObservable();
+        public IObservable<AggregateIndice> AggregateIndiceStream => _incomingMessageSubject.OfType<AggregateIndice>().AsObservable();
         public IObservable<Ohlc> OhlcStream => _incomingMessageSubject.OfType<Ohlc>().AsObservable();
         public IObservable<SubscribeComplete> SubscribeCompleteStream => _incomingMessageSubject.OfType<SubscribeComplete>().AsObservable();
         public IObservable<UnsubscribeComplete> UnsubscribeCompleteStream => _incomingMessageSubject.OfType<UnsubscribeComplete>().AsObservable();
@@ -60,8 +60,8 @@ namespace Trakx.MarketData.Collector.CryptoCompare
                     case Ticker.TypeValue:
                         _incomingMessageSubject.OnNext(JsonSerializer.Deserialize<Ticker>(rawMessage));
                         break;
-                    case AggregateIndex.TypeValue:
-                        _incomingMessageSubject.OnNext(JsonSerializer.Deserialize<AggregateIndex>(rawMessage));
+                    case AggregateIndice.TypeValue:
+                        _incomingMessageSubject.OnNext(JsonSerializer.Deserialize<AggregateIndice>(rawMessage));
                         break;
                     case Ohlc.TypeValue:
                         _incomingMessageSubject.OnNext(JsonSerializer.Deserialize<Ohlc>(rawMessage));

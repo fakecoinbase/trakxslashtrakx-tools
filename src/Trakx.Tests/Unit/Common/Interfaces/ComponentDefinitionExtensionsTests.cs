@@ -1,7 +1,7 @@
 ﻿using System.Globalization;
 using FluentAssertions;
 using NSubstitute;
-using Trakx.Common.Interfaces.Index;
+using Trakx.Common.Interfaces.Indice;
 using Xunit;
 
 namespace Trakx.Tests.Unit.Common.Interfaces

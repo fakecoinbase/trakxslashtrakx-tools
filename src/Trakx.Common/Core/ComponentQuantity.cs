@@ -1,7 +1,7 @@
 ﻿using System.Diagnostics;
 using Ardalis.GuardClauses;
 using Trakx.Common.Extensions;
-using Trakx.Common.Interfaces.Index;
+using Trakx.Common.Interfaces.Indice;
 
 namespace Trakx.Common.Core
 {
@@ -10,22 +10,22 @@ namespace Trakx.Common.Core
     {
         /// <param name="definition">Definition of the component</param>
         /// <param name="unscaledQuantity">Unscaled quantity of the component, as returned by Set protocol</param>
-        /// <param name="indexNaturalUnit">Scaling factor, expressed as a power of 10:
-        /// 18 - <see cref="IComponentDefinition.Decimals"/> - <see cref="IIndexDefinition.NaturalUnit"/></param>
-        public ComponentQuantity(IComponentDefinition definition, ulong unscaledQuantity, ushort indexNaturalUnit)
-            : this(definition, (decimal) unscaledQuantity, indexNaturalUnit) { }
+        /// <param name="indiceNaturalUnit">Scaling factor, expressed as a power of 10:
+        /// 18 - <see cref="IComponentDefinition.Decimals"/> - <see cref="IIndiceDefinition.NaturalUnit"/></param>
+        public ComponentQuantity(IComponentDefinition definition, ulong unscaledQuantity, ushort indiceNaturalUnit)
+            : this(definition, (decimal) unscaledQuantity, indiceNaturalUnit) { }
 
         /// <param name="definition">Definition of the component</param>
         /// <param name="unscaledQuantity">Unscaled quantity of the component, as returned by Set protocol</param>
-        /// <param name="indexNaturalUnit">Scaling factor, expressed as a power of 10:
-        /// 18 - <see cref="IComponentDefinition.Decimals"/> - <see cref="IIndexDefinition.NaturalUnit"/></param>
-        public ComponentQuantity(IComponentDefinition definition, decimal unscaledQuantity, ushort indexNaturalUnit)
+        /// <param name="indiceNaturalUnit">Scaling factor, expressed as a power of 10:
+        /// 18 - <see cref="IComponentDefinition.Decimals"/> - <see cref="IIndiceDefinition.NaturalUnit"/></param>
+        public ComponentQuantity(IComponentDefinition definition, decimal unscaledQuantity, ushort indiceNaturalUnit)
         {
-            Guard.Against.OutOfRange(indexNaturalUnit, nameof(indexNaturalUnit),
+            Guard.Against.OutOfRange(indiceNaturalUnit, nameof(indiceNaturalUnit),
                 0, 18);
 
             ComponentDefinition = definition;
-            Quantity = unscaledQuantity.ScaleComponentQuantity(ComponentDefinition.Decimals, indexNaturalUnit);
+            Quantity = unscaledQuantity.ScaleComponentQuantity(ComponentDefinition.Decimals, indiceNaturalUnit);
 
             Debug.Assert(this.IsValid());
         }

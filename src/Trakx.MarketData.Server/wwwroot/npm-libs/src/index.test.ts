@@ -1,4 +1,4 @@
-﻿import { Greeter, IntersectThis } from './index';
+﻿import { Greeter, IntersectThis } from './indice';
 
 test('My Greeter', () => {
     expect(Greeter('dude')).toBe('Hello dude');

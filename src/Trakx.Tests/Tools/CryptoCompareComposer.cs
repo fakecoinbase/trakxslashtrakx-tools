@@ -23,10 +23,10 @@ namespace Trakx.Tests.Tools
         private readonly ITestOutputHelper _output;
         private readonly ICryptoCompareClient _cryptoCompareClient;
         private readonly ICoinGeckoClient _coinGeckoClient;
-        private readonly InMemoryIndexRepositoryContext _dbContext;
+        private readonly InMemoryIndiceRepositoryContext _dbContext;
 
 
-        private readonly Dictionary<string, List<string>> SymbolsByIndex =
+        private readonly Dictionary<string, List<string>> SymbolsByIndice =
             new Dictionary<string, List<string>>
         {
             {"l1cex", new List<string>{"FTT", "HT", "KCS", "LEO", "OKB"}},
@@ -92,7 +92,7 @@ namespace Trakx.Tests.Tools
             var britishZone = TimeZoneInfo.FindSystemTimeZoneById("GMT Standard Time");
             var asOf = TimeZoneInfo.ConvertTimeToUtc(new DateTime(2020, 03, 31, 18, 00, 00), britishZone);
             
-            var symbols = SymbolsByIndex.Values.SelectMany(v => v).Distinct().ToList();
+            var symbols = SymbolsByIndice.Values.SelectMany(v => v).Distinct().ToList();
 
             var pricesBySymbol = await GetHistoricalPricesAsOf(asOf, symbols).ConfigureAwait(false);
             

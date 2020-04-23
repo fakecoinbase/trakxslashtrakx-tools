@@ -10,28 +10,28 @@ namespace Trakx.Common.Extensions
 
         /// <summary>
         /// Takes a quantity as expressed in set protocol, in the number of units native to the
-        /// components and scales it as a number of units native to the index to which it belongs.
+        /// components and scales it as a number of units native to the indice to which it belongs.
         /// </summary>
         /// <param name="unscaledQuantity">Quantity in number units native to the component.</param>
         /// <param name="componentDecimals">Number of decimals supported by by the ERC20 contract of the component.</param>
-        /// <param name="indexNaturalUnit">Natural unit of the index, see set protocol for more details. Generally 10
+        /// <param name="indiceNaturalUnit">Natural unit of the indice, see set protocol for more details. Generally 10
         /// as it is the convention for rebalancing indices.</param>
-        /// <returns>Quantity in number units native to the index.</returns>
+        /// <returns>Quantity in number units native to the indice.</returns>
         /// <remarks>18 is the number of decimals of the contracts produced by the set factory.</remarks>
         public static decimal ScaleComponentQuantity(this decimal unscaledQuantity, ushort componentDecimals,
-            ushort indexNaturalUnit) => unscaledQuantity * (decimal)(18 - componentDecimals - indexNaturalUnit).AsAPowerOf10();
+            ushort indiceNaturalUnit) => unscaledQuantity * (decimal)(18 - componentDecimals - indiceNaturalUnit).AsAPowerOf10();
 
         /// <summary>
-        /// Takes a quantity expressed as a number of units native to the index to which it belongs, and returns it
+        /// Takes a quantity expressed as a number of units native to the indice to which it belongs, and returns it
         /// as expressed in set protocol, in the number of units native to the components and scales it.
         /// </summary>
-        /// <param name="scaledQuantity">Quantity in number units native to the index.</param>
+        /// <param name="scaledQuantity">Quantity in number units native to the indice.</param>
         /// <param name="componentDecimals">Number of decimals supported by by the ERC20 contract of the component.</param>
-        /// <param name="indexNaturalUnit">Natural unit of the index, see set protocol for more details. Generally 10
+        /// <param name="indiceNaturalUnit">Natural unit of the indice, see set protocol for more details. Generally 10
         /// as it is the convention for rebalancing indices.</param>
         /// <returns>Quantity in number units native to the component.</returns>
         /// <remarks>18 is the number of decimals of the contracts produced by the set factory.</remarks>
         public static decimal DescaleComponentQuantity(this decimal scaledQuantity, ushort componentDecimals,
-            ushort indexNaturalUnit) => scaledQuantity * (decimal)(componentDecimals + indexNaturalUnit - 18).AsAPowerOf10();
+            ushort indiceNaturalUnit) => scaledQuantity * (decimal)(componentDecimals + indiceNaturalUnit - 18).AsAPowerOf10();
     }
 }

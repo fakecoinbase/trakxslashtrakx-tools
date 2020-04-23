@@ -13,18 +13,18 @@ namespace Trakx.MarketData.Server.Hubs
     public sealed class NavHub : Hub
     {
         private readonly INavUpdater _navUpdater;
-        private readonly IIndexDataProvider _indexProvider;
+        private readonly IIndiceDataProvider _indiceProvider;
         private readonly IHubContext<NavHub> _hubContext;
         private readonly ILogger<NavHub> _logger;
 
         public NavHub(INavUpdater navUpdater, 
-            IIndexDataProvider indexProvider,
+            IIndiceDataProvider indiceProvider,
             IMemoryCache memoryCache, 
             IHubContext<NavHub> hubContext,
             ILogger<NavHub> logger)
         {
             _navUpdater = navUpdater;
-            _indexProvider = indexProvider;
+            _indiceProvider = indiceProvider;
             _hubContext = hubContext;
             _logger = logger;
 
@@ -46,11 +46,11 @@ namespace Trakx.MarketData.Server.Hubs
             }
         }
 
-        public async Task<bool> RegisterClientToNavUpdates(Guid clientId, string indexSymbol)
+        public async Task<bool> RegisterClientToNavUpdates(Guid clientId, string indiceSymbol)
         {
             try
             {
-                var composition = await _indexProvider.GetCurrentComposition(indexSymbol);
+                var composition = await _indiceProvider.GetCurrentComposition(indiceSymbol);
                 if (composition == default) return false;
                 var registerToNavUpdates = _navUpdater.RegisterToNavUpdates(clientId, composition);
                 return registerToNavUpdates;
@@ -58,7 +58,7 @@ namespace Trakx.MarketData.Server.Hubs
             catch (Exception e)
             {
                 _logger.LogError(e, "Failed to register client {0} for NavUpdate of [{1}]",
-                    clientId, indexSymbol);
+                    clientId, indiceSymbol);
                 return false;
             }
         }

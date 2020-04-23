@@ -6,7 +6,7 @@ using System.Reactive.Subjects;
 using System.Reactive.Threading.Tasks;
 using System.Threading;
 using Microsoft.Extensions.Logging;
-using Trakx.Common.Interfaces.Index;
+using Trakx.Common.Interfaces.Indice;
 using Trakx.Common.Interfaces.Pricing;
 using Guid = System.Guid;
 
@@ -55,22 +55,22 @@ namespace Trakx.Common.Pricing
             _priceUpdatesBySymbol = new ConcurrentDictionary<string, UpdatesWithListeners>();
         }
 
-        public bool RegisterToNavUpdates(Guid clientId, IIndexComposition index)
+        public bool RegisterToNavUpdates(Guid clientId, IIndiceComposition indice)
         {
-            var updates = _priceUpdatesBySymbol.GetOrAdd(index.IndexDefinition.Symbol,
-                s => AddUpdatesToMainStream(index));
+            var updates = _priceUpdatesBySymbol.GetOrAdd(indice.IndiceDefinition.Symbol,
+                s => AddUpdatesToMainStream(indice));
 
             return updates.Listeners.TryAdd(clientId, true);
         }
 
-        private UpdatesWithListeners AddUpdatesToMainStream(IIndexComposition index)
+        private UpdatesWithListeners AddUpdatesToMainStream(IIndiceComposition indice)
         {
-            var updates = CreateUpdateStreamForSymbol(index);
+            var updates = CreateUpdateStreamForSymbol(indice);
             updates.UpdateStream.Subscribe(_subject.OnNext, 
                 _subject.OnError,
                 () =>
                 {
-                    _logger.LogDebug($"Updates for {index.IndexDefinition.Symbol} have stopped.");
+                    _logger.LogDebug($"Updates for {indice.IndiceDefinition.Symbol} have stopped.");
                 });
             var updatesWithListeners = 
                 new UpdatesWithListeners(updates.UpdateStream, 
@@ -81,7 +81,7 @@ namespace Trakx.Common.Pricing
         }
 
         private (CancellationTokenSource CancellationTokenSource, IObservable<NavUpdate> UpdateStream)
-            CreateUpdateStreamForSymbol(IIndexComposition index)
+            CreateUpdateStreamForSymbol(IIndiceComposition indice)
         {
             var cts = new CancellationTokenSource();
             var updateStream = Observable.Interval(TimeSpan.FromSeconds(2))
@@ -90,16 +90,16 @@ namespace Trakx.Common.Pricing
                     decimal nav;
                     try
                     {
-                        nav = await _navCalculator.CalculateNav(index);
+                        nav = await _navCalculator.CalculateNav(indice);
                     }
                     catch (Exception ex)
                     {
-                        _logger.LogError(ex, "Failed to calculate NAV for {0}", index?.IndexDefinition.Symbol ?? "N/A");
+                        _logger.LogError(ex, "Failed to calculate NAV for {0}", indice?.IndiceDefinition.Symbol ?? "N/A");
                         nav = 0;
                     }
 
-                    var update = new NavUpdate(index.IndexDefinition.Symbol, nav);
-                    _logger.LogDebug("Nav Updated: {0} - {1}", index.IndexDefinition.Symbol, nav);
+                    var update = new NavUpdate(indice.IndiceDefinition.Symbol, nav);
+                    _logger.LogDebug("Nav Updated: {0} - {1}", indice.IndiceDefinition.Symbol, nav);
 
                     return update;
                 })

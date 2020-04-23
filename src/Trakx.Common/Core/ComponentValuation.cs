@@ -1,6 +1,6 @@
 ﻿using System;
 using System.Diagnostics;
-using Trakx.Common.Interfaces.Index;
+using Trakx.Common.Interfaces.Indice;
 
 namespace Trakx.Common.Core
 {
@@ -43,9 +43,9 @@ namespace Trakx.Common.Core
         public DateTime TimeStamp { get; }
 
         /// <inheritdoc />
-        public void SetWeightFromTotalValue(decimal totalIndexValue)
+        public void SetWeightFromTotalValue(decimal totalIndiceValue)
         {
-            Weight = (double)this.GetWeightFromTotalValue(totalIndexValue);
+            Weight = (double)this.GetWeightFromTotalValue(totalIndiceValue);
         }
 
         #endregion

@@ -6,24 +6,24 @@ namespace Trakx.Persistence
 {
     public static class DbContextExtensions
     {
-        public static IQueryable<IndexCompositionDao> IncludeAllLinkedEntities(this DbSet<IndexCompositionDao> indexCompositionDaos)
+        public static IQueryable<IndiceCompositionDao> IncludeAllLinkedEntities(this DbSet<IndiceCompositionDao> indiceCompositionDaos)
         {
-            return indexCompositionDaos.Include(c => c.ComponentQuantityDaos)
+            return indiceCompositionDaos.Include(c => c.ComponentQuantityDaos)
                 .ThenInclude(c => c.ComponentDefinitionDao)
-                .Include(c => c.IndexDefinitionDao);
+                .Include(c => c.IndiceDefinitionDao);
         }
 
-        public static IQueryable<IndexValuationDao> IncludeAllLinkedEntities(
-            this DbSet<IndexValuationDao> indexValuationsDaos)
+        public static IQueryable<IndiceValuationDao> IncludeAllLinkedEntities(
+            this DbSet<IndiceValuationDao> indiceValuationsDaos)
         {
-            return indexValuationsDaos.Include(i => i.ComponentValuationDaos)
+            return indiceValuationsDaos.Include(i => i.ComponentValuationDaos)
                 .ThenInclude(v => v.ComponentQuantityDao)
                 .ThenInclude(q => q.ComponentDefinitionDao)
-                .Include(i => i.IndexCompositionDao)
+                .Include(i => i.IndiceCompositionDao)
                 .ThenInclude(c => c.ComponentQuantityDaos)
                 .ThenInclude(q => q.ComponentDefinitionDao)
-                .Include(i => i.IndexCompositionDao)
-                .ThenInclude(c => c.IndexDefinitionDao);
+                .Include(i => i.IndiceCompositionDao)
+                .ThenInclude(c => c.IndiceDefinitionDao);
         }
     }
 }

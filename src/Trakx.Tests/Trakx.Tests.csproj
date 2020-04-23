@@ -12,6 +12,12 @@
   <Import Project="../Common.Projects.props" />
 
   <ItemGroup>
+    <Compile Remove="Unit\Common\Sources\**" />
+    <EmbeddedResource Remove="Unit\Common\Sources\**" />
+    <None Remove="Unit\Common\Sources\**" />
+  </ItemGroup>
+
+  <ItemGroup>
     <None Remove="Data\Messari\allAssets.json" />
     <None Remove="Data\Messari\assetMetrics.btc.json" />
     <None Remove="Data\Messari\assetMetrics.eth.json" />
@@ -19,7 +25,6 @@
     <None Remove="Data\Messari\assetMetrics.sym2.json" />
     <None Remove="Data\Messari\assetProfile.btc.json" />
     <None Remove="Data\Messari\assetProfile.eth.json" />
-    <None Remove="Unit\Common\Pricing\TestIndexDetails.json" />
   </ItemGroup>
 
   <ItemGroup>
@@ -30,7 +35,6 @@
     <EmbeddedResource Include="Data\Messari\assetMetrics.eth.json" />
     <EmbeddedResource Include="Data\Messari\assetProfile.btc.json" />
     <EmbeddedResource Include="Data\Messari\assetProfile.eth.json" />
-    <EmbeddedResource Include="Unit\Common\Pricing\TestIndexDetails.json" />
   </ItemGroup>
   <ItemGroup>
     <PackageReference Include="coverlet.msbuild" Version="2.8.1">
@@ -56,10 +60,6 @@
   <ItemGroup>
     <ProjectReference Include="..\Trakx.MarketData.Collector\Trakx.MarketData.Collector.csproj" />
     <ProjectReference Include="..\Trakx.MarketData.Server\Trakx.MarketData.Server.csproj" />
-  </ItemGroup>
-
-  <ItemGroup>
-    <Folder Include="Unit\Common\Sources\CryptoCompare\" />
   </ItemGroup>
 
   <ItemGroup>

@@ -1,7 +1,7 @@
 ﻿using System;
 using System.ComponentModel.DataAnnotations;
 using System.ComponentModel.DataAnnotations.Schema;
-using Trakx.Common.Interfaces.Index;
+using Trakx.Common.Interfaces.Indice;
 
 namespace Trakx.Persistence.DAO
 {
@@ -40,9 +40,9 @@ namespace Trakx.Persistence.DAO
         public DateTime TimeStamp { get; set; }
 
         /// <inheritdoc />
-        public void SetWeightFromTotalValue(decimal totalIndexValue)
+        public void SetWeightFromTotalValue(decimal totalIndiceValue)
         {
-            Weight = (double)this.GetWeightFromTotalValue(totalIndexValue);
+            Weight = (double)this.GetWeightFromTotalValue(totalIndiceValue);
         }
 
         /// <inheritdoc />

@@ -1,7 +1,7 @@
 ﻿using System.ComponentModel.DataAnnotations;
 using System.ComponentModel.DataAnnotations.Schema;
 using Trakx.Common.Extensions;
-using Trakx.Common.Interfaces.Index;
+using Trakx.Common.Interfaces.Indice;
 
 namespace Trakx.Persistence.DAO
 {
@@ -13,13 +13,13 @@ namespace Trakx.Persistence.DAO
         #pragma warning disable CS8618
         public ComponentQuantityDao() { }
 
-        public ComponentQuantityDao(IndexCompositionDao indexComposition,
+        public ComponentQuantityDao(IndiceCompositionDao indiceComposition,
             ComponentDefinitionDao componentDefinition, 
             ulong unscaledQuantity)
         {
-            IndexCompositionDao = indexComposition;
+            IndiceCompositionDao = indiceComposition;
             ComponentDefinitionDao = componentDefinition;
-            Quantity = ((decimal)unscaledQuantity).ScaleComponentQuantity(componentDefinition.Decimals, indexComposition.IndexDefinitionDao.NaturalUnit);
+            Quantity = ((decimal)unscaledQuantity).ScaleComponentQuantity(componentDefinition.Decimals, indiceComposition.IndiceDefinitionDao.NaturalUnit);
             UpdateId();
         }
         #pragma warning restore CS8618
@@ -32,7 +32,7 @@ namespace Trakx.Persistence.DAO
 
         public ComponentDefinitionDao ComponentDefinitionDao { get; set; }
 
-        public IndexCompositionDao IndexCompositionDao { get; set; }
+        public IndiceCompositionDao IndiceCompositionDao { get; set; }
 
         #region Implementation of IComponentWeight
 
@@ -46,15 +46,15 @@ namespace Trakx.Persistence.DAO
 
         #endregion
 
-        public void LinkToIndexComposition(IndexCompositionDao indexComposition)
+        public void LinkToIndiceComposition(IndiceCompositionDao indiceComposition)
         {
-            IndexCompositionDao = indexComposition;
+            IndiceCompositionDao = indiceComposition;
             UpdateId();
         }
 
         private void UpdateId()
         {
-            Id = $"{IndexCompositionDao.Id}|{ComponentDefinition.Symbol}";
+            Id = $"{IndiceCompositionDao.Id}|{ComponentDefinition.Symbol}";
         }
     }
 }

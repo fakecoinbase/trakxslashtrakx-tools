@@ -12,7 +12,7 @@ using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Logging;
 using Polly;
 using Trakx.Common.Interfaces;
-using Trakx.Common.Interfaces.Index;
+using Trakx.Common.Interfaces.Indice;
 using Trakx.Common.Utils;
 using Trakx.MarketData.Collector.CryptoCompare;
 using Trakx.MarketData.Collector.CryptoCompare.DTOs.Inbound;
@@ -28,7 +28,7 @@ namespace Trakx.MarketData.Collector
     public class PriceCache : IPriceCache
     {
         private readonly TimeSpan _waitForDbDelays;
-        private IIndexDataProvider _indexDataProvider;
+        private IIndiceDataProvider _indiceDataProvider;
         private readonly ICryptoCompareWebSocketClient _webSocketClient;
         private readonly IDistributedCache _cache;
         private readonly IServiceScopeFactory _serviceScopeFactory;
@@ -56,7 +56,7 @@ namespace Trakx.MarketData.Collector
         public async Task StartCaching(CancellationToken cancellationToken)
         {
             using var initialisationScope = _serviceScopeFactory.CreateScope();
-            _indexDataProvider = initialisationScope.ServiceProvider.GetService<IIndexDataProvider>();
+            _indiceDataProvider = initialisationScope.ServiceProvider.GetService<IIndiceDataProvider>();
 
             await WaitForDatabaseToRespond(cancellationToken).ConfigureAwait(false);
             await SubscribeToWebSocketStreams(cancellationToken).ConfigureAwait(false);
@@ -71,22 +71,22 @@ namespace Trakx.MarketData.Collector
                     (exception, _, timespan) => 
                 {
                     _logger.LogInformation("Waiting for {0} to provide data. Received error message {1}",
-                        nameof(IIndexDataProvider), exception.Message);
+                        nameof(IIndiceDataProvider), exception.Message);
                     _logger.LogDebug(exception, "Waiting {0} seconds for database.", timespan.ToString(@"ss\.ff"));
                 });
 
             await retryPolicy.ExecuteAndCaptureAsync(async () =>
             {
-                _logger.LogInformation("Trying to retrieve known indexes from Database...");
-                var allIndexSymbols = await _indexDataProvider.GetAllIndexSymbols(cancellationToken);
-                if (allIndexSymbols?.Count == 0) throw new InvalidDataException("No Indices defined in database.");
+                _logger.LogInformation("Trying to retrieve known indicees from Database...");
+                var allIndiceSymbols = await _indiceDataProvider.GetAllIndiceSymbols(cancellationToken);
+                if (allIndiceSymbols?.Count == 0) throw new InvalidDataException("No Indices defined in database.");
             });
         }
 
         private async Task SubscribeToWebSocketStreams(CancellationToken cancellationToken)
         {
             if (_webSocketClient.State != WebSocketState.Open) await _webSocketClient.Connect();
-            _webSocketClient.WebSocketStreamer.AggregateIndexStream
+            _webSocketClient.WebSocketStreamer.AggregateIndiceStream
                 .Do(TryLogDebugMessage)
                 .Subscribe(async a => await SetNewPriceInCache(a, cancellationToken).ConfigureAwait(false));
 
@@ -98,7 +98,7 @@ namespace Trakx.MarketData.Collector
             _webSocketClient.WebSocketStreamer.ErrorStream.Subscribe(TryLogWarningMessage);
         }
 
-        private async Task SetNewPriceInCache(AggregateIndex aggregate, CancellationToken cancellationToken) 
+        private async Task SetNewPriceInCache(AggregateIndice aggregate, CancellationToken cancellationToken) 
         {
             try
             {
@@ -126,10 +126,10 @@ namespace Trakx.MarketData.Collector
 
         private async Task SubscribeToAllComponentsFeeds(CancellationToken cancellationToken)
         {
-            var currentComponents = await _indexDataProvider.GetAllComponentsFromCurrentCompositions(cancellationToken);
+            var currentComponents = await _indiceDataProvider.GetAllComponentsFromCurrentCompositions(cancellationToken);
             var currentComponentsSymbols = new[] { "usdc" }.Union(currentComponents.Select(c => c.Symbol)).Distinct();
             var subscriptions = currentComponentsSymbols
-                .Select(s => new AggregateIndexSubscription(s, "usd"))
+                .Select(s => new AggregateIndiceSubscription(s, "usd"))
                 .ToArray();
 
             await _webSocketClient.AddSubscriptions(subscriptions);

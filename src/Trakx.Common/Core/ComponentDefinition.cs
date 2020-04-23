@@ -1,5 +1,5 @@
 ﻿using System.Diagnostics;
-using Trakx.Common.Interfaces.Index;
+using Trakx.Common.Interfaces.Indice;
 
 namespace Trakx.Common.Core
 {

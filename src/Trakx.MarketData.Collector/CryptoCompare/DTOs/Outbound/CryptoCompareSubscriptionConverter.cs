@@ -19,8 +19,8 @@ namespace Trakx.MarketData.Collector.CryptoCompare.DTOs.Outbound
                     return new TradeSubscription(split[1], split[2], split[3]);
                 case TickerSubscription.TypeValue:
                     return new TickerSubscription(split[1], split[2], split[3]);
-                case AggregateIndexSubscription.TypeValue:
-                    return new AggregateIndexSubscription(split[2], split[3]);
+                case AggregateIndiceSubscription.TypeValue:
+                    return new AggregateIndiceSubscription(split[2], split[3]);
                 //todo: case OrderBookL2
                 case FullVolumeSubscription.TypeValue:
                     return new FullVolumeSubscription(split[1]);

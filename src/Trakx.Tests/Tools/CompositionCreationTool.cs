@@ -57,7 +57,7 @@ namespace Trakx.Tests.Tools
             var compositionCreator = _serviceProvider.GetRequiredService<ICompositionCreator>();
 
             var composition = await _fixture.Context
-                .IndexCompositions.Include(c => c.IndexDefinitionDao)
+                .IndiceCompositions.Include(c => c.IndiceDefinitionDao)
                 .Include(c => c.ComponentQuantityDaos)
                 .ThenInclude(q => q.ComponentDefinitionDao)
                 .FirstAsync(c => c.Symbol == compositionSymbol);
@@ -70,11 +70,11 @@ namespace Trakx.Tests.Tools
             result.Should().NotBeNullOrEmpty();
         }
 
-        private void OutputSetCallArguments(IndexCompositionDao composition)
+        private void OutputSetCallArguments(IndiceCompositionDao composition)
         {
             var units = composition.ComponentQuantities.Select(q =>
                     new BigInteger(q.Quantity.DescaleComponentQuantity(
-                        q.ComponentDefinition.Decimals, composition.IndexDefinition.NaturalUnit)))
+                        q.ComponentDefinition.Decimals, composition.IndiceDefinition.NaturalUnit)))
                 .Select(b => $"new BigNumber({b})")
                 .ToList();
 
@@ -82,8 +82,8 @@ namespace Trakx.Tests.Tools
 
             _output.WriteLine($"[{string.Join(", " + Environment.NewLine, addresses)}],");
             _output.WriteLine($"[{string.Join(", " + Environment.NewLine, units)}],");
-            _output.WriteLine($"new BigNumber({composition.IndexDefinition.NaturalUnit.AsAPowerOf10()}),");
-            _output.WriteLine($"\"{composition.IndexDefinitionDao.Name}\",");
+            _output.WriteLine($"new BigNumber({composition.IndiceDefinition.NaturalUnit.AsAPowerOf10()}),");
+            _output.WriteLine($"\"{composition.IndiceDefinitionDao.Name}\",");
             _output.WriteLine($"\"{composition.Symbol}\",");
         }
 
@@ -94,15 +94,15 @@ namespace Trakx.Tests.Tools
         //[InlineData("l1dex2001")]
         //[InlineData("l1len2001")]
         [InlineData("l1sca2001")]
-        public async Task CreateIndexFromCompositionOnChain(string compositionSymbol)
+        public async Task CreateIndiceFromCompositionOnChain(string compositionSymbol)
         {
-            var indexCreator = _serviceProvider.GetRequiredService<IIndexCreator>();
+            var indiceCreator = _serviceProvider.GetRequiredService<IIndiceCreator>();
 
             var composition = await _fixture.Context
-                .IndexCompositions.Include(c => c.IndexDefinitionDao)
+                .IndiceCompositions.Include(c => c.IndiceDefinitionDao)
                 .FirstAsync(c => c.Symbol == compositionSymbol);
 
-            var result = await indexCreator.SaveIndexOnChain(composition);
+            var result = await indiceCreator.SaveIndiceOnChain(composition);
             _output.WriteLine(result);
 
             result.Should().NotBeNullOrEmpty();

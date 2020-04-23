@@ -20,12 +20,12 @@ namespace Trakx.Persistence.DAO
                 .ForMember(dest => dest.ComponentDefinitionDao,
                     opt => opt.MapFrom(src => src.ComponentDefinition));
             CreateMap<ComponentValuation, ComponentValuationDao>();
-            CreateMap<IndexComposition, IndexCompositionDao>()
+            CreateMap<IndiceComposition, IndiceCompositionDao>()
                 .ForMember(dest => dest.ComponentQuantityDaos,
                     opt => opt.MapFrom(src => src.ComponentQuantities))
-                .ForMember(dest => dest.IndexDefinitionDao,
-                    opt => opt.MapFrom(src => src.IndexDefinition));
-            CreateMap<IndexValuation, IndexValuationDao>()
+                .ForMember(dest => dest.IndiceDefinitionDao,
+                    opt => opt.MapFrom(src => src.IndiceDefinition));
+            CreateMap<IndiceValuation, IndiceValuationDao>()
                 .ForMember(dest => dest.ComponentValuationDaos,
                     opt => opt.MapFrom(src => src.ComponentValuations));
         }

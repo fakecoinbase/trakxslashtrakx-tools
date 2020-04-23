@@ -4,7 +4,7 @@ using System.Threading.Tasks;
 using FluentAssertions;
 using Microsoft.Extensions.Caching.Distributed;
 using NSubstitute;
-using Trakx.Common.Interfaces.Index;
+using Trakx.Common.Interfaces.Indice;
 using Trakx.Common.Pricing;
 using Trakx.Common.Sources.CoinGecko;
 using Trakx.Common.Sources.Messari.Client;
@@ -34,14 +34,14 @@ namespace Trakx.Tests.Unit.Common.Pricing
 
 
         [Fact]
-        public async Task GetIndexValuation_with_asOf_should_not_ask_for_messari_price()
+        public async Task GetIndiceValuation_with_asOf_should_not_ask_for_messari_price()
         {
-            var composition = _mockCreator.GetIndexComposition(3);
+            var composition = _mockCreator.GetIndiceComposition(3);
             var asOf = new DateTime(2020, 04, 13);
             _coinGeckoClient.GetPriceAsOfFromId(default, asOf)
                 .ReturnsForAnyArgs(Task.FromResult((decimal?) 101.23m));
 
-            var valuation = await _navCalculator.GetIndexValuation(composition, asOf);
+            var valuation = await _navCalculator.GetIndiceValuation(composition, asOf);
 
             _messariClient.ReceivedCalls().Should().BeEmpty();
 
@@ -56,13 +56,13 @@ namespace Trakx.Tests.Unit.Common.Pricing
         }
 
         [Fact]
-        public async Task GetIndexValuation_without_asOf_should_only_ask_messari_price()
+        public async Task GetIndiceValuation_without_asOf_should_only_ask_messari_price()
         {
-            var composition = _mockCreator.GetIndexComposition(5);
+            var composition = _mockCreator.GetIndiceComposition(5);
 
             _messariClient.GetLatestPrice(default).ReturnsForAnyArgs(Task.FromResult((decimal?) 110.0));
 
-            var valuation = await _navCalculator.GetIndexValuation(composition);
+            var valuation = await _navCalculator.GetIndiceValuation(composition);
 
             foreach (var symbol in composition.GetComponentSymbols())
             {
@@ -77,9 +77,9 @@ namespace Trakx.Tests.Unit.Common.Pricing
         }
 
         [Fact]
-        public async Task GetIndexValuation_without_asOf_should_fallback_on_coingecko_when_messari_price_is_unavailable()
+        public async Task GetIndiceValuation_without_asOf_should_fallback_on_coingecko_when_messari_price_is_unavailable()
         {
-            var composition = _mockCreator.GetIndexComposition(4);
+            var composition = _mockCreator.GetIndiceComposition(4);
             var failSymbol = composition.ComponentQuantities[3].ComponentDefinition.Symbol;
             var failCoinGeckoId = composition.ComponentQuantities[3].ComponentDefinition.CoinGeckoId;
 
@@ -89,7 +89,7 @@ namespace Trakx.Tests.Unit.Common.Pricing
 
             _coinGeckoClient.GetLatestPrice(failCoinGeckoId).Returns(123.45m);
 
-            var valuation = await _navCalculator.GetIndexValuation(composition);
+            var valuation = await _navCalculator.GetIndiceValuation(composition);
 
             foreach (var symbol in composition.GetComponentSymbols())
             {
@@ -105,9 +105,9 @@ namespace Trakx.Tests.Unit.Common.Pricing
         }
         
         [Fact]
-        public void GetIndexValuation_without_asOf_should_fail_when_no_price_found_for_1_component()
+        public void GetIndiceValuation_without_asOf_should_fail_when_no_price_found_for_1_component()
         {
-            var composition = _mockCreator.GetIndexComposition(4);
+            var composition = _mockCreator.GetIndiceComposition(4);
             var failSymbol = composition.ComponentQuantities[3].ComponentDefinition.Symbol;
             var failCoinGeckoId = composition.ComponentQuantities[3].ComponentDefinition.CoinGeckoId;
 
@@ -117,14 +117,14 @@ namespace Trakx.Tests.Unit.Common.Pricing
 
             _coinGeckoClient.GetLatestPrice(failCoinGeckoId).Returns(FailedFetchPriceResult);
 
-            new Func<Task>(async () => await _navCalculator.GetIndexValuation(composition))
+            new Func<Task>(async () => await _navCalculator.GetIndiceValuation(composition))
                 .Should().ThrowExactly<NavCalculator.FailedToRetrievePriceException>();
         }
 
         [Fact]
-        public async Task GetIndexValuation_should_produce_component_valuations_and_correct_prices_and_weights()
+        public async Task GetIndiceValuation_should_produce_component_valuations_and_correct_prices_and_weights()
         {
-            var composition = _mockCreator.GetIndexComposition(3);
+            var composition = _mockCreator.GetIndiceComposition(3);
             composition.ComponentQuantities[0].Quantity.Returns(12m);
             composition.ComponentQuantities[1].Quantity.Returns(78.9m);
             composition.ComponentQuantities[2].Quantity.Returns(17.92m);
@@ -137,7 +137,7 @@ namespace Trakx.Tests.Unit.Common.Pricing
             _coinGeckoClient.GetLatestPrice("id-1").Returns(0.32m);
 
             var utcNow = DateTime.UtcNow;
-            var valuation = await _navCalculator.GetIndexValuation(composition);
+            var valuation = await _navCalculator.GetIndiceValuation(composition);
 
             valuation.ComponentValuations[0].Price.Should().Be(21.2m);
             valuation.ComponentValuations[0].Value.Should().Be(12 * 21.2m);
@@ -161,16 +161,16 @@ namespace Trakx.Tests.Unit.Common.Pricing
         }
 
         [Fact]
-        public async Task GetIndexValuation_EvenIf_GeckoClient_GetPriceAsOfFromId_failed_On_First_Call()
+        public async Task GetIndiceValuation_EvenIf_GeckoClient_GetPriceAsOfFromId_failed_On_First_Call()
         {
-            var composition = _mockCreator.GetIndexComposition(3);
+            var composition = _mockCreator.GetIndiceComposition(3);
             var asOf = new DateTime(2020, 04, 13);
 
             //first call failed
             _coinGeckoClient.GetPriceAsOfFromId(Arg.Any<string>(), Arg.Any<DateTime>())
                 .Returns(x => { throw new Exception(); }, x => 101.23m);
 
-            var valuation = await _navCalculator.GetIndexValuation(composition, asOf);
+            var valuation = await _navCalculator.GetIndiceValuation(composition, asOf);
 
             valuation.ComponentValuations.Select(c => c.Price).All(p => p == 101.23m).Should().BeTrue();
             await _coinGeckoClient.Received(4).GetPriceAsOfFromId(Arg.Any<string>(), asOf, Arg.Any<string>());

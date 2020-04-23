@@ -1,14 +1,14 @@
 ﻿@page "/issue-redeem"
 @using Microsoft.AspNetCore.SignalR.Client;
 @using Trakx.Common.Interfaces
-@using Trakx.Common.Interfaces.Index
+@using Trakx.Common.Interfaces.Indice
 @inject NavigationManager NavigationManager
-@inject IIndexDataProvider IndexDataProvider
+@inject IIndiceDataProvider IndiceDataProvider
 
 <h1>Issue and Redeem indices</h1>
 
 <MatBlazor.MatList SingleSelection="true" >
-    <MatBlazor.MatListItem OnClick="IndexSymbolChanged" />
+    <MatBlazor.MatListItem OnClick="IndiceSymbolChanged" />
 </MatBlazor.MatList>
 
 @code {
@@ -16,9 +16,9 @@
     private HubConnection _connection;
 
     private string _compositionSymbol = string.Empty;
-    private string _indexSymbol = string.Empty;
+    private string _indiceSymbol = string.Empty;
 
-    public List<string> IndexSymbolList { get; private set; } 
+    public List<string> IndiceSymbolList { get; private set; } 
     public IList<DateTime> CompositionDates { get; private set; }
 
     #region Overrides of ComponentBase
@@ -27,14 +27,14 @@
     protected override async Task OnInitializedAsync()
     {
         await base.OnInitializedAsync();
-        IndexSymbolList = await IndexDataProvider.GetAllIndexSymbols();
+        IndiceSymbolList = await IndiceDataProvider.GetAllIndiceSymbols();
     }
 
     #endregion
 
-    private async Task IndexSymbolChanged()
+    private async Task IndiceSymbolChanged()
     {
-        CompositionDates = (await IndexDataProvider.GetCompositionSymbolsFromIndex(_indexSymbol))
+        CompositionDates = (await IndiceDataProvider.GetCompositionSymbolsFromIndice(_indiceSymbol))
             .Select(SymbolExtensions.GetDateFromCompositionSymbol)
             .OrderByDescending(d => d)
             .ToList();
@@ -42,7 +42,7 @@
 
     private async Task GetCompositionComponents(string compositionSymbol)
     {
-        await IndexDataProvider.GetCompositionFromSymbol(compositionSymbol);
+        await IndiceDataProvider.GetCompositionFromSymbol(compositionSymbol);
     }
 
 }

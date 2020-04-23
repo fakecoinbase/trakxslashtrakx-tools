@@ -14,7 +14,7 @@ namespace Trakx.MarketData.Collector.CryptoCompare.DTOs.Outbound
 
         /// <summary>
         /// The exchange for which we want the data. This can
-        /// also be CCCAGG for CryptoCompare's own Aggregate Index.
+        /// also be CCCAGG for CryptoCompare's own Aggregate Indice.
         /// </summary>
         public string Exchange { get; }
 
@@ -34,13 +34,13 @@ namespace Trakx.MarketData.Collector.CryptoCompare.DTOs.Outbound
         #endregion
     }
 
-    public sealed class AggregateIndexSubscription : ExchangeBaseQuoteSubscription
+    public sealed class AggregateIndiceSubscription : ExchangeBaseQuoteSubscription
     {
-        internal const string TypeValue = AggregateIndex.TypeValue;
+        internal const string TypeValue = AggregateIndice.TypeValue;
         
         /// <inheritdoc />
-        public AggregateIndexSubscription(string baseCurrency, string quoteCurrency)
-            : base(AggregateIndex.TypeValue, "CCCAGG", baseCurrency, quoteCurrency) { }
+        public AggregateIndiceSubscription(string baseCurrency, string quoteCurrency)
+            : base(AggregateIndice.TypeValue, "CCCAGG", baseCurrency, quoteCurrency) { }
     }
 
     public sealed class TradeSubscription : ExchangeBaseQuoteSubscription
