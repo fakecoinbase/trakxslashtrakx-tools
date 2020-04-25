@@ -174,6 +174,8 @@ namespace Trakx.Persistence.Initialisation
                 new ComponentDefinitionDao("0xb1eef147028e9f480dbc5ccaa3277d417d1b85f0", "Seele Token", "seele", "seele", 18),
                 new ComponentDefinitionDao("0x0d8775f648430679a709e98d2b0cb6250d2887ef", "Basic Attention Token", "bat", "basic-attention-token", 18),
                 
+                new ComponentDefinitionDao("0xa0b86991c6218b36c1d19d4a2e9eb0ce3606eb48", "USD Coin", "usdc", "usd-coin", 6),
+                
             };
             await dbContext.ComponentDefinitions.AddRangeAsync(componentDefinitions, cancellationToken);
             await dbContext.SaveChangesAsync(cancellationToken);
@@ -212,6 +214,14 @@ namespace Trakx.Persistence.Initialisation
                 new IndiceDefinitionDao("l1btceth", "Equal Weight BTC ETH",
                     "Indice composed of half BTC and half ETH",
                     8,
+                    "", firstApr),
+                new IndiceDefinitionDao("l1vol15btc", "Bitcoin Vol Control 15",
+                    "A	 CTI invested in the Bitcoin ERC20 (WBTC), with a monthly rebalancing against USDc calibrated to capture a risk around 15%",
+                    6,
+                    "", firstApr),
+                new IndiceDefinitionDao("l1vol20btceth", "Bitcoin Ethereum Vol Control 20",
+                    "A CTI invested in equal weights of BTC and ETH, with a monthly rebalancing against USDc calibrated to capture a risk around 20%.",
+                    6,
                     "", firstApr),
             };
             await dbContext.AddRangeAsync(indiceDefinitions, cancellationToken);
@@ -378,6 +388,12 @@ namespace Trakx.Persistence.Initialisation
                 new CompositionData(indiceBySymbols["l1btceth"], DateTime.Parse("01-Apr-2020"), componentsBySymbols["wbtc"], 6434.42m, 0.5m),
                 new CompositionData(indiceBySymbols["l1btceth"], DateTime.Parse("01-Apr-2020"), componentsBySymbols["weth"], 132.88m, 0.5m),
 
+                new CompositionData(indiceBySymbols["l1vol15btc"], DateTime.Parse("01-Apr-2020"), componentsBySymbols["wbtc"], 6434.42m, 0.11m),
+                new CompositionData(indiceBySymbols["l1vol15btc"], DateTime.Parse("01-Apr-2020"), componentsBySymbols["usdc"], 1m, 0.89m),
+
+                new CompositionData(indiceBySymbols["l1vol20btceth"], DateTime.Parse("01-Apr-2020"), componentsBySymbols["wbtc"], 6434.42m, 0.065m),
+                new CompositionData(indiceBySymbols["l1vol20btceth"], DateTime.Parse("01-Apr-2020"), componentsBySymbols["weth"], 1m, 0.065m),
+                new CompositionData(indiceBySymbols["l1vol20btceth"], DateTime.Parse("01-Apr-2020"), componentsBySymbols["usdc"], 1m, 0.87m),
 
                 #endregion
             };
@@ -413,7 +429,7 @@ namespace Trakx.Persistence.Initialisation
 
             var componentValuations = compositionData.Select(p => new ComponentValuationDao(
                 compositionDao.ComponentQuantityDaos.Single(q => q.ComponentDefinition.Symbol == p.ComponentDefinition.Symbol),
-                historicalAsOfDate, Usdc, p.PriceAndWeight.Price, "coinGecko")).ToList();
+                historicalAsOfDate, Usdc, p.PriceAndWeight.Price, "cryptoCompare")).ToList();
 
             await dbContext.ComponentValuations.AddRangeAsync(componentValuations, cancellationToken);
 

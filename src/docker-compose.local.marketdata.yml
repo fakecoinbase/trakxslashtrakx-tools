@@ -6,13 +6,16 @@ services:
       driver: "json-file"
       options:
         max-size: "50m"
-    image: docker.pkg.github.com/trakx/trakx-tools/trakx-marketdata-server:latest
+    #image: docker.pkg.github.com/trakx/trakx-tools/trakx-marketdata-server:latest
+    build:
+      context: ./..
+      dockerfile: ./src/Server.Dockerfile
     links:
       - redis
       - sqlserver
     environment:
       - ASPNETCORE_ENVIRONMENT=Development #Consider changing this in Production
-      - ConnectionStrings__SqlServerConnection=Server=sqlserver;Database=IndiceRepository;Trusted_Connection=True;MultipleActiveResultSets=true;User=SA;Password=changeme;Integrated Security=false
+      - ConnectionStrings__SqlServerConnection=Server=sqlserver;Database=IndiceRepository;Trusted_Connection=True;MultipleActiveResultSets=true;User=SA;Password=Ch@ngeMe123;Integrated Security=false
       - ConnectionStrings__RedisConnection=redis:6379,abortConnect=False
       - CRYPTOCOMPARE_API_KEY=xxx
     networks:
@@ -20,35 +23,17 @@ services:
     ports: 
       - "3000:5000"
     restart: always
-
-  indicemanager_api:
-    logging:
-      driver: "json-file"
-      options:
-        max-size: "50m"
-    image: docker.pkg.github.com/trakx/trakx-tools/trakx-indicemanager-server:latest
-    links:
-      - redis
-      - sqlserver
-    environment:
-      - ASPNETCORE_ENVIRONMENT=Development #Consider changing this in Production
-      - ConnectionStrings__SqlServerConnection=Server=sqlserver;Database=IndiceRepository;Trusted_Connection=True;MultipleActiveResultSets=true;User=SA;Password=changeme;Integrated Security=false
-      - ConnectionStrings__RedisConnection=redis:6379,abortConnect=False
-      - CRYPTOCOMPARE_API_KEY=xxx    
-    networks:
-      - indicemanager
-    ports: 
-      - "3000:4000"
-    restart: always
-    
+  
   collector:
     logging:
       driver: "json-file"
       options:
         max-size: "50m"
-    image: docker.pkg.github.com/trakx/trakx-tools/trakx-marketdata-collector:latest
+    build:
+      context: ./..
+      dockerfile: ./src/Collector.Dockerfile
     environment:
-      - ConnectionStrings__SqlServerConnection=Server=sqlserver;Database=IndiceRepository;Trusted_Connection=True;MultipleActiveResultSets=true;User=SA;Password=changeme;Integrated Security=false
+      - ConnectionStrings__SqlServerConnection=Server=sqlserver;Database=IndiceRepository;Trusted_Connection=True;MultipleActiveResultSets=true;User=SA;Password=Ch@ngeMe123;Integrated Security=false
       - ConnectionStrings__RedisConnection=redis:6379,abortConnect=False
       - CRYPTOCOMPARE_API_KEY=xxx
     depends_on:
@@ -69,13 +54,12 @@ services:
     volumes:
       - sqlvolume:/var/opt/mssql
     environment:
-      - SA_PASSWORD=changeme
+      - SA_PASSWORD=Ch@ngeMe123
       - ACCEPT_EULA=Y
     ports:
       - "1433:1433"
     networks:
       - marketdata
-      - indicemanager
     restart: always
 
   redis:
@@ -84,7 +68,6 @@ services:
       - "6379:6379"
     networks:
       - marketdata
-      - indicemanager
     restart: always
 
   proxy:
@@ -94,20 +77,18 @@ services:
         max-size: "50m"
     build:
       context:  ./nginx
-      dockerfile: Dockerfile
+      dockerfile: Dockerfile.local
     ports:
-      - "80:80"
-      - "443:443"
+    #  - "80:80"
+    #  - "443:443"
       - "5000:5000"
-      - "5000:4000"
+#      - "4000:4000"
     networks:
       - marketdata      
-      - indicemanager
     volumes:
       - /etc/letsencrypt/:/etc/letsencrypt/
     links:
       - marketdata_api
-      - indicemanager_api
     restart: always
 
 volumes:
@@ -116,10 +97,5 @@ volumes:
 networks:
   marketdata:
     name: marketdata_network
-    ipam:
-      driver: default
-
-  indicemanager:
-    name: indicemanager_network
     ipam:
       driver: default

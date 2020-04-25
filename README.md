@@ -40,7 +40,7 @@ docker run -e "ACCEPT_EULA=Y" -e "SA_PASSWORD=changeme" -p 1433:1433 --name indi
 Get a local redis instance running
 ```bash 
 docker pull redis
-docker run --name maketdata-price-cache -d redis -p 6379:6379
+docker run -d -p 6379:6379 redis
 ```
 
 ## Running docker-compose

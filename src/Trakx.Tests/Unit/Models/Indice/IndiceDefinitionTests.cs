@@ -17,11 +17,10 @@ namespace Trakx.Tests.Unit.Models.Indice
         public IndiceDefinitionTests(DbContextFixture fixture)
         {
             _fixture = fixture;
-            _expectedIndiceCount = 7;
-            var indiceVersions = 2;
-            _expectedCompositionCount = _expectedIndiceCount * indiceVersions;
-            _expectedComponentCount = 59;
-            _expectedQuantitiesCount = 52 + 53 + 20;
+            _expectedIndiceCount = 9;
+            _expectedCompositionCount = 16;
+            _expectedComponentCount = 60;
+            _expectedQuantitiesCount = 52 + 53 + 25;
         }
 
         [Fact]

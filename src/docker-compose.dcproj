@@ -27,8 +27,8 @@
     <DockerServiceName>blazorboilerplate.server</DockerServiceName>
   </PropertyGroup>
   <ItemGroup>
+    <None Include="docker-compose.local.marketdata.yml" />
     <None Include="docker-compose.local.yml" />
-    <None Include="docker-compose.production.yml" />
     <None Include="docker-compose.yml" />
     <None Include=".dockerignore" />
   </ItemGroup>

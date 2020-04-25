@@ -9,15 +9,15 @@ namespace Trakx.MarketData.Collector.CryptoCompare
     {
         public static IServiceCollection AddCryptoCompareClient(this IServiceCollection services)
         {
+            services.AddSingleton<IApiDetailsProvider, ApiDetailsProvider>();
             services.AddSingleton<ICryptoCompareClient, CryptoCompareClient>(provider =>
             {
-                var apiKey = Environment.GetEnvironmentVariable("CRYPTOCOMPARE_API_KEY");
+                var apiKey = provider.GetService<IApiDetailsProvider>().ApiKey;
                 return new CryptoCompareClient(apiKey);
             });
 
             services.AddTransient<IClientWebsocket, WrappedClientWebsocket>();
             services.AddTransient<IWebSocketStreamer, WebSocketStreamer>();
-            services.AddSingleton<IApiDetailsProvider, ApiDetailsProvider>();
             services.AddSingleton<ICryptoCompareWebSocketClient, CryptoCompareWebSocketClient>();
             services.AddSingleton<WrappedClientWebsocket>();
             

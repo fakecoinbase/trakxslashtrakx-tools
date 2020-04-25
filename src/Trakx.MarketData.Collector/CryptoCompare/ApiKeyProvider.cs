@@ -16,7 +16,7 @@ namespace Trakx.MarketData.Collector.CryptoCompare
         
         public ApiDetailsProvider(IConfiguration configuration)
         {
-            ApiKey = configuration.GetSection("ApiKeys").GetValue<string>("CryptoCompare");
+            ApiKey = Environment.GetEnvironmentVariable("CRYPTOCOMPARE_API_KEY");
             WebSocketEndpoint = new Uri($"wss://streamer.cryptocompare.com/v2?api_key={ApiKey}");
         }
 

@@ -25,8 +25,14 @@ Project("{E53339B2-1760-4266-BCC7-CA923CBCF16C}") = "docker-compose", "docker-co
 EndProject
 Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "nginx", "nginx", "{2F26BA78-AFF7-4859-BAFD-79A61EDCA95C}"
 	ProjectSection(SolutionItems) = preProject
-		nginx\Dockerfile = nginx\Dockerfile
-		nginx\nginx.conf = nginx\nginx.conf
+		nginx\Dockerfile.local = nginx\Dockerfile.local
+		nginx\Dockerfile.preprod = nginx\Dockerfile.preprod
+		nginx\Dockerfile.prod = nginx\Dockerfile.prod
+		nginx\Dockerfile.stage = nginx\Dockerfile.stage
+		nginx\nginx.local.conf = nginx\nginx.local.conf
+		nginx\nginx.preprod.conf = nginx\nginx.preprod.conf
+		nginx\nginx.prod.conf = nginx\nginx.prod.conf
+		nginx\nginx.stage.conf = nginx\nginx.stage.conf
 	EndProjectSection
 EndProject
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Trakx.Persistence", "Trakx.Persistence\Trakx.Persistence.csproj", "{2BF4978C-2B17-4ED8-B663-1BD4C19A2E5D}"
@@ -45,7 +51,7 @@ Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Trakx.IndiceManager.Server"
 EndProject
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Trakx.IndiceManager.Server.Tests", "Trakx.IndiceManager.Server.Tests\Trakx.IndiceManager.Server.Tests.csproj", "{1DEA2E9B-5E07-482F-9E64-98B4C72BC816}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Trakx.IndiceManager.Client", "Trakx.IndiceManager.Client\Trakx.IndiceManager.Client.csproj", "{04CE72AE-772C-475E-BB54-3FFFB6F29196}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Trakx.IndiceManager.Client", "Trakx.IndiceManager.Client\Trakx.IndiceManager.Client.csproj", "{04CE72AE-772C-475E-BB54-3FFFB6F29196}"
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution

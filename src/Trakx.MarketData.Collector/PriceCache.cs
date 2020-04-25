@@ -77,9 +77,9 @@ namespace Trakx.MarketData.Collector
 
             await retryPolicy.ExecuteAndCaptureAsync(async () =>
             {
-                _logger.LogInformation("Trying to retrieve known indicees from Database...");
+                _logger.LogInformation("Trying to retrieve known indices from Database...");
                 var allIndiceSymbols = await _indiceDataProvider.GetAllIndiceSymbols(cancellationToken);
-                if (allIndiceSymbols?.Count == 0) throw new InvalidDataException("No Indices defined in database.");
+                if (allIndiceSymbols?.Count == 0) throw new InvalidDataException("No indices defined in database.");
             });
         }
 
@@ -102,6 +102,7 @@ namespace Trakx.MarketData.Collector
         {
             try
             {
+                _logger.LogInformation("Updating price for {0}/{1} to {2} in cache.", aggregate.FromSymbol, aggregate.ToSymbol, aggregate.Price);
                 if (!aggregate.FromSymbol.Equals("usdc", StringComparison.InvariantCultureIgnoreCase))
                 {
                     var usdcBytes = await _cache.GetAsync("usdc".GetLatestPriceCacheKey(aggregate.ToSymbol), cancellationToken);
@@ -126,13 +127,17 @@ namespace Trakx.MarketData.Collector
 
         private async Task SubscribeToAllComponentsFeeds(CancellationToken cancellationToken)
         {
+            _logger.LogInformation("Retrieving components from database...");
             var currentComponents = await _indiceDataProvider.GetAllComponentsFromCurrentCompositions(cancellationToken);
             var currentComponentsSymbols = new[] { "usdc" }.Union(currentComponents.Select(c => c.Symbol)).Distinct();
+            _logger.LogInformation("Adding subscriptions to AggregateIndex updates for tokens {0}.", 
+                string.Join(", ", currentComponentsSymbols?.ToList()));
+            
             var subscriptions = currentComponentsSymbols
                 .Select(s => new AggregateIndiceSubscription(s, "usd"))
                 .ToArray();
-
             await _webSocketClient.AddSubscriptions(subscriptions);
+            _logger.LogInformation("Subscriptions added.");
         }
 
         #region Logging

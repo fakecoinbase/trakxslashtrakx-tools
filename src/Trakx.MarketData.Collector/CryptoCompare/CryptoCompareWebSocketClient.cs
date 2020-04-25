@@ -49,8 +49,16 @@ namespace Trakx.MarketData.Collector.CryptoCompare
         public async Task AddSubscriptions(params ICryptoCompareSubscription[] subscriptions)
         {
             var message = new AddSubscriptionMessage(subscriptions);
-            await _client.SendAsync(Encoding.UTF8.GetBytes(JsonSerializer.Serialize(message)),
-                WebSocketMessageType.Text, true, CancellationToken.None);
+            var serialize = JsonSerializer.Serialize(message);
+            try
+            {
+                await _client.SendAsync(Encoding.UTF8.GetBytes(serialize),
+                    WebSocketMessageType.Text, true, CancellationToken.None);
+            }
+            catch (Exception exception)
+            {
+                _logger.LogError(exception, "Failed to add subscriptions.");
+            }
         }
 
         public async Task RemoveSubscriptions(params ICryptoCompareSubscription[] subscriptions)
@@ -84,7 +92,7 @@ namespace Trakx.MarketData.Collector.CryptoCompare
             await _client.CloseAsync(WebSocketCloseStatus.NormalClosure,
                 "CryptoCompare WebClient getting disposed.",
                 _cancellationTokenSource.Token);
-            _logger.LogInformation("Closing CryptoCompare websocket");
+            _logger.LogInformation("Closed CryptoCompare websocket");
         }
 
         private async Task StopListening()
