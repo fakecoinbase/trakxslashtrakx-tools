@@ -1,0 +1,65 @@
+name: Docker Build and Publish IndexManager Service
+
+on:
+  push:
+    # Publish `master` as Docker `latest` image.
+    branches:
+      - master
+
+  # Run tests for any PRs.
+  pull_request:
+
+env:
+  IMAGE_NAME: "trakx-indexmanager-server"
+  BASE_VERSION: "0.1.4"
+
+jobs:
+  # Run tests.
+  # See also https://docs.docker.com/docker-hub/builds/automated-testing/
+  test:
+    runs-on: ubuntu-latest
+
+    steps:
+      - uses: actions/checkout@v2
+
+      - name: Run tests
+        run: |
+          if [ -f src/docker-compose.test.yml ]; then
+            docker-compose --file src/docker-compose.test.yml build
+            docker-compose --file src/docker-compose.test.yml run sut
+          else
+            docker build . --file src/IndexManager.Dockerfile
+          fi
+
+  # Push image to GitHub Packages.
+  # See also https://docs.docker.com/docker-hub/builds/
+  build_and_publish_docker_image:
+    # Ensure test job passes before pushing image.
+    # needs: test
+
+    runs-on: ubuntu-latest
+    if: github.event_name == 'push'
+
+    steps:
+      - name: Generate build number
+        id: buildnumber
+        uses: einaregilsson/build-number@v2 
+        with:
+          token: ${{secrets.GITHUB_TOKEN}}
+  
+      - name: Upload build number
+        uses: actions/upload-artifact@v1
+        with:
+          name: BUILD_NUMBER
+          path: BUILD_NUMBER
+
+      - uses: actions/checkout@v2
+
+      - name: Build image and tag image
+        run: docker build . --file src/IndexManager.Dockerfile --tag "docker.pkg.github.com/$GITHUB_REPOSITORY/$IMAGE_NAME:$BASE_VERSION.$BUILD_NUMBER"
+
+      - name: Log into registry
+        run: echo "${{ secrets.GITHUB_TOKEN }}" | docker login docker.pkg.github.com -u ${{ github.actor }} --password-stdin
+
+      - name: Publish to GPR
+        run: docker push "docker.pkg.github.com/$GITHUB_REPOSITORY/$IMAGE_NAME:$BASE_VERSION.$BUILD_NUMBER"
