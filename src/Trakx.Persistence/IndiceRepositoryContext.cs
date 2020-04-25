@@ -18,10 +18,11 @@ namespace Trakx.Persistence
         public DbSet<ComponentQuantityDao> ComponentQuantities { get; set; }
         public DbSet<ComponentDefinitionDao> ComponentDefinitions { get; set; }
         public DbSet<ComponentValuationDao> ComponentValuations { get; set; }
-        
+        public DbSet<IndiceSupplyTransactionDao> IndiceSupplyTransactions { get; set; }
         public DbSet<IndiceDefinitionDao> IndiceDefinitions { get; set; }
         public DbSet<IndiceCompositionDao> IndiceCompositions { get; set; }
         public DbSet<IndiceValuationDao> IndiceValuations { get; set; }
+        public DbSet<WrappingTransactionDao> WrappingTransactions { get; set; }
 
         #region Overrides of DbContext
 
