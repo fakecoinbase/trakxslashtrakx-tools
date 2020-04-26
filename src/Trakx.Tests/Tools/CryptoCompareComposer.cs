@@ -6,6 +6,7 @@ using System.Threading.Tasks;
 using CryptoCompare;
 using Microsoft.Extensions.DependencyInjection;
 using Trakx.Common.Ethereum;
+using Trakx.Common.Extensions;
 using Trakx.Common.Sources.CoinGecko;
 using Trakx.Common.Sources.Messari.Client;
 using Trakx.MarketData.Collector.CryptoCompare;
@@ -138,31 +139,6 @@ namespace Trakx.Tests.Tools
                 t => t.Result.CoinSymbol?.ToNativeSymbol().ToUpperInvariant(), 
                 t => t.Result.MarketCap);
             return result;
-        }
-    }
-
-    internal static class SymbolMappingExtensions
-    {
-        private static readonly Dictionary<string, string> NativeToWrapped = 
-            new Dictionary<string, string>(StringComparer.InvariantCultureIgnoreCase)
-            {
-                {"btc", "wbtc"},
-                {"eth", "weth"}
-            };
-        private static readonly Dictionary<string, string> WrappedToNative 
-            = new Dictionary<string, string>(StringComparer.InvariantCultureIgnoreCase)
-            {
-                {"wbtc", "btc"},
-                {"weth", "eth"}
-            };
-
-        public static string ToNativeSymbol(this string symbol)
-        {
-            return WrappedToNative.TryGetValue(symbol, out var native) ? native : symbol;
-        }
-        public static string ToWrappedSymbol(this string symbol)
-        {
-            return NativeToWrapped.TryGetValue(symbol, out var wrapped) ? wrapped : symbol;
         }
     }
 }
