@@ -1,7 +1,6 @@
 ﻿using System;
 using System.ComponentModel.DataAnnotations;
 using System.ComponentModel.DataAnnotations.Schema;
-using Trakx.Common.Core;
 using Trakx.Common.Interfaces.Indice;
 using Trakx.Common.Interfaces.Transaction;
 
@@ -57,8 +56,8 @@ namespace Trakx.Persistence.DAO
         /// <inheritdoc />
         public string? TransactionHash { get; set; }
 
-
         /// <inheritdoc />
+        [Required, Column(TypeName = "decimal(38, 18)")]
         public decimal Quantity { get; set; }
 
         /// <inheritdoc />

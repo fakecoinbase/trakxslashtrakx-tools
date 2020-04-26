@@ -194,7 +194,7 @@ namespace Trakx.Persistence.Migrations
                         .HasColumnType("nvarchar(450)");
 
                     b.Property<decimal>("Quantity")
-                        .HasColumnType("decimal(18,2)");
+                        .HasColumnType("decimal(38, 18)");
 
                     b.Property<string>("SenderAddress")
                         .IsRequired()
@@ -250,8 +250,8 @@ namespace Trakx.Persistence.Migrations
                         .ValueGeneratedOnAdd()
                         .HasColumnType("bigint");
 
-                    b.Property<int>("AmountSent")
-                        .HasColumnType("int");
+                    b.Property<decimal>("Amount")
+                        .HasColumnType("decimal(38, 18)");
 
                     b.Property<int?>("EthereumBlockId")
                         .HasColumnType("int");

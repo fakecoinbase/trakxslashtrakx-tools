@@ -39,6 +39,29 @@ namespace Trakx.Persistence.Migrations
                 });
 
             migrationBuilder.CreateTable(
+                name: "WrappingTransactions",
+                columns: table => new
+                {
+                    Id = table.Column<long>(nullable: false),
+                    TimeStamp = table.Column<DateTime>(nullable: false),
+                    FromCurrency = table.Column<string>(maxLength: 50, nullable: false),
+                    ToCurrency = table.Column<string>(maxLength: 50, nullable: false),
+                    TransactionState = table.Column<int>(nullable: false),
+                    EthereumTransactionHash = table.Column<string>(nullable: true),
+                    NativeChainTransactionHash = table.Column<string>(nullable: true),
+                    NativeChainBlockId = table.Column<int>(nullable: true),
+                    EthereumBlockId = table.Column<int>(nullable: true),
+                    Amount = table.Column<decimal>(type: "decimal(38, 18)", nullable: false),
+                    SenderAddress = table.Column<string>(maxLength: 256, nullable: false),
+                    ReceiverAddress = table.Column<string>(maxLength: 256, nullable: false),
+                    User = table.Column<string>(nullable: false)
+                },
+                constraints: table =>
+                {
+                    table.PrimaryKey("PK_WrappingTransactions", x => x.Id);
+                });
+
+            migrationBuilder.CreateTable(
                 name: "IndiceCompositions",
                 columns: table => new
                 {
@@ -80,6 +103,31 @@ namespace Trakx.Persistence.Migrations
                         onDelete: ReferentialAction.Cascade);
                     table.ForeignKey(
                         name: "FK_ComponentQuantities_IndiceCompositions_IndiceCompositionDaoId",
+                        column: x => x.IndiceCompositionDaoId,
+                        principalTable: "IndiceCompositions",
+                        principalColumn: "Id",
+                        onDelete: ReferentialAction.Cascade);
+                });
+
+            migrationBuilder.CreateTable(
+                name: "IndiceSupplyTransactions",
+                columns: table => new
+                {
+                    Id = table.Column<long>(nullable: false),
+                    CreationTimestamp = table.Column<DateTime>(nullable: false),
+                    IndiceCompositionDaoId = table.Column<string>(nullable: false),
+                    TransactionType = table.Column<int>(nullable: false),
+                    EthereumBlockId = table.Column<int>(nullable: true),
+                    TransactionHash = table.Column<string>(nullable: true),
+                    Quantity = table.Column<decimal>(type: "decimal(38, 18)", nullable: false),
+                    SenderAddress = table.Column<string>(maxLength: 256, nullable: false),
+                    User = table.Column<string>(nullable: false)
+                },
+                constraints: table =>
+                {
+                    table.PrimaryKey("PK_IndiceSupplyTransactions", x => x.Id);
+                    table.ForeignKey(
+                        name: "FK_IndiceSupplyTransactions_IndiceCompositions_IndiceCompositionDaoId",
                         column: x => x.IndiceCompositionDaoId,
                         principalTable: "IndiceCompositions",
                         principalColumn: "Id",
@@ -164,6 +212,11 @@ namespace Trakx.Persistence.Migrations
                 column: "IndiceDefinitionDaoSymbol");
 
             migrationBuilder.CreateIndex(
+                name: "IX_IndiceSupplyTransactions_IndiceCompositionDaoId",
+                table: "IndiceSupplyTransactions",
+                column: "IndiceCompositionDaoId");
+
+            migrationBuilder.CreateIndex(
                 name: "IX_IndiceValuations_IndiceCompositionDaoId",
                 table: "IndiceValuations",
                 column: "IndiceCompositionDaoId");
@@ -173,6 +226,12 @@ namespace Trakx.Persistence.Migrations
         {
             migrationBuilder.DropTable(
                 name: "ComponentValuations");
+
+            migrationBuilder.DropTable(
+                name: "IndiceSupplyTransactions");
+
+            migrationBuilder.DropTable(
+                name: "WrappingTransactions");
 
             migrationBuilder.DropTable(
                 name: "ComponentQuantities");
