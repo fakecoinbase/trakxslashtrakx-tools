@@ -1,6 +1,4 @@
-﻿using System;
-using System.Threading;
-using System.Threading.Tasks;
+﻿using System.Threading.Tasks;
 using FluentAssertions;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.Extensions.Hosting;
@@ -11,11 +9,8 @@ using Trakx.Common.Interfaces.Pricing;
 using Trakx.Common.Interfaces.Indice;
 using Trakx.MarketData.Server.Models;
 using NSubstitute;
-using Trakx.Common.Core;
-using Trakx.Common.Pricing;
 using Trakx.MarketData.Server.Controllers;
 using Trakx.Tests.Data;
-using Xunit.Sdk;
 
 
 namespace Trakx.Tests.Unit.Server.Controllers
@@ -53,7 +48,7 @@ namespace Trakx.Tests.Unit.Server.Controllers
             await _indiceProvider.Received(1).GetInitialValuation(composition);
             IndicePricedModel finalResults = (IndicePricedModel)((JsonResult) result.Result).Value;
             finalResults.Address.Should().Be(composition.IndiceDefinition.Address);
-            finalResults.CreationDate.Should().Be(composition.IndiceDefinition.CreationDate);
+            finalResults.CreationDate.Should().Be(composition.CreationDate);
             finalResults.Symbol.ToLower().Should().Be(composition.IndiceDefinition.Symbol);
             finalResults.Description.Should().Be(composition.IndiceDefinition.Description);
             finalResults.Name.Should().Be(composition.IndiceDefinition.Name);

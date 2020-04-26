@@ -1,4 +1,5 @@
 ﻿using System.Globalization;
+using Trakx.Common.Extensions;
 
 namespace Trakx.Common.Interfaces.Indice
 {
@@ -36,7 +37,7 @@ namespace Trakx.Common.Interfaces.Indice
     public static class ComponentDefinitionExtensions
     {
         public static string GetLatestPriceCacheKey(this string componentSymbol, string quoteSymbol) =>
-            $"{componentSymbol.ToLowerInvariant()}|{quoteSymbol.ToLowerInvariant()}|LatestPrice";
+            $"{componentSymbol.ToNativeSymbol().ToLowerInvariant()}|{quoteSymbol.ToNativeSymbol().ToLowerInvariant()}|LatestPrice";
 
         public static string
             GetLatestPriceCacheKey(this IComponentDefinition componentDefinition, string quoteSymbol) =>

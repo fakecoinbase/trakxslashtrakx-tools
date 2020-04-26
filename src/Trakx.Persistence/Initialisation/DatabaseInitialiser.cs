@@ -392,7 +392,7 @@ namespace Trakx.Persistence.Initialisation
                 new CompositionData(indiceBySymbols["l1vol15btc"], DateTime.Parse("01-Apr-2020"), componentsBySymbols["usdc"], 1m, 0.89m),
 
                 new CompositionData(indiceBySymbols["l1vol20btceth"], DateTime.Parse("01-Apr-2020"), componentsBySymbols["wbtc"], 6434.42m, 0.065m),
-                new CompositionData(indiceBySymbols["l1vol20btceth"], DateTime.Parse("01-Apr-2020"), componentsBySymbols["weth"], 1m, 0.065m),
+                new CompositionData(indiceBySymbols["l1vol20btceth"], DateTime.Parse("01-Apr-2020"), componentsBySymbols["weth"], 132.88m, 0.065m),
                 new CompositionData(indiceBySymbols["l1vol20btceth"], DateTime.Parse("01-Apr-2020"), componentsBySymbols["usdc"], 1m, 0.87m),
 
                 #endregion

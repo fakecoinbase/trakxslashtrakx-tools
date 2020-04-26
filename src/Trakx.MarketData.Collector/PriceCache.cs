@@ -11,6 +11,7 @@ using Microsoft.Extensions.Caching.Distributed;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Logging;
 using Polly;
+using Trakx.Common.Extensions;
 using Trakx.Common.Interfaces;
 using Trakx.Common.Interfaces.Indice;
 using Trakx.Common.Utils;
@@ -129,7 +130,7 @@ namespace Trakx.MarketData.Collector
         {
             _logger.LogInformation("Retrieving components from database...");
             var currentComponents = await _indiceDataProvider.GetAllComponentsFromCurrentCompositions(cancellationToken);
-            var currentComponentsSymbols = new[] { "usdc" }.Union(currentComponents.Select(c => c.Symbol)).Distinct();
+            var currentComponentsSymbols = new[] { "usdc" }.Union(currentComponents.Select(c => c.Symbol.ToNativeSymbol())).Distinct();
             _logger.LogInformation("Adding subscriptions to AggregateIndex updates for tokens {0}.", 
                 string.Join(", ", currentComponentsSymbols?.ToList()));
             
