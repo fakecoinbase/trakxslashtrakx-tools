@@ -1,15 +1,13 @@
 ﻿using System;
-using System.Collections.Generic;
-using System.Text;
 using Trakx.Common.Interfaces.Transaction;
 
 namespace Trakx.Common.Core
 {
-    class WrappingTransaction :IWrappingTransaction
+    public class WrappingTransaction : IWrappingTransaction
     {
         public WrappingTransaction(DateTime timeStamp, string fromCurrency, string toCurrency,
             TransactionState transactionState, string? ethereumTransactionHash, string? nativeChainTransactionHash,
-            int? nativeChainBlockId,  int? ethereumBlockId,int amountSent, string senderAddress,
+            int? nativeChainBlockId, int? ethereumBlockId, decimal amount, string senderAddress,
             string receiverAddress, string user)
         {
             TimeStamp = timeStamp;
@@ -20,7 +18,7 @@ namespace Trakx.Common.Core
             EthereumTransactionHash = ethereumTransactionHash;
             NativeChainBlockId = nativeChainBlockId;
             NativeChainTransactionHash = nativeChainTransactionHash;
-            AmountSent = amountSent;
+            Amount = amount;
             SenderAddress = senderAddress;
             ReceiverAddress = receiverAddress;
             User = user;
@@ -53,7 +51,7 @@ namespace Trakx.Common.Core
         public int? EthereumBlockId { get; }
 
         /// <inheritdoc />
-        public int AmountSent { get; }
+        public decimal Amount { get; }
 
         /// <inheritdoc />
         public string SenderAddress { get; }

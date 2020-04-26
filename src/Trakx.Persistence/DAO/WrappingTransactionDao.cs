@@ -7,11 +7,11 @@ using Trakx.Common.Interfaces.Transaction;
 
 namespace Trakx.Persistence.DAO
 {
-    public class WrappingTransactionDao :IWrappingTransaction
+    public class WrappingTransactionDao : IWrappingTransaction
     {
         public WrappingTransactionDao(DateTime timeStamp, string fromCurrency, string toCurrency,
             TransactionState transactionState, string? ethereumTransactionHash, string? nativeChainTransactionHash,
-            int? nativeChainBlockId, int? ethereumBlockId, int amountSent, string senderAddress,
+            int? nativeChainBlockId, int? ethereumBlockId, decimal amount, string senderAddress,
             string receiverAddress, string user)
         {
             TimeStamp = timeStamp;
@@ -22,7 +22,7 @@ namespace Trakx.Persistence.DAO
             EthereumTransactionHash = ethereumTransactionHash;
             NativeChainBlockId = nativeChainBlockId;
             NativeChainTransactionHash = nativeChainTransactionHash;
-            AmountSent = amountSent;
+            Amount = amount;
             SenderAddress = senderAddress;
             ReceiverAddress = receiverAddress;
             User = user;
@@ -61,7 +61,8 @@ namespace Trakx.Persistence.DAO
         public int? EthereumBlockId { get; set; }
 
         /// <inheritdoc />
-        public int AmountSent { get; set; }
+        [Required, Column(TypeName = "decimal(38, 18)")] 
+        public decimal Amount { get; set; }
 
         /// <inheritdoc />
         [Required, MaxLength(256)]

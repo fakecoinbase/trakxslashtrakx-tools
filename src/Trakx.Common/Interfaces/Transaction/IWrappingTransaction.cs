@@ -1,6 +1,4 @@
 ﻿using System;
-using System.Collections.Generic;
-using System.Text;
 
 namespace Trakx.Common.Interfaces.Transaction
 {
@@ -12,64 +10,65 @@ namespace Trakx.Common.Interfaces.Transaction
         /// <summary>
         /// The time when the transaction was initiated.
         /// </summary>
-        public DateTime TimeStamp { get;  }
+        DateTime TimeStamp { get; }
 
         /// <summary>
         /// The symbol of the currency that was sent in the transaction.
         /// </summary>
-        public string FromCurrency { get; }
+        string FromCurrency { get; }
 
         /// <summary>
         /// The symbol of the currency that the user wants to receive in the transaction.
         /// </summary>
-        public string ToCurrency { get; }
+        string ToCurrency { get; }
 
         /// <summary>
         /// The State of the transaction : Pending / Complete / Failed
         /// This is an enum <see cref="TransactionState"/>
         /// </summary>
-        public TransactionState TransactionState { get;}
+        TransactionState TransactionState { get; }
 
         /// <summary>
         /// The hash of the transaction on the ethereum mainnet.
         /// </summary>
-        public string? EthereumTransactionHash { get; }
+        string? EthereumTransactionHash { get; }
 
         /// <summary>
         /// The hash of the transaction on the native chain.
         /// </summary>
-        public string? NativeChainTransactionHash { get;  }
+        string? NativeChainTransactionHash { get; }
 
         /// <summary>
         /// The blockId of the transaction on the ethereum mainnet.
         /// </summary>
-        public int? EthereumBlockId { get; }
+        int? EthereumBlockId { get; }
 
         /// <summary>
         /// The blockId of the transaction on the native chain.
         /// </summary>
-        public int? NativeChainBlockId { get; }
+        int? NativeChainBlockId { get; }
 
         /// <summary>
         /// The amount sent in the transaction, that means the amount that the user wants to convert.
         /// </summary>
-        public int AmountSent { get;  }
+        decimal Amount { get; }
 
         /// <summary>
         /// The address from where the user initiates the transaction. Could be an ethereum address or the address from the native token.
         /// </summary>
-        public string SenderAddress { get;  } 
+        string SenderAddress { get; }
 
         /// <summary>
         /// The address on which the user wants to receives his convert tokens.
         /// </summary>
-        public string ReceiverAddress { get;  }
+        string ReceiverAddress { get; }
 
         /// <summary>
         /// The identity of the user who executed the transaction.
         /// </summary>
-        public string User { get;  } 
+        string User { get; }
     }
+
     public enum TransactionState
     {
         Pending,

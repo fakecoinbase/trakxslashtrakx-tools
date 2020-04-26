@@ -10,7 +10,7 @@ using Trakx.Persistence;
 namespace Trakx.Persistence.Migrations
 {
     [DbContext(typeof(IndiceRepositoryContext))]
-    [Migration("20200422170419_CreateIndiceRepository")]
+    [Migration("20200426090833_CreateIndiceRepository")]
     partial class CreateIndiceRepository
     {
         protected override void BuildTargetModel(ModelBuilder modelBuilder)
@@ -179,6 +179,47 @@ namespace Trakx.Persistence.Migrations
                     b.ToTable("IndiceDefinitions");
                 });
 
+            modelBuilder.Entity("Trakx.Persistence.DAO.IndiceSupplyTransactionDao", b =>
+                {
+                    b.Property<long>("Id")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("bigint");
+
+                    b.Property<DateTime>("CreationTimestamp")
+                        .HasColumnType("datetime2");
+
+                    b.Property<int?>("EthereumBlockId")
+                        .HasColumnType("int");
+
+                    b.Property<string>("IndiceCompositionDaoId")
+                        .IsRequired()
+                        .HasColumnType("nvarchar(450)");
+
+                    b.Property<decimal>("Quantity")
+                        .HasColumnType("decimal(38, 18)");
+
+                    b.Property<string>("SenderAddress")
+                        .IsRequired()
+                        .HasColumnType("nvarchar(256)")
+                        .HasMaxLength(256);
+
+                    b.Property<string>("TransactionHash")
+                        .HasColumnType("nvarchar(max)");
+
+                    b.Property<int>("TransactionType")
+                        .HasColumnType("int");
+
+                    b.Property<string>("User")
+                        .IsRequired()
+                        .HasColumnType("nvarchar(max)");
+
+                    b.HasKey("Id");
+
+                    b.HasIndex("IndiceCompositionDaoId");
+
+                    b.ToTable("IndiceSupplyTransactions");
+                });
+
             modelBuilder.Entity("Trakx.Persistence.DAO.IndiceValuationDao", b =>
                 {
                     b.Property<string>("Id")
@@ -203,6 +244,62 @@ namespace Trakx.Persistence.Migrations
                     b.HasIndex("IndiceCompositionDaoId");
 
                     b.ToTable("IndiceValuations");
+                });
+
+            modelBuilder.Entity("Trakx.Persistence.DAO.WrappingTransactionDao", b =>
+                {
+                    b.Property<long>("Id")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("bigint");
+
+                    b.Property<decimal>("Amount")
+                        .HasColumnType("decimal(38, 18)");
+
+                    b.Property<int?>("EthereumBlockId")
+                        .HasColumnType("int");
+
+                    b.Property<string>("EthereumTransactionHash")
+                        .HasColumnType("nvarchar(max)");
+
+                    b.Property<string>("FromCurrency")
+                        .IsRequired()
+                        .HasColumnType("nvarchar(50)")
+                        .HasMaxLength(50);
+
+                    b.Property<int?>("NativeChainBlockId")
+                        .HasColumnType("int");
+
+                    b.Property<string>("NativeChainTransactionHash")
+                        .HasColumnType("nvarchar(max)");
+
+                    b.Property<string>("ReceiverAddress")
+                        .IsRequired()
+                        .HasColumnType("nvarchar(256)")
+                        .HasMaxLength(256);
+
+                    b.Property<string>("SenderAddress")
+                        .IsRequired()
+                        .HasColumnType("nvarchar(256)")
+                        .HasMaxLength(256);
+
+                    b.Property<DateTime>("TimeStamp")
+                        .HasColumnType("datetime2");
+
+                    b.Property<string>("ToCurrency")
+                        .IsRequired()
+                        .HasColumnType("nvarchar(50)")
+                        .HasMaxLength(50);
+
+                    b.Property<int>("TransactionState")
+                        .HasColumnType("int");
+
+                    b.Property<string>("User")
+                        .IsRequired()
+                        .HasColumnType("nvarchar(max)");
+
+                    b.HasKey("Id");
+
+                    b.ToTable("WrappingTransactions");
                 });
 
             modelBuilder.Entity("Trakx.Persistence.DAO.ComponentQuantityDao", b =>
@@ -238,6 +335,15 @@ namespace Trakx.Persistence.Migrations
                     b.HasOne("Trakx.Persistence.DAO.IndiceDefinitionDao", "IndiceDefinitionDao")
                         .WithMany("IndiceCompositionDaos")
                         .HasForeignKey("IndiceDefinitionDaoSymbol")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
+                });
+
+            modelBuilder.Entity("Trakx.Persistence.DAO.IndiceSupplyTransactionDao", b =>
+                {
+                    b.HasOne("Trakx.Persistence.DAO.IndiceCompositionDao", "IndiceCompositionDao")
+                        .WithMany()
+                        .HasForeignKey("IndiceCompositionDaoId")
                         .OnDelete(DeleteBehavior.Cascade)
                         .IsRequired();
                 });
