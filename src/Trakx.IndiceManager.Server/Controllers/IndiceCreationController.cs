@@ -1,7 +1,10 @@
 ﻿using System.Collections.Generic;
+using System.Linq;
+using System.Runtime.InteropServices;
 using System.Threading.Tasks;
 using Microsoft.AspNetCore.Mvc;
 using Nethereum.Util;
+using Trakx.Common.Core;
 using Trakx.Common.Interfaces.Indice;
 using Trakx.IndiceManager.Server.Managers;
 using Trakx.IndiceManager.Server.Models;
@@ -54,23 +57,78 @@ namespace Trakx.IndiceManager.Server.Controllers
         [HttpGet]
         public async Task<ActionResult<List<IndiceDetailModel>>> GetAllIndices()
         {
-            var list = await _indiceRetriever.GetAllIndicesFromDatabase();
+            var indiceDefinitions = await _indiceRetriever.GetAllIndicesFromDatabase();
 
-            if (list == null)
+            if (indiceDefinitions == null)
                 return NotFound("There is no indices in the database.");
 
-            List<IndiceDetailModel> toReturn = new List<IndiceDetailModel>();
-            foreach (IIndiceDefinition indice in list)
-            {
-                toReturn.Add(new IndiceDetailModel
-                {
-                    Symbol = indice.Symbol,
-                    CreationDate = indice.CreationDate,
-                    Name = indice.Name
-                });
-            }
+            var indiceDetails = indiceDefinitions.Select(i => new IndiceDetailModel(i)).ToList();
+            return Ok(indiceDetails);
+        }
 
-            return Ok(toReturn);
+
+        /// <summary>
+        /// Tries to get all of the compositions for an indice.
+        /// </summary>
+        /// <param name="symbol">The address of the indice that we want the compositions. Not to be confused with the composition address.</param>
+        /// <returns>A list of the past and present composition for a given indice</returns>
+        [HttpGet]
+        public async Task<ActionResult<List<IndiceCompositionModel>>> GetCompositionsBySymbol([FromBody]string symbol)
+        {
+            var allCompositions = await _indiceRetriever.GetAllCompositionsFromDatabase(symbol);
+
+            if (allCompositions == null)
+                return NotFound($"The indice attached to {symbol} is not in our database.");
+
+            if (allCompositions.Count == 0)
+                return NotFound("There are no compositions for this indice.");
+
+            return Ok(allCompositions.Select(i => new IndiceCompositionModel(i)).ToList());
+        }
+
+
+        /// <summary>
+        /// Tries to save a new indice in our database.
+        /// </summary>
+        /// <param name="indiceToSave">The indice that we want to save.</param>
+        /// <returns>An object with a response 201 if the adding was successful</returns>
+        [HttpPost]
+        public async Task<ActionResult<IndiceDetailModel>> SaveIndiceDefinition([FromBody]IndiceDetailModel indiceToSave)
+        {
+            if (!indiceToSave.Address.IsValidEthereumAddressHexFormat())
+                return BadRequest($"{indiceToSave.Address} is not a valid ethereum address");
+
+            if (await _indiceRetriever.SearchIndice(indiceToSave.Address))
+                return BadRequest("The indice is already in the database.");
+
+            var result = await _indiceRetriever.TrySaveIndice(indiceToSave);
+            if (result == true)
+                return CreatedAtAction("The indice has been added to the database.", indiceToSave);
+
+            return BadRequest("The addition in the database has failed. Please verify the parameters of the indice and try again.");
+        }
+
+
+        /// <summary>
+        /// Tries to save a new composition for an indice in our database.
+        /// </summary>
+        /// <param name="compositionToSave">The composition that the user want to save.</param>
+        /// <returns>An object with a response 201 if the adding was successful.</returns>
+        [HttpPost]
+        public async Task<ActionResult<IndiceCompositionModel>> SaveIndiceComposition([FromBody] IndiceCompositionModel compositionToSave)
+        {
+            if (!compositionToSave.Address.IsValidEthereumAddressHexFormat())
+                return BadRequest($"{compositionToSave.Address} is not a valid ethereum address");
+
+            if (await _indiceRetriever.SearchComposition(compositionToSave.Address))
+                return BadRequest("The composition is already in the database.");
+
+            var result = await _indiceRetriever.TrySaveComposition(compositionToSave);
+
+            if (result == true)
+                return CreatedAtAction("The composition has been added to the database.", compositionToSave);
+
+            return BadRequest("The addition in the database has failed. Please verify the parameters of the composition and try again.");
         }
     }
 }
