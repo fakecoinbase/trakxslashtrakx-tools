@@ -5,6 +5,7 @@ using Newtonsoft.Json.Linq;
 using NSubstitute;
 using Trakx.Common.Core;
 using Trakx.Common.Interfaces.Indice;
+using Trakx.Common.Interfaces.Transaction;
 
 namespace Trakx.Tests.Data
 {
@@ -53,6 +54,23 @@ namespace Trakx.Tests.Data
             indiceComposition.Symbol.Returns(randomIndiceDefinition.Symbol + GetRandomYearMonthSuffix());
             indiceComposition.CreationDate.Returns(GetRandomDateTime());
             return indiceComposition;
+        }
+
+        public IWrappingTransaction GetWrappingTransaction()
+        {
+            var transaction = Substitute.For<IWrappingTransaction>();
+            transaction.EthereumBlockId.Returns(Random.Next(800000));
+            transaction.SenderAddress.Returns(GetRandomAddressEthereum());
+            transaction.User.Returns(GetRandomString(20));
+            transaction.ToCurrency.Returns(GetRandomCompositionSymbol());
+            transaction.FromCurrency.Returns(GetRandomCompositionSymbol());
+            transaction.Amount.Returns(10.03m);
+            transaction.NativeChainTransactionHash.Returns(GetRandomAddressEthereum());
+            transaction.NativeChainBlockId.Returns(Random.Next(600000));
+            transaction.NativeChainTransactionHash.Returns(GetRandomAddressEthereum());
+            transaction.TimeStamp.Returns(GetRandomDateTime());
+            transaction.TransactionState.Returns(TransactionState.Complete);
+            return transaction;
         }
 
         public IIndiceDefinition GetRandomIndiceDefinition(string? indiceSymbol = default, string? name = default)

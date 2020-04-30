@@ -8,7 +8,6 @@ using Trakx.Common.Core;
 using Trakx.Common.Interfaces.Indice;
 using Trakx.IndiceManager.Server.Managers;
 using Trakx.IndiceManager.Server.Models;
-using Trakx.Persistence.DAO;
 
 namespace Trakx.IndiceManager.Server.Controllers
 {
