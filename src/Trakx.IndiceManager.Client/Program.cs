@@ -5,6 +5,7 @@ using System.Threading.Tasks;
 using System.Text;
 using Microsoft.AspNetCore.Components.WebAssembly.Hosting;
 using Microsoft.Extensions.DependencyInjection;
+using MatBlazor;
 
 namespace Trakx.IndiceManager.Client
 {
@@ -22,6 +23,16 @@ namespace Trakx.IndiceManager.Client
                 // For more information, see https://aka.ms/blazor-standalone-auth
                 options.ProviderOptions.Authority = "https://login.microsoftonline.com/";
                 options.ProviderOptions.ClientId = "33333333-3333-3333-33333333333333333";
+            });
+
+            builder.Services.AddMatToaster(config =>
+            {
+                config.Position = MatToastPosition.TopCenter;
+                config.PreventDuplicates = true;
+                config.NewestOnTop = true;
+                config.ShowCloseButton = true;
+                config.MaximumOpacity = 95;
+                config.VisibleStateDuration = 3000;
             });
 
             await builder.Build().RunAsync();
