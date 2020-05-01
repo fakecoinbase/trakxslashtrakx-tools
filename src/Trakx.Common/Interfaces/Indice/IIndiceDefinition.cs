@@ -12,6 +12,7 @@ namespace Trakx.Common.Interfaces.Indice
     {
         /// <summary>
         /// Symbol of the token associated with this indice (ex: L1MKC005).
+        /// This need to be maximum 10 characters due to constraints in the Peatio database.
         /// </summary>
         string Symbol { get; }
 

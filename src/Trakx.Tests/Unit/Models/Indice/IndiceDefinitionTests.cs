@@ -62,7 +62,7 @@ namespace Trakx.Tests.Unit.Models.Indice
         {
             var indiceCompositions = _fixture.Context.IndiceCompositions.ToList();
             indiceCompositions.Count.Should().Be(_expectedCompositionCount);
-            indiceCompositions.Where(i => i.Version == 1).Sum(i => i.ComponentQuantityDaos.Count).Should().Be(52);
+            indiceCompositions.Where(i => i.Version == 1).Sum(i => i.ComponentQuantityDaos.Count).Should().Be(69);
             indiceCompositions.Where(i => i.Version == 2).Sum(i => i.ComponentQuantityDaos.Count).Should().Be(53);
             foreach (var indiceCompositionDao in indiceCompositions)
             {

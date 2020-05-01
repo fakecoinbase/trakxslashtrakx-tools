@@ -51,17 +51,53 @@ namespace Trakx.Tests.Unit.Common.Core
         }
 
         [Fact]
-        public void IsCompositionSymbol_should_not_match_on_Top10Erc20ByMarketCap_indice_symbol()
+        public void IsIndiceSymbol_should_be_false_if_less_than_4_chars_or_more_than_10()
         {
-            "l1mcap10erc20".IsIndiceSymbol().Should().BeTrue();
-            "l1mcap10erc20".IsCompositionSymbol().Should().BeFalse();
+            "l1t".IsIndiceSymbol().Should().BeFalse();
+            "s2b3".IsIndiceSymbol().Should().BeTrue();
+            "s2abcdefgh".IsIndiceSymbol().Should().BeTrue();
+            "s2abcdefghi".IsIndiceSymbol().Should().BeFalse();
         }
 
         [Fact]
-        public void IsIndiceSymbol_should_not_match_on_Top10Erc20ByMarketCap_composition_symbol()
+        public void IsCompositionSymbol_should_be_false_if_less_than_8_chars_or_more_than_14()
         {
-            "l1mcap10erc202412".IsCompositionSymbol().Should().BeTrue();
-            "l1mcap10erc202412".IsIndiceSymbol().Should().BeFalse();
+            "l1t2205".IsCompositionSymbol().Should().BeFalse();
+            "s2b33612".IsCompositionSymbol().Should().BeTrue();
+            "s2abcdefgh2109".IsCompositionSymbol().Should().BeTrue();
+            "s2abcdefghi2606".IsCompositionSymbol().Should().BeFalse();
+        }
+
+        [Theory]
+        [InlineData("l1amg")]
+        [InlineData("l1cex")]
+        [InlineData("l1dex")]
+        [InlineData("l1len")]
+        [InlineData("l1sca")]
+        [InlineData("l1mc10erc")]
+        [InlineData("l1btceth")]
+        [InlineData("l1vol15btc")]
+        [InlineData("l1vol20be")]
+        public void IsCompositionSymbol_should_not_match_on_known_indice_symbols(string indiceSymbol)
+        {
+            indiceSymbol.IsIndiceSymbol().Should().BeTrue();
+            indiceSymbol.IsCompositionSymbol().Should().BeFalse();
+        }
+
+        [Theory]
+        [InlineData("l1amg2003")]
+        [InlineData("l1cex2001")]
+        [InlineData("l1dex2412")]
+        [InlineData("l1len2311")]
+        [InlineData("l1sca3005")]
+        [InlineData("l1mc10erc2004")]
+        [InlineData("l1btceth3311")]
+        [InlineData("l1vol15btc2708")]
+        [InlineData("l1vol20be2602")]
+        public void IsIndiceSymbol_should_not_match_on_known_composition_symbol(string compositionSymbol)
+        {
+            compositionSymbol.IsCompositionSymbol().Should().BeTrue();
+            compositionSymbol.IsIndiceSymbol().Should().BeFalse();
         }
     }
 }
