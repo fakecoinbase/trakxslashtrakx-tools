@@ -8,6 +8,42 @@ app {
     /*flex-direction: column;*/
 }
 
+/*Forms*/
+.box {
+    display: flex;
+    justify-content: center;
+    align-items: center;
+}
+
+input[type=text], select {
+    width: 100%;
+    padding: 12px 20px;
+    margin: 8px 0;
+    display: inline-block;
+    border: 1px solid #ccc;
+    border-radius: 4px;
+    box-sizing: border-box;
+}
+
+input[type=submit] {
+    width: 100%;
+    background-color: #353173;
+    color: white;
+    padding: 14px 20px;
+    margin: 8px 0;
+    border: none;
+    border-radius: 4px;
+    cursor: pointer;
+}
+
+input[type=submit]:hover {
+    background-color: #252254;
+}
+
+/*histoy tables*/
+table, th, td {
+    border: 1px solid black;
+}
 
 
 /* app bar */
@@ -27,7 +63,7 @@ app {
 .mdc-top-app-bar {
     box-shadow: 0 2px 5px 0 rgba(0,0,0,.16), 0 2px 10px 0 rgba(0,0,0,.12);
     color: white;
-    z-indice: 7 ;
+    z-index: 7 ;
     position: sticky ;
     top: 0;
 }

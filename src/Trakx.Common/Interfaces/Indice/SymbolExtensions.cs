@@ -6,9 +6,9 @@ namespace Trakx.Common.Interfaces.Indice
     public static class SymbolExtensions
     {
         public static readonly Regex IndiceSymbolRegex = new Regex(
-            @"^(?<longShort>l|s)(?<leverage>[0-9]+)(?<sectorTicker>[a-zA-z]+[\w]*)$");
+            @"^(?=^.{4,10}$)(?<longShort>l|s)(?<leverage>[0-9]+)(?<sectorTicker>[a-zA-z]+[\w]*)$");
         public static readonly Regex CompositionSymbolRegex = new Regex(
-            @"^(?<longShort>l|s)(?<leverage>[0-9]+)(?<sectorTicker>[a-zA-z]+[\w]*)(?<dateTicker>[0-9][0-9](0[1-9]|1[0-2]))$");
+            @"^(?=^.{8,14}$)(?<longShort>l|s)(?<leverage>[0-9]+)(?<sectorTicker>[a-zA-z]+[\w]*)(?<dateTicker>[0-9][0-9](0[1-9]|1[0-2]))$");
 
         public static bool IsIndiceSymbol(this string candidateSymbol)
         {

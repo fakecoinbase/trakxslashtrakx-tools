@@ -1,7 +1,217 @@
-﻿@page "/Wrapping/wrap_unwrap_token"
+﻿@using System.ComponentModel.DataAnnotations
+@using System.ComponentModel.Design.Serialization
+@using System.Text.RegularExpressions
+@inject IMatToaster Toaster
+@page "/Wrapping/wrap_unwrap_token"
 
-<h3>WrapUnwrapToken</h3>
+<h3>Wrap or Unwrap Tokens</h3>
+<br />
+
+<br />
+<div>
+    <div class="box">
+        <div>
+            <div>Select an option below To wrap or unwrap tokens:<br /></div>
+            <label>
+                <input type="radio" id="wrap-tokens" value="@SelectedOption" checked="@myModel.Wrapping" @onclick="myModel.wrappingSelected" />Wrap
+                <input type="radio" id="unwrap-tokens" value="@SelectedOption" checked="@(!myModel.Wrapping)" @onclick="myModel.unwrappingSelected" />Unwrap
+            </label>
+        </div>
+    </div>
+    <EditForm Model="myModel" OnValidSubmit="Success" OnInvalidSubmit="Failure" class="box">
+        <DataAnnotationsValidator />
+        <div>
+            <div>
+                <div>Choose the Cryptocurrency To you want To @myModel.selectedChoice() :</div>
+                <select id="select-menu" @bind="myModel.Cryptocurrency" disabled="@myModel.Disabled">
+                    <option value="">--Select your crypto--</option>
+                    @foreach (string crypto in myModel.CryptocurrencyOptions())
+                    {
+                        <option value="@crypto" id="source-@crypto">@crypto</option>
+                    }
+                </select>
+            </div>
+            <div>
+                Exchanged Amount:
+                <input id="Amount" type="number" @bind="myModel.Amount" disabled="@myModel.Disabled" />
+                <span>@myModel.Cryptocurrency</span>
+            </div>
+            <div>
+                Sending address:
+                <input id="sending-address" pattern="@myModel.GetPatternFrom()" @bind="myModel.From" disabled="@myModel.Disabled" />
+            </div>
+            <div>
+                Receiving address:
+                <input id="receiving-address" pattern="@myModel.GetPatternTo()" @bind="myModel.To" disabled="@myModel.Disabled" />
+            </div>
+            <div>
+                <button id="button-submit" type="submit" disabled="@myModel.Disabled" @onclick="HandleOnSubmitClick">@myModel.selectedChoice()</button>
+                <input id="button-reset" type="button" @onclick="HandleOnResetClick" value="Reset"></input>
+            </div>
+        </div>
+        <ValidationSummary />
+    </EditForm>
+</div>
+
 
 @code {
+    public string SelectedOption { get; set; }
+    [Parameter] public EventCallback<MouseEventArgs> OnSubmitClick { get; set; }
+    [Parameter] public EventCallback<MouseEventArgs> OnResetClick { get; set; }
 
+    private Task HandleOnSubmitClick(MouseEventArgs args)
+    {
+        if (myModel.Disabled == false) return OnSubmitClick.InvokeAsync(args);
+        return null;
+    }
+
+    private Task HandleOnResetClick(MouseEventArgs args)
+    {
+        if (myModel.Disabled == false)
+        {
+            myModel.Wrapping = null;
+            myModel.Cryptocurrency = null;
+            myModel.Amount = null;
+            myModel.From = null;
+            myModel.To = null;
+            myModel.Disabled = true;
+            return OnResetClick.InvokeAsync(args);
+        }
+        return null;
+    }
+
+
+    /// <summary>
+    /// Display a "Success" pop up (using MatToaster) when submission succeed.
+    /// </summary>
+    /// <returns></returns>
+    async Task Success()
+    {
+        if (myModel.Disabled == false)
+        {
+            Toaster.Add("your transaction as been submitted successfully", MatToastType.Success, "Success !", "", config =>
+            {
+                config.ShowCloseButton = true;
+                config.ShowProgressBar = true;
+                config.MaximumOpacity = Convert.ToInt32("100");
+                config.RequireInteraction = true;
+            });
+        }
+    }
+    /// <summary>
+    /// Display an "Error" pop up (using MatToaster) when submission failed.
+    /// </summary>
+    /// <returns></returns>
+    async Task Failure()
+    {
+        if (myModel.Disabled == false)
+        {
+            Toaster.Add("Your transaction failed, please make sure that you filled correctly the form.", MatToastType.Danger, "Error !", "", config =>
+            {
+                config.ShowCloseButton = true;
+                config.ShowProgressBar = true;
+                config.MaximumOpacity = Convert.ToInt32("100");
+                config.RequireInteraction = true;
+            });
+        }
+    }
+
+
+    public SubmitModel myModel = new SubmitModel();
+
+    public class SubmitModel
+    {
+        private const string ehtereumAddressPattern = "^0x[a-fA-F0-9]{40}$";
+        private const string anyAddressPattern = ".*";
+
+        /// <summary>
+        /// Returns the correct address pattern (Regex) for the address From which the initial Cryptocurrency is send.
+        /// </summary>
+        /// <returns>address From pattern</returns>
+        public string GetPatternFrom()
+        {
+            if(Wrapping == false) return ehtereumAddressPattern;
+            return anyAddressPattern;
+        }
+        /// <summary>
+        /// Returns the correct address pattern (Regex) for the address To which the final Cryptocurrency is send.
+        /// </summary>
+        /// <returns>address To pattern</returns>
+        public string GetPatternTo()
+        {
+            if(Wrapping == false) return anyAddressPattern;
+            return ehtereumAddressPattern;
+        }
+
+        [Required]
+        public bool? Wrapping { get; set; }
+        [Required]
+        public string? Cryptocurrency { get; set; }
+        [Required]
+        public int? Amount { get; set; }
+        [Required]
+        public string? From { get; set; }
+        [Required]
+        public string? To { get; set; }
+        [Required]
+        public bool Disabled { get; set; }
+
+
+        public SubmitModel()
+        {
+            Disabled = true;
+        }
+
+        public SubmitModel(bool _wrapping, string _crypto, int _amount, string _from, string _to)
+        {
+            Wrapping = _wrapping; Cryptocurrency = _crypto; Amount = _amount; From = _from; To = _to;
+        }
+
+        /// <summary>
+        /// If the user click on the Wrapping button, bool "Wrapping" is set To TRUE. We also reinitialize the Cryptocurrency.
+        /// </summary>
+        public void wrappingSelected()
+        {
+            Wrapping = true;
+            Disabled = false;
+            Cryptocurrency = null;
+        }
+        /// <summary>
+        /// If the user click on the unwrapping button, bool "Wrapping" is set To FALSE. We also reinitialize the Cryptocurrency.
+        /// </summary>
+        public void unwrappingSelected()
+        {
+            Wrapping = false;
+            Disabled = false;
+            Cryptocurrency = null;
+        }
+        /// <summary>
+        /// Simply returns a string "Wrap" or "Unwrap" display in submit button, according To the option selected.
+        /// </summary>
+        /// <returns></returns>
+        public string selectedChoice()
+        {
+            if(Wrapping == null) return "Wrap/Unwrap";
+            return (bool)Wrapping ? "Wrap" : "Unwrap";
+        }
+
+        public string[] wrappingOptions = new[]
+        {
+            "BTC", "LTC", "XRP", "XTZ"
+        };
+        public string[] unwrappingOptions = new[]
+        {
+            "wBTC", "wLTC", "wXRP", "wXTZ"
+        };
+
+        /// <summary>
+        /// Returns an array of strings of the cryptocurrencies available for wrap/unwrap (according To the option selected upwind)
+        /// </summary>
+        /// <returns></returns>
+        public string[] CryptocurrencyOptions()
+        {
+            if (Disabled || Wrapping == null) return new[] { "Error: select an option above" };
+            return (bool)Wrapping ? wrappingOptions : unwrappingOptions;
+        }
+    }
 }

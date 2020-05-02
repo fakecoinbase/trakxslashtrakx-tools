@@ -77,10 +77,11 @@ namespace Trakx.Tests.Tools
 
             serviceCollection.AddMessariClient();
             serviceCollection.AddCryptoCompareClient();
+            serviceCollection.AddSingleton<IApiDetailsProvider>(new ApiDetailsProvider(Secrets.CryptoCompareApiKey));
             serviceCollection.AddCoinGeckoClient();
             serviceCollection.AddMemoryCache();
             serviceCollection.AddEthereumInteraction(Secrets.InfuraApiKey);
-
+            
             var serviceProvider = serviceCollection.BuildServiceProvider();
             _coinGeckoClient = serviceProvider.GetService<ICoinGeckoClient>();
             _cryptoCompareClient = serviceProvider.GetService<ICryptoCompareClient>();
@@ -91,7 +92,7 @@ namespace Trakx.Tests.Tools
         public async Task GetCryptoCompareHistoricalMarketCaps()
         {
             var britishZone = TimeZoneInfo.FindSystemTimeZoneById("GMT Standard Time");
-            var asOf = TimeZoneInfo.ConvertTimeToUtc(new DateTime(2020, 03, 31, 18, 00, 00), britishZone);
+            var asOf = TimeZoneInfo.ConvertTimeToUtc(new DateTime(2020, 04, 30, 18, 00, 00), britishZone);
             
             var symbols = SymbolsByIndice.Values.SelectMany(v => v).Distinct().ToList();
 

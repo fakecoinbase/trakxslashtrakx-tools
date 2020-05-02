@@ -5,6 +5,7 @@ using System.Threading.Tasks;
 using FluentAssertions;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.DependencyInjection;
+using Nethereum.Web3;
 using Trakx.Common.Ethereum;
 using Trakx.Common.Extensions;
 using Trakx.Common.Sources.Coinbase;
@@ -42,16 +43,8 @@ namespace Trakx.Tests.Tools
 
         [Theory(Skip = "not a test")]
         //[Theory]
-        //[InlineData("l1amg2001")]
-        //[InlineData("l1cex2001")]
-        //[InlineData("l1dex2001")]
-        //[InlineData("l1len2001")]
-        //[InlineData("l1sca2001")]
-        //[InlineData("l1amg2003")]
-        //[InlineData("l1cex2003")]
-        //[InlineData("l1dex2003")]
-        //[InlineData("l1len2003")]
-        [InlineData("l1sca2003")]
+        [InlineData("l1cex2005")]
+
         public async Task CreateCompositionOnChain(string compositionSymbol)
         {
             var compositionCreator = _serviceProvider.GetRequiredService<ICompositionCreator>();
@@ -89,11 +82,7 @@ namespace Trakx.Tests.Tools
 
         [Theory(Skip = "not a test")]
         //[Theory]
-        //[InlineData("l1amg2001")]
-        //[InlineData("l1cex2001")]
-        //[InlineData("l1dex2001")]
-        //[InlineData("l1len2001")]
-        [InlineData("l1sca2001")]
+        [InlineData("l1mc10erc2004")]
         public async Task CreateIndiceFromCompositionOnChain(string compositionSymbol)
         {
             var indiceCreator = _serviceProvider.GetRequiredService<IIndiceCreator>();
@@ -106,6 +95,30 @@ namespace Trakx.Tests.Tools
             _output.WriteLine(result);
 
             result.Should().NotBeNullOrEmpty();
+        }
+
+        [Theory(Skip = "not a test")]
+        //[Theory]
+        [InlineData("l1sca2003")]
+        public async Task RebalanceIndiceOnChain(string newCompositionSymbol)
+        {
+            var composition = await _fixture.Context
+                .IndiceCompositions.Include(c => c.IndiceDefinitionDao)
+                .FirstAsync(c => c.Symbol == newCompositionSymbol);
+
+            var web3 = _serviceProvider.GetRequiredService<IWeb3>();
+            var logger = _output.ToLogger<IndiceRebalancer>();
+
+            var rebalancer = new IndiceRebalancer(composition.IndiceDefinition, web3, logger);
+
+            var rebalancingProposal = await rebalancer.ProposeRebalancing(composition).ConfigureAwait(false);
+            _output.WriteLine(rebalancingProposal);
+
+            var rebalancingStart = await rebalancer.StartRebalancing().ConfigureAwait(false);
+            _output.WriteLine(rebalancingStart);
+
+            var rebalancingSettle = await rebalancer.SettleRebalancing().ConfigureAwait(false);
+            _output.WriteLine(rebalancingSettle);
         }
     }
 }
