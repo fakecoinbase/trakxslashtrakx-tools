@@ -52,7 +52,10 @@ namespace Trakx.Tests.Tools
             targetDirectory.Create();
 
             var contracts = new Dictionary<string, string>
-                {{"RebalancingSetToken", "0x7b0ef33d7d91f4d0f7e49e72fbe50d27522cf857"}};
+            {
+                { "RebalancingSetTokenV3", "0x26c477C0e431C2AB3d82F59d1D350323AF15b795" },
+                { "RebalancingSetTokenV3Factory", "0xA367A2513Cbd5be1c75a745914521a93E011549c"},
+            };
             foreach (var addressByName in contracts)
             {
                 var address = addressByName.Value;

@@ -7,7 +7,7 @@ using Microsoft.Extensions.Logging;
 using Nethereum.Web3;
 using Newtonsoft.Json;
 using Trakx.Common.Interfaces.Indice;
-using Trakx.Contracts.RebalancingSetToken;
+using Trakx.Contracts.Set.RebalancingSetToken;
 
 namespace Trakx.Common.Ethereum
 {

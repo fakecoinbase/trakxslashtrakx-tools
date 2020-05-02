@@ -1,5 +1,4 @@
 ﻿using System;
-using Microsoft.Extensions.Configuration;
 
 namespace Trakx.MarketData.Collector.CryptoCompare
 {
@@ -14,7 +13,7 @@ namespace Trakx.MarketData.Collector.CryptoCompare
         public Uri WebSocketEndpoint { get; }
         public string ApiKey { get; }
         
-        public ApiDetailsProvider(IConfiguration configuration)
+        public ApiDetailsProvider()
         {
             ApiKey = Environment.GetEnvironmentVariable("CRYPTOCOMPARE_API_KEY");
             WebSocketEndpoint = new Uri($"wss://streamer.cryptocompare.com/v2?api_key={ApiKey}");

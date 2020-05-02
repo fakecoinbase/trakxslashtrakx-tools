@@ -43,7 +43,8 @@ namespace Trakx.Tests.Tools
 
         [Theory(Skip = "not a test")]
         //[Theory]
-        [InlineData("l1mc10erc2004")]
+        [InlineData("l1cex2005")]
+
         public async Task CreateCompositionOnChain(string compositionSymbol)
         {
             var compositionCreator = _serviceProvider.GetRequiredService<ICompositionCreator>();

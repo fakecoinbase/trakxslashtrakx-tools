@@ -1,13 +1,13 @@
-using System.Threading.Tasks;
 using System.Collections.Generic;
 using System.Numerics;
-using Nethereum.Web3;
-using Nethereum.RPC.Eth.DTOs;
-using Nethereum.Contracts.ContractHandlers;
 using System.Threading;
-using Trakx.Contracts.RebalancingSetToken.ContractDefinition;
+using System.Threading.Tasks;
+using Nethereum.Contracts.ContractHandlers;
+using Nethereum.RPC.Eth.DTOs;
+using Nethereum.Web3;
+using Trakx.Contracts.Set.RebalancingSetToken.ContractDefinition;
 
-namespace Trakx.Contracts.RebalancingSetToken
+namespace Trakx.Contracts.Set.RebalancingSetToken
 {
     public partial class RebalancingSetTokenService
     {
