@@ -1,6 +1,7 @@
 ﻿@using System.ComponentModel.DataAnnotations
 @using System.ComponentModel.Design.Serialization
 @using System.Text.RegularExpressions
+@using System.Threading
 @inject IMatToaster Toaster
 @page "/Wrapping/wrap_unwrap_token"
 
@@ -13,8 +14,8 @@
         <div>
             <div>Select an option below To wrap or unwrap tokens:<br /></div>
             <label>
-                <input type="radio" id="wrap-tokens" value="@SelectedOption" checked="@myModel.Wrapping" @onclick="myModel.wrappingSelected" />Wrap
-                <input type="radio" id="unwrap-tokens" value="@SelectedOption" checked="@(!myModel.Wrapping)" @onclick="myModel.unwrappingSelected" />Unwrap
+                <input type="radio" id="wrap-tokens" checked="@myModel.Wrapping" @onclick="myModel.wrappingSelected" />Wrap
+                <input type="radio" id="unwrap-tokens" checked="@(!myModel.Wrapping)" @onclick="myModel.unwrappingSelected" />Unwrap
             </label>
         </div>
     </div>
@@ -22,8 +23,8 @@
         <DataAnnotationsValidator />
         <div>
             <div>
-                <div>Choose the Cryptocurrency To you want To @myModel.selectedChoice() :</div>
-                <select id="select-menu" @bind="myModel.Cryptocurrency" disabled="@myModel.Disabled">
+                <div>Choose the Currency you want to @myModel.selectedChoice() :</div>
+                <select id="select-menu" @bind="myModel.FromCurrency" disabled="@myModel.Disabled">
                     <option value="">--Select your crypto--</option>
                     @foreach (string crypto in myModel.CryptocurrencyOptions())
                     {
@@ -32,17 +33,22 @@
                 </select>
             </div>
             <div>
-                Exchanged Amount:
-                <input id="Amount" type="number" @bind="myModel.Amount" disabled="@myModel.Disabled" />
-                <span>@myModel.Cryptocurrency</span>
+                Amount you want to exchange:
+                <input id="Amount" type="number" @bind="myModel.Amount" disabled="@myModel.Disabled"/>
+                <span>@myModel.FromCurrency</span>
             </div>
             <div>
-                Sending address:
-                <input id="sending-address" pattern="@myModel.GetPatternFrom()" @bind="myModel.From" disabled="@myModel.Disabled" />
+                Address where the @myModel.FromCurrency will be send:
+                <input id="app-receiving-address" value="@myModel.AppReceivingAddress" readonly />
+
             </div>
             <div>
-                Receiving address:
-                <input id="receiving-address" pattern="@myModel.GetPatternTo()" @bind="myModel.To" disabled="@myModel.Disabled" />
+                Address from which you send the @myModel.FromCurrency:
+                <input id="user-sending-address" pattern="@myModel.GetPatternFrom()" @bind="myModel.SendingAddress" disabled="@myModel.Disabled" />
+            </div>
+            <div>
+                Address where you will receive the wrapped @myModel.FromCurrency:
+                <input id="user-receiving-address" pattern="@myModel.GetPatternTo()" @bind="myModel.ReceivingAddress" disabled="@myModel.Disabled" />
             </div>
             <div>
                 <button id="button-submit" type="submit" disabled="@myModel.Disabled" @onclick="HandleOnSubmitClick">@myModel.selectedChoice()</button>
@@ -55,7 +61,7 @@
 
 
 @code {
-    public string SelectedOption { get; set; }
+
     [Parameter] public EventCallback<MouseEventArgs> OnSubmitClick { get; set; }
     [Parameter] public EventCallback<MouseEventArgs> OnResetClick { get; set; }
 
@@ -70,10 +76,11 @@
         if (myModel.Disabled == false)
         {
             myModel.Wrapping = null;
-            myModel.Cryptocurrency = null;
+            myModel.FromCurrency = null;
+            myModel.ToCurrency = null;
             myModel.Amount = null;
-            myModel.From = null;
-            myModel.To = null;
+            myModel.SendingAddress = null;
+            myModel.ReceivingAddress = null;
             myModel.Disabled = true;
             return OnResetClick.InvokeAsync(args);
         }
@@ -125,18 +132,18 @@
         private const string anyAddressPattern = ".*";
 
         /// <summary>
-        /// Returns the correct address pattern (Regex) for the address From which the initial Cryptocurrency is send.
+        /// Returns the correct pattern (Regex) for the user sending address for the FromCurrency.
         /// </summary>
-        /// <returns>address From pattern</returns>
+        /// <returns>user sending address pattern</returns>
         public string GetPatternFrom()
         {
             if(Wrapping == false) return ehtereumAddressPattern;
             return anyAddressPattern;
         }
         /// <summary>
-        /// Returns the correct address pattern (Regex) for the address To which the final Cryptocurrency is send.
+        /// Returns the correct pattern (Regex) for the user receiving address for the ToCurrency.
         /// </summary>
-        /// <returns>address To pattern</returns>
+        /// <returns>user receiving address pattern</returns>
         public string GetPatternTo()
         {
             if(Wrapping == false) return anyAddressPattern;
@@ -146,44 +153,53 @@
         [Required]
         public bool? Wrapping { get; set; }
         [Required]
-        public string? Cryptocurrency { get; set; }
+        public string? FromCurrency { get; set; }
+        //todo: have a Get request initialing the ToCurrency according to the wrap/unwrap FromCurrency [Required] 
+        public string? ToCurrency { get; set; }
         [Required]
         public int? Amount { get; set; }
         [Required]
-        public string? From { get; set; }
+        public string? SendingAddress { get; set; }
         [Required]
-        public string? To { get; set; }
+        public string? ReceivingAddress { get; set; }
         [Required]
         public bool Disabled { get; set; }
+
+        public string AppReceivingAddress { get; set; }
+
 
 
         public SubmitModel()
         {
             Disabled = true;
+            AppReceivingAddress = "Coinbase-custody-address";
+
         }
 
         public SubmitModel(bool _wrapping, string _crypto, int _amount, string _from, string _to)
         {
-            Wrapping = _wrapping; Cryptocurrency = _crypto; Amount = _amount; From = _from; To = _to;
+            Wrapping = _wrapping; FromCurrency = _crypto; Amount = _amount; SendingAddress = _from; ReceivingAddress = _to;
         }
 
         /// <summary>
-        /// If the user click on the Wrapping button, bool "Wrapping" is set To TRUE. We also reinitialize the Cryptocurrency.
+        /// If the user click on the Wrapping button, bool "Wrapping" is set To TRUE. We also reinitialize FromCurrency and ToCurrency.
         /// </summary>
         public void wrappingSelected()
         {
             Wrapping = true;
             Disabled = false;
-            Cryptocurrency = null;
+            FromCurrency = null;
+            ToCurrency = null;
         }
         /// <summary>
-        /// If the user click on the unwrapping button, bool "Wrapping" is set To FALSE. We also reinitialize the Cryptocurrency.
+        /// If the user click on the unwrapping button, bool "Wrapping" is set To FALSE. We also reinitialize FromCurrency and ToCurrency.
         /// </summary>
         public void unwrappingSelected()
         {
             Wrapping = false;
             Disabled = false;
-            Cryptocurrency = null;
+            FromCurrency = null;
+            ToCurrency = null;
         }
         /// <summary>
         /// Simply returns a string "Wrap" or "Unwrap" display in submit button, according To the option selected.
