@@ -18,8 +18,8 @@ namespace Trakx.IndiceManager.Client.Tests.Wrapping
         private readonly MockCreator _mockCreator;
         private readonly IRenderedComponent<WrapUnwrapToken> _component;
         private IHtmlInputElement AmountInput => (IHtmlInputElement) _component.FindElementWithId("input", "Amount");
-        private IHtmlInputElement SendingAddressInput => (IHtmlInputElement)_component.FindElementWithId("input", "sending-address");
-        private IHtmlInputElement ReceivingAddressInput => (IHtmlInputElement)_component.FindElementWithId("input", "receiving-address");
+        private IHtmlInputElement SendingAddressInput => (IHtmlInputElement)_component.FindElementWithId("input", "user-sending-address");
+        private IHtmlInputElement ReceivingAddressInput => (IHtmlInputElement)_component.FindElementWithId("input", "user-receiving-address");
         private IElement WrapRadioButton => _component.FindElementWithId("input", "wrap-tokens");
         private IElement ResetButton => _component.FindElementWithId("input", "button-reset");
         private IElement UnwrapRadioButton => _component.FindElementWithId("input", "unwrap-tokens");
@@ -103,11 +103,11 @@ namespace Trakx.IndiceManager.Client.Tests.Wrapping
             //getting an instance of SubmitModel class of WrapUnwrapToken.razor
             var submitModelInstance = _component.Instance.myModel;
 
-            //by clicking on the "wrap" button, only tokens From other blockchains than ethereum should be proposed (BTC, LTC etc...)
+            //by clicking on the "wrap" button, only tokens from other blockchains than ethereum should be proposed (BTC, LTC etc...)
             WrapRadioButton.Click();
             SourceCryptocurrencyOptions.Select(o => o.Text).Should().BeEquivalentTo(submitModelInstance.wrappingOptions);
 
-            //by clicking on the "unwrap" button, only tokens From on ethereum should be proposed (wrapped tokens)
+            //by clicking on the "unwrap" button, only tokens based on ethereum should be proposed (wrapped tokens)
             UnwrapRadioButton.Click();
             SourceCryptocurrencyOptions.Select(o => o.Text).Should().BeEquivalentTo(submitModelInstance.unwrappingOptions);
 
@@ -125,7 +125,7 @@ namespace Trakx.IndiceManager.Client.Tests.Wrapping
             //1) We test for "wrapping" option
             WrapRadioButton.Click();
 
-            //todo: find a way To select an option 
+            //todo: find a way to select an option 
             var selectMenu = SelectMenu;
             var btcOption = (IHtmlOptionElement)_component.FindElementWithId("option", "source-BTC");
             selectMenu.Options.SelectedIndex = selectMenu.Options.IndexOf(btcOption);
@@ -144,8 +144,8 @@ namespace Trakx.IndiceManager.Client.Tests.Wrapping
             //...should be correctly saved on model
             //todo: add test for myModel.cryptocurrency
             myModel.Amount.Should().Be(expectedAmount);
-            myModel.From.Should().Be(expectedBtcAddress);
-            myModel.To.Should().Be(expectedEthAddress);
+            myModel.SendingAddress.Should().Be(expectedBtcAddress);
+            myModel.ReceivingAddress.Should().Be(expectedEthAddress);
 
 
             //2) We reset the form and we verify that every model's variables are reset
@@ -158,8 +158,8 @@ namespace Trakx.IndiceManager.Client.Tests.Wrapping
 
             //todo: add test for myModel.cryptocurrency
             myModel.Amount.Should().BeNull();
-            myModel.From.Should().BeNullOrEmpty();
-            myModel.To.Should().BeNullOrEmpty();
+            myModel.SendingAddress.Should().BeNullOrEmpty();
+            myModel.ReceivingAddress.Should().BeNullOrEmpty();
 
 
             //3) We test for "unwrapping" option
@@ -173,8 +173,8 @@ namespace Trakx.IndiceManager.Client.Tests.Wrapping
             //...should be correctly saved on model
             //todo: add test for myModel.cryptocurrency
             myModel.Amount.Should().Be(expectedAmount);
-            myModel.From.Should().Be(expectedEthAddress);
-            myModel.To.Should().Be(expectedBtcAddress);
+            myModel.SendingAddress.Should().Be(expectedEthAddress);
+            myModel.ReceivingAddress.Should().Be(expectedBtcAddress);
         }
 
         public void click_on_submit_form_should_failed_if_not_all_boxes_are_not_correctly_filled_and_succeed_if_everything_is_ok()
