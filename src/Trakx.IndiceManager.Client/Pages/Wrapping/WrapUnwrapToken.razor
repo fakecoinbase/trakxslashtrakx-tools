@@ -96,13 +96,7 @@
     {
         if (myModel.Disabled == false)
         {
-            Toaster.Add("your transaction as been submitted successfully", MatToastType.Success, "Success !", "", config =>
-            {
-                config.ShowCloseButton = true;
-                config.ShowProgressBar = true;
-                config.MaximumOpacity = Convert.ToInt32("100");
-                config.RequireInteraction = true;
-            });
+            Toaster.Add("your transaction as been submitted successfully", MatToastType.Success, "Success !");
         }
     }
     /// <summary>
@@ -113,13 +107,7 @@
     {
         if (myModel.Disabled == false)
         {
-            Toaster.Add("Your transaction failed, please make sure that you filled correctly the form.", MatToastType.Danger, "Error !", "", config =>
-            {
-                config.ShowCloseButton = true;
-                config.ShowProgressBar = true;
-                config.MaximumOpacity = Convert.ToInt32("100");
-                config.RequireInteraction = true;
-            });
+            Toaster.Add("Your transaction failed, please make sure that you filled correctly the form.", MatToastType.Danger, "Error !");
         }
     }
 

@@ -33,6 +33,10 @@ namespace Trakx.IndiceManager.Client
                 config.ShowCloseButton = true;
                 config.MaximumOpacity = 95;
                 config.VisibleStateDuration = 3000;
+                config.ShowCloseButton = true;
+                config.ShowProgressBar = true;
+                config.MaximumOpacity = Convert.ToInt32("100");
+                config.RequireInteraction = true;
             });
 
             await builder.Build().RunAsync();

@@ -1,7 +1,192 @@
-﻿@page "/IndiceComposition/indice_creation"
+﻿@using System.ComponentModel.DataAnnotations
+@using System.Globalization
+@using System.Reflection
+@using System.Runtime.CompilerServices
+@page "/IndiceComposition/indice_creation"
 
-<h3>Indice Creation</h3>
+
+<h1>Indice Creation</h1>
+<div>
+    <EditForm id="edit-form" Model="myModel" OnValidSubmit="NavCalculationSuccess" OnInvalidSubmit="NavCalculationFailure">
+        <DataAnnotationsValidator />
+        <ValidationSummary />
+        <div>
+            <div id="box-indice-main-features">
+                <h2>Indice main features</h2>
+                <label>Name: </label>&nbsp;<input id="input-indice-name" @bind="myModel.IndiceName" />
+                <label>Symbol: </label>&nbsp;<input id="input-indice-symbol" @bind="myModel.IndiceSymbol" />
+                <label>Targeted NAV: </label>&nbsp;<input id="input-indice-targeted-nav" type="number" @bind="myModel.TargetedNav" /><label>USDc</label>
+            </div>
+            <div id="box-indice-composition">
+                <div>
+                    <h2>Indice composition</h2>
+                    <label>Equal weight:</label>&nbsp;<input id="input-equal-weight" type="checkbox" @bind="myModel.EqualWeights" /><br />
+                    <label>Weight unit:</label>
+                    <input id="radio-weight-in-percentage" type="radio"
+                           checked="@(myModel.WeightUnit == IndiceCreationModel.WeightUnitType.Percentage)"
+                           @onclick="(() => myModel.WeightUnit = IndiceCreationModel.WeightUnitType.Percentage)" />
+                    <label> Percentage</label>
+                    <input id="radio-weight-in-usdc" type="radio"
+                           checked="@(myModel.WeightUnit == IndiceCreationModel.WeightUnitType.USDc)"
+                           @onclick="(() => myModel.WeightUnit = IndiceCreationModel.WeightUnitType.USDc)" />
+                    <label> USDc</label>
+                </div>
+                <div>
+                    <ol>
+                        @foreach (var element in myModel.ComponentList)
+                        {
+                            <li>
+                                Symbol: <strong>@element.Symbol</strong> Weight: <strong>@element.Weight</strong>
+                            </li>
+                        }
+                    </ol>
+                    <label>Symbol:</label>&nbsp;<input id="input-add-erc20-symbol" @bind="NewComponent.Symbol" />
+                    <label>Weight: </label>&nbsp;<input id="input-add-erc20-weight" @bind="NewComponent.Weight" />
+
+                    <input id="button-add-new-erc20" type="button" value="Add a new ERC20 token"
+                           @onclick="HandleAddErc20" />
+                    <br />
+
+                </div>
+                <button id="button-submit-calculate-nav" type="submit" @onclick="HandleOnSubmitClick" disabled="@atLeastOneComponent">Calculate NAV</button>
+            </div>
+        </div>
+    </EditForm>
+    <br /><br /><br />
+    <div id="box-indice-calculated-weight-and-nav">
+        <div>
+            @*todo: graphic of the weight*@
+        </div>
+        <div>
+            <input value="Calculated NAV: " readonly />
+        </div>
+        <div>
+            <button>Create Indice</button>
+            <button>Save Indice</button>
+        </div>
+    </div>
+</div>
 
 @code {
+
+    public IndiceCreationModel myModel = new IndiceCreationModel();
+    public IndiceCreationModel.ComponentModel NewComponent = new IndiceCreationModel.ComponentModel();
+    private bool atLeastOneComponent = true;
+
+    [Parameter] public EventCallback<MouseEventArgs> OnCalculateNavSubmitClick { get; set; }
+
+    private Task HandleOnSubmitClick(MouseEventArgs args)
+    {
+        return OnCalculateNavSubmitClick.InvokeAsync(args);
+    }
+
+    #region MatToasters
+
+    [Inject]
+    public IMatToaster Toaster { get; set; }
+
+    public string MessageNavCalculation = "Your indice composition is correct, see on the right of the screen the calculated nav and weight. " +
+                                      "And then if the suggestion fits you, you can save or create your indice.";
+
+    public string MessageError = "An error happened, please make sure that you filled correctly the form.";
+
+    public string MessageAddErc20Succeed = "The ERC20 was successfully add to your indice composition !";
+
+    public string MessageErrorErcIsNotValid = "Sorry but the ERC symbol and/or weight are not correctly filled.";
+
+    public string MessageErrorErcAlreadyExists = "Sorry but this ERC is already in the composition, if you want to change his weight you can delete " +
+                                                 "delete it and then add it with an new weight.";
+
+
+    public async Task NavCalculationSuccess()
+    {
+        Toaster.Add(MessageNavCalculation, MatToastType.Success, "Success");
+    }
+
+    public async Task NavCalculationFailure()
+    {
+        Toaster.Add(MessageError, MatToastType.Danger, "Error");
+    }
+
+    public async Task HandleAddErc20()
+    {
+        atLeastOneComponent = false;
+        bool componentIsValid = NewComponent.IsValid();
+        bool symbolAlreadyInList = myModel.ComponentList.Any(o => o.Symbol == NewComponent.Symbol);
+
+        if (componentIsValid && !symbolAlreadyInList)
+        {
+            myModel.AddNewComponentToList(NewComponent);
+            Toaster.Add(MessageAddErc20Succeed, MatToastType.Success, "Success");
+        }
+        else if(!componentIsValid)
+        {
+            Toaster.Add(MessageErrorErcIsNotValid, MatToastType.Danger, "Error");
+        }
+        else
+        {
+            Toaster.Add(MessageErrorErcAlreadyExists, MatToastType.Danger, "Error");
+        }
+        //todo: special error when the weight unit is in percentage and the total % > 100
+    }
+
+    #endregion
+
+    #region IndiceCreationModel class
+
+    public class IndiceCreationModel
+    {
+        public enum WeightUnitType { Percentage, USDc }
+
+        public struct ComponentModel
+        {
+            [Required]
+            public string Symbol { get; set; }
+            [Required]
+            public decimal? Weight { get; set; }
+
+            public ComponentModel(string symbol, decimal weight)
+            {
+                Symbol = symbol; Weight = weight;
+            }
+
+            public bool IsValid()
+            {
+                if (!String.IsNullOrEmpty(Symbol) && Weight != null && Weight != 0)
+                    return true;
+                return false;
+            }
+        }
+
+        [Required]
+        public string? IndiceName { get; set; }
+        [Required]
+        public string? IndiceSymbol { get; set; }
+        [Required]
+        public decimal? TargetedNav { get; set; }
+        [Required]
+        public bool EqualWeights { get; set; }
+        [Required]
+        public WeightUnitType WeightUnit { get; set; }
+
+        public List<ComponentModel> ComponentList = new List<ComponentModel>();
+
+
+        public IndiceCreationModel()
+        {
+            IndiceName = null; IndiceSymbol = null; EqualWeights = false; TargetedNav = null; WeightUnit = WeightUnitType.Percentage;
+        }
+
+        public void AddNewComponentToList(ComponentModel newComponent)
+        {
+            if (!ComponentList.Any(o => o.Symbol == newComponent.Symbol) && newComponent.IsValid())
+                ComponentList.Add(new ComponentModel(newComponent.Symbol.ToUpper(), (decimal) newComponent.Weight));
+
+        }
+
+    }
+
+    #endregion
+
 
 }
