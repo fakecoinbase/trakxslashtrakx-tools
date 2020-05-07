@@ -1,11 +1,7 @@
-﻿using System;
-using System.Threading.Tasks;
+﻿using System.Threading.Tasks;
 using FluentAssertions;
-using Trakx.Common.Core;
 using Trakx.Common.Sources.CoinGecko;
 using Trakx.IndiceManager.Server.Managers;
-using static System.Environment;
-using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
 using Trakx.Common.Ethereum;
 using Trakx.Common.Sources.Web3.Client;
@@ -14,7 +10,6 @@ using Trakx.Persistence.DAO;
 using Trakx.Tests.Tools;
 using Trakx.Tests.Unit.Models;
 using Xunit;
-using Xunit.Abstractions;
 
 
 namespace Trakx.IndiceManager.Server.Tests.Integration.Managers
@@ -33,7 +28,7 @@ namespace Trakx.IndiceManager.Server.Tests.Integration.Managers
             var serviceProvider = serviceCollection.BuildServiceProvider();
             var coinGeckoClient = serviceProvider.GetRequiredService<ICoinGeckoClient>();
             var web3 = serviceProvider.GetRequiredService<IWeb3Client>();
-            var fixture = new DbContextFixture();
+            var fixture = new SeededDbContextFixture();
             IndiceRepositoryContext context = fixture.Context;
 
             _componentInformationRetriever = new ComponentInformationRetriever(context, web3,coinGeckoClient);

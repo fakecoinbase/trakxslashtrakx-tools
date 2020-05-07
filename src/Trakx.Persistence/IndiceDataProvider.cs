@@ -167,5 +167,42 @@ namespace Trakx.Persistence
                 .FirstAsync(cancellationToken);
             return composition;
         }
+
+        /// <inheritdoc />
+        public async Task<List<IIndiceComposition>?> GetAllCompositionForIndice(string indiceSymbol) 
+        {
+            var indice = await _dbContext.IndiceDefinitions.FirstOrDefaultAsync(i => i.Symbol == indiceSymbol);
+
+            if (indice == null)
+                return null;
+
+            return await _dbContext.IndiceCompositions.Where(c => c.IndiceDefinitionDao == indice)
+                .ToListAsync<IIndiceComposition>();
+        }
+
+        /// <inheritdoc />
+        public async Task<List<IIndiceDefinition>> GetAllIndices()
+        {
+            var indices = await _dbContext.IndiceDefinitions.ToListAsync<IIndiceDefinition>();
+            return indices;
+        } 
+
+        /// <inheritdoc />
+        public async Task<bool> TryToGetIndiceByAddress(string? indiceAddress)
+        {
+            if (await _dbContext.IndiceDefinitions.FirstOrDefaultAsync(i => i.Address == indiceAddress) != null)
+                return true;
+
+            return false;
+        } 
+
+        /// <inheritdoc />
+        public async Task<bool> TryToGetCompositionByAddress(string compositionAddress)
+        {
+            if (await _dbContext.IndiceCompositions.FirstOrDefaultAsync(c => c.Address == compositionAddress) != null)
+                return true;
+
+            return false;
+        } 
     }
 }

@@ -23,5 +23,10 @@ namespace Trakx.IndiceManager.Server.Models
         public string Address { get; set; }
         public string Symbol { get; set; }
         public decimal? Quantity { get; set; }
+        public string? Name { get; set; }
+
+        public string? CoinGeckoId { get; set; }
+
+        public ushort Decimals { get; set; }
     }
 }

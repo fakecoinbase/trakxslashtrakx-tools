@@ -16,7 +16,7 @@ using Xunit.Abstractions;
 
 namespace Trakx.Tests.Tools
 {
-    [Collection(nameof(DbContextCollection))]
+    [Collection(nameof(SeededDbContextCollection))]
     public class CryptoCompareComposer
     {
         private const string QuoteSymbol = "USDC";
@@ -24,7 +24,7 @@ namespace Trakx.Tests.Tools
         private readonly ITestOutputHelper _output;
         private readonly ICryptoCompareClient _cryptoCompareClient;
         private readonly ICoinGeckoClient _coinGeckoClient;
-        private readonly InMemoryIndiceRepositoryContext _dbContext;
+        private readonly SeededInMemoryIndiceRepositoryContext _dbContext;
 
 
         private readonly Dictionary<string, List<string>> SymbolsByIndice =
@@ -69,7 +69,7 @@ namespace Trakx.Tests.Tools
         };
 
 
-        public CryptoCompareComposer(DbContextFixture fixture, ITestOutputHelper output)
+        public CryptoCompareComposer(SeededDbContextFixture fixture, ITestOutputHelper output)
         {
             _output = output;
             _dbContext = fixture.Context;

@@ -6,18 +6,17 @@ using Xunit;
 
 namespace Trakx.Tests.Unit.Models
 {
-    public sealed class DbContextFixture : IDisposable
+    public sealed class SeededDbContextFixture : IDisposable
     {
-        public InMemoryIndiceRepositoryContext Context { get; private set; }
+        public SeededInMemoryIndiceRepositoryContext Context { get; private set; }
         
-
-        public DbContextFixture()
+        public SeededDbContextFixture()
         {
             var serviceCollection = new ServiceCollection();
             serviceCollection.AddMappings();
             var serviceProvider = serviceCollection.BuildServiceProvider();
             var mapper = serviceProvider.GetRequiredService<IMapper>();
-            Context = new InMemoryIndiceRepositoryContext(mapper);
+            Context = new SeededInMemoryIndiceRepositoryContext(mapper);
         }
 
         #region IDisposable
@@ -31,8 +30,8 @@ namespace Trakx.Tests.Unit.Models
         #endregion
     }
 
-    [CollectionDefinition(nameof(DbContextCollection))]
-    public sealed class DbContextCollection : ICollectionFixture<DbContextFixture>
+    [CollectionDefinition(nameof(SeededDbContextCollection))]
+    public sealed class SeededDbContextCollection : ICollectionFixture<SeededDbContextFixture>
     {
         //nothing there 🤐
     }

@@ -1,5 +1,4 @@
-﻿using System;
-using System.Collections.Generic;
+﻿using System.Collections.Generic;
 using System.Threading.Tasks;
 using FluentAssertions;
 using Microsoft.AspNetCore.Mvc;
@@ -20,13 +19,15 @@ namespace Trakx.IndiceManager.Server.Tests.Unit.Controllers
         private readonly IndiceCreationController _controller;
         private readonly MockCreator _mockCreator;
         private readonly IIndiceInformationRetriever _indiceRetriever;
+        private readonly IIndiceDatabaseWriter _indiceWriter;
 
         public IndiceCreationControllerTests()
         {
             _componentRetriever = Substitute.For<IComponentInformationRetriever>();
             _mockCreator = new MockCreator();
             _indiceRetriever = Substitute.For<IIndiceInformationRetriever>();
-            _controller = new IndiceCreationController(_componentRetriever,_indiceRetriever);
+            _indiceWriter = Substitute.For<IIndiceDatabaseWriter>();
+            _controller = new IndiceCreationController(_componentRetriever,_indiceRetriever,_indiceWriter);
             
         }
 
@@ -77,9 +78,11 @@ namespace Trakx.IndiceManager.Server.Tests.Unit.Controllers
         [Fact]
         public async Task GetAllIndices_should_Send_A_List_Of_Detailed_Indices()
         {
-            var listIndices = new List<IIndiceDefinition>();
-            listIndices.Add(_mockCreator.GetRandomIndiceDefinition());
-            listIndices.Add(_mockCreator.GetRandomIndiceDefinition());
+            var listIndices = new List<IIndiceDefinition>
+            {
+                _mockCreator.GetRandomIndiceDefinition(),
+                _mockCreator.GetRandomIndiceDefinition()
+            };
             _indiceRetriever.GetAllIndicesFromDatabase().ReturnsForAnyArgs(listIndices);
 
             var result = await _controller.GetAllIndices();
@@ -94,7 +97,7 @@ namespace Trakx.IndiceManager.Server.Tests.Unit.Controllers
         [Fact]
         public async Task GetAllIndices_should_Send_Not_Found_If_Database_Is_Empty()
         {
-            _indiceRetriever.GetAllIndicesFromDatabase().ReturnsForAnyArgs((List<IIndiceDefinition>)null);
+            _indiceRetriever.GetAllIndicesFromDatabase().ReturnsForAnyArgs(new List<IIndiceDefinition>());
 
             var result = await _controller.GetAllIndices();
             ((NotFoundObjectResult)result.Result).Value.Should().Be("There is no indices in the database.");
@@ -110,7 +113,7 @@ namespace Trakx.IndiceManager.Server.Tests.Unit.Controllers
                 _mockCreator.GetIndiceComposition(2)
             };
             
-            _indiceRetriever.GetAllCompositionsFromDatabase(symbol).Returns(compositions);
+            _indiceRetriever.GetAllCompositionForIndiceFromDatabase(symbol).Returns(compositions);
 
             var result = await _controller.GetCompositionsBySymbol(symbol);
             var finalResult = (List<IndiceCompositionModel>)((OkObjectResult)result.Result).Value;
@@ -128,7 +131,7 @@ namespace Trakx.IndiceManager.Server.Tests.Unit.Controllers
         {
             var symbol = _mockCreator.GetRandomIndiceSymbol();
 
-            _indiceRetriever.GetAllCompositionsFromDatabase(symbol).Returns((List<IIndiceComposition>)null);
+            _indiceRetriever.GetAllCompositionForIndiceFromDatabase(symbol).Returns((List<IIndiceComposition>)null);
 
             var result = await _controller.GetCompositionsBySymbol(symbol);
             ((NotFoundObjectResult) result.Result).Value.Should()
@@ -141,7 +144,7 @@ namespace Trakx.IndiceManager.Server.Tests.Unit.Controllers
             var symbol = _mockCreator.GetRandomIndiceSymbol();
             var composition = new List<IIndiceComposition>();
 
-            _indiceRetriever.GetAllCompositionsFromDatabase(symbol).Returns(composition);
+            _indiceRetriever.GetAllCompositionForIndiceFromDatabase(symbol).Returns(composition);
 
             var result= await _controller.GetCompositionsBySymbol(symbol);
             var finalResult = ((NotFoundObjectResult) result.Result).Value;
@@ -157,7 +160,7 @@ namespace Trakx.IndiceManager.Server.Tests.Unit.Controllers
                 Address = invalidAddress
             };
             await _controller.SaveIndiceDefinition(indiceDefinition);
-            await _indiceRetriever.DidNotReceiveWithAnyArgs().SearchIndice(default);
+            await _indiceRetriever.DidNotReceiveWithAnyArgs().SearchIndiceByAddress(default);
         }
 
         [Fact]
@@ -168,9 +171,9 @@ namespace Trakx.IndiceManager.Server.Tests.Unit.Controllers
             {
                 Address = address
             };
-            _indiceRetriever.SearchIndice(address).Returns(true);
+            _indiceRetriever.SearchIndiceByAddress(address).Returns(true);
             await _controller.SaveIndiceDefinition(indiceDefinition);
-            await _indiceRetriever.DidNotReceiveWithAnyArgs().TrySaveIndice(indiceDefinition);
+            await _indiceWriter.DidNotReceiveWithAnyArgs().TrySaveIndice(indiceDefinition);
         }
 
         [Fact]
@@ -181,8 +184,8 @@ namespace Trakx.IndiceManager.Server.Tests.Unit.Controllers
             {
                 Address = address
             };
-            _indiceRetriever.SearchIndice(address).Returns(false);
-            _indiceRetriever.TrySaveIndice(indiceDefinition).Returns(true);
+            _indiceRetriever.SearchIndiceByAddress(address).Returns(false);
+            _indiceWriter.TrySaveIndice(indiceDefinition).Returns(true);
             var result = await _controller.SaveIndiceDefinition(indiceDefinition);
             ((CreatedAtActionResult) result.Result).StatusCode.Should().Be(201);
             ((CreatedAtActionResult)result.Result).Value.Should().Be(indiceDefinition);
@@ -196,8 +199,8 @@ namespace Trakx.IndiceManager.Server.Tests.Unit.Controllers
             {
                 Address = address
             };
-            _indiceRetriever.SearchIndice(address).Returns(false);
-            _indiceRetriever.TrySaveIndice(indiceDefinition).Returns(false);
+            _indiceRetriever.SearchIndiceByAddress(address).Returns(false);
+            _indiceWriter.TrySaveIndice(indiceDefinition).Returns(false);
             var result = await _controller.SaveIndiceDefinition(indiceDefinition);
             ((BadRequestObjectResult) result.Result).Value.Should().Be(
                 "The addition in the database has failed. Please verify the parameters of the indice and try again.");
@@ -212,7 +215,7 @@ namespace Trakx.IndiceManager.Server.Tests.Unit.Controllers
                 Address = invalidAddress
             };
             await _controller.SaveIndiceComposition(composition);
-            await _indiceRetriever.DidNotReceiveWithAnyArgs().SearchComposition(default);
+            await _indiceRetriever.DidNotReceiveWithAnyArgs().SearchCompositionByAddress(default);
         }
 
         [Fact]
@@ -223,9 +226,9 @@ namespace Trakx.IndiceManager.Server.Tests.Unit.Controllers
             {
                 Address = address
             };
-            _indiceRetriever.SearchComposition(address).Returns(true);
+            _indiceRetriever.SearchCompositionByAddress(address).Returns(true);
             await _controller.SaveIndiceComposition(composition);
-            await _indiceRetriever.DidNotReceiveWithAnyArgs().TrySaveComposition(composition);
+            await _indiceWriter.DidNotReceiveWithAnyArgs().TrySaveComposition(composition);
         }
 
         [Fact]
@@ -236,8 +239,8 @@ namespace Trakx.IndiceManager.Server.Tests.Unit.Controllers
             {
                 Address = address
             };
-            _indiceRetriever.SearchComposition(address).Returns(false);
-            _indiceRetriever.TrySaveComposition(composition).Returns(true);
+            _indiceRetriever.SearchCompositionByAddress(address).Returns(false);
+            _indiceWriter.TrySaveComposition(composition).Returns(true);
             var result = await _controller.SaveIndiceComposition(composition);
             ((CreatedAtActionResult)result.Result).StatusCode.Should().Be(201);
             ((CreatedAtActionResult)result.Result).Value.Should().Be(composition);
@@ -251,8 +254,8 @@ namespace Trakx.IndiceManager.Server.Tests.Unit.Controllers
             {
                 Address = address
             };
-            _indiceRetriever.SearchComposition(address).Returns(false);
-            _indiceRetriever.TrySaveComposition(composition).Returns(false);
+            _indiceRetriever.SearchCompositionByAddress(address).Returns(false);
+            _indiceWriter.TrySaveComposition(composition).Returns(false);
             var result = await _controller.SaveIndiceComposition(composition);
             ((BadRequestObjectResult)result.Result).Value.Should().Be(
                 "The addition in the database has failed. Please verify the parameters of the composition and try again.");
