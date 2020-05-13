@@ -1,11 +1,8 @@
 ﻿using System.Collections.Generic;
 using System.Linq;
-using System.Runtime.InteropServices;
 using System.Threading.Tasks;
 using Microsoft.AspNetCore.Mvc;
 using Nethereum.Util;
-using Trakx.Common.Core;
-using Trakx.Common.Interfaces.Indice;
 using Trakx.IndiceManager.Server.Managers;
 using Trakx.IndiceManager.Server.Models;
 
@@ -19,10 +16,13 @@ namespace Trakx.IndiceManager.Server.Controllers
 
         private readonly IIndiceInformationRetriever _indiceRetriever;
 
-        public IndiceCreationController(IComponentInformationRetriever componentRetriever,IIndiceInformationRetriever indiceRetriever)
+        private readonly IIndiceDatabaseWriter _indiceDatabaseWriter;
+
+        public IndiceCreationController(IComponentInformationRetriever componentRetriever,IIndiceInformationRetriever indiceRetriever,IIndiceDatabaseWriter indiceDatabaseWriter)
         {
             _componentRetriever = componentRetriever;
             _indiceRetriever = indiceRetriever;
+            _indiceDatabaseWriter = indiceDatabaseWriter;
         }
         
         /// <summary>
@@ -58,7 +58,7 @@ namespace Trakx.IndiceManager.Server.Controllers
         {
             var indiceDefinitions = await _indiceRetriever.GetAllIndicesFromDatabase();
 
-            if (indiceDefinitions == null)
+            if (indiceDefinitions.Count==0)
                 return NotFound("There is no indices in the database.");
 
             var indiceDetails = indiceDefinitions.Select(i => new IndiceDetailModel(i)).ToList();
@@ -69,12 +69,12 @@ namespace Trakx.IndiceManager.Server.Controllers
         /// <summary>
         /// Tries to get all of the compositions for an indice.
         /// </summary>
-        /// <param name="symbol">The address of the indice that we want the compositions. Not to be confused with the composition address.</param>
+        /// <param name="symbol">The symbol of the indice that we want the compositions. Not to be confused with the composition symbol.</param>
         /// <returns>A list of the past and present composition for a given indice</returns>
         [HttpGet]
         public async Task<ActionResult<List<IndiceCompositionModel>>> GetCompositionsBySymbol([FromBody]string symbol)
         {
-            var allCompositions = await _indiceRetriever.GetAllCompositionsFromDatabase(symbol);
+            var allCompositions = await _indiceRetriever.GetAllCompositionForIndiceFromDatabase(symbol);
 
             if (allCompositions == null)
                 return NotFound($"The indice attached to {symbol} is not in our database.");
@@ -97,10 +97,10 @@ namespace Trakx.IndiceManager.Server.Controllers
             if (!indiceToSave.Address.IsValidEthereumAddressHexFormat())
                 return BadRequest($"{indiceToSave.Address} is not a valid ethereum address");
 
-            if (await _indiceRetriever.SearchIndice(indiceToSave.Address))
+            if (await _indiceRetriever.SearchIndiceByAddress(indiceToSave.Address))
                 return BadRequest("The indice is already in the database.");
 
-            var result = await _indiceRetriever.TrySaveIndice(indiceToSave);
+            var result = await _indiceDatabaseWriter.TrySaveIndice(indiceToSave);
             if (result == true)
                 return CreatedAtAction("The indice has been added to the database.", indiceToSave);
 
@@ -119,10 +119,10 @@ namespace Trakx.IndiceManager.Server.Controllers
             if (!compositionToSave.Address.IsValidEthereumAddressHexFormat())
                 return BadRequest($"{compositionToSave.Address} is not a valid ethereum address");
 
-            if (await _indiceRetriever.SearchComposition(compositionToSave.Address))
+            if (await _indiceRetriever.SearchCompositionByAddress(compositionToSave.Address))
                 return BadRequest("The composition is already in the database.");
 
-            var result = await _indiceRetriever.TrySaveComposition(compositionToSave);
+            var result = await _indiceDatabaseWriter.TrySaveComposition(compositionToSave);
 
             if (result == true)
                 return CreatedAtAction("The composition has been added to the database.", compositionToSave);

@@ -4,6 +4,15 @@ using System.Reflection;
 
 namespace Trakx.Contracts.Set
 {
+    public static class Address
+    {
+        public static readonly ReadOnlyDictionary<string, string> AddressByName = new ReadOnlyDictionary<string, string>(
+            typeof(DeployedContractAddresses)
+                .GetFields(BindingFlags.Public | BindingFlags.Static | BindingFlags.FlattenHierarchy)
+                .Where(fi => fi.IsInitOnly && fi.FieldType == typeof(string))
+                .ToDictionary(fi => fi.Name, fi => fi.GetValue(null).ToString()));
+    }
+
     public static class DeployedContractAddresses
     {
         public static readonly string CommonValidationsLibrary = "0xC269E9396556B6AFB0C38eef4a590321FF9E8D3A";
@@ -32,10 +41,6 @@ namespace Trakx.Contracts.Set
         public static readonly string WhiteList = "0xc6449473BE76AB2a70329fA66Cbe504a25005338";
         public static readonly string ZeroExExchangeWrapper = "0xA2bb0b46960f24C9720F56639E08aD6C0E101C61";
 
-        public static readonly ReadOnlyDictionary<string, string> AddressByName = new ReadOnlyDictionary<string, string>(
-                typeof(DeployedContractAddresses)
-                .GetFields(BindingFlags.Public | BindingFlags.Static | BindingFlags.FlattenHierarchy)
-                .Where(fi => fi.IsInitOnly && fi.FieldType == typeof(string))
-                .ToDictionary(fi => fi.Name, fi => fi.GetValue(null).ToString()));
+        public static readonly ReadOnlyDictionary<string, string> AddressByName = Address.AddressByName;
     }
 }

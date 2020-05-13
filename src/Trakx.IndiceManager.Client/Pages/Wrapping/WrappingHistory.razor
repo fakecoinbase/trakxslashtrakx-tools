@@ -2,6 +2,91 @@
 
 <h3>WrappingHistory</h3>
 
+<table align="center" cellpadding="10px" rules="rows">
+    <tr>
+        <th colspan="1">ID</th>
+        <th colspan="2">From Currency</th>
+        <th colspan="3">To Currency</th>
+        <th colspan="4">State</th>
+        <th colspan="5">Date</th>
+        <th colspan="6">Click for details</th>
+    </tr>
+    @foreach (var element in WrappingHistoryList)
+    {
+        <tr>
+            <th colspan="1">@element.Id</th>
+            <th colspan="2">@element.FromCurrency</th>
+            <th colspan="3">@element.ToCurrency</th>
+            <th colspan="4">@element.State</th>
+            <th colspan="5">@element.Date</th>
+            <th colspan="5"><MatButton OnClick="@( () => OpenDialog(element.Id))" 
+                                       Raised="true" Icon="add">Details</MatButton></th>
+        </tr>
+    }
+</table>
+
+<MatDialog @bind-IsOpen="@dialogIsOpen">
+    <MatDialogActions>
+        <MatButton OnClick="@(e => { dialogIsOpen = false; id = 0; })" Icon="close"></MatButton>
+    </MatDialogActions>
+    <MatDialogTitle>Transaction details</MatDialogTitle>
+    <MatDialogContent>
+        <p>Transaction Id on @WrappingHistoryList[id].FromCurrency Chain: @TxIdFromCurrency</p>
+        <p>Transaction Id on @WrappingHistoryList[id].ToCurrency Chain: @TxIdToCurrency</p>
+        <p>Amount in @WrappingHistoryList[id].FromCurrency: @FromCurrencyAmount</p>
+        <p>Amount in @WrappingHistoryList[id].ToCurrency: @ToCurrencyAmount</p>
+        <p>Sender Address: @SenderAddress</p>
+        <p>Receiver Address: @ReceiverAddress</p>
+    </MatDialogContent>
+</MatDialog>
+
 @code {
+    //todo: take the data from the database
+
+    string TxIdFromCurrency = "0987654087";
+    string TxIdToCurrency = "456TG890Y";
+    string FromCurrencyAmount = "12.56";
+    string ToCurrencyAmount = "63.87";
+    string SenderAddress = "0x00000000000000000";
+    string ReceiverAddress = "0x00000000000000000";
+
+    bool dialogIsOpen = false;
+    int id;
+
+    void OpenDialog(string _id)
+    {
+        dialogIsOpen = true;
+        id =  Int32.Parse(_id) - 1;
+    }
+
+    public class WrappingHistoryModel
+    {
+        public enum StateType{ Complete, Pending };
+
+        public string Id { get; set; }
+        public string FromCurrency { get; set; }
+        public string ToCurrency { get; set; }
+        public StateType State { get; set; }
+        public DateTime Date { get; set; }
+        public string TxIdOnFromCurrencyChain { get; set; }
+        public string TxIdOnToCurrencyChain { get; set; }
+        public double Amount { get; set; }
+        public string SenderAddress { get; set; }
+        public string ReceiverAddress { get; set; }
+
+        public WrappingHistoryModel(string id, string fromCurrency, string toCurrency, StateType state, DateTime date)
+        {
+            Id = id; FromCurrency = fromCurrency; ToCurrency = toCurrency; State = state; Date = date;
+        }
+    }
+
+    static private DateTime date1 = DateTime.MaxValue;
+    static private DateTime date2 = DateTime.MinValue;
+
+    public List<WrappingHistoryModel> WrappingHistoryList = new List<WrappingHistoryModel>()
+{
+        new WrappingHistoryModel("1","wXRP","XRP", WrappingHistoryModel.StateType.Complete, date1),
+        new WrappingHistoryModel("2","BTC","wBTC",WrappingHistoryModel.StateType.Pending, date2)
+    };
 
 }

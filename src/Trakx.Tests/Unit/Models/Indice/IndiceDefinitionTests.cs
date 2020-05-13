@@ -5,16 +5,16 @@ using Xunit;
 
 namespace Trakx.Tests.Unit.Models.Indice
 {
-    [Collection(nameof(DbContextCollection))]
+    [Collection(nameof(SeededDbContextCollection))]
     public class IndiceDefinitionTests
     {
-        private readonly DbContextFixture _fixture;
+        private readonly SeededDbContextFixture _fixture;
         private readonly int _expectedIndiceCount;
         private readonly int _expectedComponentCount;
         private readonly int _expectedCompositionCount;
         private readonly int _expectedQuantitiesCount;
 
-        public IndiceDefinitionTests(DbContextFixture fixture)
+        public IndiceDefinitionTests(SeededDbContextFixture fixture)
         {
             _fixture = fixture;
             _expectedIndiceCount = 9;

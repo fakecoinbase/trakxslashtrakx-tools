@@ -5,12 +5,13 @@ using Trakx.Persistence.Initialisation;
 
 namespace Trakx.Tests.Unit.Models
 {
-    public sealed class InMemoryIndiceRepositoryContext : IndiceRepositoryContext
+    public sealed class SeededInMemoryIndiceRepositoryContext : IndiceRepositoryContext
     {
-        public InMemoryIndiceRepositoryContext(IMapper mapper) : base(
+        public SeededInMemoryIndiceRepositoryContext(IMapper mapper) : base(
             new DbContextOptionsBuilder<IndiceRepositoryContext>()
-            .UseInMemoryDatabase(databaseName: "IndiceRepository")
-            .Options)
+                .UseInMemoryDatabase(databaseName: "SeededIndiceRepository")
+                .Options)
+
         {
             DatabaseInitialiser.AddKnownIndicees(this, mapper);
         }

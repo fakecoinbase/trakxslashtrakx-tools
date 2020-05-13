@@ -18,14 +18,14 @@ using Xunit.Abstractions;
 
 namespace Trakx.Tests.Tools
 {
-    [Collection(nameof(DbContextCollection))]
-    public class CompositionCreationTool : IClassFixture<DbContextFixture>
+    [Collection(nameof(SeededDbContextCollection))]
+    public class CompositionCreationTool : IClassFixture<SeededDbContextFixture>
     {
-        private readonly DbContextFixture _fixture;
+        private readonly SeededDbContextFixture _fixture;
         private readonly ITestOutputHelper _output;
         private readonly ServiceProvider _serviceProvider;
 
-        public CompositionCreationTool(DbContextFixture fixture, ITestOutputHelper output)
+        public CompositionCreationTool(SeededDbContextFixture fixture, ITestOutputHelper output)
         {
             _output = output;
             _fixture = fixture;

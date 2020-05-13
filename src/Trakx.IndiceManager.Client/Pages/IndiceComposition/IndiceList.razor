@@ -2,6 +2,124 @@
 
 <h3>Indice List</h3>
 
+<table align="center" cellpadding="10px" rules="rows">
+    <tr>
+        <th colspan="1">Name of the Indice</th>
+        <th colspan="2">Date of creation</th>
+        <th colspan="3">State</th>
+        <th colspan="4">Details</th>
+    </tr>
+    @foreach (var element in indicelList)
+    {
+        <tr>
+            <th colspan="1">@element.Name</th>
+            <th colspan="2">@element.Date</th>
+            <th colspan="3">@element.State</th>
+            <th colspan="4">
+                <MatButton OnClick="@( () => OpenDialog(element.Id))"
+                           Raised="true" Icon="add">Details</MatButton>
+            </th>
+        </tr>
+    }
+</table>
+
+<MatDialog @bind-IsOpen="@dialogIsOpen">
+    <MatDialogActions>
+        <MatButton OnClick="@(e => { dialogIsOpen = false; onClickId = 0; })" Icon="close"></MatButton>
+    </MatDialogActions>
+    <MatDialogTitle>Summary of the @indicelList[onClickId].Name Indice</MatDialogTitle>
+    <MatDialogContent>
+        <p><strong>Name: </strong>@indicelList[onClickId].Name</p>
+        <p><strong>Symbol: </strong>@indicelList[onClickId].Symbol</p>
+        <p><strong>Id: </strong>@indicelList[onClickId].Id</p>
+        <p><strong>Nav: </strong>@indicelList[onClickId].Nav</p>
+        <p><strong>Indice Address: </strong>"0x00000000000000000"</p>
+        <p><strong>Creation Date: </strong>@indicelList[onClickId].Date</p>
+        <p><strong>Composition: </strong></p>
+        <ol>
+            @foreach (var e in indicelList[onClickId].ComponentList)
+            {
+                <li>@e.Symbol: @e.Weight (USDc)</li>
+            }
+        </ol>
+    </MatDialogContent>
+</MatDialog>
+
 @code {
+    //todo: take the data from the database
+
+    static private DateTime date1 = DateTime.MaxValue;
+    static private DateTime date2 = DateTime.MinValue;
+
+    static List<IndiceList.IndiceModel.ComponentModel> componentList1 = new List<IndiceModel.ComponentModel>()
+{
+        new IndiceModel.ComponentModel("BAT",13.45),
+        new IndiceModel.ComponentModel("wXRP", 38.17),
+        new IndiceModel.ComponentModel("ETH", 70.32)
+    };
+
+    static List<IndiceList.IndiceModel.ComponentModel> componentList2 = new List<IndiceModel.ComponentModel>()
+{
+        new IndiceModel.ComponentModel("MKR", 49.18),
+        new IndiceModel.ComponentModel("wXTZ", 34.55)
+    };
+
+    List<IndiceModel> indicelList = new List<IndiceModel>()
+{
+        new IndiceModel("1","Indice1","IND1",123.98,IndiceModel.StateType.Published,date1, componentList1),
+        new IndiceModel("2","Indice2", "IND2", 37.45, IndiceModel.StateType.Saved, date2, componentList2)
+    };
+
+
+    bool dialogIsOpen = false;
+    int onClickId;
+
+    void OpenDialog(string _id)
+    {
+        dialogIsOpen = true;
+        onClickId = Int32.Parse(_id) - 1;
+    }
+
+    #region IndiceModel class
+    public class IndiceModel
+    {
+        public IndiceModel(string id, string name, string symbol, double nav, StateType state, DateTime date, List<ComponentModel> componentList)
+        {
+            Id = id;
+            Name = name;
+            Symbol = symbol;
+            Nav = nav;
+            State = state;
+            Date = date;
+            ComponentList = componentList;
+        }
+
+        public enum StateType { Saved, Published };
+
+        public struct ComponentModel
+        {
+            public ComponentModel(string symbol, double weight)
+            {
+                Symbol = symbol; Weight = weight;
+            }
+
+            public string Symbol { get; set; }
+            public double Weight { get; set; }
+        }
+
+        public string Id { get; set; }
+        public string Name { get; set; }
+        public string Symbol { get; set; }
+        public double Nav { get; set; }
+        public StateType State { get; set; }
+        public DateTime Date { get; set; }
+
+        public List<ComponentModel> ComponentList = new List<ComponentModel>();
+
+    }
+
+    #endregion
+
 
 }
+

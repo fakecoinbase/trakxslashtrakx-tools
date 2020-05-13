@@ -1,13 +1,12 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Linq;
+﻿using System.Collections.Generic;
 using System.Threading.Tasks;
-using Trakx.Common.Core;
 using Trakx.Common.Interfaces.Indice;
-using Trakx.IndiceManager.Server.Models;
 
 namespace Trakx.IndiceManager.Server.Managers
 {
+    /// <summary>
+    /// This component allows you to retrieve indices and compositions from the database.
+    /// </summary>
     public interface IIndiceInformationRetriever
     {
         /// <summary>
@@ -21,28 +20,15 @@ namespace Trakx.IndiceManager.Server.Managers
         /// </summary>
         /// <param name="symbol">The symbol of the indice for which we want the compositions</param>
         /// <returns>All compositions for a indice, both old and new.</returns>
-        Task<List<IIndiceComposition>> GetAllCompositionsFromDatabase(string symbol);
+        Task<List<IIndiceComposition>?> GetAllCompositionForIndiceFromDatabase(string symbol);
 
-        /// <summary>
-        /// Tries to save a new indice in the database.
-        /// </summary>
-        /// <param name="indice">The indice that we want to save in the database.</param>
-        /// <returns>A boolean : true if succeed and false else.</returns>
-        Task<bool> TrySaveIndice(IndiceDetailModel indice);
-
-        /// <summary>
-        /// Tries to save a new composition in the database.
-        /// </summary>
-        /// <param name="composition">The composition that we want to save in the database.</param>
-        /// <returns>A boolean : true if succeed and false else.</returns>
-        Task<bool> TrySaveComposition(IndiceCompositionModel composition);
-
+        
         /// <summary>
         /// Verify if the address of the indice exists in the database.
         /// </summary>
         /// <param name="indiceAddress">The Ethereum address of the indice we looking for.</param>
         /// <returns>Return a boolean : true if the indice exists, false else.</returns>
-        Task<bool> SearchIndice(string indiceAddress);
+        Task<bool> SearchIndiceByAddress(string? indiceAddress);
 
 
         /// <summary>
@@ -50,6 +36,6 @@ namespace Trakx.IndiceManager.Server.Managers
         /// </summary>
         /// <param name="compositionAddress">The Ethereum address of the composition we looking for.</param>
         /// <returns>Return a boolean : true if the composition exists, false else.</returns>
-        Task<bool> SearchComposition(string compositionAddress);
+        Task<bool> SearchCompositionByAddress(string compositionAddress);
     }
 }

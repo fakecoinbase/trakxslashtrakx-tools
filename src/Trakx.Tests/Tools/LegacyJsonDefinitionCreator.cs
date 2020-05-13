@@ -16,12 +16,12 @@ using Xunit.Abstractions;
 
 namespace Trakx.Tests.Tools
 {
-    [Collection(nameof(DbContextCollection))]
-    public class LegacyJsonDefinitionCreator : IClassFixture<DbContextFixture>
+    [Collection(nameof(SeededDbContextCollection))]
+    public class LegacyJsonDefinitionCreator : IClassFixture<SeededDbContextFixture>
     {
         private readonly IndiceDataProvider _indiceDetailProvider;
 
-        public LegacyJsonDefinitionCreator(DbContextFixture fixture, ITestOutputHelper output)
+        public LegacyJsonDefinitionCreator(SeededDbContextFixture fixture, ITestOutputHelper output)
         {
             var context = fixture.Context;
             var serviceCollection = new ServiceCollection();
