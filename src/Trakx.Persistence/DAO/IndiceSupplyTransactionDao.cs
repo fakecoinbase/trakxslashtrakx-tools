@@ -14,7 +14,7 @@ namespace Trakx.Persistence.DAO
         public IndiceSupplyTransactionDao() { }
 
         public IndiceSupplyTransactionDao(DateTime creationTimestamp, IndiceCompositionDao indiceCompositionDao,
-            TransactionType transactionType, decimal quantity, string senderAddress, string user, string? transactionHash, int? ethereumBlockId)
+            SupplyTransactionType transactionType, decimal quantity, string senderAddress, string user, string? transactionHash, int? ethereumBlockId)
         {
             CreationTimestamp = creationTimestamp;
             IndiceCompositionDao = indiceCompositionDao;
@@ -26,9 +26,6 @@ namespace Trakx.Persistence.DAO
             EthereumBlockId = ethereumBlockId;
         }
         #pragma warning restore CS8618
-
-        
-        
         
         [DatabaseGenerated(DatabaseGeneratedOption.Identity)]
         [Key]
@@ -37,7 +34,6 @@ namespace Trakx.Persistence.DAO
         /// <inheritdoc />
         [Required]
         public DateTime CreationTimestamp { get; set; }
-
 
         /// <inheritdoc />
         [NotMapped]
@@ -48,7 +44,7 @@ namespace Trakx.Persistence.DAO
 
         /// <inheritdoc />
         [Required]
-        public TransactionType TransactionType { get; set; }
+        public SupplyTransactionType TransactionType { get; set; }
 
         /// <inheritdoc />
         public int? EthereumBlockId { get; set; }
@@ -63,8 +59,7 @@ namespace Trakx.Persistence.DAO
         /// <inheritdoc />
         [MaxLength(256)]
         public string SenderAddress { get; set; }
-
-
+        
         /// <inheritdoc />
         [Required]
         public string User { get; set; }
