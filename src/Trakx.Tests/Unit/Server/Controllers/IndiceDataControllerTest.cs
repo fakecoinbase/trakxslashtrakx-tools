@@ -11,6 +11,7 @@ using Trakx.MarketData.Server.Models;
 using NSubstitute;
 using Trakx.MarketData.Server.Controllers;
 using Trakx.Tests.Data;
+using Xunit.Abstractions;
 
 
 namespace Trakx.Tests.Unit.Server.Controllers
@@ -24,11 +25,11 @@ namespace Trakx.Tests.Unit.Server.Controllers
         private readonly IndiceDataController _indiceDataController;
 
 
-        public IndiceDataControllerTest()
+        public IndiceDataControllerTest(ITestOutputHelper output)
         {
             _indiceProvider = Substitute.For<IIndiceDataProvider>();
             _navCalculator = Substitute.For<INavCalculator>(); 
-            _mockCreator = new MockCreator();
+            _mockCreator = new MockCreator(output);
             _indiceDataController= new IndiceDataController(_indiceProvider,_navCalculator, Substitute.For<IHostEnvironment>(), Substitute.For<ILogger<IndiceDataController>>());
         }
 

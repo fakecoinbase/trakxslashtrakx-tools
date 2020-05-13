@@ -27,7 +27,7 @@ namespace Trakx.Tests.Unit.Common.Ethereum
 
         public IndiceCreatorTests(ITestOutputHelper output)
         {
-            var mockCreator = new MockCreator();
+            var mockCreator = new MockCreator(output);
             _web3 = Substitute.For<IWeb3>();
             _accountAddress = mockCreator.GetRandomAddressEthereum();
             _web3.TransactionManager.Account.Address.Returns(_accountAddress);

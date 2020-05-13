@@ -10,6 +10,7 @@ using Bunit;
 using MatBlazor;
 using Microsoft.AspNetCore.Components.Web;
 using Trakx.Tests.Data;
+using Xunit.Abstractions;
 
 namespace Trakx.IndiceManager.Client.Tests.Wrapping
 {
@@ -35,9 +36,9 @@ namespace Trakx.IndiceManager.Client.Tests.Wrapping
         private bool _submitted;
 
 
-        public WrapUnwrapTokenTests()
+        public WrapUnwrapTokenTests(ITestOutputHelper output)
         {
-            _mockCreator = new MockCreator();
+            _mockCreator = new MockCreator(output);
             Services.AddMatToaster();
             _submitted = false;
             var submitEventCallback = EventCallback(nameof(WrapUnwrapToken.OnSubmitClick), (MouseEventArgs _) => _submitted = true);

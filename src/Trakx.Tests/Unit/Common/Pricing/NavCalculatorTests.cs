@@ -29,7 +29,7 @@ namespace Trakx.Tests.Unit.Common.Pricing
             var cache = Substitute.For<IDistributedCache>();
             _navCalculator =
                 new NavCalculator(_messariClient, _coinGeckoClient, cache, output.ToLogger<NavCalculator>());
-            _mockCreator = new MockCreator();
+            _mockCreator = new MockCreator(output);
         }
 
 

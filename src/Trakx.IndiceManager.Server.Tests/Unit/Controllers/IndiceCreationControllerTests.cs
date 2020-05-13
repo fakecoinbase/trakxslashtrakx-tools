@@ -10,6 +10,7 @@ using Trakx.IndiceManager.Server.Managers;
 using Trakx.IndiceManager.Server.Models;
 using Trakx.Tests.Data;
 using Xunit;
+using Xunit.Abstractions;
 
 namespace Trakx.IndiceManager.Server.Tests.Unit.Controllers
 {
@@ -21,10 +22,10 @@ namespace Trakx.IndiceManager.Server.Tests.Unit.Controllers
         private readonly IIndiceInformationRetriever _indiceRetriever;
         private readonly IIndiceDatabaseWriter _indiceWriter;
 
-        public IndiceCreationControllerTests()
+        public IndiceCreationControllerTests(ITestOutputHelper output)
         {
             _componentRetriever = Substitute.For<IComponentInformationRetriever>();
-            _mockCreator = new MockCreator();
+            _mockCreator = new MockCreator(output);
             _indiceRetriever = Substitute.For<IIndiceInformationRetriever>();
             _indiceWriter = Substitute.For<IIndiceDatabaseWriter>();
             _controller = new IndiceCreationController(_componentRetriever,_indiceRetriever,_indiceWriter);

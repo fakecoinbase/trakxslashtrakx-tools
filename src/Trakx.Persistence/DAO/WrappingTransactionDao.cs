@@ -1,14 +1,28 @@
 ﻿using System;
-using System.Collections.Generic;
 using System.ComponentModel.DataAnnotations;
 using System.ComponentModel.DataAnnotations.Schema;
-using System.Text;
 using Trakx.Common.Interfaces.Transaction;
 
 namespace Trakx.Persistence.DAO
 {
     public class WrappingTransactionDao : IWrappingTransaction
     {
+        public WrappingTransactionDao(IWrappingTransaction transaction)
+        {
+            TimeStamp = transaction.TimeStamp;
+            FromCurrency = transaction.FromCurrency;
+            ToCurrency = transaction.ToCurrency;
+            TransactionState = transaction.TransactionState;
+            EthereumBlockId = transaction.EthereumBlockId;
+            EthereumTransactionHash = transaction.EthereumTransactionHash;
+            NativeChainBlockId = transaction.NativeChainBlockId;
+            NativeChainTransactionHash = transaction.NativeChainTransactionHash;
+            Amount = transaction.Amount;
+            SenderAddress = transaction.SenderAddress;
+            ReceiverAddress = transaction.ReceiverAddress;
+            User = transaction.User;
+        }
+
         public WrappingTransactionDao(DateTime timeStamp, string fromCurrency, string toCurrency,
             TransactionState transactionState, string? ethereumTransactionHash, string? nativeChainTransactionHash,
             int? nativeChainBlockId, int? ethereumBlockId, decimal amount, string senderAddress,

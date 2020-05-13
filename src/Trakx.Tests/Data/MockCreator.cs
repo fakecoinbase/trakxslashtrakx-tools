@@ -1,34 +1,64 @@
 ﻿using System;
 using System.Linq;
+using System.Reflection;
 using Nethereum.RPC.Eth.DTOs;
 using Newtonsoft.Json.Linq;
 using NSubstitute;
 using Trakx.Common.Core;
 using Trakx.Common.Interfaces.Indice;
 using Trakx.Common.Interfaces.Transaction;
+using Xunit.Abstractions;
 
 namespace Trakx.Tests.Data
 {
+    public static class TestOutputHelperExtensions
+    {
+        public static string GetCurrentTestName(this ITestOutputHelper output)
+        {
+            var currentTest = output
+                .GetType()
+                .GetField("test", BindingFlags.Instance | BindingFlags.NonPublic)
+                ?.GetValue(output) as ITest;
+            if (currentTest == null)
+            {
+                throw new ArgumentNullException(
+                    $"Failed to reflect current test as {nameof(ITest)} from {nameof(output)}");
+            }
+
+            var currentTestName = currentTest.TestCase.TestMethod.Method.Name;
+            return currentTestName;
+        }
+    }
+
     public class MockCreator
     {
-        private static readonly Random Random = new Random();
+        private readonly Random _random;
+        private readonly string _name;
         private const string AddressChars = "abcdef01234566789";
         private const string Alphabet = "abcdefghijklmnopqrstuvwxyz";
 
+        public MockCreator(ITestOutputHelper output)
+        {
+            _name = output.GetCurrentTestName();
+            _random = new Random(_name.GetHashCode());
+        }
+
         public string GetRandomAddressEthereum() => "0x" + new string(Enumerable.Range(0, 40)
-            .Select(_ => AddressChars[Random.Next(0, AddressChars.Length)]).ToArray());
+            .Select(_ => AddressChars[_random.Next(0, AddressChars.Length)]).ToArray());
+        public string GetRandomEthereumTransactionHash() => "0x" + new string(Enumerable.Range(0, 64)
+                                                        .Select(_ => AddressChars[_random.Next(0, AddressChars.Length)]).ToArray());
 
         public string GetRandomString(int size) => new string(Enumerable.Range(0, size)
-            .Select(_ => Alphabet[Random.Next(0, Alphabet.Length)]).ToArray());
+            .Select(_ => Alphabet[_random.Next(0, Alphabet.Length)]).ToArray());
 
-        public string GetRandomIndiceSymbol(string? indiceShortName = default) => (Random.Next(1) < 1 ? "l" : "s")
-                                                                      + Random.Next(1, 20)
+        public string GetRandomIndiceSymbol(string? indiceShortName = default) => (_random.Next(1) < 1 ? "l" : "s")
+                                                                      + _random.Next(1, 20)
                                                                       + (indiceShortName ?? GetRandomString(3));
 
         public string GetRandomCompositionSymbol(string? indiceShortName = default)
             => GetRandomIndiceSymbol(indiceShortName) + GetRandomYearMonthSuffix();
 
-        public string GetRandomYearMonthSuffix() => $"{Random.Next(20, 36):00}{Random.Next(1, 13):00}";
+        public string GetRandomYearMonthSuffix() => $"{_random.Next(20, 36):00}{_random.Next(1, 13):00}";
 
         public DateTime GetRandomDateTime()
         {
@@ -36,7 +66,7 @@ namespace Trakx.Tests.Data
             var firstJan2050 = new DateTime(2050, 01, 01);
             var timeBetween2020And2050 = firstJan2050.Subtract(firstJan2020);
 
-            var randomDay = firstJan2020 + TimeSpan.FromDays(Random.Next(0, (int)timeBetween2020And2050.TotalDays));
+            var randomDay = firstJan2020 + TimeSpan.FromDays(_random.Next(0, (int)timeBetween2020And2050.TotalDays));
             return randomDay;
         }
 
@@ -56,20 +86,24 @@ namespace Trakx.Tests.Data
             return indiceComposition;
         }
 
-        public IWrappingTransaction GetWrappingTransaction()
+        public IWrappingTransaction GetWrappingTransaction(TransactionState transactionState = TransactionState.Complete)
         {
             var transaction = Substitute.For<IWrappingTransaction>();
-            transaction.EthereumBlockId.Returns(Random.Next(800000));
             transaction.SenderAddress.Returns(GetRandomAddressEthereum());
-            transaction.User.Returns(GetRandomString(20));
+            transaction.User.Returns(_name);
             transaction.ToCurrency.Returns(GetRandomCompositionSymbol());
             transaction.FromCurrency.Returns(GetRandomCompositionSymbol());
             transaction.Amount.Returns(10.03m);
             transaction.NativeChainTransactionHash.Returns(GetRandomAddressEthereum());
-            transaction.NativeChainBlockId.Returns(Random.Next(600000));
+            transaction.ReceiverAddress.Returns(GetRandomAddressEthereum());
             transaction.NativeChainTransactionHash.Returns(GetRandomAddressEthereum());
+            transaction.EthereumTransactionHash.Returns(GetRandomEthereumTransactionHash());
             transaction.TimeStamp.Returns(GetRandomDateTime());
-            transaction.TransactionState.Returns(TransactionState.Complete);
+            transaction.TransactionState.Returns(transactionState);
+            if (transactionState != TransactionState.Complete) return transaction;
+
+            transaction.NativeChainBlockId.Returns(_random.Next(600000));
+            transaction.EthereumBlockId.Returns(_random.Next(800000));
             return transaction;
         }
 
@@ -96,11 +130,11 @@ namespace Trakx.Tests.Data
             ushort? decimals = default)
         {
             var componentQuantity = Substitute.For<IComponentQuantity>();
-            quantity ??= (decimal)(Random.NextDouble() + 0.001 * 10000);
+            quantity ??= (decimal)(_random.NextDouble() + 0.001 * 10000);
             componentQuantity.Quantity.Returns(quantity.Value);
             address ??= GetRandomAddressEthereum();
             componentQuantity.ComponentDefinition.Address.Returns(address);
-            decimals ??= (ushort)Random.Next(0, 19);
+            decimals ??= (ushort)_random.Next(0, 19);
             componentQuantity.ComponentDefinition.Decimals.Returns(decimals.Value);
             symbol ??= GetRandomString(3);
             componentQuantity.ComponentDefinition.Symbol.Returns(symbol);

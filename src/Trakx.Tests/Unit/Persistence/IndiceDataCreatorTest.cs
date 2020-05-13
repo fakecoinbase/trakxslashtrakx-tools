@@ -8,6 +8,7 @@ using Trakx.Persistence.DAO;
 using Trakx.Tests.Data;
 using Trakx.Tests.Unit.Models;
 using Xunit;
+using Xunit.Abstractions;
 
 namespace Trakx.Tests.Unit.Persistence
 {
@@ -22,11 +23,11 @@ namespace Trakx.Tests.Unit.Persistence
         private readonly IIndiceDataCreator _indiceDataCreator;
         private readonly string _indiceSymbol;
 
-        public IndiceDataCreatorTest(EmptyDbContextFixture fixture)
+        public IndiceDataCreatorTest(EmptyDbContextFixture fixture, ITestOutputHelper output)
         {
             _context = fixture.Context;
             _indiceDataCreator = new IndiceDataCreator(_context);
-            var mockCreator = new MockCreator();
+            var mockCreator = new MockCreator(output);
             _indiceSymbol = mockCreator.GetRandomIndiceSymbol();
         }
 
