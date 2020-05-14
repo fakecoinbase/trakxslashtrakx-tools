@@ -16,30 +16,30 @@ namespace Trakx.Contracts.Wrapping.WrappedToken
 {
     public partial class WrappedTokenService
     {
-        public static Task<TransactionReceipt> DeployContractAndWaitForReceiptAsync(Nethereum.Web3.Web3 web3, WrappedTokenDeployment wrappedTokenDeployment, CancellationTokenSource cancellationTokenSource = null)
+        public static Task<TransactionReceipt> DeployContractAndWaitForReceiptAsync(IWeb3 web3, WrappedTokenDeployment wrappedTokenDeployment, CancellationTokenSource cancellationTokenSource = null)
         {
             return web3.Eth.GetContractDeploymentHandler<WrappedTokenDeployment>().SendRequestAndWaitForReceiptAsync(wrappedTokenDeployment, cancellationTokenSource);
         }
 
-        public static Task<string> DeployContractAsync(Nethereum.Web3.Web3 web3, WrappedTokenDeployment wrappedTokenDeployment)
+        public static Task<string> DeployContractAsync(IWeb3 web3, WrappedTokenDeployment wrappedTokenDeployment)
         {
             return web3.Eth.GetContractDeploymentHandler<WrappedTokenDeployment>().SendRequestAsync(wrappedTokenDeployment);
         }
 
-        public static async Task<WrappedTokenService> DeployContractAndGetServiceAsync(Nethereum.Web3.Web3 web3, WrappedTokenDeployment wrappedTokenDeployment, CancellationTokenSource cancellationTokenSource = null)
+        public static async Task<WrappedTokenService> DeployContractAndGetServiceAsync(IWeb3 web3, WrappedTokenDeployment wrappedTokenDeployment, CancellationTokenSource cancellationTokenSource = null)
         {
             var receipt = await DeployContractAndWaitForReceiptAsync(web3, wrappedTokenDeployment, cancellationTokenSource);
             return new WrappedTokenService(web3, receipt.ContractAddress);
         }
 
-        protected Nethereum.Web3.Web3 Web3{ get; }
+        protected IWeb3 Web3{ get; }
 
         public ContractHandler ContractHandler { get; }
 
-        public WrappedTokenService(Nethereum.Web3.Web3 web3, string tokenSymbol)
+        public WrappedTokenService(IWeb3 web3, string tokenSymbol)
         {
             Web3 = web3;
-            ContractHandler = web3.Eth.GetContractHandler(DeployedContractAddresses.AddressByName[tokenSymbol.ToLower()]);
+            ContractHandler = web3.Eth.GetContractHandler(RinkebyDeployedContractAddresses.AddressByName[tokenSymbol.ToLower()]);
         }
 
         public Task<string> AddBurnerRequestAsync(AddBurnerFunction addBurnerFunction)

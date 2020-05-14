@@ -16,7 +16,6 @@ using Trakx.Common.Extensions;
 using Trakx.Common.Interfaces.Indice;
 using Trakx.Contracts.Set;
 using Trakx.Contracts.Set.Core;
-
 [assembly:InternalsVisibleTo("Trakx.Tests")]
 
 namespace Trakx.Common.Ethereum
