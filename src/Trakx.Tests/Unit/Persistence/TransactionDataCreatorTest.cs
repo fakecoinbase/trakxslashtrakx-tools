@@ -30,7 +30,7 @@ namespace Trakx.Tests.Unit.Persistence
         [Fact]
         public async Task SaveIndiceSupplyTransaction_should_return_true_if_addition_succeed()
         {
-            var compositionToSave = new IndiceCompositionDao(new IndiceDefinitionDao("12/05/2020;11h19;52s", "SimplierTest", "nothing to say", 8, "EthereumAddress", DateTime.Now), 1, DateTime.Today, null, null);
+            var compositionToSave = new IndiceCompositionDao(new IndiceDefinitionDao(_mockCreator.GetRandomIndiceSymbol(), "SimplierTest", "nothing to say", 8, "EthereumAddress", DateTime.Now), 1, DateTime.Today, null, null);
             var transactionToSave = new IndiceSupplyTransactionDao(new DateTime(2015, 8, 10), compositionToSave, SupplyTransactionType.Redeem, 10m, "0x2317D87e46691ECc6203514A4c43fd806db281ff", "Aymeric", _mockCreator.GetRandomEthereumTransactionHash(), null);
             
             var isAdded = await _transactionDataCreator.SaveIndiceSupplyTransaction(transactionToSave);

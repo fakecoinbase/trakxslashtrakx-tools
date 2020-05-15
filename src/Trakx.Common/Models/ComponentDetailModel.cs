@@ -1,7 +1,7 @@
 ﻿using Ardalis.GuardClauses;
 using Trakx.Common.Interfaces.Indice;
 
-namespace Trakx.IndiceManager.Server.Models
+namespace Trakx.Common.Models
 {
     public class ComponentDetailModel
     {

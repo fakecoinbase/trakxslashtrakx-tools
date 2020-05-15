@@ -1,12 +1,14 @@
 ﻿using System;
 using System.Collections.Generic;
 using FluentAssertions;
+using Trakx.Common.Core;
 using Trakx.Common.Extensions;
-using Trakx.IndiceManager.Server.Models;
+using Trakx.Common.Interfaces.Indice;
+using Trakx.Common.Models;
 using Trakx.Persistence.DAO;
 using Xunit;
 
-namespace Trakx.IndiceManager.Server.Tests.Unit.Model
+namespace Trakx.Tests.Unit.Common.Model
 {
     public class IndiceCompositionModelTest
     {
@@ -36,69 +38,66 @@ namespace Trakx.IndiceManager.Server.Tests.Unit.Model
         [Fact]
         public void FromModelToIndiceComposition_should_create_composition_on_new_indice()
         {
-            var result = _newComposition.FromModelToIndiceComposition(null) as IndiceCompositionDao;
+            var result = _newComposition.ConvertToIIndiceComposition(null);
 
             VerifyComposition(result);
             VerifyIndiceModification(result);
-            VerifyComponentQuantityDao(result,_newIndice.NaturalUnit);
+            VerifyComponentQuantityDao(result);
         }
 
         [Fact]
         public void FromModelToIndiceComposition_should_create_composition_on_saved_indice_and_modify_indice()
         {
             var savedIndice = new IndiceDefinitionDao(null, null, null, 2, null, null);
-            var result = _newComposition.FromModelToIndiceComposition(savedIndice) as IndiceCompositionDao;
+            var result = _newComposition.ConvertToIIndiceComposition(savedIndice);
 
             VerifyComposition(result);
             VerifyIndiceModification(result);
-            VerifyComponentQuantityDao(result, _newIndice.NaturalUnit);
+            VerifyComponentQuantityDao(result);
         }
 
-        
+
         [Fact]
         public void FromModelToIndiceComposition_should_create_composition_on_published_indice_and_dont_modify_indice()
         {
             var publishedIndice = new IndiceDefinitionDao("TRX", null, null, 2, "published address", null);
-            var result = _newComposition.FromModelToIndiceComposition(publishedIndice) as IndiceCompositionDao;
+            var result = _newComposition.ConvertToIIndiceComposition(publishedIndice);
 
             VerifyComposition(result);
-            VerifyComponentQuantityDao(result, publishedIndice.NaturalUnit);
+            VerifyComponentQuantityDao(result);
 
-            result.IndiceDefinitionDao.Address.Should().Be(publishedIndice.Address);
-            result.IndiceDefinitionDao.NaturalUnit.Should().Be(publishedIndice.NaturalUnit);
-            result.IndiceDefinitionDao.Symbol.Should().Be(publishedIndice.Symbol);
-            result.IndiceDefinitionDao.CreationDate.Should().Be(publishedIndice.CreationDate);
-            result.IndiceDefinitionDao.Description.Should().Be(publishedIndice.Description);
+            result.IndiceDefinition.Address.Should().Be(publishedIndice.Address);
+            result.IndiceDefinition.NaturalUnit.Should().Be(publishedIndice.NaturalUnit);
+            result.IndiceDefinition.Symbol.Should().Be(publishedIndice.Symbol);
+            result.IndiceDefinition.CreationDate.Should().Be(publishedIndice.CreationDate);
+            result.IndiceDefinition.Description.Should().Be(publishedIndice.Description);
         }
 
 
-        private void VerifyComposition(IndiceCompositionDao result)
+        private void VerifyComposition(IIndiceComposition result)
         {
             result.Symbol.Should().Be($"{_newIndice.Symbol}{_newComposition.CreationDate:yyMM}");
             result.CreationDate.Should().Be(_newComposition.CreationDate);
             result.Version.Should().Be(_newComposition.Version);
-            result.Id.Should().Be($"{_newIndice.Symbol}|{_newComposition.Version}");
         }
 
-        private void VerifyIndiceModification(IndiceCompositionDao result)
+        private void VerifyIndiceModification(IIndiceComposition result)
         {
-            result.IndiceDefinitionDao.Address.Should().Be(_newIndice.Address);
-            result.IndiceDefinitionDao.NaturalUnit.Should().Be(_newIndice.NaturalUnit);
-            result.IndiceDefinitionDao.Symbol.Should().Be(_newIndice.Symbol);
-            result.IndiceDefinitionDao.CreationDate.Should().Be(_newIndice.CreationDate);
-            result.IndiceDefinitionDao.Description.Should().Be(_newIndice.Description);
+            result.IndiceDefinition.Address.Should().Be(_newIndice.Address);
+            result.IndiceDefinition.NaturalUnit.Should().Be(_newIndice.NaturalUnit);
+            result.IndiceDefinition.Symbol.Should().Be(_newIndice.Symbol);
+            result.IndiceDefinition.CreationDate.Should().Be(_newIndice.CreationDate);
+            result.IndiceDefinition.Description.Should().Be(_newIndice.Description);
+            result.IndiceDefinition.Name.Should().Be(_newIndice.Name);
         }
 
-        private void VerifyComponentQuantityDao(IndiceCompositionDao result,ushort indiceNaturalUnit)
+        private void VerifyComponentQuantityDao(IIndiceComposition result)
         {
-            result.ComponentQuantityDaos.Count.Should().Be(1);
-            result.ComponentQuantityDaos[0].IndiceCompositionDao.Should().Be(result);
-            result.ComponentQuantityDaos[0].Quantity
-                .DescaleComponentQuantity(_newComposition.Components[0].Decimals, indiceNaturalUnit).Should()
+            result.ComponentQuantities.Count.Should().Be(1);
+            result.ComponentQuantities[0].Quantity.DescaleComponentQuantity(result.ComponentQuantities[0].ComponentDefinition.Decimals,result.IndiceDefinition.NaturalUnit).Should()
                 .Be(_newComposition.Components[0].Quantity);
-            result.ComponentQuantityDaos[0].ComponentDefinitionDao.Symbol.Should()
+            result.ComponentQuantities[0].ComponentDefinition.Symbol.Should()
                 .Be(_newComposition.Components[0].Symbol);
-            result.ComponentQuantityDaos[0].Id.Should().Be($"{result.Id}|{_newComposition.Components[0].Symbol}");
         }
     }
 }

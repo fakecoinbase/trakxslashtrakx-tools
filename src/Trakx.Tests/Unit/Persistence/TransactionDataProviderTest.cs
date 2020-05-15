@@ -30,8 +30,7 @@ namespace Trakx.Tests.Unit.Persistence
         public async Task GetWrappingTransactionByNativeTransactionHash_should_return_null_when_transaction_not_in_database()
         {
             var result =
-                await _transactionDataProvider.GetWrappingTransactionByNativeTransactionHash(
-                    "test12/05/2020;09h33;16515612secondes");
+                await _transactionDataProvider.GetWrappingTransactionByNativeTransactionHash(_mockCreator.GetRandomString(50));
 
             result.Should().BeNull();
         }
@@ -45,16 +44,13 @@ namespace Trakx.Tests.Unit.Persistence
                 .GetWrappingTransactionByNativeTransactionHash(transaction.NativeChainTransactionHash);
 
             RetrievedWrappingTransactionShouldBeTheGoodOne(result, transaction);
-
-            
         }
 
         [Fact]
         public async Task GetWrappingTransactionByEthereumTransactionHash_should_return_null_if_transaction_not_in_database()
         {
             var result =
-                await _transactionDataProvider.GetWrappingTransactionByNativeTransactionHash(
-                    "test12/05/2020;09h43;000236987secondes");
+                await _transactionDataProvider.GetWrappingTransactionByNativeTransactionHash(_mockCreator.GetRandomString(50));
 
             result.Should().BeNull();
         }
@@ -98,7 +94,7 @@ namespace Trakx.Tests.Unit.Persistence
         [Fact]
         public async Task GetAllIndiceSupplyTransactionsByUser_should_return_list_of_indiceSupplyTransaction()
         {
-            var composition = new IndiceCompositionDao(new IndiceDefinitionDao("12/05/2020;10h04", "SimplierTest", "nothing to say", 8, "EthereumAddress", DateTime.Now), 1, DateTime.Today, null, null);
+            var composition = new IndiceCompositionDao(new IndiceDefinitionDao(_mockCreator.GetRandomIndiceSymbol(), "SimplierTest", "nothing to say", 8, "EthereumAddress", DateTime.Now), 1, DateTime.Today, null, null);
             var userName = "Aymeric"+_mockCreator.GetRandomString(10);
             var transaction = new IndiceSupplyTransactionDao(new DateTime(2015, 8, 10), composition, SupplyTransactionType.Redeem, 10m, "0x2317D87e46691ECc6203514A4c43fd806db281ff", userName, null, null);
             await _context.IndiceSupplyTransactions.AddRangeAsync(transaction);

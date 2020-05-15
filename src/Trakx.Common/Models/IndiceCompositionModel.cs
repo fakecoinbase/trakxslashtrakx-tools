@@ -1,12 +1,10 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Linq;
-using System.Runtime.CompilerServices;
 using Trakx.Common.Core;
 using Trakx.Common.Interfaces.Indice;
-using Trakx.Persistence.DAO;
 
-namespace Trakx.IndiceManager.Server.Models
+namespace Trakx.Common.Models
 {
     public class IndiceCompositionModel
     {
@@ -39,24 +37,21 @@ namespace Trakx.IndiceManager.Server.Models
 
         public uint Version { get; set; }
 
-        public IIndiceComposition FromModelToIndiceComposition(IIndiceDefinition? indiceDefinition)
+        public IIndiceComposition ConvertToIIndiceComposition(IIndiceDefinition indiceDefinition) 
         {
-            var indice= indiceDefinition?? new IndiceDefinitionDao(IndiceDetail.Symbol, IndiceDetail.Name,
+            var indice = indiceDefinition ?? new IndiceDefinition(IndiceDetail.Symbol, IndiceDetail.Name,
                 IndiceDetail.Description, IndiceDetail.NaturalUnit, IndiceDetail.Address, IndiceDetail.CreationDate);
 
             indice = string.IsNullOrWhiteSpace(indice.Address)
-                ? new IndiceDefinitionDao(IndiceDetail.Symbol, IndiceDetail.Name,
+                ? new IndiceDefinition(IndiceDetail.Symbol, IndiceDetail.Name,
                     IndiceDetail.Description, IndiceDetail.NaturalUnit, IndiceDetail.Address, IndiceDetail.CreationDate)
                 : indice;
 
-            var indiceCompositionDao= new IndiceCompositionDao((IndiceDefinitionDao)indice,Version,CreationDate,Address,Symbol);
+            var componentQuantities = Components.Select(c => new ComponentQuantity(new ComponentDefinition(c.Address, c.Name, c.Symbol, c.CoinGeckoId, c.Decimals), Convert.ToUInt16(c.Quantity),indice.NaturalUnit)).ToList<IComponentQuantity>();
 
-            var componentQuantities = Components.Select(c=>new ComponentQuantityDao(indiceCompositionDao,
-                new ComponentDefinitionDao(c.Address,c.Name,c.Symbol,c.CoinGeckoId,c.Decimals), Convert.ToUInt16(c.Quantity))).ToList<ComponentQuantityDao>();
+            var indiceComposition = new IndiceComposition(indice, componentQuantities,Version, CreationDate, Address);
             
-            indiceCompositionDao.ComponentQuantityDaos = componentQuantities;
-
-            return indiceCompositionDao;
+            return indiceComposition;
         }
     }
 }

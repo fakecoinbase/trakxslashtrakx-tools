@@ -46,10 +46,7 @@ namespace Trakx.Common.Interfaces.Indice
         public static bool IsValid(this IIndiceDefinition definition)
         {
             Guard.Against.Default(definition, nameof(definition));
-            Guard.Against.NullOrWhiteSpace(definition.Name, nameof(definition.Name));
             Guard.Against.NullOrWhiteSpace(definition.Symbol, nameof(definition.Symbol));
-            Guard.Against.NullOrWhiteSpace(definition.Description, nameof(definition.Description));
-            Guard.Against.OutOfRange(definition.NaturalUnit, nameof(definition.NaturalUnit), 0, 50);
             return true;
         }
 

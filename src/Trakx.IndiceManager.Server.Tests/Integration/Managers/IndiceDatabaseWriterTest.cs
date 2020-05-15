@@ -4,12 +4,14 @@ using System.Threading.Tasks;
 using FluentAssertions;
 using NSubstitute;
 using Trakx.Common.Interfaces;
+using Trakx.Common.Models;
 using Trakx.IndiceManager.Server.Managers;
-using Trakx.IndiceManager.Server.Models;
 using Trakx.Persistence;
 using Trakx.Persistence.DAO;
+using Trakx.Tests.Data;
 using Trakx.Tests.Unit.Models;
 using Xunit;
+using Xunit.Abstractions;
 
 namespace Trakx.IndiceManager.Server.Tests.Integration.Managers
 { 
@@ -21,8 +23,9 @@ namespace Trakx.IndiceManager.Server.Tests.Integration.Managers
         private readonly IIndiceDataCreator _indiceDataCreator;
         private readonly IIndiceDataModifier _indiceDataModifier;
         private readonly IndiceRepositoryContext _dbContext;
+        private readonly MockCreator _mock;
 
-        public IndiceDatabaseWriterTest()
+        public IndiceDatabaseWriterTest(ITestOutputHelper output)
         {
             _dbContext = new EmptyDbContextFixture().Context;
             _indiceDataCreator = Substitute.For<IIndiceDataCreator>();
@@ -44,6 +47,7 @@ namespace Trakx.IndiceManager.Server.Tests.Integration.Managers
                 Version = 2,
                 Components = new List<ComponentDetailModel> { new ComponentDetailModel { Quantity = 3.0m, Symbol = "btc", Address = "0xab6e10fbacf109e45646664cdce4876c7e729bf", Name = "bitcoin", CoinGeckoId = "bitcoin" } }
             };
+            _mock=new MockCreator(output);
         }
 
         public void Dispose()
@@ -97,6 +101,17 @@ namespace Trakx.IndiceManager.Server.Tests.Integration.Managers
             await _indiceDataCreator.ReceivedWithAnyArgs(1).AddNewComposition(default, default);
             await _indiceDataModifier.DidNotReceiveWithAnyArgs().ModifyComposition(default);
         }
+
+        [Fact]
+        public async Task TrySaveComposition_should_add_new_composition_on_new_indice()
+        {
+            _composition.IndiceDetail.Symbol = _mock.GetRandomIndiceSymbol();
+            await _indiceWriter.TrySaveComposition(_composition);
+
+            await _indiceDataCreator.ReceivedWithAnyArgs(1).AddNewComposition(default, default);
+            await _indiceDataModifier.DidNotReceiveWithAnyArgs().ModifyComposition(default);
+        }
+
 
         [Fact]
         public async Task TrySaveIndice_should_modify_saved_indice()

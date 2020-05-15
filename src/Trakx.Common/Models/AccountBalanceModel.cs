@@ -3,7 +3,7 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
 
-namespace Trakx.IndiceManager.Server.Models
+namespace Trakx.Common.Models
 {
     public class AccountBalanceModel
     {

@@ -128,7 +128,7 @@ namespace Trakx.Persistence
             var issueDate = composition.CreationDate;
             var valuation = await _dbContext.IndiceValuations
                 .IncludeAllLinkedEntities()
-                .Where(c => c.IndiceCompositionDao.Id == $"{composition.IndiceDefinition.Symbol}|{composition.Version}"
+                .Where(c => c.IndiceCompositionDao.Id == composition.GetCompositionId()
                                       && c.QuoteCurrency == quoteCurrency
                                       && c.TimeStamp == issueDate)
                 .AsNoTracking()

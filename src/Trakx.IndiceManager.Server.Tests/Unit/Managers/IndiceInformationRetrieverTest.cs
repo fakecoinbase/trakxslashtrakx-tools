@@ -1,16 +1,7 @@
-﻿using FluentAssertions;
-using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Threading.Tasks;
+﻿using System.Threading.Tasks;
 using NSubstitute;
-using Trakx.Common.Extensions;
 using Trakx.Common.Interfaces;
 using Trakx.IndiceManager.Server.Managers;
-using Trakx.IndiceManager.Server.Models;
-using Trakx.Persistence;
-using Trakx.Persistence.DAO;
-using Trakx.Tests.Unit.Models;
 using Xunit;
 
 namespace Trakx.IndiceManager.Server.Tests.Unit.Managers

@@ -25,5 +25,8 @@
     <ProjectReference Include="..\Trakx.IndiceManager.Server\Trakx.IndiceManager.Server.csproj" />
     <ProjectReference Include="..\Trakx.Tests\Trakx.Tests.csproj" />
   </ItemGroup>
+  <ItemGroup>
+    <Folder Include="Unit\Model\" />
+  </ItemGroup>
 
 </Project>

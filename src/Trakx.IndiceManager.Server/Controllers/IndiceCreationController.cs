@@ -3,8 +3,8 @@ using System.Linq;
 using System.Threading.Tasks;
 using Microsoft.AspNetCore.Mvc;
 using Nethereum.Util;
+using Trakx.Common.Models;
 using Trakx.IndiceManager.Server.Managers;
-using Trakx.IndiceManager.Server.Models;
 
 namespace Trakx.IndiceManager.Server.Controllers
 {

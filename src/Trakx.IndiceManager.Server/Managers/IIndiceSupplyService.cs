@@ -1,7 +1,7 @@
 ﻿using System.Collections.Generic;
 using System.Threading.Tasks;
 using Trakx.Common.Interfaces.Transaction;
-using Trakx.IndiceManager.Server.Models;
+using Trakx.Common.Models;
 
 namespace Trakx.IndiceManager.Server.Managers
 {

@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using System.ComponentModel.DataAnnotations;
 using System.ComponentModel.DataAnnotations.Schema;
 using System.Linq;
+using Trakx.Common.Extensions;
 using Trakx.Common.Interfaces.Indice;
 
 namespace Trakx.Persistence.DAO
@@ -30,6 +31,20 @@ namespace Trakx.Persistence.DAO
             Symbol = $"{indiceDefinition.Symbol}{creationDate:yyMM}";
             ComponentQuantityDaos = new List<ComponentQuantityDao>();
             IndiceValuationDaos = new List<IndiceValuationDao>();
+        }
+
+        public IndiceCompositionDao(IIndiceComposition composition)
+        {
+            IndiceDefinitionDao = new IndiceDefinitionDao(composition.IndiceDefinition.Symbol, composition.IndiceDefinition.Name, composition.IndiceDefinition.Description, composition.IndiceDefinition.NaturalUnit, composition.IndiceDefinition.Address, composition.IndiceDefinition.CreationDate);
+            Version = composition.Version;
+            CreationDate = composition.CreationDate;
+            Address = composition.Address;
+            Symbol = $"{IndiceDefinition.Symbol}{CreationDate:yyMM}";
+            Id = $"{IndiceDefinition.Symbol}|{Version}";
+            
+            ComponentQuantityDaos = composition.ComponentQuantities.Select(c => new ComponentQuantityDao(this,
+                new ComponentDefinitionDao(c.ComponentDefinition.Address, c.ComponentDefinition.Name, c.ComponentDefinition.Symbol, c.ComponentDefinition.CoinGeckoId, c.ComponentDefinition.Decimals), Convert.ToUInt64(c.Quantity.DescaleComponentQuantity(c.ComponentDefinition.Decimals, IndiceDefinitionDao.NaturalUnit)))).ToList<ComponentQuantityDao>();
+            IndiceValuationDaos=new List<IndiceValuationDao>();
         }
 
         public List<ComponentQuantityDao> ComponentQuantityDaos { get; set; }

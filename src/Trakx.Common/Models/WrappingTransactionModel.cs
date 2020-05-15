@@ -1,7 +1,7 @@
 ﻿using System;
 using Trakx.Common.Interfaces.Transaction;
 
-namespace Trakx.IndiceManager.Server.Models
+namespace Trakx.Common.Models
 {
     public class WrappingTransactionModel
     {
