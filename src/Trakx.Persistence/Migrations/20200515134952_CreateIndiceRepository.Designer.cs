@@ -10,8 +10,8 @@ using Trakx.Persistence;
 namespace Trakx.Persistence.Migrations
 {
     [DbContext(typeof(IndiceRepositoryContext))]
-    [Migration("20200513093146_WrappingTransactionToSupplyTransaction")]
-    partial class WrappingTransactionToSupplyTransaction
+    [Migration("20200515134952_CreateIndiceRepository")]
+    partial class CreateIndiceRepository
     {
         protected override void BuildTargetModel(ModelBuilder modelBuilder)
         {
