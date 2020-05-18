@@ -1,5 +1,8 @@
 ﻿using AutoMapper;
 using Microsoft.Extensions.DependencyInjection;
+using Trakx.Common.Interfaces;
+using Trakx.IndiceManager.Server.Managers;
+using Trakx.Persistence;
 using Trakx.Persistence.DAO;
 
 namespace Trakx.IndiceManager.Server.Data
@@ -18,5 +21,27 @@ namespace Trakx.IndiceManager.Server.Data
             serviceCollection.AddSingleton(autoMapper);
             return serviceCollection;
         }
+
+        public static IServiceCollection AddAllManagerForControllers(this IServiceCollection service)
+        {
+            service.AddScoped<IComponentInformationRetriever, ComponentInformationRetriever>();
+            service.AddScoped<IIndiceInformationRetriever, IndiceInformationRetriever>();
+            service.AddScoped<IIndiceDatabaseWriter, IndiceDatabaseWriter>();
+            service.AddScoped<IIndiceSupplyService, IndiceSupplyService>();
+
+            return service;
+        }
+
+        public static IServiceCollection AddDatabaseFunctions(this IServiceCollection service)
+        {
+            service.AddScoped<IIndiceDataProvider, IndiceDataProvider>();
+            service.AddScoped<IIndiceDataModifier, IndiceDataModifier>();
+            service.AddScoped<IIndiceDataCreator, IndiceDataCreator>();
+            service.AddScoped<ITransactionDataProvider, TransactionDataProvider>();
+            service.AddScoped<ITransactionDataCreator, TransactionDataCreator>();
+            service.AddScoped<ITransactionDataModifier, TransactionDataModifier>();
+            return service;
+        } 
+
     }
 }

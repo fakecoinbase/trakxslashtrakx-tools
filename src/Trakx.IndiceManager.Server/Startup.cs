@@ -9,13 +9,13 @@ using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Hosting;
 using Microsoft.EntityFrameworkCore;
 using Trakx.IndiceManager.Server.Data;
-using Trakx.IndiceManager.Server.Managers;
 using Trakx.Persistence;
 using Trakx.Persistence.Initialisation;
 using Microsoft.OpenApi.Models;
 using Trakx.Common.Ethereum;
 using Trakx.Common.Interfaces;
 using Trakx.Common.Sources.CoinGecko;
+using Trakx.IndiceManager.Server.Managers;
 
 
 namespace Trakx.IndiceManager.Server
@@ -38,12 +38,8 @@ namespace Trakx.IndiceManager.Server
                 options.UseSqlServer(Configuration.GetConnectionString("SqlServerConnection")));
 
             services.AddControllers();
-            services.AddScoped<IComponentInformationRetriever, ComponentInformationRetriever>();
-            services.AddScoped<IIndiceInformationRetriever, IndiceInformationRetriever>();
-            services.AddScoped<IIndiceDatabaseWriter,IndiceDatabaseWriter>();
-            services.AddScoped<IIndiceDataProvider, IndiceDataProvider>();
-            services.AddScoped<IIndiceDataModifier, IndiceDataModifier>();
-            services.AddScoped<IIndiceDataCreator, IndiceDataCreator>();
+            services.AddAllManagerForControllers();
+            services.AddDatabaseFunctions();
 
             services.AddMappings();
             // DB Creation and Seeding

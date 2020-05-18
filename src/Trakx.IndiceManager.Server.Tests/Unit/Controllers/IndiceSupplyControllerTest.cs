@@ -76,8 +76,10 @@ namespace Trakx.IndiceManager.Server.Tests.Unit.Controllers
             var result = await _controller.SaveTransaction(_transaction);
             ((CreatedAtActionResult) result.Result).ActionName.Should()
                 .Be("The transaction has been added to the database");
+
             ((CreatedAtActionResult)result.Result).StatusCode.Should()
                 .Be(201);
+
             ((CreatedAtActionResult)result.Result).Value.Should()
                 .Be(_transaction);
         }

@@ -18,6 +18,9 @@ namespace Trakx.Common.Models
             Address = quantity.ComponentDefinition.Address;
             Symbol = quantity.ComponentDefinition.Symbol;
             Quantity = quantity.Quantity;
+            Name = quantity.ComponentDefinition.Name;
+            Decimals = quantity.ComponentDefinition.Decimals;
+            CoinGeckoId = quantity.ComponentDefinition.CoinGeckoId;
         }
 
         public string Address { get; set; }

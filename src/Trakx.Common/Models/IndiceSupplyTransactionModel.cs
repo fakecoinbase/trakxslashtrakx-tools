@@ -1,4 +1,8 @@
 ﻿using System;
+using System.Collections.Generic;
+using System.Linq;
+using Trakx.Common.Core;
+using Trakx.Common.Interfaces.Indice;
 using Trakx.Common.Interfaces.Transaction;
 
 namespace Trakx.Common.Models
@@ -43,8 +47,24 @@ namespace Trakx.Common.Models
                    && !string.IsNullOrWhiteSpace(User)
                    && !string.IsNullOrWhiteSpace(SenderAddress)
                    && CreationTimestamp != default
-                   && TransactionType != default 
+                   && TransactionType != null 
                    && IndiceQuantity > 0m;
+        }
+
+        public IIndiceSupplyTransaction ConvertToIIndiceSupplyTransaction()
+        {
+            var indiceDefinition = new IndiceDefinition(IndiceComposition.IndiceDetail.Symbol, IndiceComposition.IndiceDetail.Name, 
+                IndiceComposition.IndiceDetail.Description, IndiceComposition.IndiceDetail.NaturalUnit, IndiceComposition.IndiceDetail.Address, 
+                IndiceComposition.IndiceDetail.CreationDate);
+
+            var components = IndiceComposition.Components.Select(c =>
+                new ComponentQuantity(new ComponentDefinition(c.Address, c.Name, c.Symbol, c.CoinGeckoId, c.Decimals),
+                    Convert.ToUInt64(c.Quantity), IndiceComposition.IndiceDetail.NaturalUnit)).ToList<IComponentQuantity>();
+
+            var composition = new IndiceComposition(indiceDefinition, components,IndiceComposition.Version,IndiceComposition.CreationDate,IndiceComposition.Address);
+            var supplyTransaction = new IndiceSupplyTransaction(CreationTimestamp, composition,TransactionType,IndiceQuantity,SenderAddress,User,TransactionHash,EthereumBlockId);
+
+            return supplyTransaction;
         }
     }
 }
