@@ -2,220 +2,205 @@
 @using System.ComponentModel.Design.Serialization
 @using System.Text.RegularExpressions
 @using System.Threading
-@inject IMatToaster Toaster
+@using Syncfusion.Blazor.Buttons
+@using Syncfusion.Blazor.DropDowns
+@using Syncfusion.Blazor.Inputs
+@using Syncfusion.Blazor.Notifications
+@using Syncfusion.Blazor.Popups
 @page "/Wrapping/wrap_unwrap_token"
 
-<h3>Wrap or Unwrap Tokens</h3>
-<br />
 
-<br />
+<SfToast @ref="Toaster" TimeOut=3000>
+    <ToastPosition X="Center" Y="Bottom"></ToastPosition>
+</SfToast>
+<h1>Wrap or Unwrap Tokens</h1>
+
 <div>
-    <div class="box">
-        <div>
-            <div>Select an option below To wrap or unwrap tokens:<br /></div>
-            <label>
-                <input type="radio" id="wrap-tokens" checked="@myModel.Wrapping" @onclick="myModel.wrappingSelected" />Wrap
-                <input type="radio" id="unwrap-tokens" checked="@(!myModel.Wrapping)" @onclick="myModel.unwrappingSelected" />Unwrap
-            </label>
-        </div>
-    </div>
-    <EditForm Model="myModel" OnValidSubmit="Success" OnInvalidSubmit="Failure" class="box">
-        <DataAnnotationsValidator />
-        <div>
-            <div>
-                <div>Choose the Currency you want to @myModel.selectedChoice() :</div>
-                <select id="select-menu" @bind="myModel.FromCurrency" disabled="@myModel.Disabled">
-                    <option value="">--Select your crypto--</option>
-                    @foreach (string crypto in myModel.CryptocurrencyOptions())
-                    {
-                        <option value="@crypto" id="source-@crypto">@crypto</option>
-                    }
-                </select>
-            </div>
-            <div>
-                Amount you want to exchange:
-                <input id="Amount" type="number" @bind="myModel.Amount" disabled="@myModel.Disabled"/>
-                <span>@myModel.FromCurrency</span>
-            </div>
-            <div>
-                Address where the @myModel.FromCurrency will be send:
-                <input id="app-receiving-address" value="@myModel.AppReceivingAddress" readonly />
+    <div>
+        <EditForm OnValidSubmit="Success" OnInvalidSubmit="Failure" EditContext="@EditContext">
+            <DataAnnotationsValidator />
+            <fieldset>
+                <div>
+                    <div class="form-text">Select an option below to wrap or unwrap tokens:</div>
+                    <div class="col-xs-12 col-sm-12 col-lg-6 col-md-6">
+                        <SfTooltip Content="@WrappingTooltipContent">
+                            <SfRadioButton Label="Wrap" Name="WrappingOperation" Value="Wrap"
+                                           Checked="Model.Wrapping"
+                                           CheckedChanged="WrappingOperationChanged" @ref="WrappingRadioButton" />
+                        </SfTooltip>
+                    </div>
+                    <div class="col-xs-12 col-sm-12 col-lg-6 col-md-6">
+                        <SfTooltip Content="@UnwrappingTooltipContent">
+                            <SfRadioButton Label="Unwrap" Name="WrappingOperation" Value="Unwrap" />
+                        </SfTooltip>
+                    </div>
+                </div>
 
-            </div>
-            <div>
-                Address from which you send the @myModel.FromCurrency:
-                <input id="user-sending-address" pattern="@myModel.GetPatternFrom()" @bind="myModel.SendingAddress" disabled="@myModel.Disabled" />
-            </div>
-            <div>
-                Address where you will receive the wrapped @myModel.FromCurrency:
-                <input id="user-receiving-address" pattern="@myModel.GetPatternTo()" @bind="myModel.ReceivingAddress" disabled="@myModel.Disabled" />
-            </div>
-            <div>
-                <button id="button-submit" type="submit" disabled="@myModel.Disabled" @onclick="HandleOnSubmitClick">@myModel.selectedChoice()</button>
-                <input id="button-reset" type="button" @onclick="HandleOnResetClick" value="Reset"></input>
-            </div>
-        </div>
-        <ValidationSummary />
-    </EditForm>
+
+                <div>
+                    <div>
+                        <div class="form-text">Choose the Currency you want to @SelectedWrappingOperation.ToLower()</div>
+                        <div class="col-xs-12 col-sm-12 col-lg-6 col-md-6">
+                            <SfAutoComplete TValue="string" TItem="string" Placeholder="Currency" @bind-Value="Model.FromCurrency"
+                                            DataSource="@CurrencyOptions" @ref="FromCurrencyTextBox">
+                                <AutoCompleteFieldSettings Value="Text"></AutoCompleteFieldSettings>
+                            </SfAutoComplete>
+                        </div>
+                    </div>
+                    <div>
+                        <div class="form-text">Amount you want to @SelectedWrappingOperation.ToLower()</div>
+                        <div class="col-xs-12 col-sm-12 col-lg-6 col-md-6">
+                            <SfNumericTextBox TValue="decimal?" @bind-Value="Model.Amount" Max="10m" Min="1e-4m" Step="0.01m" Format="@AmountFormatString" @ref="AmountTextBox">
+                            </SfNumericTextBox>
+                        </div>
+                    </div>
+                    <div>
+                        <div class="form-text h4">You will need to send your @Model.FromCurrency tokens to the address @Model.AppReceivingAddress</div>
+                    </div>
+                    <div>
+                        <div class="form-text">Address from which you will send the @Model.FromCurrency tokens for @SelectedWrappingOperation.ToLower()ping</div>
+                        <div class="col-xs-12 col-sm-12 col-lg-6 col-md-6">
+                            @if (Model.Wrapping)
+                            {<SfTextBox @bind-Value="@Model.NativeAddress" @ref="WrappingFromAddress"/> }
+                            else
+                            {<SfTextBox @bind-Value="@Model.EthereumAddress" @ref="UnwrappingFromAddress"/>}
+                        </div>
+                    </div>
+                    <div>
+                        <div class="form-text">In return you will receive @Model.ToCurrency @SelectedWrappingOperation.ToLower() tokens at the address of your choice.</div>
+                        <div class="col-xs-12 col-sm-12 col-lg-6 col-md-6">
+                            @if (Model.Wrapping)
+                            {<SfTextBox @bind-Value="@Model.EthereumAddress" @ref="WrappingToAddress"/> }
+                            else
+                            {<SfTextBox @bind-Value="@Model.NativeAddress" @ref="UnwrappingToAddress"/>}
+                        </div>
+                    </div>
+                    <div>
+                        <SfButton IsPrimary="true" Disabled="IsSubmitDisabled" Type="submit">@SelectedWrappingOperation</SfButton>
+                        <SfButton CssClass="e-outline" OnClick="Reset" @ref="ResetButton">Reset</SfButton>
+                    </div>
+                </div>
+            </fieldset>
+            <ValidationSummary />
+        </EditForm>
+    </div>
 </div>
 
 
 @code {
+    public SfToast Toaster { get; set; }
+    public SfAutoComplete<string, string> FromCurrencyTextBox { get; set; }
+    public SfRadioButton WrappingRadioButton { get; set; }
+    public SfNumericTextBox<decimal?> AmountTextBox { get; set; }
+    public string AmountFormatString => $"#.#### {Model.FromCurrency}";
+    public SfTextBox WrappingFromAddress { get; set; }
+    public SfTextBox WrappingToAddress { get; set; }
+    public SfTextBox UnwrappingFromAddress { get; set; }
+    public SfTextBox UnwrappingToAddress { get; set; }
+    public SfButton ResetButton { get; set; }
 
-    [Parameter] public EventCallback<MouseEventArgs> OnSubmitClick { get; set; }
-    [Parameter] public EventCallback<MouseEventArgs> OnResetClick { get; set; }
+    public string WrappingTooltipContent = "Exchange native currency against its equivalent ERC20 representation";
+    public string UnwrappingTooltipContent = "Redeem an ERC20 Wrapper token for its equivalent in native tokens";
 
-    private Task HandleOnSubmitClick(MouseEventArgs args)
+    public EditContext EditContext { get; set; }
+    public bool IsSubmitDisabled => !EditContext.Validate();
+
+    protected override void OnInitialized()
     {
-        if (myModel.Disabled == false) return OnSubmitClick.InvokeAsync(args);
-        return null;
+        EditContext = new EditContext(Model);
     }
 
-    private Task HandleOnResetClick(MouseEventArgs args)
+    private void Reset(MouseEventArgs args)
     {
-        if (myModel.Disabled == false)
-        {
-            myModel.Wrapping = null;
-            myModel.FromCurrency = null;
-            myModel.ToCurrency = null;
-            myModel.Amount = null;
-            myModel.SendingAddress = null;
-            myModel.ReceivingAddress = null;
-            myModel.Disabled = true;
-            return OnResetClick.InvokeAsync(args);
-        }
-        return null;
+        Model = new WrappingTransactionModel();
+        EditContext = new EditContext(Model);
+        StateHasChanged();
     }
 
-
+    public void WrappingOperationChanged(bool newValue)
+    {
+        Model.Wrapping = newValue;
+        if (FromCurrencyTextBox.Index.HasValue) Model.FromCurrency = CurrencyOptions[FromCurrencyTextBox.Index.Value];
+        StateHasChanged();
+    }
     /// <summary>
     /// Display a "Success" pop up (using MatToaster) when submission succeed.
     /// </summary>
     /// <returns></returns>
-    async Task Success()
+    public async Task Success()
     {
-        if (myModel.Disabled == false)
+        await Toaster.Show(new ToastModel
         {
-            Toaster.Add("your transaction as been submitted successfully", MatToastType.Success, "Success !");
-        }
+            Content = "Your transaction as been submitted successfully",
+            Title = "Success !",
+        });
     }
     /// <summary>
     /// Display an "Error" pop up (using MatToaster) when submission failed.
     /// </summary>
     /// <returns></returns>
-    async Task Failure()
+    public async Task Failure()
     {
-        if (myModel.Disabled == false)
+        await Toaster.Show(new ToastModel
         {
-            Toaster.Add("Your transaction failed, please make sure that you filled correctly the form.", MatToastType.Danger, "Error !");
-        }
+            Content = "Your transaction failed, please make sure that you filled correctly the form.",
+            Title = "Error !",
+        });
     }
 
 
-    public SubmitModel myModel = new SubmitModel();
 
-    public class SubmitModel
+    /// <summary>
+    /// Simply returns a string "Wrap" or "Unwrap" display in submit button, according To the option selected.
+    /// </summary>
+    /// <returns></returns>
+    public string SelectedWrappingOperation => Model.Wrapping ? "Wrap" : "Unwrap";
+
+    private readonly string[] _availableCurrencies = { "BTC", "LTC", "XRP", "XTZ" };
+
+    public List<string> CurrencyOptions => _availableCurrencies.Select(c => (Model.Wrapping ? "" : "w") + c).ToList();
+
+    public WrappingTransactionModel Model = new WrappingTransactionModel();
+
+    public class WrappingTransactionModel
     {
-        private const string ehtereumAddressPattern = "^0x[a-fA-F0-9]{40}$";
-        private const string anyAddressPattern = ".*";
-
-        /// <summary>
-        /// Returns the correct pattern (Regex) for the user sending address for the FromCurrency.
-        /// </summary>
-        /// <returns>user sending address pattern</returns>
-        public string GetPatternFrom()
-        {
-            if(Wrapping == false) return ehtereumAddressPattern;
-            return anyAddressPattern;
-        }
-        /// <summary>
-        /// Returns the correct pattern (Regex) for the user receiving address for the ToCurrency.
-        /// </summary>
-        /// <returns>user receiving address pattern</returns>
-        public string GetPatternTo()
-        {
-            if(Wrapping == false) return anyAddressPattern;
-            return ehtereumAddressPattern;
-        }
+        private const string EthereumAddressPattern = "^0x[a-fA-F0-9]{40}$";
+        private const string NativeAddressPattern = ".*";
 
         [Required]
-        public bool? Wrapping { get; set; }
+        public bool Wrapping { get; set; }
+
         [Required]
         public string? FromCurrency { get; set; }
-        //todo: have a Get request initialing the ToCurrency according to the wrap/unwrap FromCurrency [Required] 
+
+        //todo: have a Get request initialing the ToCurrency according to the wrap/unwrap FromCurrency [Required]
         public string? ToCurrency { get; set; }
-        [Required]
-        public int? Amount { get; set; }
-        [Required]
-        public string? SendingAddress { get; set; }
-        [Required]
-        public string? ReceivingAddress { get; set; }
-        [Required]
-        public bool Disabled { get; set; }
+
+        [Required, Range(1e-4, 10)]
+        public decimal? Amount { get; set; }
+
+        [Required, RegularExpression(EthereumAddressPattern)]
+        public string? EthereumAddress { get; set; }
+
+        [Required, RegularExpression(NativeAddressPattern)]
+        public string? NativeAddress { get; set; }
 
         public string AppReceivingAddress { get; set; }
 
-
-
-        public SubmitModel()
-        {
-            Disabled = true;
-            AppReceivingAddress = "Coinbase-custody-address";
-
-        }
-
-        public SubmitModel(bool _wrapping, string _crypto, int _amount, string _from, string _to)
-        {
-            Wrapping = _wrapping; FromCurrency = _crypto; Amount = _amount; SendingAddress = _from; ReceivingAddress = _to;
-        }
-
-        /// <summary>
-        /// If the user click on the Wrapping button, bool "Wrapping" is set To TRUE. We also reinitialize FromCurrency and ToCurrency.
-        /// </summary>
-        public void wrappingSelected()
+        public WrappingTransactionModel()
         {
             Wrapping = true;
-            Disabled = false;
-            FromCurrency = null;
-            ToCurrency = null;
-        }
-        /// <summary>
-        /// If the user click on the unwrapping button, bool "Wrapping" is set To FALSE. We also reinitialize FromCurrency and ToCurrency.
-        /// </summary>
-        public void unwrappingSelected()
-        {
-            Wrapping = false;
-            Disabled = false;
-            FromCurrency = null;
-            ToCurrency = null;
-        }
-        /// <summary>
-        /// Simply returns a string "Wrap" or "Unwrap" display in submit button, according To the option selected.
-        /// </summary>
-        /// <returns></returns>
-        public string selectedChoice()
-        {
-            if(Wrapping == null) return "Wrap/Unwrap";
-            return (bool)Wrapping ? "Wrap" : "Unwrap";
+            AppReceivingAddress = "Coinbase-custody-address";
         }
 
-        public string[] wrappingOptions = new[]
+        public WrappingTransactionModel(bool wrapping, string crypto, int amount, string ethereumAddress, string nativeAddress)
         {
-            "BTC", "LTC", "XRP", "XTZ"
-        };
-        public string[] unwrappingOptions = new[]
-        {
-            "wBTC", "wLTC", "wXRP", "wXTZ"
-        };
-
-        /// <summary>
-        /// Returns an array of strings of the cryptocurrencies available for wrap/unwrap (according To the option selected upwind)
-        /// </summary>
-        /// <returns></returns>
-        public string[] CryptocurrencyOptions()
-        {
-            if (Disabled || Wrapping == null) return new[] { "Error: select an option above" };
-            return (bool)Wrapping ? wrappingOptions : unwrappingOptions;
+            EthereumAddress = ethereumAddress;
+            NativeAddress = nativeAddress;
+            Wrapping = wrapping;
+            FromCurrency = crypto;
+            Amount = amount;
         }
+
     }
 }

@@ -1,11 +1,9 @@
 using System;
 using System.Net.Http;
-using System.Collections.Generic;
 using System.Threading.Tasks;
-using System.Text;
 using Microsoft.AspNetCore.Components.WebAssembly.Hosting;
 using Microsoft.Extensions.DependencyInjection;
-using MatBlazor;
+using Syncfusion.Blazor;
 
 namespace Trakx.IndiceManager.Client
 {
@@ -25,19 +23,7 @@ namespace Trakx.IndiceManager.Client
                 options.ProviderOptions.ClientId = "33333333-3333-3333-33333333333333333";
             });
 
-            builder.Services.AddMatToaster(config =>
-            {
-                config.Position = MatToastPosition.TopCenter;
-                config.PreventDuplicates = true;
-                config.NewestOnTop = true;
-                config.ShowCloseButton = true;
-                config.MaximumOpacity = 95;
-                config.VisibleStateDuration = 3000;
-                config.ShowCloseButton = true;
-                config.ShowProgressBar = true;
-                config.MaximumOpacity = Convert.ToInt32("100");
-                config.RequireInteraction = true;
-            });
+            builder.Services.AddSyncfusionBlazor();
 
             await builder.Build().RunAsync();
         }

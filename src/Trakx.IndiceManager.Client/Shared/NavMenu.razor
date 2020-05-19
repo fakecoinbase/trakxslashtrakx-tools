@@ -1,79 +1,46 @@
-﻿@using Microsoft.AspNetCore.Components;
+﻿@using Syncfusion.Blazor.Navigations
 @inject NavigationManager navigationManager
 
-<MatNavMenu Multi="true" Class="app-sidebar">
-    <MatNavSubMenu>
-        <MatNavSubMenuHeader>
-            <MatNavItem AllowSelection="false">
-            @*<MatNavItem AllowSelection="false" >*@
-                <MatIcon Style="color: white;">monetization_on</MatIcon>
-                <span class="miniHover"> Wrapping</span>
-            </MatNavItem>
-        </MatNavSubMenuHeader>
-        <MatNavSubMenuList>
-            <MatNavItem Href="@navigationManager.ToAbsoluteUri("Wrapping/wrapping_balance").AbsoluteUri" >
-                <MatIcon Style="color: white;">account_balance</MatIcon> <span class="miniHover">Wrapping Balances</span>
-
-            </MatNavItem>
-            <MatNavItem Href="@navigationManager.ToAbsoluteUri("Wrapping/wrap_unwrap_token").AbsoluteUri" >
-                <MatIcon Style="color: white;">swap_horiz</MatIcon> <span class="miniHover">Wrap/Unwrap Tokens</span>
-            </MatNavItem>
-            <MatNavItem Href="@navigationManager.ToAbsoluteUri("Wrapping/wrapping_history").AbsoluteUri" >
-                <MatIcon Style="color: white;">history</MatIcon> <span class="miniHover">Wrapping History</span>
-            </MatNavItem>
-        </MatNavSubMenuList>
-    </MatNavSubMenu>
-
-    <MatNavSubMenu>
-        <MatNavSubMenuHeader>
-            <MatNavItem AllowSelection="false" >
-                <MatIcon Style="color: white;">pie_chart</MatIcon>
-                <span class="miniHover"> Indices Composition</span>
-
-            </MatNavItem>
-        </MatNavSubMenuHeader>
-        <MatNavSubMenuList>
-            <MatNavItem Href="@navigationManager.ToAbsoluteUri("IndiceComposition/indice_list").AbsoluteUri" >
-                <MatIcon Style="color: white;">list</MatIcon> <span class="miniHover">Indices List</span>
-
-            </MatNavItem>
-            <MatNavItem Href="@navigationManager.ToAbsoluteUri("IndiceComposition/indice_creation").AbsoluteUri" >
-                <MatIcon Style="color: white;">create</MatIcon> <span class="miniHover">Indice Creation</span>
-
-            </MatNavItem>
-            <MatNavItem Href="@navigationManager.ToAbsoluteUri("IndiceComposition/add_erc20").AbsoluteUri" >
-                <MatIcon Style="color: white;">add</MatIcon> <span class="miniHover">Add New ERC20 Component</span>
-
-            </MatNavItem>
-        </MatNavSubMenuList>
-    </MatNavSubMenu>
-
-    <MatNavSubMenu>
-        <MatNavSubMenuHeader>
-            <MatNavItem AllowSelection="false" >
-                <MatIcon Style="color: white;">add_shopping_cart</MatIcon>@*insert_chart_outlined*@
-                <span class="miniHover"> Indices Marketplace</span>
-
-            </MatNavItem>
-        </MatNavSubMenuHeader>
-        <MatNavSubMenuList>
-            <MatNavItem Href="@navigationManager.ToAbsoluteUri("IndiceMarketplace/issue_redeem_indice").AbsoluteUri" >
-                <MatIcon Style="color: white;">swap_vert</MatIcon> <span class="miniHover">Issue/Redeem Indice</span>
-
-            </MatNavItem>
-            <MatNavItem Href="@navigationManager.ToAbsoluteUri("IndiceMarketplace/indice_history").AbsoluteUri" >
-                <MatIcon Style="color: white;">history</MatIcon> <span class="miniHover">Indices History</span>
-
-            </MatNavItem>
-        </MatNavSubMenuList>
-    </MatNavSubMenu>
-
-    <MatNavItem Href="@navigationManager.ToAbsoluteUri("user_wallet").AbsoluteUri" AllowSelection="false" >
-        <MatIcon Style="color: white;">account_balance_wallet</MatIcon> <span class="miniHover">My Wallet</span>
-    </MatNavItem>
-</MatNavMenu>
+<SfMenu Items="@MainMenuItems" CssClass="@CssClass" Orientation="@Orientation" />
 
 @code {
+
+    [Parameter]
+    public Orientation Orientation { get; set; }
+    [Parameter]
+    public string CssClass { get; set; }
+
+    public List<MenuItem> MainMenuItems = new List<MenuItem>{
+        new MenuItem {
+            Text = "Wrapping", IconCss = "fas fa-coins", //<i class="fas fa-fa-exchange-alt"></i>
+                Items = new List<MenuItem> {
+                    new MenuItem{ Text = "Balances", Url = "Wrapping/wrapping_balance", IconCss = "fas fa-wallet" },
+                    new MenuItem{ Text = "Wrap/Unwrap Tokens", Url = "Wrapping/wrap_unwrap_token", IconCss = "fas fa-exchange-alt" },
+                    new MenuItem{ Text = "History", Url = "Wrapping/wrapping_history", IconCss = "fas fa-history" }
+                }
+            },
+        new MenuItem {
+            Text = "Indices Composition",
+            IconCss = "fas fa-chart-pie",
+            Items = new List<MenuItem> {
+                new MenuItem{ Text = "Indices List", Url = "IndiceComposition/indice_list", IconCss = "fas fa-list" },
+                new MenuItem{ Text = "Indice Creation", Url = "IndiceComposition/indice_creation", IconCss = "fas fa-edit"},
+                new MenuItem{ Text = "Add New ERC20 Component", Url = "IndiceComposition/add_erc20", IconCss = "fas fa-plus-square"}
+            }
+        },
+        new MenuItem {
+            Text = "Indices Marketplace",
+            IconCss = "fas fa-cart-plus",
+            Items = new List<MenuItem> {
+                new MenuItem{ Text = "Issue/Redeem", Url = "IndiceMarketplace/issue_redeem_indice", IconCss = "fas fa-award" },
+                new MenuItem{ Text = "Indices History", Url = "IndiceMarketplace/indice_history", IconCss = "fas fa-history"},
+            }
+        },
+        new MenuItem { Text = "My Wallet", IconCss = "fas fa-piggy-bank", Url = "user_wallet" },
+
+    };
+
+    
     public bool IsLoggedIn = false;
 
     [CascadingParameter]
@@ -95,4 +62,5 @@
             //Console.WriteLine("Administrator");
         }
     }
+
 }

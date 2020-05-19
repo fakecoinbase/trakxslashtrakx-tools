@@ -1,162 +1,161 @@
 ﻿@using System.ComponentModel.DataAnnotations
-@using System.Globalization
-@using System.Reflection
-@using System.Runtime.CompilerServices
+@using Microsoft.Extensions.Logging
+@using Syncfusion.Blazor.Buttons
+@using Syncfusion.Blazor.DropDowns
+@using Syncfusion.Blazor.Grids
+@using Syncfusion.Blazor.Inputs
+@using Syncfusion.Blazor.Notifications
+@using Action = Syncfusion.Blazor.Grids.Action
 @page "/IndiceComposition/indice_creation"
+@inject ILogger<IndiceCreation> Logger
 
 
+@*I didn't have time to find why this toaster doesn't work ...*@
+<SfToast Title="Error" @ref="Toaster">
+    <ToastPosition X="Center" Y="Center"></ToastPosition>
+</SfToast>
 <h1>Indice Creation</h1>
 <div>
-    <EditForm id="edit-form" Model="myModel" OnValidSubmit="NavCalculationSuccess" OnInvalidSubmit="NavCalculationFailure">
-        <DataAnnotationsValidator />
-        <ValidationSummary />
+    <fieldset>
         <div>
-            <div id="box-indice-main-features">
-                <h2>Indice main features</h2>
-                <label>Name: </label>&nbsp;<input id="input-indice-name" @bind="myModel.IndiceName" />
-                <label>Symbol: </label>&nbsp;<input id="input-indice-symbol" @bind="myModel.IndiceSymbol" />
-                <label>Targeted NAV: </label>&nbsp;<input id="input-indice-targeted-nav" type="number" @bind="myModel.TargetedNav" /><label>USDc</label>
+            <h2>Indice main features</h2>
+            <div class="form-row col-3">
+                <SfTextBox PlaceHolder="Name" @bind-Value="Model.IndiceName" @ref="NameTextBox" FloatLabelType="FloatLabelType.Auto" />
             </div>
-            <div id="box-indice-composition">
-                <div>
-                    <h2>Indice composition</h2>
-                    <label>Equal weight:</label>&nbsp;<input id="input-equal-weight" type="checkbox" @bind="myModel.EqualWeights" /><br />
-                    <label>Weight unit:</label>
-                    <input id="radio-weight-in-percentage" type="radio"
-                           checked="@(myModel.WeightUnit == IndiceCreationModel.WeightUnitType.Percentage)"
-                           @onclick="(() => myModel.WeightUnit = IndiceCreationModel.WeightUnitType.Percentage)" />
-                    <label> Percentage</label>
-                    <input id="radio-weight-in-usdc" type="radio"
-                           checked="@(myModel.WeightUnit == IndiceCreationModel.WeightUnitType.USDc)"
-                           @onclick="(() => myModel.WeightUnit = IndiceCreationModel.WeightUnitType.USDc)" />
-                    <label> USDc</label>
-                </div>
-                <div>
-                    <ol>
-                        @foreach (var element in myModel.ComponentList)
-                        {
-                            <li>
-                                Symbol: <strong>@element.Symbol</strong> Weight: <strong>@element.Weight</strong>
-                            </li>
-                        }
-                    </ol>
-                    <label>Symbol:</label>&nbsp;<input id="input-add-erc20-symbol" @bind="NewComponent.Symbol" />
-                    <label>Weight: </label>&nbsp;<input id="input-add-erc20-weight" @bind="NewComponent.Weight" />
-
-                    <input id="button-add-new-erc20" type="button" value="Add a new ERC20 token"
-                           @onclick="HandleAddErc20" />
-                    <br />
-
-                </div>
-                <button id="button-submit-calculate-nav" type="submit" @onclick="HandleOnSubmitClick" disabled="@atLeastOneComponent">Calculate NAV</button>
+            <div class="form-row col-3">
+                <SfTextBox PlaceHolder="Symbol" @bind-Value="Model.IndiceSymbol" @ref="SymbolTextBox" FloatLabelType="FloatLabelType.Auto" />
+            </div>
+            <div class="form-row col-3">
+                <SfNumericTextBox PlaceHolder="Targeted NAV (USDc)" @bind-Value="Model.TargetedNav" Format="c2"
+                                  @ref="TargetNavTextBox" FloatLabelType="FloatLabelType.Auto" Locale="@LocaleString" />
             </div>
         </div>
-    </EditForm>
-    <br /><br /><br />
-    <div id="box-indice-calculated-weight-and-nav">
-        <div>
-            @*todo: graphic of the weight*@
-        </div>
-        <div>
-            <input value="Calculated NAV: " readonly />
-        </div>
-        <div>
-            <button>Create Indice</button>
-            <button>Save Indice</button>
-        </div>
-    </div>
+        <row id="box-indice-composition">
+            <div>
+                <h2>Indice composition</h2>
+                <div class="form-row">
+                    <label>Equal Weights</label>
+                    <SfSwitch @bind-Checked="Model.EqualWeights" @ref="EqualWeightSwitch" />
+                </div>
+                @if (!Model.EqualWeights)
+                {
+                    <div class="form-row">
+                        <label>Weight Units</label>
+                        <SfDropDownList TValue="IndiceCreationModel.WeightUnitType" TItem="string" @bind-Value="Model.WeightUnit"
+                                        DataSource="Enum.GetNames(typeof(IndiceCreationModel.WeightUnitType))"
+                                        @ref="WeightUnitsDropdown">
+                        </SfDropDownList>
+                    </div>
+                }
+
+            </div>
+            <div>
+                <h3>Indice Components</h3>
+                <row id="grid" class="col-9">
+                    <SfGrid DataSource="Model.Components" Toolbar="@(new List<string>() { "Add", "Edit", "Delete", "Update", "Cancel" })"
+                            @ref="ConstituentsGrid" Locale="LocaleString">
+                        <GridEditSettings AllowAdding="true" AllowDeleting="true" AllowEditing="true" />
+                        <GridEvents OnActionBegin="CheckRowChange" TValue="ConstituentModel" />
+                        <GridColumns>
+                            <GridColumn Field=@nameof(ConstituentModel.Symbol) IsPrimaryKey="true" @ref="SymbolGridColumn">
+
+                                <EditTemplate>
+                                    @if (string.IsNullOrEmpty((context as ConstituentModel).Symbol))
+                                    {
+                                        <SfAutoComplete TItem="string" TValue="string" ID="Symbol" Value="@((context as ConstituentModel).Symbol)"
+                                                        DataSource="@KnownErcTickers" AllowCustom=false>
+                                            <AutoCompleteFieldSettings Value="Symbol"></AutoCompleteFieldSettings>
+                                        </SfAutoComplete>
+                                    }
+                                    else
+                                    {
+                                        <SfTextBox Readonly="true" Value="@((context as ConstituentModel).Symbol)" ID="Symbol"></SfTextBox>
+                                    }
+
+                                </EditTemplate>
+
+                            </GridColumn>
+                            <GridColumn Field=@nameof(ConstituentModel.Weight) TextAlign="TextAlign.Right" EditType="EditType.NumericEdit"
+                                        AllowEditing="@CustomWeights" DefaultValue="0.01">
+                            </GridColumn>
+                        </GridColumns>
+                    </SfGrid>
+
+                </row>
+
+            </div>
+        </row>
+        <row>
+            <SfButton IsPrimary="true" OnClick="CalculateNav" Disabled="@CalculateNavDisabled" @ref="CalculateNavButton">Calculate NAV</SfButton>
+        </row>
+        <row>
+            Calculated Nav : @CalculatedNav
+        </row>
+    </fieldset>
 </div>
 
 @code {
+#nullable disable
+    public SfTextBox NameTextBox { get; set; }
+    public SfTextBox SymbolTextBox { get; set; }
+    public SfNumericTextBox<decimal?> TargetNavTextBox { get; set; }
+    public SfSwitch EqualWeightSwitch { get; set; }
+    public SfDropDownList<IndiceCreationModel.WeightUnitType, string> WeightUnitsDropdown { get; set; }
+    public SfGrid<ConstituentModel> ConstituentsGrid { get; set; }
+    public SfToast Toaster { get; set; }
+    public SfButton CalculateNavButton { get; set; }
+    public GridColumn SymbolGridColumn { get; set; }
+#nullable enable
 
-    public IndiceCreationModel myModel = new IndiceCreationModel();
-    public IndiceCreationModel.ComponentModel NewComponent = new IndiceCreationModel.ComponentModel();
-    private bool atLeastOneComponent = true;
+    public IndiceCreationModel Model = new IndiceCreationModel();
+    public string WeightColumnFormat => Model.WeightUnit == IndiceCreationModel.WeightUnitType.USDc ? "C2" : "##.####%";
+    public bool CustomWeights => !Model.EqualWeights;
+    public bool CalculateNavDisabled => Model?.Components?.Count == 0;
+    public decimal CalculatedNav { get; set; }
+    public string LocaleString { get; } = "en-US";
 
-    [Parameter] public EventCallback<MouseEventArgs> OnCalculateNavSubmitClick { get; set; }
+    #region Overrides of ComponentBase
 
-    private Task HandleOnSubmitClick(MouseEventArgs args)
+    public List<string> KnownErcTickers { get; } = new List<string> { "ABC", "DEF", "GHI", "JKL", "MNO" };
+
+    /// <inheritdoc />
+    protected override void OnInitialized()
     {
-        return OnCalculateNavSubmitClick.InvokeAsync(args);
-    }
-
-    #region MatToasters
-
-    [Inject]
-    public IMatToaster Toaster { get; set; }
-
-    public string MessageNavCalculation = "Your indice composition is correct, see on the right of the screen the calculated nav and weight. " +
-                                      "And then if the suggestion fits you, you can save or create your indice.";
-
-    public string MessageError = "An error happened, please make sure that you filled correctly the form.";
-
-    public string MessageAddErc20Succeed = "The ERC20 was successfully add to your indice composition !";
-
-    public string MessageErrorErcIsNotValid = "Sorry but the ERC symbol and/or weight are not correctly filled.";
-
-    public string MessageErrorErcAlreadyExists = "Sorry but this ERC is already in the composition, if you want to change his weight you can delete " +
-                                                 "delete it and then add it with an new weight.";
-
-
-    public async Task NavCalculationSuccess()
-    {
-        Toaster.Add(MessageNavCalculation, MatToastType.Success, "Success");
-    }
-
-    public async Task NavCalculationFailure()
-    {
-        Toaster.Add(MessageError, MatToastType.Danger, "Error");
-    }
-
-    public async Task HandleAddErc20()
-    {
-        atLeastOneComponent = false;
-        bool componentIsValid = NewComponent.IsValid();
-        bool symbolAlreadyInList = myModel.ComponentList.Any(o => o.Symbol == NewComponent.Symbol);
-
-        if (componentIsValid && !symbolAlreadyInList)
-        {
-            myModel.AddNewComponentToList(NewComponent);
-            Toaster.Add(MessageAddErc20Succeed, MatToastType.Success, "Success");
-        }
-        else if(!componentIsValid)
-        {
-            Toaster.Add(MessageErrorErcIsNotValid, MatToastType.Danger, "Error");
-        }
-        else
-        {
-            Toaster.Add(MessageErrorErcAlreadyExists, MatToastType.Danger, "Error");
-        }
-        //todo: special error when the weight unit is in percentage and the total % > 100
+        base.OnInitialized();
+        Logger.LogInformation("IndexCreation page initialised");
     }
 
     #endregion
+
+    public void CalculateNav(MouseEventArgs args)
+    {
+        CalculatedNav = (decimal)(new Random().NextDouble() + 10) * 10;
+    }
+
+    public async Task CheckRowChange(ActionEventArgs<ConstituentModel> args)
+    {
+        switch (args.RequestType)
+        {
+            case Action.Save:
+                var newSymbol = args.Data.Symbol;
+                if (Model.Components.Any(c => c.Symbol == newSymbol))
+                {
+                    await Toaster.Show(new ToastModel { Content = $"Symbol {newSymbol} is already in use.", TimeOut = 1500 });
+                    args.Cancel = true;
+                }
+                //redistribute weights
+                break;
+            case Action.Delete:
+                //redistribute weights
+                break;
+        }
+    }
 
     #region IndiceCreationModel class
 
     public class IndiceCreationModel
     {
         public enum WeightUnitType { Percentage, USDc }
-
-        public struct ComponentModel
-        {
-            [Required]
-            public string Symbol { get; set; }
-            [Required]
-            public decimal? Weight { get; set; }
-
-            public ComponentModel(string symbol, decimal weight)
-            {
-                Symbol = symbol; Weight = weight;
-            }
-
-            public bool IsValid()
-            {
-                if (!String.IsNullOrEmpty(Symbol) && Weight != null && Weight != 0)
-                    return true;
-                return false;
-            }
-        }
 
         [Required]
         public string? IndiceName { get; set; }
@@ -168,25 +167,38 @@
         public bool EqualWeights { get; set; }
         [Required]
         public WeightUnitType WeightUnit { get; set; }
-
-        public List<ComponentModel> ComponentList = new List<ComponentModel>();
+        [MinLength(1)]
+        public List<ConstituentModel> Components { get; set; }
 
 
         public IndiceCreationModel()
         {
-            IndiceName = null; IndiceSymbol = null; EqualWeights = false; TargetedNav = null; WeightUnit = WeightUnitType.Percentage;
+            IndiceName = null;
+            IndiceSymbol = null;
+            EqualWeights = false;
+            TargetedNav = null;
+            WeightUnit = WeightUnitType.Percentage;
+            Components = new List<ConstituentModel>();
         }
-
-        public void AddNewComponentToList(ComponentModel newComponent)
-        {
-            if (!ComponentList.Any(o => o.Symbol == newComponent.Symbol) && newComponent.IsValid())
-                ComponentList.Add(new ComponentModel(newComponent.Symbol.ToUpper(), (decimal) newComponent.Weight));
-
-        }
-
     }
 
+    public class ConstituentModel
+    {
+        //todo add a method to call the api and check the symbol is OK
+        [Required]
+        public string Symbol { get; set; }
+        [Required, Range(1e-6, 1)]
+        public decimal? Weight { get; set; }
+
+        //todo check sum of weights, etc
+        //see in Tools.CompositionHelper.AssignComponentWeights to see one way the weight is
+        //sometimes assigned based on marketCap... I can explain as this is bad code. 💩
+        public bool IsValid()
+        {
+            if (!string.IsNullOrEmpty(Symbol) && Weight != null && Weight > 0)
+                return true;
+            return false;
+        }
+    }
     #endregion
-
-
 }

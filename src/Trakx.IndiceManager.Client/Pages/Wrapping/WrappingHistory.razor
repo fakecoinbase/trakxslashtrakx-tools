@@ -19,13 +19,13 @@
             <th colspan="3">@element.ToCurrency</th>
             <th colspan="4">@element.State</th>
             <th colspan="5">@element.Date</th>
-            <th colspan="5"><MatButton OnClick="@( () => OpenDialog(element.Id))" 
-                                       Raised="true" Icon="add">Details</MatButton></th>
+            <th colspan="5">@*<MatButton OnClick="@( () => OpenDialog(element.Id))" 
+                                       Raised="true" Icon="add">Details</MatButton>*@</th>
         </tr>
     }
 </table>
 
-<MatDialog @bind-IsOpen="@dialogIsOpen">
+@*<MatDialog @bind-IsOpen="@dialogIsOpen">
     <MatDialogActions>
         <MatButton OnClick="@(e => { dialogIsOpen = false; id = 0; })" Icon="close"></MatButton>
     </MatDialogActions>
@@ -38,7 +38,7 @@
         <p>Sender Address: @SenderAddress</p>
         <p>Receiver Address: @ReceiverAddress</p>
     </MatDialogContent>
-</MatDialog>
+</MatDialog>*@
 
 @code {
     //todo: take the data from the database
