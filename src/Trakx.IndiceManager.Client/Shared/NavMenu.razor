@@ -43,24 +43,5 @@
     
     public bool IsLoggedIn = false;
 
-    [CascadingParameter]
-    Task<AuthenticationState> authenticationStateTask { get; set; }
-
-    protected override async Task OnParametersSetAsync()
-    {
-        IsLoggedIn = false;
-        var user = (await authenticationStateTask).User;
-
-        if (user.Identity.IsAuthenticated)
-        {
-            IsLoggedIn = true;
-        }
-
-        if (user.IsInRole("Administrator"))
-        {
-            // Perform some action only available to users in the 'admin' role
-            //Console.WriteLine("Administrator");
-        }
-    }
 
 }

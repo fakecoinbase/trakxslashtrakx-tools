@@ -81,8 +81,6 @@
         navigationManager.NavigateTo($"/account/Login/{returnUrl}", forceLoad: false);
     }
 
-    [CascadingParameter]
-    Task<AuthenticationState> authenticationStateTask { get; set; }
 
 }
 
