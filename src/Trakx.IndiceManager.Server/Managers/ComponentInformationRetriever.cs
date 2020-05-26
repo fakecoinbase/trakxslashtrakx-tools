@@ -1,10 +1,10 @@
 ﻿using System;
+using System.Collections.Generic;
 using System.Threading.Tasks;
-using Microsoft.EntityFrameworkCore;
-using Nethereum.Web3;
 using Trakx.Common.Core;
+using Trakx.Common.Interfaces;
 using Trakx.Common.Interfaces.Indice;
-using Trakx.Persistence;
+using Trakx.Common.Models;
 using Trakx.Common.Sources.CoinGecko;
 using Trakx.Common.Sources.Web3.Client;
 
@@ -12,19 +12,21 @@ namespace Trakx.IndiceManager.Server.Managers
 {
     public class ComponentInformationRetriever : IComponentInformationRetriever
     {
-        private readonly IndiceRepositoryContext _dbContext;
         private readonly IWeb3Client _web3;
         private readonly ICoinGeckoClient _coinGeckoClient;
-        public ComponentInformationRetriever(IndiceRepositoryContext dbContext, IWeb3Client web3, ICoinGeckoClient coinGeckoClient)
+        private readonly IComponentDataProvider _componentDataProvider;
+        private readonly IComponentDataCreator _componentDataCreator;
+        public ComponentInformationRetriever(IWeb3Client web3, ICoinGeckoClient coinGeckoClient,IComponentDataProvider componentDataProvider,IComponentDataCreator componentDataCreator)
         {
-            _dbContext = dbContext;
             _web3 = web3;
             _coinGeckoClient = coinGeckoClient;
+            _componentDataProvider = componentDataProvider;
+            _componentDataCreator = componentDataCreator;
         }
 
         public async Task<IComponentDefinition> GetComponentDefinitionFromAddress(string address)
         {
-            var result = await _dbContext.ComponentDefinitions.SingleOrDefaultAsync(t => t.Address == address);
+            var result = await _componentDataProvider.GetComponentFromDatabaseByAddress(address);
 
             if (result!=null)
             {
@@ -43,6 +45,20 @@ namespace Trakx.IndiceManager.Server.Managers
             {
                 return null;
             }
+        }
+
+        public async Task<List<IComponentDefinition>> GetAllComponents()
+        {
+            var components = await _componentDataProvider.GetAllComponentsFromDatabase();
+
+            return components;
+        }
+
+        public async Task<bool> TryToSaveComponentDefinition(ComponentDetailModel componentDefinition)
+        {
+            var result = await _componentDataCreator.TryAddComponentDefinition(componentDefinition.ConvertToIComponentDefinition());
+
+            return result;
         }
     }
 }

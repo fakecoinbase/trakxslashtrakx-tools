@@ -1,5 +1,6 @@
 ﻿using System.ComponentModel.DataAnnotations;
 using System.Diagnostics;
+using Trakx.Common.Core;
 using Trakx.Common.Interfaces.Indice;
 
 namespace Trakx.Persistence.DAO
@@ -23,6 +24,16 @@ namespace Trakx.Persistence.DAO
             Debug.Assert(this.IsValid());
         }
 
+        public ComponentDefinitionDao(IComponentDefinition componentDefinition)
+        {
+            Address = componentDefinition.Address;
+            Name = componentDefinition.Name;
+            Symbol = componentDefinition.Symbol;
+            CoinGeckoId = componentDefinition.CoinGeckoId;
+            Decimals = componentDefinition.Decimals;
+
+            Debug.Assert(this.IsValid());
+        }
         /// <inheritdoc />
         [Key, MaxLength(256)]
         public string Address { get; set; }
