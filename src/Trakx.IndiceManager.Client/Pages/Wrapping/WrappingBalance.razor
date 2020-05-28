@@ -1,39 +1,27 @@
 ﻿@page "/Wrapping/wrapping_balance"
+@using Syncfusion.Blazor.Grids
 
-<h3>WrappingBalance</h3>
-
-<table align="center" cellpadding="10px" rules="rows">
-    <tr>
-        <th colspan="1">Token</th>
-        <th colspan="2">Trakx Balance</th>
-
-        <th colspan="3">Wrapped tokens in circulation</th>
-    </tr>
-    @foreach (var element in WrappingBalanceList)
-    {
-        <tr>
-            <td colspan="1">@element.Name</td>
-            <td colspan="2">@element.NativeTokenBalance</td>
-
-            <td colspan="3">@element.WrappedTokenInCirculation</td>
-        </tr>
-    }
-</table>
+<h3>Wrapping Balance</h3>
+<SfGrid DataSource="@WrappingBalanceList" Toolbar="@(new List<string>() { "Add", "Edit", "Delete", "Update", "Cancel", "Search" })" AllowPaging="true">
+    <GridEditSettings AllowAdding="true" AllowDeleting="true" AllowEditing="true"/>
+    <GridTemplates></GridTemplates>
+    <GridColumns>
+        <GridColumn Field=@nameof(WrappingBalanceModel.Name) IsPrimaryKey="true"></GridColumn>
+        <GridColumn Field=@nameof(WrappingBalanceModel.NativeTokenBalance)></GridColumn>
+        <GridColumn Field=@nameof(WrappingBalanceModel.WrappedTokenInCirculation) ></GridColumn>
+    </GridColumns>
+</SfGrid>
 
 @code {
 
-    public struct WrappingBalanceModel
-
-
+    public class WrappingBalanceModel
     {
         public string Name { get; set; }
-        public double NativeTokenBalance{ get; set; }
+        public double NativeTokenBalance { get; set; }
 
         public double WrappedTokenInCirculation { get; set; }
 
         public WrappingBalanceModel(string name, double nativeTokenBalance, double wrappedTokenInCirculation)
-
-
         {
             Name = name; NativeTokenBalance = nativeTokenBalance; WrappedTokenInCirculation = wrappedTokenInCirculation;
 
@@ -43,7 +31,7 @@
     public List<WrappingBalanceModel> WrappingBalanceList = new List<WrappingBalanceModel>()
 
 
-    {
+{
         new WrappingBalanceModel("Bitcoin",12.345,12.345),
 
 
@@ -53,5 +41,15 @@
         new WrappingBalanceModel("Ripple",63.188,63.188)
 
     };
+
+    #region Overrides of ComponentBase
+
+    /// <inheritdoc />
+    protected override void OnInitialized()
+    {
+        base.OnInitialized();
+    }
+
+    #endregion
 
 }
