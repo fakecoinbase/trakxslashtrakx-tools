@@ -2,6 +2,7 @@
 @using System.ComponentModel.Design.Serialization
 @using System.Text.RegularExpressions
 @using System.Threading
+@using Trakx.Common.Models
 @using Syncfusion.Blazor.Buttons
 @using Syncfusion.Blazor.DropDowns
 @using Syncfusion.Blazor.Inputs
@@ -15,7 +16,7 @@
 </SfToast>
 <h1>Wrap or Unwrap Tokens</h1>
 
-<div>
+<div class="container">
     <div>
         <EditForm OnValidSubmit="Success" OnInvalidSubmit="Failure" EditContext="@EditContext">
             <DataAnnotationsValidator />
@@ -35,8 +36,6 @@
                         </SfTooltip>
                     </div>
                 </div>
-
-
                 <div>
                     <div>
                         <div class="form-text">Choose the Currency you want to @SelectedWrappingOperation.ToLower()</div>
@@ -55,24 +54,27 @@
                         </div>
                     </div>
                     <div>
-                        <div class="form-text h4">You will need to send your @Model.FromCurrency tokens to the address @Model.AppReceivingAddress</div>
+                        <div class="form-text h4">
+                            You will need to send your @Model.FromCurrency tokens to the address:
+                            <strong>@Model.AppReceivingAddress</strong>
+                        </div>
                     </div>
                     <div>
                         <div class="form-text">Address from which you will send the @Model.FromCurrency tokens for @SelectedWrappingOperation.ToLower()ping</div>
                         <div class="col-xs-12 col-sm-12 col-lg-6 col-md-6">
                             @if (Model.Wrapping)
-                            {<SfTextBox @bind-Value="@Model.NativeAddress" @ref="WrappingFromAddress"/> }
+                            {<SfTextBox @bind-Value="@Model.NativeAddress" @ref="WrappingFromAddress" /> }
                             else
-                            {<SfTextBox @bind-Value="@Model.EthereumAddress" @ref="UnwrappingFromAddress"/>}
+                            {<SfTextBox @bind-Value="@Model.EthereumAddress" @ref="UnwrappingFromAddress" />}
                         </div>
                     </div>
                     <div>
                         <div class="form-text">In return you will receive @Model.ToCurrency @SelectedWrappingOperation.ToLower() tokens at the address of your choice.</div>
                         <div class="col-xs-12 col-sm-12 col-lg-6 col-md-6">
                             @if (Model.Wrapping)
-                            {<SfTextBox @bind-Value="@Model.EthereumAddress" @ref="WrappingToAddress"/> }
+                            {<SfTextBox @bind-Value="@Model.EthereumAddress" @ref="WrappingToAddress" /> }
                             else
-                            {<SfTextBox @bind-Value="@Model.NativeAddress" @ref="UnwrappingToAddress"/>}
+                            {<SfTextBox @bind-Value="@Model.NativeAddress" @ref="UnwrappingToAddress" />}
                         </div>
                     </div>
                     <div>
@@ -84,6 +86,7 @@
             <ValidationSummary />
         </EditForm>
     </div>
+    <br/><br/>
 </div>
 
 
@@ -112,7 +115,7 @@
 
     private void Reset(MouseEventArgs args)
     {
-        Model = new WrappingTransactionModel();
+        Model = new WrappingTransactionViewModel();
         EditContext = new EditContext(Model);
         StateHasChanged();
     }
@@ -134,6 +137,10 @@
             Content = "Your transaction as been submitted successfully",
             Title = "Success !",
         });
+
+        WrappingTransactionModel wrappingTransactionModel = Model.ToWrappingTransactionModel();
+
+        //todo: httpclient request once Wrapping route will be available
     }
     /// <summary>
     /// Display an "Error" pop up (using MatToaster) when submission failed.
@@ -160,9 +167,10 @@
 
     public List<string> CurrencyOptions => _availableCurrencies.Select(c => (Model.Wrapping ? "" : "w") + c).ToList();
 
-    public WrappingTransactionModel Model = new WrappingTransactionModel();
+    public WrappingTransactionViewModel Model = new WrappingTransactionViewModel();
 
-    public class WrappingTransactionModel
+
+    public class WrappingTransactionViewModel
     {
         private const string EthereumAddressPattern = "^0x[a-fA-F0-9]{40}$";
         private const string NativeAddressPattern = ".*";
@@ -176,6 +184,8 @@
         //todo: have a Get request initialing the ToCurrency according to the wrap/unwrap FromCurrency [Required]
         public string? ToCurrency { get; set; }
 
+        public DateTime CreationDate { get; set; }
+
         [Required, Range(1e-4, 10)]
         public decimal? Amount { get; set; }
 
@@ -187,14 +197,16 @@
 
         public string AppReceivingAddress { get; set; }
 
-        public WrappingTransactionModel()
+        public WrappingTransactionViewModel()
         {
+            CreationDate = DateTime.Now;
             Wrapping = true;
             AppReceivingAddress = "Coinbase-custody-address";
         }
 
-        public WrappingTransactionModel(bool wrapping, string crypto, int amount, string ethereumAddress, string nativeAddress)
+        public WrappingTransactionViewModel(bool wrapping, string crypto, decimal amount, string ethereumAddress, string nativeAddress)
         {
+            CreationDate = DateTime.Now;
             EthereumAddress = ethereumAddress;
             NativeAddress = nativeAddress;
             Wrapping = wrapping;
@@ -202,5 +214,27 @@
             Amount = amount;
         }
 
+        public WrappingTransactionModel ToWrappingTransactionModel()
+        {
+            var newModel = new WrappingTransactionModel();
+
+            newModel.TrakxAddress = AppReceivingAddress;
+            if (Wrapping)
+            {
+                newModel.SenderAddress = NativeAddress;
+                newModel.ReceiverAddress =EthereumAddress;
+            }
+            else
+            {
+                newModel.SenderAddress = EthereumAddress;
+                newModel.ReceiverAddress = NativeAddress;
+            }
+            newModel.Date = CreationDate;
+            newModel.FromCurrency = FromCurrency;
+            newModel.ToCurrency = ToCurrency;
+
+            return newModel;
+        }
     }
+
 }

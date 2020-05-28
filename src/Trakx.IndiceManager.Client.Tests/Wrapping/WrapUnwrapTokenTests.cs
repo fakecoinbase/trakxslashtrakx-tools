@@ -1,29 +1,36 @@
 using System.Linq;
 using System.Collections.Generic;
 using System.Threading.Tasks;
+using System.Text.Json;
 using FluentAssertions;
 using Trakx.IndiceManager.Client.Pages.Wrapping;
+using Trakx.Tests.Data;
+using Trakx.Common.Models;
 using Xunit;
+using Xunit.Abstractions;
 using AngleSharp.Dom;
 using AngleSharp.Html.Dom;
 using Microsoft.AspNetCore.Components;
 using Bunit;
 using Syncfusion.Blazor;
-using Trakx.Tests.Data;
-using Xunit.Abstractions;
+using Flurl.Http.Testing;
+using Flurl.Http;
 
 namespace Trakx.IndiceManager.Client.Tests.Wrapping
 {
     public sealed class WrapUnwrapTokenTests : ComponentTest<WrapUnwrapToken>
     {
         private readonly MockCreator _mockCreator;
-        private readonly WrapUnwrapToken.WrappingTransactionModel _model;
+        private readonly WrapUnwrapToken.WrappingTransactionViewModel _model;
+        private readonly HttpTest _httpTest;
 
         public WrapUnwrapTokenTests(ITestOutputHelper output)
         {
             _mockCreator = new MockCreator(output);
             Services.AddSyncfusionBlazor();
             Component = RenderComponent<WrapUnwrapToken>();
+            _mockCreator = new MockCreator(output);
+            _httpTest = new HttpTest();
 
             _model = Component.Instance.Model;
         }
@@ -182,6 +189,34 @@ namespace Trakx.IndiceManager.Client.Tests.Wrapping
             var newEditContext = Component.Instance.EditContext;
             newEditContext.Should().NotBeSameAs(editContext);
             newEditContext.Model.Should().BeSameAs(newModel);
+        }
+
+        [Fact]
+        public async Task ToWrappingTransactionModel_should_work()
+        {
+            string fakeHttp = "https://localhost:44373/";
+
+            var currencyToWrap = Component.Instance.CurrencyOptions[0];
+            _model.FromCurrency = currencyToWrap;
+            _model.NativeAddress = "valid";
+            _model.EthereumAddress = _mockCreator.GetRandomAddressEthereum();
+            _model.Amount = 3.45m;
+            (await Dispatch(() => Component.Instance.EditContext.Validate()))
+                .Should().BeTrue();
+
+            WrappingTransactionModel wrappingTransaction = _model.ToWrappingTransactionModel();
+
+            string jsonModel = JsonSerializer.Serialize(wrappingTransaction);
+
+            _httpTest.RespondWith(jsonModel);
+
+            var apiResponse = await fakeHttp.GetJsonAsync();
+            var jsonApiResponse = JsonSerializer.Serialize(apiResponse);
+
+            WrappingTransactionModel objResult = JsonSerializer.Deserialize<WrappingTransactionModel>(jsonApiResponse);
+
+            objResult.Should().BeEquivalentTo(wrappingTransaction);
+
         }
     }
 }

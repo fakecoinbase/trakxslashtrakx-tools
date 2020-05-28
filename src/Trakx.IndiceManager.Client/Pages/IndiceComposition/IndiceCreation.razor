@@ -1,118 +1,187 @@
 ﻿@using System.ComponentModel.DataAnnotations
+@using System.Threading
 @using Microsoft.Extensions.Logging
+@using Trakx.Common.Models
 @using Syncfusion.Blazor.Buttons
 @using Syncfusion.Blazor.DropDowns
 @using Syncfusion.Blazor.Grids
 @using Syncfusion.Blazor.Inputs
 @using Syncfusion.Blazor.Notifications
+@using Syncfusion.Blazor.Charts
+@using Trakx.IndiceManager.Client.ApiClient
 @using Action = Syncfusion.Blazor.Grids.Action
+@using ActionCompleteEventArgs = Syncfusion.Blazor.DropDowns.ActionCompleteEventArgs
 @page "/IndiceComposition/indice_creation"
 @inject ILogger<IndiceCreation> Logger
-
-
+@inject IApiClient ApiClient;
 @*I didn't have time to find why this toaster doesn't work ...*@
-<SfToast Title="Error" @ref="Toaster">
-    <ToastPosition X="Center" Y="Center"></ToastPosition>
+
+<SfToast @ref="Toaster" TimeOut=3000>
+    <ToastPosition X="Center" Y="Bottom"></ToastPosition>
 </SfToast>
-<h1>Indice Creation</h1>
-<div>
-    <fieldset>
-        <div>
-            <h2>Indice main features</h2>
-            <div class="form-row col-3">
-                <SfTextBox PlaceHolder="Name" @bind-Value="Model.IndiceName" @ref="NameTextBox" FloatLabelType="FloatLabelType.Auto" />
-            </div>
-            <div class="form-row col-3">
-                <SfTextBox PlaceHolder="Symbol" @bind-Value="Model.IndiceSymbol" @ref="SymbolTextBox" FloatLabelType="FloatLabelType.Auto" />
-            </div>
-            <div class="form-row col-3">
-                <SfNumericTextBox PlaceHolder="Targeted NAV (USDc)" @bind-Value="Model.TargetedNav" Format="c2"
-                                  @ref="TargetNavTextBox" FloatLabelType="FloatLabelType.Auto" Locale="@LocaleString" />
-            </div>
-        </div>
-        <row id="box-indice-composition">
+<div class="container">
+    <EditForm OnInvalidSubmit="Failure" OnValidSubmit="Success" EditContext="@EditContext">
+        <DataAnnotationsValidator />
+        <fieldset>
+            <legend>Indice Creation</legend>
             <div>
-                <h2>Indice composition</h2>
-                <div class="form-row">
-                    <label>Equal Weights</label>
-                    <SfSwitch @bind-Checked="Model.EqualWeights" @ref="EqualWeightSwitch" />
-                </div>
-                @if (!Model.EqualWeights)
-                {
-                    <div class="form-row">
-                        <label>Weight Units</label>
-                        <SfDropDownList TValue="IndiceCreationModel.WeightUnitType" TItem="string" @bind-Value="Model.WeightUnit"
-                                        DataSource="Enum.GetNames(typeof(IndiceCreationModel.WeightUnitType))"
-                                        @ref="WeightUnitsDropdown">
-                        </SfDropDownList>
+                <fieldset>
+                    <legend>Indice main features</legend>
+                    <div class="form-row col-3">
+                        <SfTextBox PlaceHolder="Name" @bind-Value="Model.IndiceName" @ref="NameTextBox" FloatLabelType="FloatLabelType.Auto" />
                     </div>
-                }
-
+                    <div class="form-row col-3">
+                        <SfTextBox PlaceHolder="Symbol" @bind-Value="Model.IndiceSymbol" @ref="SymbolTextBox" FloatLabelType="FloatLabelType.Auto" />
+                    </div>
+                    <div class="form-row col-3">
+                        <SfNumericTextBox PlaceHolder="Targeted NAV (USDc)" @bind-Value="Model.TargetedNav" Format="c2"
+                                          @ref="TargetNavTextBox" FloatLabelType="FloatLabelType.Auto" Locale="@LocaleString" />
+                    </div>
+                    <div class="form-row col-3">
+                        <SfTextBox PlaceHolder="Description" @bind-Value="Model.IndiceDescription" @ref="DescriptionTextBox" FloatLabelType="FloatLabelType.Auto" />
+                    </div>
+                </fieldset>
             </div>
             <div>
-                <h3>Indice Components</h3>
-                <row id="grid" class="col-9">
-                    <SfGrid DataSource="Model.Components" Toolbar="@(new List<string>() { "Add", "Edit", "Delete", "Update", "Cancel" })"
-                            @ref="ConstituentsGrid" Locale="LocaleString">
-                        <GridEditSettings AllowAdding="true" AllowDeleting="true" AllowEditing="true" />
-                        <GridEvents OnActionBegin="CheckRowChange" TValue="ConstituentModel" />
-                        <GridColumns>
-                            <GridColumn Field=@nameof(ConstituentModel.Symbol) IsPrimaryKey="true" @ref="SymbolGridColumn">
+                <fieldset>
+                    <legend>Indice Composition</legend>
+                    <row id="box-indice-composition">
+                        <div>
+                            <div class="form-row">
+                                <label>Equal Weights</label>
+                                <SfSwitch @bind-Checked="Model.EqualWeights" @ref="EqualWeightSwitch" />
+                            </div>
+                            @if (!Model.EqualWeights)
+                            {
 
-                                <EditTemplate>
-                                    @if (string.IsNullOrEmpty((context as ConstituentModel).Symbol))
-                                    {
-                                        <SfAutoComplete TItem="string" TValue="string" ID="Symbol" Value="@((context as ConstituentModel).Symbol)"
-                                                        DataSource="@KnownErcTickers" AllowCustom=false>
-                                            <AutoCompleteFieldSettings Value="Symbol"></AutoCompleteFieldSettings>
-                                        </SfAutoComplete>
-                                    }
-                                    else
-                                    {
-                                        <SfTextBox Readonly="true" Value="@((context as ConstituentModel).Symbol)" ID="Symbol"></SfTextBox>
-                                    }
+                                <div class="form-row">
+                                    <label>Weight Units</label>
+                                    <SfDropDownList TValue="IndiceCreationViewModel.WeightUnitType" TItem="string" @bind-Value="Model.WeightUnit"
+                                                    DataSource="Enum.GetNames(typeof(IndiceCreationViewModel.WeightUnitType))"
+                                                    @ref="WeightUnitsDropdown">
+                                    </SfDropDownList>
+                                </div>
+                            }
+                        </div>
+                        <div>
+                            <h3>Indice Components</h3>
+                            <row id="grid" class="col-9">
+                                <SfGrid DataSource="Model.Components" Toolbar="@(new List<string>() { "Add", "Edit", "Delete", "Update", "Cancel" })"
+                                        @ref="ConstituentsGrid" Locale="LocaleString">
+                                    <GridEditSettings AllowAdding="true" AllowDeleting="true" AllowEditing="true" />
+                                    <GridEvents OnActionBegin="CheckRowChange" TValue="ConstituentModel" OnActionComplete="RefreshIfNeeded" />
+                                    <GridColumns>
+                                        <GridColumn Field=@nameof(ConstituentModel.Symbol) IsPrimaryKey="true" @ref="SymbolGridColumn">
 
-                                </EditTemplate>
+                                            <EditTemplate Context="editTemplate_context">
+                                                @if (string.IsNullOrEmpty((editTemplate_context as ConstituentModel).Symbol))
+                                                {
+                                                    <SfAutoComplete TItem="string" TValue="string" ID="Symbol" Value="@((editTemplate_context as ConstituentModel).Symbol)"
+                                                                    DataSource="@KnownErcTickers" AllowCustom=false>
+                                                        <AutoCompleteFieldSettings Value="Symbol"></AutoCompleteFieldSettings>
+                                                    </SfAutoComplete>
+                                                }
+                                                else
+                                                {
+                                                    <SfTextBox Readonly="true" Value="@((editTemplate_context as ConstituentModel).Symbol)" ID="Symbol"></SfTextBox>
+                                                }
 
-                            </GridColumn>
-                            <GridColumn Field=@nameof(ConstituentModel.Weight) TextAlign="TextAlign.Right" EditType="EditType.NumericEdit"
-                                        AllowEditing="@CustomWeights" DefaultValue="0.01">
-                            </GridColumn>
-                        </GridColumns>
-                    </SfGrid>
-
-                </row>
-
+                                            </EditTemplate>
+                                        </GridColumn>
+                                        <GridColumn Field=@nameof(ConstituentModel.Weight) TextAlign="TextAlign.Right" EditType="EditType.NumericEdit"
+                                                    AllowEditing="@CustomWeights" DefaultValue="0.01">
+                                        </GridColumn>
+                                    </GridColumns>
+                                </SfGrid>
+                            </row>
+                        </div>
+                    </row>
+                    <row>
+                        <SfButton Type="button" IsPrimary="false" OnClick="CalculateNav" Disabled="@CalculateNavDisabled" @ref="CalculateNavButton">Calculate NAV</SfButton>
+                    </row>
+                </fieldset>
             </div>
-        </row>
-        <row>
-            <SfButton IsPrimary="true" OnClick="CalculateNav" Disabled="@CalculateNavDisabled" @ref="CalculateNavButton">Calculate NAV</SfButton>
-        </row>
-        <row>
-            Calculated Nav : @CalculatedNav
-        </row>
-    </fieldset>
+            <div>
+                <fieldset>
+                    <legend>NAV Calculation</legend>
+                    <div>
+                        @if (Model.Components.Any())
+                        {
+                            <SfAccumulationChart @ref="ComponentsWeightsChart">
+                                <AccumulationChartSeriesCollection>
+                                    <AccumulationChartSeries DataSource="@Model.Components" XName="Symbol" YName="Weight">
+                                        <AccumulationDataLabelSettings Visible="true" Name="Symbol"></AccumulationDataLabelSettings>
+                                    </AccumulationChartSeries>
+                                </AccumulationChartSeriesCollection>
+                                <AccumulationChartTooltipSettings Enable="true"></AccumulationChartTooltipSettings>
+                                <AccumulationChartLegendSettings Visible="false"></AccumulationChartLegendSettings>
+                            </SfAccumulationChart>
+                        }
+                    </div>
+                    <div>
+                        Calculated Nav : @CalculatedNav
+                    </div>
+                    <div>
+                        <SfButton IsPrimary="true" Type="submit">Create Indice</SfButton>
+                        <SfButton IsPrimary="false" @ref="SaveIndiceButton" OnClick="SaveIndice">Save Indice</SfButton>
+                    </div>
+                </fieldset>
+            </div>
+        </fieldset>
+        <ValidationSummary />
+    </EditForm>
 </div>
 
 @code {
 #nullable disable
     public SfTextBox NameTextBox { get; set; }
+    public SfTextBox DescriptionTextBox { get; set; }
     public SfTextBox SymbolTextBox { get; set; }
     public SfNumericTextBox<decimal?> TargetNavTextBox { get; set; }
     public SfSwitch EqualWeightSwitch { get; set; }
-    public SfDropDownList<IndiceCreationModel.WeightUnitType, string> WeightUnitsDropdown { get; set; }
+    public SfDropDownList<IndiceCreationViewModel.WeightUnitType, string> WeightUnitsDropdown { get; set; }
     public SfGrid<ConstituentModel> ConstituentsGrid { get; set; }
     public SfToast Toaster { get; set; }
     public SfButton CalculateNavButton { get; set; }
     public GridColumn SymbolGridColumn { get; set; }
+    public EditContext EditContext { get; set; }
+    public SfAccumulationChart ComponentsWeightsChart { get; set; }
+    public SfButton SaveIndiceButton { get; set; }
 #nullable enable
 
-    public IndiceCreationModel Model = new IndiceCreationModel();
-    public string WeightColumnFormat => Model.WeightUnit == IndiceCreationModel.WeightUnitType.USDc ? "C2" : "##.####%";
+    public IndiceCreationViewModel Model = new IndiceCreationViewModel();
+    public string WeightColumnFormat => Model.WeightUnit == IndiceCreationViewModel.WeightUnitType.USDc ? "C2" : "##.####%";
     public bool CustomWeights => !Model.EqualWeights;
     public bool CalculateNavDisabled => Model?.Components?.Count == 0;
     public decimal CalculatedNav { get; set; }
     public string LocaleString { get; } = "en-US";
+
+    #region Toast
+    public async Task Failure()
+    {
+        await Toaster.Show(new ToastModel
+        {
+            Content = "Your transaction failed, please make sure that you filled correctly the form.",
+            Title = "Error !",
+        });
+    }
+
+    public async Task Success()
+    {
+        await Toaster.Show(new ToastModel
+        {
+            Content = "Congratulations, the Indice creation succeeded.",
+            Title = "Success !",
+        });
+    }
+
+    private async Task SaveIndice(MouseEventArgs args)
+    {
+        _ = await ApiClient.TrySaveIndiceCompositionAsync((IndiceCompositionModel) Model, CancellationToken.None)
+            .ConfigureAwait(false);
+    }
+
+    #endregion
 
     #region Overrides of ComponentBase
 
@@ -121,6 +190,7 @@
     /// <inheritdoc />
     protected override void OnInitialized()
     {
+        EditContext = new EditContext(Model);
         base.OnInitialized();
         Logger.LogInformation("IndexCreation page initialised");
     }
@@ -151,9 +221,20 @@
         }
     }
 
-    #region IndiceCreationModel class
+    public void RefreshIfNeeded(ActionEventArgs<ConstituentModel> args)
+    {
+        switch (args.RequestType)
+        {
+            case Action.Save:
+                ComponentsWeightsChart.Refresh();
+                break;
+        }
+    }
 
-    public class IndiceCreationModel
+
+    #region IndiceCreationViewModel class
+
+    public class IndiceCreationViewModel
     {
         public enum WeightUnitType { Percentage, USDc }
 
@@ -161,8 +242,10 @@
         public string? IndiceName { get; set; }
         [Required]
         public string? IndiceSymbol { get; set; }
+        public string IndiceDescription { get; set; }
         [Required]
         public decimal? TargetedNav { get; set; }
+        public decimal? FinalNav { get; set; }
         [Required]
         public bool EqualWeights { get; set; }
         [Required]
@@ -170,15 +253,40 @@
         [MinLength(1)]
         public List<ConstituentModel> Components { get; set; }
 
+        public DateTime CreationDate { get; set; }
 
-        public IndiceCreationModel()
+
+        public IndiceCreationViewModel()
         {
+            CreationDate = DateTime.Now;
             IndiceName = null;
             IndiceSymbol = null;
+            IndiceDescription = "";
             EqualWeights = false;
             TargetedNav = null;
+            FinalNav = null;
             WeightUnit = WeightUnitType.Percentage;
             Components = new List<ConstituentModel>();
+        }
+
+        public static explicit operator IndiceCompositionModel(IndiceCreationViewModel viewModel)
+        {
+            var compositionModel = new IndiceCompositionModel();
+
+            var indiceDetailModel = new IndiceDetailModel
+            {
+                Symbol = viewModel.IndiceSymbol,
+                Name = viewModel.IndiceName,
+                CreationDate = viewModel.CreationDate,
+                Description = viewModel.IndiceDescription
+            };
+
+
+            compositionModel.IndiceDetail = indiceDetailModel;
+
+            compositionModel.Components = viewModel.Components.Select(c => c.ToComponentDetailModel()).ToList();
+
+            return compositionModel;
         }
     }
 
@@ -198,6 +306,11 @@
             if (!string.IsNullOrEmpty(Symbol) && Weight != null && Weight > 0)
                 return true;
             return false;
+        }
+
+        public ComponentDetailModel ToComponentDetailModel()
+        {
+            return new ComponentDetailModel {Symbol = Symbol, Quantity = null};
         }
     }
     #endregion
