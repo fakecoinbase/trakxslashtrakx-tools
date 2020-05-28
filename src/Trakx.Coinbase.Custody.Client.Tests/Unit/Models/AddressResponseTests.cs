@@ -1,23 +1,18 @@
 ﻿using System;
-using System.IO;
 using System.Text.Json;
 using System.Threading.Tasks;
 using FluentAssertions;
 using Trakx.Coinbase.Custody.Client.Models;
 using Xunit;
 
-namespace Trakx.Coinbase.Custody.Client.Tests.Models
+namespace Trakx.Coinbase.Custody.Client.Tests.Unit.Models
 {
     public class AddressResponseTests
     {
         [Fact]
         public async Task AddressResponse_can_be_deserialised()
         {
-            var type = typeof(AddressResponse);
-            var shortAssemblyName = type.Assembly!.FullName!.Split(",")[0]; 
-            var namespaceSuffix = type.Namespace!.Replace(shortAssemblyName+".", "");
-            var sampleResponse = await File.ReadAllTextAsync(Path.Combine(namespaceSuffix, $"{type.Name}.json"))
-                .ConfigureAwait(false);
+            var sampleResponse = await SampleResponseHelper.GetSampleResponseContent<AddressResponse>();
 
             var deserialised = JsonSerializer.Deserialize<PagedResponse<AddressResponse>>(sampleResponse);
 

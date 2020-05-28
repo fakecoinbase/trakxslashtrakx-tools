@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Text.Json.Serialization;
+using Newtonsoft.Json;
 
 namespace Trakx.Coinbase.Custody.Client.Models
 {
@@ -18,6 +19,7 @@ namespace Trakx.Coinbase.Custody.Client.Models
         [JsonPropertyName("balance")]
         public long Balance { get; set; }
 
+        [JsonProperty("blockchain_link")]
         [JsonPropertyName("blockchain_link")]
         public Uri BlockchainLink { get; set; }
 

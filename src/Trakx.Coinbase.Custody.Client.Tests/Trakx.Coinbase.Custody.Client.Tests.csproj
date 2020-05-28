@@ -20,11 +20,13 @@
   <ItemGroup>
     <ProjectReference Include="..\Trakx.Coinbase.Custody.Client\Trakx.Coinbase.Custody.Client.csproj" />
   </ItemGroup>
-  
+
   <ItemGroup>
-    <None Update="Models\AddressResponse.json">
-      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
-    </None>
+    <AssetsSourceFiles Include="Unit\Models\*.json"/>
   </ItemGroup>
+
+  <Target Name="CopyCustomContent" AfterTargets="AfterBuild">
+    <Copy SourceFiles="@(AssetsSourceFiles)" DestinationFolder="$(OutDir)" SkipUnchangedFiles="true" />
+  </Target>
 
 </Project>

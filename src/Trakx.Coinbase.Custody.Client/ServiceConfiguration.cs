@@ -14,7 +14,8 @@ namespace Trakx.Coinbase.Custody.Client
             Guard.Against.NullOrEmpty(apiPassPhrase, nameof(apiPassPhrase));
             serviceCollection.AddSingleton<IApiKeyConfig, ApiKeyConfig>(serviceProvider =>
                 new ApiKeyConfig(apiKey, apiPassPhrase));
-
+            serviceCollection.AddTransient<ICoinbaseClient, CoinbaseClient>();
+            serviceCollection.AddTransient<IAddressEndpoint, AddressEndpoint>();
             return serviceCollection;
         }
     }

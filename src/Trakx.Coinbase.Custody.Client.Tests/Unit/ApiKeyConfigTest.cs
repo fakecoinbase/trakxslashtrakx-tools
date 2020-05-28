@@ -1,12 +1,10 @@
 ﻿using System;
 using System.Threading.Tasks;
-using Ardalis.GuardClauses;
 using FluentAssertions;
 using Flurl.Http;
 using Xunit;
 using Microsoft.Extensions.DependencyInjection;
 using Flurl.Http.Testing;
-using NSubstitute.ExceptionExtensions;
 using Trakx.Coinbase.Custody.Client.Interfaces;
 
 
@@ -51,14 +49,11 @@ namespace Trakx.Coinbase.Custody.Client.Tests.Unit
 
             var client = new CoinbaseClient(apiConfig);
 
-            await client.ApiUrl
+            await client.BaseUrl
                 .WithClient(client)
                 .GetJsonAsync();
 
-            _httpTest.ShouldHaveCalled("https://api.custody.coinbase.com/api/v1/")
-                .WithContentType("application/json")
-                .WithHeader(HeaderNames.AccessKey, apiKey)
-                .WithHeader(HeaderNames.AccessPassphrase, passPhrase);
+            _httpTest.ShouldHaveCorrectHeader(apiKey,passPhrase);
         }
     }
 }

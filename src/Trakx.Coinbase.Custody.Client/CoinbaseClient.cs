@@ -1,18 +1,13 @@
-﻿using System.Dynamic;
-using Flurl.Http;
+﻿using Flurl.Http;
 using Trakx.Coinbase.Custody.Client.Interfaces;
 
 namespace Trakx.Coinbase.Custody.Client
 {
-    public class CoinbaseClient : FlurlClient
+    public class CoinbaseClient : FlurlClient, ICoinbaseClient
     {
-        public string ApiUrl { get; }
-
-        public CoinbaseClient(IApiKeyConfig api)
+        public CoinbaseClient(IApiKeyConfig api) : base("https://api.custody.coinbase.com/api/v1/")
         {
             api.Configure(this);
-            ApiUrl = "https://api.custody.coinbase.com/api/v1/";
         }
-
     }
 }
