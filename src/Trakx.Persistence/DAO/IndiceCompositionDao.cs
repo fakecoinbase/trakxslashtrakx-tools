@@ -28,7 +28,7 @@ namespace Trakx.Persistence.DAO
             Version = version;
             CreationDate = creationDate;
             Address = address;
-            Symbol = $"{indiceDefinition.Symbol}{creationDate:yyMM}";
+            Symbol = indiceDefinition.GetCompositionSymbol(creationDate);
             ComponentQuantityDaos = new List<ComponentQuantityDao>();
             IndiceValuationDaos = new List<IndiceValuationDao>();
         }
@@ -39,7 +39,7 @@ namespace Trakx.Persistence.DAO
             Version = composition.Version;
             CreationDate = composition.CreationDate;
             Address = composition.Address;
-            Symbol = $"{IndiceDefinition.Symbol}{CreationDate:yyMM}";
+            Symbol = IndiceDefinition.GetCompositionSymbol(CreationDate);
             Id = $"{IndiceDefinition.Symbol}|{Version}";
             
             ComponentQuantityDaos = composition.ComponentQuantities.Select(c => new ComponentQuantityDao(this,

@@ -18,7 +18,7 @@ namespace Trakx.Common.Core
             Version = version;
             CreationDate = creationDate;
             Address = address;
-            Symbol = $"{definition.Symbol}{creationDate:yyMM}";
+            Symbol = definition.GetCompositionSymbol(creationDate);
 
             Debug.Assert(this.IsValid());
         }

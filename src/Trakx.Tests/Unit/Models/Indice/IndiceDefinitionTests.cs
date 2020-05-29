@@ -18,9 +18,9 @@ namespace Trakx.Tests.Unit.Models.Indice
         {
             _fixture = fixture;
             _expectedIndiceCount = 9;
-            _expectedCompositionCount = 23;
+            _expectedCompositionCount = 23 + 7;
             _expectedComponentCount = 60;
-            _expectedQuantitiesCount = 52 + 53 + 25 + 28;
+            _expectedQuantitiesCount = 52 + 53 + 25 + 28 + 28;
         }
 
         [Fact]
