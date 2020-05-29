@@ -55,9 +55,11 @@ Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Trakx.IndiceManager.Client.
 EndProject
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Trakx.IndiceManager.Client", "Trakx.IndiceManager.Client\Trakx.IndiceManager.Client.csproj", "{C04CBE48-0543-410D-95AF-0F547375D84A}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Trakx.Coinbase.Custody.Client", "Trakx.Coinbase.Custody.Client\Trakx.Coinbase.Custody.Client.csproj", "{462684E6-322B-4F77-8ED1-FA237E858960}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Trakx.Coinbase.Custody.Client", "Trakx.Coinbase.Custody.Client\Trakx.Coinbase.Custody.Client.csproj", "{462684E6-322B-4F77-8ED1-FA237E858960}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Trakx.Coinbase.Custody.Client.Tests", "Trakx.Coinbase.Custody.Client.Tests\Trakx.Coinbase.Custody.Client.Tests.csproj", "{E9D3A5D8-49EC-4D20-BD9A-42F55406D4BA}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Trakx.Coinbase.Custody.Client.Tests", "Trakx.Coinbase.Custody.Client.Tests\Trakx.Coinbase.Custody.Client.Tests.csproj", "{E9D3A5D8-49EC-4D20-BD9A-42F55406D4BA}"
+EndProject
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Trakx.Common.Tests", "Trakx.Common.Tests\Trakx.Common.Tests.csproj", "{571C3535-B4CA-4C79-AD70-6B561CAE1819}"
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
@@ -179,6 +181,14 @@ Global
 		{E9D3A5D8-49EC-4D20-BD9A-42F55406D4BA}.Release|Any CPU.Build.0 = Release|Any CPU
 		{E9D3A5D8-49EC-4D20-BD9A-42F55406D4BA}.Release|x86.ActiveCfg = Release|Any CPU
 		{E9D3A5D8-49EC-4D20-BD9A-42F55406D4BA}.Release|x86.Build.0 = Release|Any CPU
+		{571C3535-B4CA-4C79-AD70-6B561CAE1819}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{571C3535-B4CA-4C79-AD70-6B561CAE1819}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{571C3535-B4CA-4C79-AD70-6B561CAE1819}.Debug|x86.ActiveCfg = Debug|Any CPU
+		{571C3535-B4CA-4C79-AD70-6B561CAE1819}.Debug|x86.Build.0 = Debug|Any CPU
+		{571C3535-B4CA-4C79-AD70-6B561CAE1819}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{571C3535-B4CA-4C79-AD70-6B561CAE1819}.Release|Any CPU.Build.0 = Release|Any CPU
+		{571C3535-B4CA-4C79-AD70-6B561CAE1819}.Release|x86.ActiveCfg = Release|Any CPU
+		{571C3535-B4CA-4C79-AD70-6B561CAE1819}.Release|x86.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE

@@ -1,6 +1,7 @@
 using System;
 using System.IO;
 using System.Reflection;
+using CryptoCompare;
 using Microsoft.AspNetCore.Builder;
 using Microsoft.AspNetCore.Components.Authorization;
 using Microsoft.AspNetCore.Hosting;
@@ -68,6 +69,8 @@ namespace Trakx.MarketData.Server
             services.AddScoped<IIndiceDataProvider, IndiceDataProvider>();
             services.AddScoped<NavHub>();
             services.AddPricing();
+            services.AddSingleton<ICryptoCompareClient>(
+                new CryptoCompareClient(Environment.GetEnvironmentVariable("CRYPTOCOMPARE_API_KEY")));
             services.AddCoinGeckoClient();
             services.AddMessariClient();
             services.AddEthereumInteraction();

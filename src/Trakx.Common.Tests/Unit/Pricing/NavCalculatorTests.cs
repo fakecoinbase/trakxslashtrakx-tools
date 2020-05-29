@@ -1,6 +1,8 @@
 ﻿using System;
+using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
+using CryptoCompare;
 using FluentAssertions;
 using Microsoft.Extensions.Caching.Distributed;
 using NSubstitute;
@@ -8,11 +10,12 @@ using Trakx.Common.Interfaces.Indice;
 using Trakx.Common.Pricing;
 using Trakx.Common.Sources.CoinGecko;
 using Trakx.Common.Sources.Messari.Client;
+using Trakx.Common.Utils;
 using Trakx.Tests.Data;
 using Xunit;
 using Xunit.Abstractions;
 
-namespace Trakx.Tests.Unit.Common.Pricing
+namespace Trakx.Common.Tests.Unit.Pricing
 {
     public class NavCalculatorTests
     {
@@ -20,15 +23,18 @@ namespace Trakx.Tests.Unit.Common.Pricing
         private readonly ICoinGeckoClient _coinGeckoClient;
         private readonly NavCalculator _navCalculator;
         private readonly MockCreator _mockCreator;
+        private readonly ICryptoCompareClient _cryptoCompareClient;
+        private readonly IDistributedCache _cache;
         private static readonly Task<decimal?> FailedFetchPriceResult = Task.FromResult<decimal?>(default);
 
         public NavCalculatorTests(ITestOutputHelper output)
         {
             _messariClient = Substitute.For<IMessariClient>();
             _coinGeckoClient = Substitute.For<ICoinGeckoClient>();
-            var cache = Substitute.For<IDistributedCache>();
+            _cryptoCompareClient = Substitute.For<ICryptoCompareClient>();
+            _cache = Substitute.For<IDistributedCache>();
             _navCalculator =
-                new NavCalculator(_messariClient, _coinGeckoClient, cache, output.ToLogger<NavCalculator>());
+                new NavCalculator(_messariClient, _coinGeckoClient, _cache, _cryptoCompareClient, output.ToLogger<NavCalculator>());
             _mockCreator = new MockCreator(output);
         }
 
@@ -56,7 +62,44 @@ namespace Trakx.Tests.Unit.Common.Pricing
         }
 
         [Fact]
-        public async Task GetIndiceValuation_without_asOf_should_only_ask_messari_price()
+        public async Task GetIndiceValuation_without_asOf_should_look_in_cache_first()
+        {
+            var composition = _mockCreator.GetIndiceComposition(5);
+
+            _cache.GetAsync(default).ReturnsForAnyArgs(Task.FromResult(110.0m.GetBytes()));
+
+            var valuation = await _navCalculator.GetIndiceValuation(composition);
+
+            await CacheShouldReceiveCallsForComponentPrices(composition).ConfigureAwait(false);
+
+            _cryptoCompareClient.ReceivedCalls().Should().BeEmpty();
+            _messariClient.ReceivedCalls().Should().BeEmpty();
+            _coinGeckoClient.ReceivedCalls().Should().BeEmpty();
+
+            ValuationShouldBeValid(valuation, composition);
+        }
+
+        [Fact]
+        public async Task GetIndiceValuation_without_asOf_should_fetch_from_cryptoCompare_second()
+        {
+            var composition = _mockCreator.GetIndiceComposition(5);
+
+            _cryptoCompareClient.Prices.SingleSymbolPriceAsync(default, default).ReturnsForAnyArgs(
+                new PriceSingleResponse(new Dictionary<string, decimal>{{"USDC", 99m}}));
+
+            var valuation = await _navCalculator.GetIndiceValuation(composition);
+
+            await CacheShouldReceiveCallsForComponentPrices(composition).ConfigureAwait(false);
+            await CryptoCompareShouldReceiveCallsForComponentPrices(composition).ConfigureAwait(false);
+            
+            _messariClient.ReceivedCalls().Should().BeEmpty();
+            _coinGeckoClient.ReceivedCalls().Should().BeEmpty();
+
+            ValuationShouldBeValid(valuation, composition);
+        }
+
+        [Fact]
+        public async Task GetIndiceValuation_without_asOf_should_fetch_prices_from_messari_third()
         {
             var composition = _mockCreator.GetIndiceComposition(5);
 
@@ -64,16 +107,13 @@ namespace Trakx.Tests.Unit.Common.Pricing
 
             var valuation = await _navCalculator.GetIndiceValuation(composition);
 
-            foreach (var symbol in composition.GetComponentSymbols())
-            {
-                await _messariClient.Received(1)
-                    .GetLatestPrice(Arg.Is(symbol));
-            }
+            await CacheShouldReceiveCallsForComponentPrices(composition).ConfigureAwait(false);
+            await CryptoCompareShouldReceiveCallsForComponentPrices(composition).ConfigureAwait(false);
+            await MessariShouldReceiveCallsForComponentPrices(composition).ConfigureAwait(false);
 
             _coinGeckoClient.ReceivedCalls().Should().BeEmpty();
 
-            valuation.ComponentValuations.Count.Should().Be(composition.ComponentQuantities.Count);
-            valuation.NetAssetValue.Should().NotBe(0);
+            ValuationShouldBeValid(valuation, composition);
         }
 
         [Fact]
@@ -91,19 +131,17 @@ namespace Trakx.Tests.Unit.Common.Pricing
 
             var valuation = await _navCalculator.GetIndiceValuation(composition);
 
-            foreach (var symbol in composition.GetComponentSymbols())
-            {
-                await _messariClient.Received(1)
-                    .GetLatestPrice(Arg.Is(symbol));
-            }
+            await CacheShouldReceiveCallsForComponentPrices(composition).ConfigureAwait(false);
+            await CryptoCompareShouldReceiveCallsForComponentPrices(composition).ConfigureAwait(false);
+            await MessariShouldReceiveCallsForComponentPrices(composition).ConfigureAwait(false);
 
             _coinGeckoClient.ReceivedCalls().Count().Should().Be(1);
-            await _coinGeckoClient.Received(1).GetLatestPrice(Arg.Is(failCoinGeckoId));
+            await _coinGeckoClient.Received(1).GetLatestPrice(Arg.Is(failCoinGeckoId))
+                .ConfigureAwait(false);
 
-            valuation.ComponentValuations.Count.Should().Be(composition.ComponentQuantities.Count);
-            valuation.NetAssetValue.Should().NotBe(0);
+            ValuationShouldBeValid(valuation, composition);
         }
-        
+
         [Fact]
         public void GetIndiceValuation_without_asOf_should_fail_when_no_price_found_for_1_component()
         {
@@ -119,6 +157,38 @@ namespace Trakx.Tests.Unit.Common.Pricing
 
             new Func<Task>(async () => await _navCalculator.GetIndiceValuation(composition))
                 .Should().ThrowExactly<NavCalculator.FailedToRetrievePriceException>();
+        }
+
+        private static void ValuationShouldBeValid(IIndiceValuation valuation, IIndiceComposition composition)
+        {
+            valuation.ComponentValuations.Count.Should().Be(composition.ComponentQuantities.Count);
+            valuation.NetAssetValue.Should().NotBe(0);
+        }
+
+        private async Task CacheShouldReceiveCallsForComponentPrices(IIndiceComposition composition)
+        {
+            foreach (var symbol in composition.GetComponentSymbols())
+            {
+                await _cache.Received(1).GetAsync(Arg.Is(symbol.GetLatestPriceCacheKey("usdc")));
+            }
+        }
+
+        private async Task CryptoCompareShouldReceiveCallsForComponentPrices(IIndiceComposition composition)
+        {
+            foreach (var symbol in composition.GetComponentSymbols())
+            {
+                await _cryptoCompareClient.Prices.Received(1).SingleSymbolPriceAsync(Arg.Is(symbol), 
+                    Arg.Is<IEnumerable<string>>(e => e.Count() == 1 && e.First() == "usdc"), 
+                    Arg.Is(true));
+            }
+        }
+
+        private async Task MessariShouldReceiveCallsForComponentPrices(IIndiceComposition composition)
+        {
+            foreach (var symbol in composition.GetComponentSymbols())
+            {
+                await _messariClient.Received(1).GetLatestPrice(Arg.Is(symbol));
+            }
         }
 
         [Fact]

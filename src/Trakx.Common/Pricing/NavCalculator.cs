@@ -2,6 +2,7 @@
 using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
+using CryptoCompare;
 using Microsoft.Extensions.Caching.Distributed;
 using Microsoft.Extensions.Logging;
 using Polly;
@@ -20,22 +21,34 @@ namespace Trakx.Common.Pricing
         private readonly IMessariClient _messariClient;
         private readonly ICoinGeckoClient _coinGeckoClient;
         private readonly IDistributedCache _cache;
+        private readonly ICryptoCompareClient _cryptoCompareClient;
         private readonly ILogger<NavCalculator> _logger;
         private readonly AsyncRetryPolicy _historicalPriceRetryPolicy;
+        private readonly Dictionary<string, Func<IComponentDefinition, Task<KeyValuePair<string, SourcedPrice>>>> _priceFetchFunctionsBySource;
 
         public NavCalculator(IMessariClient messariClient,
             ICoinGeckoClient coinGeckoClient,
             IDistributedCache cache,
+            ICryptoCompareClient cryptoCompareClient,
             ILogger<NavCalculator> logger)
         {
             _messariClient = messariClient;
             _coinGeckoClient = coinGeckoClient;
             _cache = cache;
+            _cryptoCompareClient = cryptoCompareClient;
             _logger = logger;
             _historicalPriceRetryPolicy = Policy.Handle<Exception>()
                 .WaitAndRetryAsync(3, i => TimeSpan.FromMilliseconds(50 * i));
+
+            _priceFetchFunctionsBySource = new Dictionary<string, Func<IComponentDefinition, Task<KeyValuePair<string, SourcedPrice>>>>
+            {
+                {"Cache", async c => await GetCachedPrice(c)},
+                {"CryptoCompare", async c => await GetCryptoComparePrice(c)},
+                {"Messari", async c => await GetMessariPrice(c)},
+                {"CoinGecko", async c => await GetLatestCoinGeckoUsdPrice(c)},
+            };
         }
-        
+
         #region Implementation of INavCalculator
 
         /// <inheritdoc />
@@ -56,7 +69,7 @@ namespace Trakx.Common.Pricing
             var utcNow = DateTime.UtcNow;
             asOf ??= utcNow;
             var utcTimeStamp = asOf.Value.ToUniversalTime();
-            var getPricesTasks = composition.ComponentQuantities.Select(quantity => 
+            var getPricesTasks = composition.ComponentQuantities.Select(quantity =>
                 asOf == utcNow ? GetLatestUsdPrice(quantity) : GetUsdPriceAsOf(quantity, asOf.Value)).ToArray();
 
             await Task.WhenAll(getPricesTasks).ConfigureAwait(false);
@@ -75,56 +88,40 @@ namespace Trakx.Common.Pricing
 
         #endregion
 
-        private async Task<KeyValuePair<string, SourcedPrice>> GetLatestUsdPrice(IComponentQuantity c)
+        private async Task<KeyValuePair<string, SourcedPrice>> GetLatestUsdPrice(IComponentQuantity quantity)
         {
-            try
+            foreach (var priceSource in _priceFetchFunctionsBySource)
             {
-                var result = await GetCachedPrice(c.ComponentDefinition);
-                if (result.Value.Price != default) return result;
+                try
+                {
+                    var result = await priceSource.Value(quantity.ComponentDefinition).ConfigureAwait(false);
+                    if (result.Value.Price != default) return result;
+                }
+                catch (Exception e)
+                {
+                    _logger.LogWarning(e, "Failed to retrieve price from {0}", priceSource.Key);
+                }
             }
-            catch (Exception e)
-            {
-                _logger.LogWarning(e, "Failed to retrieve price from Cache");
-            }
-
-            try
-            {
-                var result = await GetMessariPrice(c.ComponentDefinition);
-                if (result.Value.Price != default) return result;
-            }
-            catch (Exception e)
-            {
-                _logger.LogWarning(e, "Failed to retrieve price from Messari");
-            }
-
-            try
-            {
-                var result = await GetLatestCoinGeckoUsdPrice(c.ComponentDefinition);
-                if (result.Value.Price != default) return result;
-            }
-            catch (Exception e)
-            {
-                _logger.LogWarning(e, "Failed to retrieve price from CoinGecko");
-            }
-
-            throw new FailedToRetrievePriceException($"Failed to retrieve price for component {c.ComponentDefinition.Symbol}");
+            
+            throw new FailedToRetrievePriceException($"Failed to retrieve price for component {quantity.ComponentDefinition.Symbol}");
         }
 
         private async Task<KeyValuePair<string, SourcedPrice>> GetUsdPriceAsOf(IComponentQuantity quantity, DateTime asOf)
         {
             var result = await _historicalPriceRetryPolicy
-                .ExecuteAndCaptureAsync(async () => await GetCoinGeckoUsdPriceAsOf(quantity.ComponentDefinition, asOf));
+                .ExecuteAndCaptureAsync(async () => await GetCoinGeckoUsdPriceAsOf(quantity.ComponentDefinition, asOf))
+                .ConfigureAwait(false);
 
-            if (result.Outcome == OutcomeType.Successful && result.Result.Value.Price != default) 
+            if (result.Outcome == OutcomeType.Successful && result.Result.Value.Price != default)
                 return result.Result;
 
             throw new FailedToRetrievePriceException($"Failed to retrieve price for component {quantity.ComponentDefinition.Symbol} as of {asOf}", result.FinalException);
         }
 
-        private async Task<KeyValuePair<string, SourcedPrice>>  GetMessariPrice(IComponentDefinition c)
+        private async Task<KeyValuePair<string, SourcedPrice>> GetMessariPrice(IComponentDefinition c)
         {
             var price = await _messariClient.GetLatestPrice(c.Symbol).ConfigureAwait(false);
-            return price == default 
+            return price == default
                 ? default
                 : new KeyValuePair<string, SourcedPrice>(c.Symbol, new SourcedPrice(c.Symbol, "messari", price.Value));
         }
@@ -135,6 +132,15 @@ namespace Trakx.Common.Pricing
             return priceBytes == default
                 ? default
                 : new KeyValuePair<string, SourcedPrice>(c.Symbol, new SourcedPrice(c.Symbol, "cryptoCompare", priceBytes.ToDecimal()));
+        }
+
+        private async ValueTask<KeyValuePair<string, SourcedPrice>> GetCryptoComparePrice(IComponentDefinition c)
+        {
+            var pricesByToCurrency = await _cryptoCompareClient.Prices.SingleSymbolPriceAsync(c.Symbol, new[] {"usdc"}, true)
+                .ConfigureAwait(false);
+            return pricesByToCurrency == default
+                ? default
+                : new KeyValuePair<string, SourcedPrice>(c.Symbol, new SourcedPrice(c.Symbol, "cryptoCompare", pricesByToCurrency["USDC"]));
         }
 
         private async ValueTask<KeyValuePair<string, SourcedPrice>> GetLatestCoinGeckoUsdPrice(IComponentDefinition c)

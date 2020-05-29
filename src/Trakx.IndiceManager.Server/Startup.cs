@@ -1,6 +1,7 @@
 using System;
 using System.IO;
 using System.Reflection;
+using CryptoCompare;
 using Microsoft.AspNetCore.Builder;
 using Microsoft.AspNetCore.Hosting;
 using Microsoft.AspNetCore.Http;
@@ -13,9 +14,7 @@ using Trakx.Persistence;
 using Trakx.Persistence.Initialisation;
 using Microsoft.OpenApi.Models;
 using Trakx.Common.Ethereum;
-using Trakx.Common.Interfaces;
 using Trakx.Common.Sources.CoinGecko;
-using Trakx.IndiceManager.Server.Managers;
 
 
 namespace Trakx.IndiceManager.Server
@@ -44,7 +43,7 @@ namespace Trakx.IndiceManager.Server
             services.AddMappings();
             // DB Creation and Seeding
             services.AddTransient<IDatabaseInitialiser, DatabaseInitialiser>();
-            
+
             services.AddCoinGeckoClient();
             services.AddSwaggerGen(c =>
             {
