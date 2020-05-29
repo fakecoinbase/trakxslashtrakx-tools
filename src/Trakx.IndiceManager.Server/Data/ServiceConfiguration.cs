@@ -42,6 +42,7 @@ namespace Trakx.IndiceManager.Server.Data
             service.AddScoped<ITransactionDataModifier, TransactionDataModifier>();
             service.AddScoped<IComponentInformationRetriever, ComponentInformationRetriever>();
             service.AddScoped<IComponentDataCreator, ComponentDataCreator>();
+            service.AddScoped<IComponentDataProvider, ComponentDataProvider>();
             return service;
         } 
 

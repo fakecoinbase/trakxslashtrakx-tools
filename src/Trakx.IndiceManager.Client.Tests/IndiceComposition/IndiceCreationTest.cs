@@ -12,7 +12,6 @@ using Xunit.Abstractions;
 using Syncfusion.Blazor;
 using Syncfusion.Blazor.Grids;
 using Trakx.Common.Models;
-using Trakx.IndiceManager.Client.ApiClient;
 
 namespace Trakx.IndiceManager.Client.Tests.IndiceComposition
 {
@@ -147,7 +146,7 @@ namespace Trakx.IndiceManager.Client.Tests.IndiceComposition
 
             await Dispatch(Component.Instance.SaveIndiceButton.OnClick, new MouseEventArgs()).ConfigureAwait(false);
 
-            await _apiClient.Received(1).TrySaveIndiceCompositionAsync(
+            await _apiClient.Received(1).SaveIndiceCompositionAsync(
                 Arg.Is<IndiceCompositionModel>(m =>
                     m.IndiceDetail.Symbol == _model.IndiceSymbol
                     && m.IndiceDetail.Name == _model.IndiceName

@@ -8,7 +8,6 @@
 @using Syncfusion.Blazor.Inputs
 @using Syncfusion.Blazor.Notifications
 @using Syncfusion.Blazor.Charts
-@using Trakx.IndiceManager.Client.ApiClient
 @using Action = Syncfusion.Blazor.Grids.Action
 @using ActionCompleteEventArgs = Syncfusion.Blazor.DropDowns.ActionCompleteEventArgs
 @page "/IndiceComposition/indice_creation"
@@ -177,8 +176,7 @@
 
     private async Task SaveIndice(MouseEventArgs args)
     {
-        _ = await ApiClient.TrySaveIndiceCompositionAsync((IndiceCompositionModel) Model, CancellationToken.None)
-            .ConfigureAwait(false);
+        _ = await ApiClient.SaveIndiceCompositionAsync((IndiceCompositionModel)Model, CancellationToken.None).ConfigureAwait(false); ;
     }
 
     #endregion
