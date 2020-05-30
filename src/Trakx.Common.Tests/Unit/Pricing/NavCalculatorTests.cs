@@ -6,6 +6,7 @@ using CryptoCompare;
 using FluentAssertions;
 using Microsoft.Extensions.Caching.Distributed;
 using NSubstitute;
+using Trakx.Common.Extensions;
 using Trakx.Common.Interfaces.Indice;
 using Trakx.Common.Pricing;
 using Trakx.Common.Sources.CoinGecko;
@@ -244,6 +245,32 @@ namespace Trakx.Common.Tests.Unit.Pricing
 
             valuation.ComponentValuations.Select(c => c.Price).All(p => p == 101.23m).Should().BeTrue();
             await _coinGeckoClient.Received(4).GetPriceAsOfFromId(Arg.Any<string>(), asOf, Arg.Any<string>());
+        }
+
+        [Fact]
+        public async Task GetIndiceValuation_should_use_native_token_symbols()
+        {
+            var composition = _mockCreator.GetIndiceComposition(2);
+            var wrappedBitcoinSymbol = "wbtc";
+            var wrappedEtherSymbol = "weth";
+            composition.ComponentQuantities[0].ComponentDefinition.Symbol.Returns(wrappedBitcoinSymbol);
+            composition.ComponentQuantities[1].ComponentDefinition.Symbol.Returns(wrappedEtherSymbol);
+
+            _coinGeckoClient.GetLatestPrice("id-0").Returns(12.3m);
+            _coinGeckoClient.GetLatestPrice("id-1").Returns(45.6m);
+            
+            var valuation = await _navCalculator.GetIndiceValuation(composition);
+
+            await _cryptoCompareClient.Prices.Received(1).SingleSymbolPriceAsync(Arg.Is(wrappedBitcoinSymbol.ToNativeSymbol()),
+                Arg.Any<IEnumerable<string>>(), Arg.Any<bool>());
+            await _cryptoCompareClient.Prices.Received(1).SingleSymbolPriceAsync(Arg.Is(wrappedEtherSymbol.ToNativeSymbol()),
+                Arg.Any<IEnumerable<string>>(), Arg.Any<bool>());
+
+            await _messariClient.Received(1).GetLatestPrice(Arg.Is(wrappedBitcoinSymbol.ToNativeSymbol()));
+            await _messariClient.Received(1).GetLatestPrice(Arg.Is(wrappedEtherSymbol.ToNativeSymbol()));
+
+            valuation.ComponentValuations.Select(v => v.ComponentQuantity.ComponentDefinition.Symbol)
+                .Should().BeEquivalentTo(wrappedBitcoinSymbol, wrappedEtherSymbol);
         }
     }
 }
