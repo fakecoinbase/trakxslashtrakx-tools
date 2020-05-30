@@ -31,6 +31,7 @@ namespace Trakx.MarketData.Server
     {
         private const string ApiName = "Trakx Market Data Api";
         private const string ApiVersion = "v0.1";
+        private const string AllowTrakxExchangeOrigin = nameof(AllowTrakxExchangeOrigin);
 
         public Startup(IConfiguration configuration)
         {
@@ -43,6 +44,15 @@ namespace Trakx.MarketData.Server
         // For more information on how to configure your application, visit https://go.microsoft.com/fwlink/?LinkID=398940
         public void ConfigureServices(IServiceCollection services)
         {
+            services.AddCors(options =>
+            {
+                options.AddPolicy(name: AllowTrakxExchangeOrigin, builder =>
+                    {
+                        builder.WithOrigins("http://trakx.io", "http://www.trakx.io", "https://trakx.io", "https://www.trakx.io");
+                    });
+            });
+
+
             services.AddDbContext<ApplicationDbContext>(options =>
                 options.UseSqlServer(Configuration.GetConnectionString("SqlServerConnection")));
             
@@ -120,6 +130,8 @@ namespace Trakx.MarketData.Server
             app.UseRouting();
             app.UseAuthentication();
             app.UseAuthorization();
+
+            app.UseCors(AllowTrakxExchangeOrigin);
 
             app.UseEndpoints(endpoints =>
             {
