@@ -3,8 +3,8 @@ using System.Linq;
 using System.Threading.Tasks;
 using Microsoft.AspNetCore.Mvc;
 using Nethereum.Util;
+using Trakx.Common.Models;
 using Trakx.IndiceManager.Server.Managers;
-using Trakx.IndiceManager.Server.Models;
 
 namespace Trakx.IndiceManager.Server.Controllers
 {
@@ -48,6 +48,42 @@ namespace Trakx.IndiceManager.Server.Controllers
             };
             return new JsonResult(componentDetailModel);
         }
+
+        /// <summary>
+        ///  Tries to retrieve all of the components that are currently in database.
+        /// </summary>
+        /// <returns>A list of <see cref="ComponentDetailModel"/>.</returns>
+        [HttpGet]
+        public async Task<ActionResult<List<ComponentDetailModel>>> GetAllComponents()
+        {
+            var components = await _componentRetriever.GetAllComponents();
+
+            if (components.Count == 0)
+                return NotFound("There is no components in the database.");
+
+            var returnComponents = components.Select(c => new ComponentDetailModel(c)).ToList();
+            return Ok(returnComponents);
+        }
+
+        /// <summary>
+        /// Tries to put a new component in the database to use it later in a new indice.
+        /// </summary>
+        /// <param name="componentDefinition">The component that we want to save.</param>
+        /// <returns>An object with a response 201 if the adding was successful</returns>
+        [HttpPost]
+        public async Task<ActionResult<ComponentDetailModel>> SaveComponentDefinition(ComponentDetailModel componentDefinition)
+        {
+            if (!componentDefinition.IsValid())
+                return BadRequest("The component is incomplete, please try again.");
+
+            var isAdded = await _componentRetriever.TryToSaveComponentDefinition(componentDefinition);
+
+            if (isAdded )
+                return CreatedAtAction("The component has been added to the database.", componentDefinition);
+            
+            return BadRequest("Object already in database.");
+        }
+
 
         /// <summary>
         /// Tries to retrieve all of the indices in our database.

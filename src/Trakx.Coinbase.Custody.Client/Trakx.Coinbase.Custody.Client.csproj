@@ -1,0 +1,18 @@
+﻿<Project Sdk="Microsoft.NET.Sdk">
+
+  <PropertyGroup>
+    <TargetFramework>netstandard2.1</TargetFramework>
+  </PropertyGroup>
+  
+  <Import Project="../Common.Projects.props" />
+  
+  <ItemGroup>
+    <PackageReference Include="System.Text.Json" Version="4.7.2" />
+    <PackageReference Include="Flurl" Version="2.8.2" />
+    <PackageReference Include="Flurl.Http" Version="2.4.2" />
+    <PackageReference Include="Microsoft.Extensions.DependencyInjection.Abstractions" Version="3.1.4" />
+    <PackageReference Include="Ardalis.GuardClauses" Version="1.4.2" />
+  </ItemGroup>
+  
+</Project>
+

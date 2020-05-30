@@ -1,0 +1,11 @@
+﻿html, body {
+    font-family: HelveticaNeue, "Helvetica Neue", Helvetica, Arial, sans-serif;
+}
+
+fieldset div {
+    margin: 0.5em auto 0.5em;
+}
+
+.container {
+    margin: auto auto 100px;
+}

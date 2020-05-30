@@ -233,15 +233,15 @@ namespace Trakx.Persistence.Initialisation
                     14,
                     "", firstApr),
                 new IndiceDefinitionDao("l1btceth", "Bitcoin Ether 50/50",
-                    "Index composed of half BTC and half ETH",
+                    "Index composed of half Bitcoin and half Ether",
                     14,
                     "", firstApr),
                 new IndiceDefinitionDao("l1vol15btc", "Bitcoin Control15",
-                    "Index composed of wrapped Bitcoin with a risk control mechanism",
+                    "Index composed of Bitcoin with a risk control mechanism",
                     14,
                     "", firstApr),
                 new IndiceDefinitionDao("l1vol20be", "Bitcoin Ether Control20",
-                    "Index composed of half wrapped Bitcoin and half wrapped Ether with a risk control mechanism",
+                    "Index composed of half Bitcoin and half Ether with a risk control mechanism",
                     14,
                     "", firstApr),
             };
@@ -454,6 +454,43 @@ namespace Trakx.Persistence.Initialisation
                 new CompositionData(indiceBySymbols["l1vol20be"], DateTime.Parse("01-May-2020"), componentsBySymbols["weth"], 214.79m, 0.075m),
                 new CompositionData(indiceBySymbols["l1vol20be"], DateTime.Parse("01-May-2020"), componentsBySymbols["usdc"], 1m, 0.85m),
                 #endregion
+
+                #region Jun 2020
+                new CompositionData(indiceBySymbols["l1cex"], DateTime.Parse("29-May-2020"), componentsBySymbols["ht"], 4.023m, 0.3m),
+                new CompositionData(indiceBySymbols["l1cex"], DateTime.Parse("29-May-2020"), componentsBySymbols["leo"], 1.171m, 0.3m),
+                new CompositionData(indiceBySymbols["l1cex"], DateTime.Parse("29-May-2020"), componentsBySymbols["okb"], 5.23m, 0.171944435337883m),
+                new CompositionData(indiceBySymbols["l1cex"], DateTime.Parse("29-May-2020"), componentsBySymbols["ftt"], 2.943m, 0.15652502472127m),
+                new CompositionData(indiceBySymbols["l1cex"], DateTime.Parse("29-May-2020"), componentsBySymbols["kcs"], 0.9823m, 0.0715305399408469m),
+
+                new CompositionData(indiceBySymbols["l1dex"], DateTime.Parse("29-May-2020"), componentsBySymbols["zrx"], 0.3367m, 0.5m),
+                new CompositionData(indiceBySymbols["l1dex"], DateTime.Parse("29-May-2020"), componentsBySymbols["knc"], 0.6863m, 0.347254704239048m),
+                new CompositionData(indiceBySymbols["l1dex"], DateTime.Parse("29-May-2020"), componentsBySymbols["lrc"], 0.04495m, 0.152745295760952m),
+
+                new CompositionData(indiceBySymbols["l1len"], DateTime.Parse("29-May-2020"), componentsBySymbols["mkr"], 427.96m, 0.5m),
+                new CompositionData(indiceBySymbols["l1len"], DateTime.Parse("29-May-2020"), componentsBySymbols["nexo"], 0.1313m, 0.253994231722931m),
+                new CompositionData(indiceBySymbols["l1len"], DateTime.Parse("29-May-2020"), componentsBySymbols["lend"], 0.05304m, 0.246005768277069m),
+
+                new CompositionData(indiceBySymbols["l1mc10erc"], DateTime.Parse("29-May-2020"), componentsBySymbols["ht"], 4.023m, 0.15m),
+                new CompositionData(indiceBySymbols["l1mc10erc"], DateTime.Parse("29-May-2020"), componentsBySymbols["leo"], 1.171m, 0.15m),
+                new CompositionData(indiceBySymbols["l1mc10erc"], DateTime.Parse("29-May-2020"), componentsBySymbols["link"], 4.04m, 0.15m),
+                new CompositionData(indiceBySymbols["l1mc10erc"], DateTime.Parse("29-May-2020"), componentsBySymbols["mkr"], 427.96m, 0.115787438260279m),
+                new CompositionData(indiceBySymbols["l1mc10erc"], DateTime.Parse("29-May-2020"), componentsBySymbols["okb"], 5.23m, 0.0916454316166629m),
+                new CompositionData(indiceBySymbols["l1mc10erc"], DateTime.Parse("29-May-2020"), componentsBySymbols["ftt"], 2.943m, 0.0842025532094753m),
+                new CompositionData(indiceBySymbols["l1mc10erc"], DateTime.Parse("29-May-2020"), componentsBySymbols["bat"], 0.2113m, 0.0906347528376021m),
+                new CompositionData(indiceBySymbols["l1mc10erc"], DateTime.Parse("29-May-2020"), componentsBySymbols["zrx"], 0.3367m, 0.0723356933063399m),
+                new CompositionData(indiceBySymbols["l1mc10erc"], DateTime.Parse("29-May-2020"), componentsBySymbols["knc"], 0.6863m, 0.0522180234621038m),
+                new CompositionData(indiceBySymbols["l1mc10erc"], DateTime.Parse("29-May-2020"), componentsBySymbols["kcs"], 0.9823m, 0.0431761073075374m),
+
+                new CompositionData(indiceBySymbols["l1vol20be"], DateTime.Parse("29-May-2020"), componentsBySymbols["usdc"], 1m, 0.7409m),
+                new CompositionData(indiceBySymbols["l1vol20be"], DateTime.Parse("29-May-2020"), componentsBySymbols["wbtc"], 9472.24m, 0.12955m),
+                new CompositionData(indiceBySymbols["l1vol20be"], DateTime.Parse("29-May-2020"), componentsBySymbols["weth"], 221.25m, 0.12955m),
+
+                new CompositionData(indiceBySymbols["l1vol15btc"], DateTime.Parse("29-May-2020"), componentsBySymbols["usdc"], 1m, 0.7892m),
+                new CompositionData(indiceBySymbols["l1vol15btc"], DateTime.Parse("29-May-2020"), componentsBySymbols["wbtc"], 9472.24m, 0.2108m),
+
+                new CompositionData(indiceBySymbols["l1btceth"], DateTime.Parse("29-May-2020"), componentsBySymbols["weth"], 221.25m, 0.5m),
+                new CompositionData(indiceBySymbols["l1btceth"], DateTime.Parse("29-May-2020"), componentsBySymbols["wbtc"], 9472.24m, 0.5m),
+                #endregion
             };
 
 
@@ -514,6 +551,14 @@ namespace Trakx.Persistence.Initialisation
                 {"l1dex2003", 153.70073834097101260102037937m},
                 {"l1len2003", 139.07719885058049760491362928m},
                 {"l1sca2003", 119.54041799142740614271470609m},
+
+                {"l1cex2006", 98.78196024409610152057474844m},
+                {"l1dex2006", 130.60197236946566472017116372m},
+                {"l1btceth2006", 103.85607935995173194247m},
+                {"l1len2006", 119.17740439259966310741733793m},
+                {"l1mc10erc2006", 104.75395058863399644703986350m},
+                {"l1vol15btc", 100.64102994287913139848m},
+                {"l1vol20be", 100.57841190399275939853m},
             };
     }
 }

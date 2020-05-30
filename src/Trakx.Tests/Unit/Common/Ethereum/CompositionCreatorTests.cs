@@ -7,21 +7,24 @@ using Nethereum.ABI.Encoders;
 using NSubstitute;
 using Trakx.Common.Ethereum;
 using Trakx.Common.Extensions;
-using Trakx.Contracts.Set;
 using Trakx.Contracts.Set.Core;
+using Trakx.Contracts.Set;
 using Trakx.Tests.Data;
 using Xunit;
+using Xunit.Abstractions;
 
 namespace Trakx.Tests.Unit.Common.Ethereum
 {
     public class CompositionCreatorTests
     {
         private readonly ICoreService _coreService;
+        private readonly MockCreator _mockCreator;
 
-        public CompositionCreatorTests()
+        public CompositionCreatorTests(ITestOutputHelper output)
         {
             _coreService = Substitute.For<ICoreService>();
-            var transactionReceipt = new MockCreator().GetTransactionReceipt();
+            _mockCreator = new MockCreator(output);
+            var transactionReceipt = _mockCreator.GetTransactionReceipt();
             _coreService.CreateSetRequestAndWaitForReceiptAsync(default, 
                     default, default, default, default, default, default)
                 .ReturnsForAnyArgs(transactionReceipt);
@@ -34,7 +37,7 @@ namespace Trakx.Tests.Unit.Common.Ethereum
 
             var compositionCreator = new CompositionCreator(_coreService, Substitute.For<ILogger<CompositionCreator>>());
 
-            var composition = new MockCreator().GetIndiceComposition(3);
+            var composition = _mockCreator.GetIndiceComposition(3);
 
             var expectedComponents = composition.ComponentQuantities.Select(q => q.ComponentDefinition.Address).ToList();
             var expectedQuantities = composition.ComponentQuantities.Select(q =>

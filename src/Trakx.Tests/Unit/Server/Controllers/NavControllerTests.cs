@@ -11,6 +11,7 @@ using Trakx.Common.Interfaces.Pricing;
 using Trakx.MarketData.Server.Controllers;
 using Trakx.Tests.Data;
 using Xunit;
+using Xunit.Abstractions;
 
 namespace Trakx.Tests.Unit.Server.Controllers
 {
@@ -22,13 +23,13 @@ namespace Trakx.Tests.Unit.Server.Controllers
         private readonly NavController _navController;
         private readonly MockCreator _mockCreator;
 
-        public NavControllerTests()
+        public NavControllerTests(ITestOutputHelper output)
         {
             _indiceProvider = Substitute.For<IIndiceDataProvider>();
             _navCalculator = Substitute.For<INavCalculator>();
             _dateTimeProvider = Substitute.For<IDateTimeProvider>();
             _navController = new NavController(_indiceProvider, _navCalculator, _dateTimeProvider, Substitute.For<ILogger<NavController>>());
-            _mockCreator = new MockCreator();
+            _mockCreator = new MockCreator(output);
         }
 
         [Fact]

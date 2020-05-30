@@ -44,7 +44,7 @@ namespace Trakx.Persistence.DAO
 
         /// <inheritdoc />
         [Required]
-        public SupplyTransactionType TransactionType { get; set; }
+        public SupplyTransactionType? TransactionType { get; set; }
 
         /// <inheritdoc />
         public int? EthereumBlockId { get; set; }

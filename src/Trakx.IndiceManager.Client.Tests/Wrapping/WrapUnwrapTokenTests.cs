@@ -1,199 +1,222 @@
 using System.Linq;
 using System.Collections.Generic;
+using System.Threading.Tasks;
+using System.Text.Json;
 using FluentAssertions;
 using Trakx.IndiceManager.Client.Pages.Wrapping;
+using Trakx.Tests.Data;
+using Trakx.Common.Models;
 using Xunit;
+using Xunit.Abstractions;
 using AngleSharp.Dom;
 using AngleSharp.Html.Dom;
 using Microsoft.AspNetCore.Components;
 using Bunit;
-using MatBlazor;
-using Microsoft.AspNetCore.Components.Web;
-using Trakx.Tests.Data;
+using Syncfusion.Blazor;
+using Flurl.Http.Testing;
+using Flurl.Http;
 
 namespace Trakx.IndiceManager.Client.Tests.Wrapping
 {
-    public sealed class WrapUnwrapTokenTests : ComponentTestFixture
+    public sealed class WrapUnwrapTokenTests : ComponentTest<WrapUnwrapToken>
     {
         private readonly MockCreator _mockCreator;
-        private readonly IRenderedComponent<WrapUnwrapToken> _component;
-        private IHtmlInputElement AmountInput => (IHtmlInputElement) _component.FindElementWithId("input", "Amount");
-        private IHtmlInputElement SendingAddressInput => (IHtmlInputElement)_component.FindElementWithId("input", "user-sending-address");
-        private IHtmlInputElement ReceivingAddressInput => (IHtmlInputElement)_component.FindElementWithId("input", "user-receiving-address");
-        private IElement WrapRadioButton => _component.FindElementWithId("input", "wrap-tokens");
-        private IElement ResetButton => _component.FindElementWithId("input", "button-reset");
-        private IElement UnwrapRadioButton => _component.FindElementWithId("input", "unwrap-tokens");
-        private IHtmlSelectElement SelectMenu => (IHtmlSelectElement)_component.FindElementWithId("select", "select-menu");
-        private IElement SubmitButton => _component.FindElementWithId("button", "button-submit");
+        private readonly WrapUnwrapToken.WrappingTransactionViewModel _model;
+        private readonly HttpTest _httpTest;
 
-        private List<IHtmlOptionElement> SourceCryptocurrencyOptions => _component.FindAll("option")
-            .Where(o => o.Id?.StartsWith("source-") ?? false)
-            .Cast<IHtmlOptionElement>()
-            .ToList();
-
-
-        private bool _submitted;
-
-
-        public WrapUnwrapTokenTests()
+        public WrapUnwrapTokenTests(ITestOutputHelper output)
         {
-            _mockCreator = new MockCreator();
-            Services.AddMatToaster();
-            _submitted = false;
-            var submitEventCallback = EventCallback(nameof(WrapUnwrapToken.OnSubmitClick), (MouseEventArgs _) => _submitted = true);
-            _component = RenderComponent<WrapUnwrapToken>(submitEventCallback);
+            _mockCreator = new MockCreator(output);
+            Services.AddSyncfusionBlazor();
+            Component = RenderComponent<WrapUnwrapToken>();
+            _mockCreator = new MockCreator(output);
+            _httpTest = new HttpTest();
+
+            _model = Component.Instance.Model;
         }
 
         [Fact]
-        public void submit_click_is_available_only_if_one_of_wrap_or_unwrap_option_was_choose()
+        public void Wrapping_should_be_the_default_option()
         {
-            SubmitButton.Click();
-            _submitted.Should().BeFalse();
-
-            WrapRadioButton.Click();
-            SubmitButton.Click();
-            _submitted.Should().BeTrue();
+            _model.Wrapping.Should().BeTrue();
+            Component.Instance.WrappingRadioButton.Checked.Should().BeTrue();
         }
 
         [Fact]
-        public void click_on_wrap_or_unwrap_button_should_display_the_corresponding_choice_in_the_submit_button()
+        public async Task Wrapping_should_determinate_list_of_from_currencies()
         {
-             WrapRadioButton.Click();
-            SubmitButton.TextContent.Should().Be("Wrap");
+            _model.Wrapping.Should().BeTrue();
+            Component.Instance.FromCurrencyTextBox.DataSource.Any(c => c.StartsWith("w")).Should().BeFalse();
 
-            UnwrapRadioButton.Click();
-            SubmitButton.TextContent.Should().Be("Unwrap");
+            await Dispatch(Component.Instance.WrappingRadioButton.CheckedChanged, false);
+            Component.Instance.FromCurrencyTextBox.DataSource.All(c => c.StartsWith("w")).Should().BeTrue();
         }
 
         [Fact]
-        public void verify_that_form_boxes_are_disabled_when_no_wrapping_option_is_chosen_and_after_clicking_on_reset_button()
+        public async Task FromCurrencyTextBox_should_change_model_from_Currency()
         {
-            //initially, forms boxes should be disabled
-            VerifyFormBoxesStates(true);
-
-            //clicking on "wrap" button makes them all available
-            WrapRadioButton.Click();
-            VerifyFormBoxesStates(false);
-
-            //clicking on "reset" button makes them all disabled again
-            ResetButton.Click();
-            VerifyFormBoxesStates(true);
-
-            //clicking on "unwrap" button makes them all available
-            WrapRadioButton.Click();
-            VerifyFormBoxesStates(false);
+            _model.FromCurrency.Should().BeNullOrEmpty();
+            var selectedCurrency = Component.Instance.CurrencyOptions[1];   
+            await Dispatch(Component.Instance.FromCurrencyTextBox.ValueChanged, selectedCurrency);
+            _model.FromCurrency.Should().Be(selectedCurrency);
         }
-
-        private void VerifyFormBoxesStates(bool expectedDisabledState)
+        
+        [Fact]
+        public async Task FromCurrencyTextBox_should_preserve_value_on_change_of_wrapping_operation()
         {
-            AmountInput.IsDisabled.Should().Be(expectedDisabledState);
-            SendingAddressInput.IsDisabled.Should().Be(expectedDisabledState);
-            ReceivingAddressInput.IsDisabled.Should().Be(expectedDisabledState);
-            SelectMenu.IsDisabled.Should().Be(expectedDisabledState);
-            SubmitButton.IsDisabled().Should().Be(expectedDisabledState);
+            var currencyToWrap = Component.Instance.CurrencyOptions[0];
+            _model.FromCurrency = currencyToWrap;
+            Component.Instance.FromCurrencyTextBox.Index = 0;
+
+            await Dispatch(Component.Instance.WrappingRadioButton.CheckedChanged, false);
+            Component.Render();
+            var currencyToUnwrap = "w" + currencyToWrap;
+            _model.FromCurrency.Should().Be(currencyToUnwrap);
+
+            await Dispatch(Component.Instance.WrappingRadioButton.CheckedChanged, true);
+            Component.Render();
+            _model.FromCurrency.Should().Be(currencyToWrap);
         }
 
         [Fact]
-        public void select_options_should_display_the_correct_list_of_cryptocurrencies_or_none_if_no_option_is_selected()
+        public async Task AmountTextBox_should_be_bound_to_model_Amount()
         {
-            //initially it must not have any crypto currencies proposed
-            SourceCryptocurrencyOptions[0].Text.Should().Be("Error: select an option above");
-            SourceCryptocurrencyOptions.Count.Should().Be(1, "we only have one option when Database not connected.");
-
-            //getting an instance of SubmitModel class of WrapUnwrapToken.razor
-            var submitModelInstance = _component.Instance.myModel;
-
-            //by clicking on the "wrap" button, only tokens from other blockchains than ethereum should be proposed (BTC, LTC etc...)
-            WrapRadioButton.Click();
-            SourceCryptocurrencyOptions.Select(o => o.Text).Should().BeEquivalentTo(submitModelInstance.wrappingOptions);
-
-            //by clicking on the "unwrap" button, only tokens based on ethereum should be proposed (wrapped tokens)
-            UnwrapRadioButton.Click();
-            SourceCryptocurrencyOptions.Select(o => o.Text).Should().BeEquivalentTo(submitModelInstance.unwrappingOptions);
-
-            //by clicking on the "reset" button, any crypto currencies should be proposed again
-            ResetButton.Click();
-            SourceCryptocurrencyOptions[0].Text.Should().Be("Error: select an option above");
-            SourceCryptocurrencyOptions.Count.Should().Be(1, "we only have one option when Database not connected.");
+            _model.Amount.Should().BeNull("we start with an empty model");
+            await Dispatch(Component.Instance.AmountTextBox.ValueChanged, 123.45m);
+            _model.Amount.Should().Be(123.45m);
         }
 
         [Fact]
-        public void modification_on_forms_should_be_saved_on_model_attributes_and_reset_button_should_reset_every_inputs_and_model_variables()
+        public async Task FromAddress_and_ToAddress_should_bind_to_correct_addresses_when_wrapping()
         {
-            var myModel = _component.Instance.myModel;
+            _model.Wrapping.Should().BeTrue("we start with wrapping mode");
 
-            //1) We test for "wrapping" option
-            WrapRadioButton.Click();
+            var wrappingFrom = "wrappingFrom";
+            await Dispatch(Component.Instance.WrappingFromAddress.ValueChanged, wrappingFrom);
+            OnlyNativeAddressShouldBe(wrappingFrom);
 
-            //todo: find a way to select an option 
-            var selectMenu = SelectMenu;
-            var btcOption = (IHtmlOptionElement)_component.FindElementWithId("option", "source-BTC");
-            selectMenu.Options.SelectedIndex = selectMenu.Options.IndexOf(btcOption);
-
-            //expected values
-            var expectedAmount = 10;
-            var expectedBtcAddress = "bc1qf749kttvwp8mjra55and424tf62hlngzu469t0"; //here we take "BTC" for example
-            var expectedEthAddress = _mockCreator.GetRandomAddressEthereum();
-
-            //changes on razor page...
-            //todo: add test for <select> component
-            AmountInput.Change(expectedAmount.ToString());
-            SendingAddressInput.Change(expectedBtcAddress);
-            ReceivingAddressInput.Change(expectedEthAddress);
-
-            //...should be correctly saved on model
-            //todo: add test for myModel.cryptocurrency
-            myModel.Amount.Should().Be(expectedAmount);
-            myModel.SendingAddress.Should().Be(expectedBtcAddress);
-            myModel.ReceivingAddress.Should().Be(expectedEthAddress);
-
-
-            //2) We reset the form and we verify that every model's variables are reset
-            ResetButton.Click();
-
-            //todo: add test for <select> component
-            AmountInput.Value.Should().BeNullOrEmpty();
-            SendingAddressInput.Value.Should().BeNullOrEmpty();
-            ReceivingAddressInput.Value.Should().BeNullOrEmpty();
-
-            //todo: add test for myModel.cryptocurrency
-            myModel.Amount.Should().BeNull();
-            myModel.SendingAddress.Should().BeNullOrEmpty();
-            myModel.ReceivingAddress.Should().BeNullOrEmpty();
-
-
-            //3) We test for "unwrapping" option
-            UnwrapRadioButton.Click();
-
-            //todo: add test for <select> component
-            AmountInput.Change(expectedAmount.ToString());
-            SendingAddressInput.Change(expectedEthAddress);
-            ReceivingAddressInput.Change(expectedBtcAddress);
-
-            //...should be correctly saved on model
-            //todo: add test for myModel.cryptocurrency
-            myModel.Amount.Should().Be(expectedAmount);
-            myModel.SendingAddress.Should().Be(expectedEthAddress);
-            myModel.ReceivingAddress.Should().Be(expectedBtcAddress);
+            var wrappingTo = "wrappingTo";
+            await Dispatch(Component.Instance.WrappingToAddress.ValueChanged, wrappingTo);
+            OnlyEthereumAddressShouldBe(wrappingTo);
         }
 
-        public void click_on_submit_form_should_failed_if_not_all_boxes_are_not_correctly_filled_and_succeed_if_everything_is_ok()
+
+        [Fact]
+        public async Task FromAddress_and_ToAddress_should_bind_to_correct_addresses_when_unwrapping()
         {
-            //todo: This test will check that submission is succeed only if everything is well filled.
+            _model.Wrapping = false;
+            Component.Render();
+            
+            var unwrappingFrom = "unwrappingFrom";
+            await Dispatch(Component.Instance.UnwrappingFromAddress.ValueChanged, unwrappingFrom);
+            OnlyEthereumAddressShouldBe(unwrappingFrom);
+
+            var unwrappingTo = "unwrappingTo";
+            await Dispatch(Component.Instance.UnwrappingToAddress.ValueChanged, unwrappingTo);
+            OnlyNativeAddressShouldBe(unwrappingTo);
         }
 
-        public void click_on_reset_button_should_display_a_reset_event()
+        private void OnlyEthereumAddressShouldBe(string expectedEthereumAddress)
         {
-            //todo: This test will check that reset button display a corresponding event.
+            _model.EthereumAddress.Should().Be(expectedEthereumAddress);
+            _model.NativeAddress.Should().NotBe(expectedEthereumAddress);
         }
-    }
 
-    public static class RenderedComponentExtension
-    {
-        public static IElement FindElementWithId<T>(this IRenderedComponent<T> component, string type, string id)
-            where T : class, IComponent
+        private void OnlyNativeAddressShouldBe(string expectedNativeAddress)
         {
-            return component.FindAll(type).Single(c => c.Id == id);
+            _model.EthereumAddress.Should().NotBe(expectedNativeAddress);
+            _model.NativeAddress.Should().Be(expectedNativeAddress);
+        }
+
+        [Fact]
+        public async Task NativeAddress_and_EthereumAddress_should_not_change_on_wrapping_operation_change()
+        {
+            await FromAddress_and_ToAddress_should_bind_to_correct_addresses_when_wrapping().ConfigureAwait(false);
+            var ethereumAddress = _model.EthereumAddress;
+            var nativeAddress = _model.NativeAddress;
+
+            await Dispatch(Component.Instance.WrappingRadioButton.CheckedChanged, false);
+            _model.Wrapping.Should().BeFalse();
+
+            _model.EthereumAddress.Should().Be(ethereumAddress);
+            _model.NativeAddress.Should().Be(nativeAddress);
+        }
+        
+        [Fact]
+        public async Task IsSubmitDisabled_should_be_true_until_model_is_valid()
+        {
+            (await Dispatch(() => Component.Instance.EditContext.Validate()))
+                .Should().BeFalse();
+            
+            var currencyToWrap = Component.Instance.CurrencyOptions[0];
+            _model.FromCurrency = currencyToWrap;
+            (await Dispatch(() => Component.Instance.EditContext.Validate()))
+                .Should().BeFalse();
+
+            _model.Amount = 123.45m;
+            (await Dispatch(() => Component.Instance.EditContext.Validate()))
+                .Should().BeFalse();
+
+            _model.EthereumAddress = _mockCreator.GetRandomAddressEthereum() + "notvalid";
+            (await Dispatch(() => Component.Instance.EditContext.Validate()))
+                .Should().BeFalse();
+
+            _model.NativeAddress = "valid";
+            (await Dispatch(() => Component.Instance.EditContext.Validate()))
+                .Should().BeFalse();
+
+            _model.EthereumAddress = _mockCreator.GetRandomAddressEthereum();
+            (await Dispatch(() => Component.Instance.EditContext.Validate()))
+                .Should().BeFalse();
+
+            _model.Amount = 3.45m;
+            (await Dispatch(() => Component.Instance.EditContext.Validate()))
+                .Should().BeTrue();
+        }
+
+        [Fact]
+        public async Task Reset_should_create_new_Model_and_EditContext()
+        {
+            var editContext = Component.Instance.EditContext;
+            editContext.Model.Should().BeSameAs(_model);
+
+            await Dispatch(Component.Instance.ResetButton.OnClick,
+                new Microsoft.AspNetCore.Components.Web.MouseEventArgs());
+
+            var newModel = Component.Instance.Model;
+            newModel.Should().NotBeSameAs(_model);
+            
+            var newEditContext = Component.Instance.EditContext;
+            newEditContext.Should().NotBeSameAs(editContext);
+            newEditContext.Model.Should().BeSameAs(newModel);
+        }
+
+        [Fact]
+        public async Task ToWrappingTransactionModel_should_work()
+        {
+            string fakeHttp = "https://localhost:44373/";
+
+            var currencyToWrap = Component.Instance.CurrencyOptions[0];
+            _model.FromCurrency = currencyToWrap;
+            _model.NativeAddress = "valid";
+            _model.EthereumAddress = _mockCreator.GetRandomAddressEthereum();
+            _model.Amount = 3.45m;
+            (await Dispatch(() => Component.Instance.EditContext.Validate()))
+                .Should().BeTrue();
+
+            WrappingTransactionModel wrappingTransaction = _model.ToWrappingTransactionModel();
+
+            string jsonModel = JsonSerializer.Serialize(wrappingTransaction);
+
+            _httpTest.RespondWith(jsonModel);
+
+            var apiResponse = await fakeHttp.GetJsonAsync();
+            var jsonApiResponse = JsonSerializer.Serialize(apiResponse);
+
+            WrappingTransactionModel objResult = JsonSerializer.Deserialize<WrappingTransactionModel>(jsonApiResponse);
+
+            objResult.Should().BeEquivalentTo(wrappingTransaction);
+
         }
     }
 }

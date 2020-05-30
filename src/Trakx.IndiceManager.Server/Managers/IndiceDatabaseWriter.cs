@@ -1,7 +1,8 @@
 ﻿using System.Threading.Tasks;
 using Microsoft.EntityFrameworkCore;
 using Trakx.Common.Interfaces;
-using Trakx.IndiceManager.Server.Models;
+using Trakx.Common.Interfaces.Indice;
+using Trakx.Common.Models;
 using Trakx.Persistence;
 using Trakx.Persistence.DAO;
 
@@ -30,17 +31,18 @@ namespace Trakx.IndiceManager.Server.Managers
                 await _dbContext.IndiceDefinitions.FirstOrDefaultAsync(i =>
                     i.Symbol == indiceCompositionModel.IndiceDetail.Symbol);
             
-            var indiceComposition = indiceCompositionModel.FromModelToIndiceComposition(indiceDefinitionInDatabase);
-
+            var indiceComposition = indiceCompositionModel.ConvertToIIndiceComposition(indiceDefinitionInDatabase);
             
+            var indiceCompositionDao= new IndiceCompositionDao(indiceComposition);
+
             if (await _dbContext.IndiceCompositions.FirstOrDefaultAsync(c =>
-                c.Id == $"{indiceComposition.IndiceDefinition.Symbol}|{indiceComposition.Version}" && c.Address == null) != null)
-                return await _indiceDataModifier.ModifyComposition(indiceComposition).ConfigureAwait(false);
+                c.Id == indiceCompositionDao.GetCompositionId() && c.Address == null) != null)
+                return await _indiceDataModifier.ModifyComposition(indiceCompositionDao).ConfigureAwait(false);
 
 
             if (await _dbContext.IndiceCompositions.FirstOrDefaultAsync(c =>
-                c.Id == $"{indiceComposition.IndiceDefinition.Symbol}|{indiceComposition.Version}") == null)
-                return await _indiceDataCreator.AddNewComposition(indiceComposition,indiceDefinitionInDatabase).ConfigureAwait(false);
+                c.Id == indiceCompositionDao.GetCompositionId()) == null)
+                return await _indiceDataCreator.AddNewComposition(indiceCompositionDao, indiceDefinitionInDatabase).ConfigureAwait(false);
 
             return false;
         }

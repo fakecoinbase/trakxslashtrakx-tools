@@ -3,14 +3,14 @@ using System.Threading.Tasks;
 using FluentAssertions;
 using Microsoft.AspNetCore.Mvc;
 using NSubstitute;
-using Trakx.Common.Core;
 using Trakx.Common.Interfaces.Transaction;
+using Trakx.Common.Models;
 using Trakx.Common.Sources.Coinbase;
 using Trakx.IndiceManager.Server.Controllers;
 using Trakx.IndiceManager.Server.Managers;
-using Trakx.IndiceManager.Server.Models;
 using Trakx.Tests.Data;
 using Xunit;
+using Xunit.Abstractions;
 
 namespace Trakx.IndiceManager.Server.Tests.Unit.Controllers
 {
@@ -21,12 +21,12 @@ namespace Trakx.IndiceManager.Server.Tests.Unit.Controllers
         private readonly WrappingController _controller;
         private readonly MockCreator _mockCreator;
 
-        public WrappingControllerTest()
+        public WrappingControllerTest(ITestOutputHelper output)
         {
             _wrappingService = Substitute.For<IWrappingService>();
             _coinbaseClient = Substitute.For<ICoinbaseClient>();
             _controller = new WrappingController(_wrappingService,_coinbaseClient);
-            _mockCreator= new MockCreator();
+            _mockCreator= new MockCreator(output);
         }
 
         [Fact]

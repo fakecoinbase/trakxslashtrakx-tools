@@ -22,4 +22,5 @@ COPY --from=publish /app/publish .
 ENV ASPNETCORE_URLS http://+:5000
 ENV MESSARI_API_KEY "replace me"
 ENV INFURA_API_KEY "replace me"
+ENV CRYPTOCOMPARE_API_KEY "replace me"
 ENTRYPOINT ["dotnet", "Trakx.MarketData.Server.dll"]

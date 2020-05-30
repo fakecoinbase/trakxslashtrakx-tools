@@ -54,5 +54,11 @@ namespace Trakx.Common.Interfaces.Indice
         {
             return composition.ComponentQuantities.Select(s => s.ComponentDefinition.CoinGeckoId).ToList();
         }
+
+        public static string GetCompositionId(this IIndiceComposition composition) =>
+             $"{composition.IndiceDefinition.Symbol}|{composition.Version}";
+
+        public static string GetCompositionSymbol(this IIndiceComposition composition) =>
+            $"{composition.IndiceDefinition.Symbol}{composition.CreationDate:yyMM}";
     }
 }

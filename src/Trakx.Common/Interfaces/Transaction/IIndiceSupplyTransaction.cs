@@ -22,7 +22,7 @@ namespace Trakx.Common.Interfaces.Transaction
         /// The type of the transaction : Issue or Redeem of indices.
         /// This is an enum <see cref="TransactionType"/>
         /// </summary>
-        SupplyTransactionType TransactionType { get;}
+        SupplyTransactionType? TransactionType { get;}
 
         /// <summary>
         /// The block Id of the transaction on the ethereum mainnet.

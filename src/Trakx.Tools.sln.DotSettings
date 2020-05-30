@@ -6,6 +6,8 @@
 	<s:Boolean x:Key="/Default/InstalledDictionaries/InstalledDictionaries/=C_003A_005CUsers_005Cmatthieu_005C_002Espelling_005Cen_005FGB_002Edic/@EntryIndiceedValue">True</s:Boolean>
 	<s:Boolean x:Key="/Default/ReSpeller/DocCommentsUseMemberModifiers/@EntryValue">True</s:Boolean>
 	<s:Boolean x:Key="/Default/UserDictionary/Words/=centralised/@EntryIndiceedValue">True</s:Boolean>
+	<s:Boolean x:Key="/Default/UserDictionary/Words/=Coinbase/@EntryIndexedValue">True</s:Boolean>
+	<s:Boolean x:Key="/Default/UserDictionary/Words/=coingecko/@EntryIndexedValue">True</s:Boolean>
 	<s:Boolean x:Key="/Default/UserDictionary/Words/=decentralised/@EntryIndiceedValue">True</s:Boolean>
 	<s:Boolean x:Key="/Default/UserDictionary/Words/=Deregister/@EntryIndiceedValue">True</s:Boolean>
 	<s:Boolean x:Key="/Default/UserDictionary/Words/=Ethereum/@EntryIndexedValue">True</s:Boolean>
@@ -16,6 +18,7 @@
 	<s:Boolean x:Key="/Default/UserDictionary/Words/=Initialiser/@EntryIndiceedValue">True</s:Boolean>
 	<s:Boolean x:Key="/Default/UserDictionary/Words/=Kaiko/@EntryIndiceedValue">True</s:Boolean>
 	<s:Boolean x:Key="/Default/UserDictionary/Words/=Levenshtein/@EntryIndiceedValue">True</s:Boolean>
+	<s:Boolean x:Key="/Default/UserDictionary/Words/=messari/@EntryIndexedValue">True</s:Boolean>
 	<s:Boolean x:Key="/Default/UserDictionary/Words/=Messari/@EntryIndiceedValue">True</s:Boolean>
 	<s:Boolean x:Key="/Default/UserDictionary/Words/=Peatio/@EntryIndexedValue">True</s:Boolean>
 	<s:Boolean x:Key="/Default/UserDictionary/Words/=Rebalance/@EntryIndexedValue">True</s:Boolean>
@@ -28,4 +31,5 @@
 	<s:Boolean x:Key="/Default/UserDictionary/Words/=serialise/@EntryIndiceRemoved">True</s:Boolean>
 	<s:Boolean x:Key="/Default/UserDictionary/Words/=Trakx/@EntryIndexedValue">True</s:Boolean>
 	<s:Boolean x:Key="/Default/UserDictionary/Words/=Trakx/@EntryIndiceedValue">True</s:Boolean>
+	<s:Boolean x:Key="/Default/UserDictionary/Words/=usdc/@EntryIndexedValue">True</s:Boolean>
 	<s:Boolean x:Key="/Default/UserDictionary/Words/=usdc/@EntryIndiceedValue">True</s:Boolean></wpf:ResourceDictionary>

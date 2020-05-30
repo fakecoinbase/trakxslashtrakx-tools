@@ -47,6 +47,6 @@ namespace Trakx.Common.Interfaces.Indice
     public static class IndiceDefinitionExtensions
     {
         public static string GetCompositionSymbol(this IIndiceDefinition indiceDefinition, DateTime issueDate)
-                => $"{indiceDefinition.Symbol}{issueDate:yyMM}";
+                => $"{indiceDefinition.Symbol}{issueDate.AddDays(10):yyMM}";
     }
 }

@@ -6,11 +6,12 @@ using Microsoft.AspNetCore.Mvc;
 using NSubstitute;
 using Trakx.Common.Core;
 using Trakx.Common.Interfaces.Transaction;
+using Trakx.Common.Models;
 using Trakx.IndiceManager.Server.Controllers;
 using Trakx.IndiceManager.Server.Managers;
-using Trakx.IndiceManager.Server.Models;
 using Trakx.Tests.Data;
 using Xunit;
+using Xunit.Abstractions;
 
 namespace Trakx.IndiceManager.Server.Tests.Unit.Controllers
 {
@@ -19,16 +20,17 @@ namespace Trakx.IndiceManager.Server.Tests.Unit.Controllers
         private readonly IndiceSupplyController _controller;
         private readonly IIndiceSupplyService _indiceSupplyService;
         private readonly IndiceSupplyTransactionModel _transaction;
-        private readonly MockCreator _mock = new MockCreator();
+        private readonly MockCreator _mockCreator;
 
-        public IndiceSupplyControllerTest()
+        public IndiceSupplyControllerTest(ITestOutputHelper output)
         {
             _indiceSupplyService = Substitute.For<IIndiceSupplyService>();
             _controller=new IndiceSupplyController(_indiceSupplyService);
-            _transaction= new IndiceSupplyTransactionModel
+            _mockCreator = new MockCreator(output);
+            _transaction = new IndiceSupplyTransactionModel
             {
                 CreationTimestamp = DateTime.MaxValue,
-                IndiceComposition = new IndiceCompositionModel(_mock.GetIndiceComposition(3)),
+                IndiceComposition = new IndiceCompositionModel(_mockCreator.GetIndiceComposition(3)),
                 IndiceQuantity = 4.00m,
                 TransactionType = SupplyTransactionType.Redeem,
                 User = "Fred",
@@ -74,8 +76,10 @@ namespace Trakx.IndiceManager.Server.Tests.Unit.Controllers
             var result = await _controller.SaveTransaction(_transaction);
             ((CreatedAtActionResult) result.Result).ActionName.Should()
                 .Be("The transaction has been added to the database");
+
             ((CreatedAtActionResult)result.Result).StatusCode.Should()
                 .Be(201);
+
             ((CreatedAtActionResult)result.Result).Value.Should()
                 .Be(_transaction);
         }
@@ -106,7 +110,7 @@ namespace Trakx.IndiceManager.Server.Tests.Unit.Controllers
         {
             var transactions= new List<IIndiceSupplyTransaction>
             {
-                new IndiceSupplyTransaction(DateTime.Today, _mock.GetIndiceComposition(2),SupplyTransactionType.Redeem,0.3m,"senderAddress","fred",null,null)
+                new IndiceSupplyTransaction(DateTime.Today, _mockCreator.GetIndiceComposition(2),SupplyTransactionType.Redeem,0.3m,"senderAddress","fred",null,null)
             };
 
             _indiceSupplyService.GetAllTransactionByUser("fred")

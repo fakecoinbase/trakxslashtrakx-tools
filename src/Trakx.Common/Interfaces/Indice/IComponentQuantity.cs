@@ -18,11 +18,9 @@
         decimal Quantity { get; }
     }
 
-    //public static class ComponentQuantityExtensions
-    //{
-    //    public static string GetId(this IComponentQuantity componentQuantity, IIndiceComposition indiceComopositi)
-    //    {
-    //        return $"{indiceDefinition.IndiceDefinition}|{componentQuantity.ComponentDefinition.Symbol}"
-    //    }
-    //}
+    public static class ComponentQuantityExtensions
+    {
+        public static string GetId(this IComponentQuantity componentQuantity, IIndiceComposition indiceComposition)=>
+            $"{indiceComposition.GetCompositionId()}|{componentQuantity.ComponentDefinition.Symbol}";
+    }
 }

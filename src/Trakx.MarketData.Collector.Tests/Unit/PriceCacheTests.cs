@@ -51,7 +51,7 @@ namespace Trakx.MarketData.Collector.Tests.Unit
                 serviceScopeFactory, logger, 
                 TimeSpan.FromMilliseconds(50));
 
-            _mockCreator = new MockCreator();
+            _mockCreator = new MockCreator(output);
         }
 
         private IServiceScopeFactory PrepareScopeResolution()

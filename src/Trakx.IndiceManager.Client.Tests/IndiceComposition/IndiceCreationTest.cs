@@ -1,119 +1,160 @@
-﻿using System.Linq;
+﻿using System.Threading;
+using System.Threading.Tasks;
 using FluentAssertions;
+using Microsoft.AspNetCore.Components.Web;
+using Microsoft.Extensions.DependencyInjection;
+using Microsoft.Extensions.Logging;
+using NSubstitute;
 using Trakx.IndiceManager.Client.Pages.IndiceComposition;
+using Trakx.Tests.Data;
 using Xunit;
-using AngleSharp.Dom;
-using AngleSharp.Html.Dom;
-using Bunit;
-using MatBlazor;
-using Trakx.IndiceManager.Client.Tests.Wrapping;
+using Xunit.Abstractions;
+using Syncfusion.Blazor;
+using Syncfusion.Blazor.Grids;
+using Trakx.Common.Models;
 
 namespace Trakx.IndiceManager.Client.Tests.IndiceComposition
 {
-    public sealed class IndiceCreationTest: ComponentTestFixture
+    public sealed class IndiceCreationTest : ComponentTest<IndiceCreation>
     {
-        private readonly IRenderedComponent<IndiceCreation> _component;
+        private readonly IndiceCreation.IndiceCreationViewModel _model;
+        private readonly IndiceCreation.ConstituentModel _constituent;
+        private readonly MockCreator _mockCreator;
+        private readonly IApiClient _apiClient;
 
-        private IHtmlInputElement IndiceNameInput => (IHtmlInputElement)_component.FindElementWithId("input", "input-indice-name");
-        private IHtmlInputElement IndiceSymbolInput => (IHtmlInputElement)_component.FindElementWithId("input", "input-indice-symbol");
-        private IHtmlInputElement IndiceTargetedNavInput => (IHtmlInputElement)_component.FindElementWithId("input", "input-indice-targeted-nav");
-        private IElement EqualWeightCheckBox => _component.FindElementWithId("input", "input-equal-weight");
-        private IElement WeightInPercentageRadioButton => _component.FindElementWithId("input", "radio-weight-in-percentage");
-        private IElement WeightInUsdcRadioButton => _component.FindElementWithId("input", "radio-weight-in-usdc");
-        private IHtmlInputElement NewErc20SymbolInput => (IHtmlInputElement)_component.FindElementWithId("input", "input-add-erc20-symbol");
-        private IHtmlInputElement NewErc20WeightInput => (IHtmlInputElement)_component.FindElementWithId("input", "input-add-erc20-weight");
-        private IElement AddErc20Button => _component.FindElementWithId("input", "button-add-new-erc20");
-        private IElement CalculateNavSubmitButton => _component.FindElementWithId("button", "button-submit-calculate-nav");
-        private IMatToaster ToasterInstance => _component.Instance.Toaster;
-        private IndiceCreation.IndiceCreationModel MyModelInstance =>
-            (IndiceCreation.IndiceCreationModel) _component.Instance.myModel;
-        
-        
-        public IndiceCreationTest()
+        public IndiceCreationTest(ITestOutputHelper output)
         {
-            Services.AddMatToaster();
-            _component = RenderComponent<IndiceCreation>();
-        }
-
-
-        [Fact]
-        public void add_a_new_erc20_to_component_list_should_failed_if_boxes_are_not_correctly_filled_and_if_the_component_is_already_in_the_list()
-        {
-            ToasterInstance.Toasts.Count.Should().Be(0);
-
-            AddErc20Button.Click();
-            ToasterInstance.Toasts.Single().Title.Should().Be("Error");
-            ToasterInstance.Clear();
-
-            NewErc20SymbolInput.Change("BAT");
-            NewErc20WeightInput.Change("0.4");
-            AddErc20Button.Click();
-            ToasterInstance.Toasts.Single().Title.Should().Be("Success");
-            ToasterInstance.Clear();
-
-            NewErc20SymbolInput.Change("BAT");
-            NewErc20WeightInput.Change("0.2");
-            AddErc20Button.Click();
-            ToasterInstance.Toasts.Single().Title.Should().Be("Error");
-            ToasterInstance.Clear();
-
-        }
-
-        [Fact]
-        public void successfull_submit_of_calculate_nav_form_should_register_correctly_the_inputs_in_the_model()
-        {
-            string expectedName = "test token";
-            string expectedSymbol = "TT";
-            double expectedTargetedNav = 123;
-            string expectedErc20Symbol = "BAT";
-            double expectedErc20Weight = 0.3;
-
-            IndiceNameInput.Change(expectedName);
-            IndiceSymbolInput.Change(expectedSymbol);
-            IndiceTargetedNavInput.Change(expectedTargetedNav.ToString());
-            NewErc20SymbolInput.Change(expectedErc20Symbol);
-            NewErc20WeightInput.Change(expectedErc20Weight.ToString());
-            AddErc20Button.Click();
-            CalculateNavSubmitButton.Click();
-
-            ToasterInstance.Toasts.Single().Title.Should().Be("Success");
-
-            MyModelInstance.IndiceName.Should().Be(expectedName);
-            MyModelInstance.IndiceSymbol.Should().Be(expectedSymbol);
-            MyModelInstance.TargetedNav.Should().Be((decimal)expectedTargetedNav);
-            MyModelInstance.ComponentList.Single().Symbol.Should().Be(expectedErc20Symbol);
-            MyModelInstance.ComponentList.Single().Weight.Should().Be((decimal)expectedErc20Weight);
-
-        }
-
-        [Fact]
-        public void click_on_weight_unit_in_percentage_should_unselect_usdc_option_and_vice_versa()
-        {
-            WeightInPercentageRadioButton.Click();
-            WeightInPercentageRadioButton.IsChecked().Should().BeTrue();
-            MyModelInstance.WeightUnit.Should().Be(IndiceCreation.IndiceCreationModel.WeightUnitType.Percentage);
+            Services.AddSyncfusionBlazor();
+            Services.AddSingleton(Substitute.For<ILogger<IndiceCreation>>());
+            _apiClient = Substitute.For<IApiClient>();
+            Services.AddSingleton(_apiClient);
+            Component = RenderComponent<IndiceCreation>();
+            _mockCreator = new MockCreator(output);
             
-            WeightInUsdcRadioButton.Click();
-            WeightInPercentageRadioButton.IsChecked().Should().BeFalse();
-            MyModelInstance.WeightUnit.Should().Be(IndiceCreation.IndiceCreationModel.WeightUnitType.USDc);
+            _model = Component.Instance.Model;
+            _constituent = new IndiceCreation.ConstituentModel { Symbol = "ZZZ", Weight = 0.15m };
+        }
+
+        [Fact]
+        public async Task Changing_symbol_in_textBox_should_change_Model()
+        {
+            await Dispatch(Component.Instance.SymbolTextBox.ValueChanged, "symbol");
+            _model.IndiceSymbol.Should().Be("symbol");
+        }
+
+        [Fact]
+        public async Task Changing_name_in_textBox_should_change_Model()
+        {
+            await Dispatch(Component.Instance.NameTextBox.ValueChanged, "name");
+            _model.IndiceName.Should().Be("name");
+        }
+
+        [Fact]
+        public async Task Changing_targetNav_in_textBox_should_change_Model()
+        {
+            await Dispatch(Component.Instance.TargetNavTextBox.ValueChanged, 123.45m);
+            _model.TargetedNav.Should().Be(123.45m);
+        }
+
+        [Fact]
+        public async Task Clicking_equal_weight_should_change_Model()
+        {
+            await Dispatch(Component.Instance.EqualWeightSwitch.CheckedChanged, true);
+            _model.EqualWeights.Should().BeTrue();
+
+            await Dispatch(Component.Instance.EqualWeightSwitch.CheckedChanged, false);
+            _model.EqualWeights.Should().BeFalse();
+        }
+
+
+        [Fact]
+        public async Task Changing_weight_units_should_change_Model()
+        {
+            await Dispatch(Component.Instance.WeightUnitsDropdown.ValueChanged, IndiceCreation.IndiceCreationViewModel.WeightUnitType.USDc);
+            _model.WeightUnit.Should().Be(IndiceCreation.IndiceCreationViewModel.WeightUnitType.USDc);
+
+            await Dispatch(Component.Instance.WeightUnitsDropdown.ValueChanged, IndiceCreation.IndiceCreationViewModel.WeightUnitType.Percentage);
+            _model.WeightUnit.Should().Be(IndiceCreation.IndiceCreationViewModel.WeightUnitType.Percentage);
 
         }
 
         [Fact]
-        public void check_box_equal_weight()
+        public async Task DataGrid_should_be_bound_to_Model_component_list()
         {
-            MyModelInstance.EqualWeights.Should().BeFalse();
-            EqualWeightCheckBox.IsChecked().Should().BeFalse();
-
-            EqualWeightCheckBox.Change(true);
-            EqualWeightCheckBox.IsChecked().Should().BeTrue();
-            MyModelInstance.EqualWeights.Should().BeTrue();
-
-            EqualWeightCheckBox.Change(false);
-            EqualWeightCheckBox.IsChecked().Should().BeFalse();
-            MyModelInstance.EqualWeights.Should().BeFalse();
+            Component.Instance.ConstituentsGrid.DataSource.Should().BeSameAs(Component.Instance.Model.Components);
         }
 
-    }
+        [Fact]
+        public async Task Adding_new_component_should_fail_if_component_already_added()
+        {
+            _model.Components.Add(_constituent);
 
+            var newChange = new ActionEventArgs<IndiceCreation.ConstituentModel>
+            {
+                Data = _constituent,
+                PreviousData = new IndiceCreation.ConstituentModel(),
+                RequestType = Action.Save
+            };
+
+            await Component.TestContext.Renderer.Dispatcher.InvokeAsync(() =>
+                Component.Instance.CheckRowChange(newChange));
+            newChange.Cancel.Should().BeTrue();
+        }
+
+        [Fact]
+        public async Task Changing_existing_component_should_be_allowed()
+        {
+            var newChange = new ActionEventArgs<IndiceCreation.ConstituentModel>
+            {
+                Data = new IndiceCreation.ConstituentModel { Symbol = _constituent.Symbol, Weight = _constituent.Weight + 0.2m },
+                PreviousData = _constituent,
+                RequestType = Action.Save
+            };
+
+            await Component.Instance.CheckRowChange(newChange);
+            newChange.Cancel.Should().BeFalse();
+        }
+
+        [Fact]
+        public void CalculateNav_should_require_one_constituent_in_model()
+        {
+            _model.Components.Should().BeEmpty();
+            Component.Instance.CalculateNavButton.Disabled.Should().BeTrue();
+
+            _model.Components.Add(_constituent);
+            Component.Render();
+            Component.Instance.CalculateNavButton.Disabled.Should().BeFalse();
+
+        }
+
+        [Fact]
+        public void SymbolGridColumn_should_be_primary_key()
+        {
+            Component.Instance.SymbolGridColumn.IsPrimaryKey.Should()
+                .BeTrue("otherwise you can't really delete records once inserted");
+        }
+
+        [Fact]
+        public async Task ToIndiceCompositionModel_should_work()
+        {
+            var indiceDefinition = _mockCreator.GetRandomIndiceDefinition();
+
+            _model.IndiceName = indiceDefinition.Name;
+            _model.IndiceSymbol = indiceDefinition.Symbol;
+            _model.IndiceDescription = indiceDefinition.Description;
+            _model.Components.Add(_constituent);
+
+            await Dispatch(Component.Instance.SaveIndiceButton.OnClick, new MouseEventArgs()).ConfigureAwait(false);
+
+            await _apiClient.Received(1).SaveIndiceCompositionAsync(
+                Arg.Is<IndiceCompositionModel>(m =>
+                    m.IndiceDetail.Symbol == _model.IndiceSymbol
+                    && m.IndiceDetail.Name == _model.IndiceName
+                    && m.IndiceDetail.Description == _model.IndiceDescription
+                    && m.Components[0].Symbol == _constituent.Symbol),
+                Arg.Any<CancellationToken>()).ConfigureAwait(false);
+
+
+        }
+    }
 }

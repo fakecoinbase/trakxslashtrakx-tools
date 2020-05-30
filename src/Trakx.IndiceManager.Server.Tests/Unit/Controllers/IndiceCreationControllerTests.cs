@@ -5,11 +5,12 @@ using Microsoft.AspNetCore.Mvc;
 using NSubstitute;
 using Trakx.Common.Core;
 using Trakx.Common.Interfaces.Indice;
+using Trakx.Common.Models;
 using Trakx.IndiceManager.Server.Controllers;
 using Trakx.IndiceManager.Server.Managers;
-using Trakx.IndiceManager.Server.Models;
 using Trakx.Tests.Data;
 using Xunit;
+using Xunit.Abstractions;
 
 namespace Trakx.IndiceManager.Server.Tests.Unit.Controllers
 {
@@ -21,10 +22,10 @@ namespace Trakx.IndiceManager.Server.Tests.Unit.Controllers
         private readonly IIndiceInformationRetriever _indiceRetriever;
         private readonly IIndiceDatabaseWriter _indiceWriter;
 
-        public IndiceCreationControllerTests()
+        public IndiceCreationControllerTests(ITestOutputHelper output)
         {
             _componentRetriever = Substitute.For<IComponentInformationRetriever>();
-            _mockCreator = new MockCreator();
+            _mockCreator = new MockCreator(output);
             _indiceRetriever = Substitute.For<IIndiceInformationRetriever>();
             _indiceWriter = Substitute.For<IIndiceDatabaseWriter>();
             _controller = new IndiceCreationController(_componentRetriever,_indiceRetriever,_indiceWriter);
@@ -259,6 +260,63 @@ namespace Trakx.IndiceManager.Server.Tests.Unit.Controllers
             var result = await _controller.SaveIndiceComposition(composition);
             ((BadRequestObjectResult)result.Result).Value.Should().Be(
                 "The addition in the database has failed. Please verify the parameters of the composition and try again.");
+        }
+
+        [Fact]
+        public async Task GetAllComponents_should_return_error_if_there_is_no_components_database()
+        {
+            _componentRetriever.GetAllComponents().Returns(new List<IComponentDefinition>());
+
+            var result = await _controller.GetAllComponents();
+            var response = ((NotFoundObjectResult) result.Result).Value;
+            response.Should().Be("There is no components in the database.");
+        }
+
+        [Fact]
+        public async Task GetAllComponents_should_return_list_of_ComponentDetailModel()
+        {
+            var component = _mockCreator.GetComponentQuantity().ComponentDefinition;
+            _componentRetriever.GetAllComponents().Returns(new List<IComponentDefinition>{ component });
+
+            var result = await _controller.GetAllComponents();
+            var response = (List<ComponentDetailModel>)((OkObjectResult) result.Result).Value;
+            response.Count.Should().Be(1);
+            response[0].Symbol.Should().Be(component.Symbol);
+            response[0].Address.Should().Be(component.Address);
+            response[0].CoinGeckoId.Should().Be(component.CoinGeckoId);
+            response[0].Decimals.Should().Be(component.Decimals);
+            response[0].Name.Should().Be(component.Name);
+        }
+
+        [Fact]
+        public async Task SaveComponentDefinition_should_send_badRequestError_if_component_incomplete()
+        {
+            var component = new ComponentDetailModel(_mockCreator.GetComponentQuantity().ComponentDefinition);
+            component.CoinGeckoId = null;
+            component.Name = null;
+
+            await _controller.SaveComponentDefinition(component);
+            await _componentRetriever.DidNotReceiveWithAnyArgs().TryToSaveComponentDefinition(component);
+        }
+
+        [Fact]
+        public async Task SaveComponentDefinition_should_return_error_if_object_already_in_database()
+        {
+            var component = new ComponentDetailModel(_mockCreator.GetComponentQuantity().ComponentDefinition);
+            _componentRetriever.TryToSaveComponentDefinition(component).ReturnsForAnyArgs(false);
+
+            var result = await _controller.SaveComponentDefinition(component);
+            ((BadRequestObjectResult)result.Result).Value.Should().Be("Object already in database.");
+        }
+
+        [Fact]
+        public async Task SaveComponentDefinition_should_return_status_code_201_if_addition_success()
+        {
+            var component = new ComponentDetailModel(_mockCreator.GetComponentQuantity().ComponentDefinition);
+            _componentRetriever.TryToSaveComponentDefinition(component).ReturnsForAnyArgs(true);
+
+            var result = await _controller.SaveComponentDefinition(component);
+            ((CreatedAtActionResult) result.Result).StatusCode.Should().Be(201);
         }
     }
 }

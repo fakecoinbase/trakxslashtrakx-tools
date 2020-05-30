@@ -1,7 +1,7 @@
 ﻿using System.Collections.Generic;
 using System.Threading.Tasks;
 using Trakx.Common.Interfaces.Transaction;
-using Trakx.IndiceManager.Server.Models;
+using Trakx.Common.Models;
 
 namespace Trakx.IndiceManager.Server.Managers
 {
@@ -21,8 +21,8 @@ namespace Trakx.IndiceManager.Server.Managers
         /// <summary>
         /// This function tries to retrieve all of the issuing and redeeming of indices made by a specific user.
         /// </summary>
-        /// <param name="name">The user that made the transactions.</param>
+        /// <param name="userName">The user that made the transactions.</param>
         /// <returns>A list of <see cref="IIndiceSupplyTransaction"/> with all the transactions.</returns>
-        Task<List<IIndiceSupplyTransaction>> GetAllTransactionByUser(string name);
+        Task<List<IIndiceSupplyTransaction>> GetAllTransactionByUser(string userName);
     }
 }
