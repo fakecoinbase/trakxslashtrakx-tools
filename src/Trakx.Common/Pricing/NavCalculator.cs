@@ -8,6 +8,7 @@ using Microsoft.Extensions.Logging;
 using Polly;
 using Polly.Retry;
 using Trakx.Common.Core;
+using Trakx.Common.Extensions;
 using Trakx.Common.Interfaces.Indice;
 using Trakx.Common.Interfaces.Pricing;
 using Trakx.Common.Sources.CoinGecko;
@@ -120,7 +121,7 @@ namespace Trakx.Common.Pricing
 
         private async Task<KeyValuePair<string, SourcedPrice>> GetMessariPrice(IComponentDefinition c)
         {
-            var price = await _messariClient.GetLatestPrice(c.Symbol).ConfigureAwait(false);
+            var price = await _messariClient.GetLatestPrice(c.Symbol.ToNativeSymbol()).ConfigureAwait(false);
             return price == default
                 ? default
                 : new KeyValuePair<string, SourcedPrice>(c.Symbol, new SourcedPrice(c.Symbol, "messari", price.Value));
@@ -136,7 +137,7 @@ namespace Trakx.Common.Pricing
 
         private async ValueTask<KeyValuePair<string, SourcedPrice>> GetCryptoComparePrice(IComponentDefinition c)
         {
-            var pricesByToCurrency = await _cryptoCompareClient.Prices.SingleSymbolPriceAsync(c.Symbol, new[] {"usdc"}, true)
+            var pricesByToCurrency = await _cryptoCompareClient.Prices.SingleSymbolPriceAsync(c.Symbol.ToNativeSymbol(), new[] {"usdc"}, true)
                 .ConfigureAwait(false);
             return pricesByToCurrency == default
                 ? default
