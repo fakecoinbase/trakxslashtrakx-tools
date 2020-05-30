@@ -52,16 +52,16 @@ namespace Trakx.Persistence
         {
             try
             {
-                var cacheKey = $"{indiceSymbol}|asOf|{asOfUtc:yyMMddHHmmss}";
+                var cacheKey = $"{indiceSymbol}|asOf|{asOfUtc:yyMMddHHmm}";
                 var def = await _memoryCache.GetOrCreateAsync(cacheKey, async entry =>
                 {
-                    entry.SetSlidingExpiration(TimeSpan.FromSeconds(10));
+                    entry.SetSlidingExpiration(TimeSpan.FromMinutes(1));
                     
                     var version = await GetVersionAtDate(indiceSymbol, asOfUtc, cancellationToken);
                     var composition = await RetrieveFullComposition(indiceSymbol, version.Value, cancellationToken);
 
                     entry.AbsoluteExpirationRelativeToNow = composition != null && composition.IsValid() 
-                        ? TimeSpan.FromSeconds(100)
+                        ? TimeSpan.FromMinutes(1)
                         : TimeSpan.FromTicks(1);
                     return composition;
                 });
@@ -83,12 +83,12 @@ namespace Trakx.Persistence
                 var cacheKey = $"{compositionSymbol}";
                 var def = await _memoryCache.GetOrCreateAsync(cacheKey, async entry =>
                 {
-                    entry.SetSlidingExpiration(TimeSpan.FromSeconds(10));
+                    entry.SetSlidingExpiration(TimeSpan.FromSeconds(120));
 
                     var composition = await RetrieveFullComposition(compositionSymbol, cancellationToken);
 
                     entry.AbsoluteExpirationRelativeToNow = composition != null && composition.IsValid()
-                        ? TimeSpan.FromSeconds(100)
+                        ? TimeSpan.FromSeconds(120)
                         : TimeSpan.FromTicks(1);
                     return composition;
                 });
@@ -125,15 +125,33 @@ namespace Trakx.Persistence
             string quoteCurrency = "usdc",
             CancellationToken cancellationToken = default)
         {
-            var issueDate = composition.CreationDate;
-            var valuation = await _dbContext.IndiceValuations
-                .IncludeAllLinkedEntities()
-                .Where(c => c.IndiceCompositionDao.Id == composition.GetCompositionId()
-                                      && c.QuoteCurrency == quoteCurrency
-                                      && c.TimeStamp == issueDate)
-                .AsNoTracking()
-                .SingleOrDefaultAsync(cancellationToken);
-            return valuation;
+            try
+            {
+                var cacheKey = $"initial-valuation|{composition}|{quoteCurrency}";
+                var intitialValuation = await _memoryCache.GetOrCreateAsync(cacheKey, async entry =>
+                {
+                    entry.SetSlidingExpiration(TimeSpan.FromDays(1));
+
+                    var valuation = await _dbContext.IndiceValuations
+                        .IncludeAllLinkedEntities()
+                        .Where(c => c.IndiceCompositionDao.Id == composition.GetCompositionId()
+                                    && c.QuoteCurrency == quoteCurrency
+                                    && c.TimeStamp == composition.CreationDate)
+                        .AsNoTracking()
+                        .SingleOrDefaultAsync(cancellationToken);
+
+                    entry.AbsoluteExpirationRelativeToNow = valuation != null && valuation.IsValid()
+                        ? TimeSpan.FromDays(1)
+                        : TimeSpan.FromTicks(1);
+                    return valuation;
+                });
+                return intitialValuation;
+            }
+            catch (Exception ex)
+            {
+                _logger.LogError(ex, "Failed to retrieve initial valuation for composition {0}", composition.IndiceDefinition);
+                return default;
+            }
         }
 
         /// <inheritdoc />
