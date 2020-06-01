@@ -127,7 +127,7 @@ namespace Trakx.Persistence
         {
             try
             {
-                var cacheKey = $"initial-valuation|{composition}|{quoteCurrency}";
+                var cacheKey = $"initial-valuation|{composition.Symbol}|{quoteCurrency}";
                 var intitialValuation = await _memoryCache.GetOrCreateAsync(cacheKey, async entry =>
                 {
                     entry.SetSlidingExpiration(TimeSpan.FromDays(1));
