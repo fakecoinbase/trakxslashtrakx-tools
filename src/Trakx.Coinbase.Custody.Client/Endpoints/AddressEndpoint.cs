@@ -1,15 +1,13 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Text;
-using System.Threading;
+﻿using System.Threading;
 using System.Threading.Tasks;
 using Flurl.Http;
 using JetBrains.Annotations;
 using Trakx.Coinbase.Custody.Client.Interfaces;
 using Trakx.Coinbase.Custody.Client.Models;
 
-namespace Trakx.Coinbase.Custody.Client
+namespace Trakx.Coinbase.Custody.Client.Endpoints
 {
+    /// <inheritdoc />
     public class AddressEndpoint : IAddressEndpoint
     {
         private readonly ICoinbaseClient _client;
@@ -19,6 +17,7 @@ namespace Trakx.Coinbase.Custody.Client
             _client = client;
         }
 
+        /// <inheritdoc />
         public async Task<PagedResponse<AddressResponse>> ListAddressesAsync([CanBeNull] string currency = null,
             [CanBeNull] string state = null, CancellationToken cancellationToken = default)
         {

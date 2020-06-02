@@ -2,6 +2,7 @@
 using System.Collections.Generic;
 using System.Text;
 using System.Text.Json.Serialization;
+using Newtonsoft.Json;
 
 namespace Trakx.Coinbase.Custody.Client.Models
 {
@@ -35,12 +36,16 @@ namespace Trakx.Coinbase.Custody.Client.Models
         public string Destination { get; set; }
 
         [JsonPropertyName("created_at")]
+        [JsonProperty("created_at")]
         public DateTimeOffset CreatedAt { get; set; }
 
+        
         [JsonPropertyName("updated_at")]
+        [JsonProperty("updated_at")]
         public DateTimeOffset UpdatedAt { get; set; }
 
         [JsonPropertyName("wallet_id")]
+        [JsonProperty("wallet_id")]
         public Guid WalletId { get; set; }
 
         [JsonPropertyName("currency")]

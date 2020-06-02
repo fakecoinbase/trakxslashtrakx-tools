@@ -1,0 +1,28 @@
+﻿{
+  "data": [
+    {
+      "id": "575f6845-9508-4cd7-a794-cb9ab7faf441",
+      "name": "test",
+      "balance": "1.26",
+      "withdrawable_balance": "2.235",
+      "created_at": "2019-08-19T18:15:34.803Z",
+      "updated_at": "1998-08-10T18:15:34.803Z",
+      "cold_address": "fake_btc_cold_address",
+      "currency": "btc"
+    },
+    {
+      "id": "97881a38-fba1-4563-992c-130a306c5a14",
+      "name": "test",
+      "balance": "0.0",
+      "withdrawable_balance": "0.0",
+      "created_at": "2019-08-19T18:15:34.808Z",
+      "updated_at": "2019-08-19T18:15:34.808Z",
+      "cold_address": "fake_eth_cold_address",
+      "currency": "eth"
+    }
+  ],
+  "pagination": {
+    "before": "575f6845-9508-4cd7-a794-cb9ab7faf441",
+    "after": "97881a38-fba1-4563-992c-130a306c5a14"
+  }
+}

@@ -1,0 +1,26 @@
+{
+  "data": [
+    {
+      "address": "fake_btc_cold_address",
+      "state": "cold",
+      "balance": 12,
+      "blockchain_link": "https://live.blockcypher.com/btc/address/fake_btc_cold_address",
+      "created_at": "2019-08-19T18:15:23.494Z",
+      "updated_at": "2019-08-19T18:15:23.520Z",
+      "currency": "btc"
+    },
+    {
+      "address": "fake_btc_restored_address",
+      "state": "restored",
+      "balance": 0,
+      "blockchain_link": "https://live.blockcypher.com/btc/address/fake_btc_restored_address",
+      "created_at": "2019-08-19T18:15:23.498Z",
+      "updated_at": "2019-08-19T18:15:23.524Z",
+      "currency": "btc"
+    }
+  ],
+  "pagination": {
+    "before": "fake_btc_cold_address",
+    "after": "fake_btc_restored_address"
+  }
+}

@@ -1,0 +1,14 @@
+﻿{
+  "id": "08396aef-3126-4ed4-b109-46b82ff1857b",
+  "type": "withdrawal",
+  "state": "done",
+  "amount": -400,
+  "source": "fake_btc_cold_address",
+  "destination": "fake_btc_cold_address_2",
+  "created_at": "2019-08-19T18:15:29.787Z",
+  "updated_at": "1998-03-01T18:15:29.787Z",
+  "wallet_id": "6b4be175-793f-4d99-b922-b90e8b6677be",
+  "currency": "btc",
+  "fee": 40,
+  "hashes": []
+}

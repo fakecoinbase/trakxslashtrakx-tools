@@ -7,12 +7,12 @@ using Xunit;
 
 namespace Trakx.Coinbase.Custody.Client.Tests.Unit.Models
 {
-    public class AddressResponseTests
+    public class PagedResponseAddressTest
     {
         [Fact]
         public async Task AddressResponse_can_be_deserialised()
         {
-            var sampleResponse = await SampleResponseHelper.GetSampleResponseContent<AddressResponse>();
+            var sampleResponse = await SampleResponseHelper.GetSampleResponseContent("PagedResponseAddress");
 
             var deserialised = JsonSerializer.Deserialize<PagedResponse<AddressResponse>>(sampleResponse);
 

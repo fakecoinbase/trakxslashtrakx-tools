@@ -23,9 +23,11 @@ namespace Trakx.Coinbase.Custody.Client.Models
         [JsonPropertyName("blockchain_link")]
         public Uri BlockchainLink { get; set; }
 
+        [JsonProperty("created_at")]
         [JsonPropertyName("created_at")]
         public DateTimeOffset CreatedAt { get; set; }
 
+        [JsonProperty("updated_at")]
         [JsonPropertyName("updated_at")]
         public DateTimeOffset UpdatedAt { get; set; }
 
