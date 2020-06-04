@@ -12,7 +12,7 @@
 @using ActionCompleteEventArgs = Syncfusion.Blazor.DropDowns.ActionCompleteEventArgs
 @page "/IndiceComposition/indice_creation"
 @inject ILogger<IndiceCreation> Logger
-@inject IApiClient ApiClient;
+@inject IIndiceCreationClient ApiClient;
 @*I didn't have time to find why this toaster doesn't work ...*@
 
 <SfToast @ref="Toaster" TimeOut=3000>

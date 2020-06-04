@@ -20,13 +20,13 @@ namespace Trakx.IndiceManager.Client.Tests.IndiceComposition
         private readonly IndiceCreation.IndiceCreationViewModel _model;
         private readonly IndiceCreation.ConstituentModel _constituent;
         private readonly MockCreator _mockCreator;
-        private readonly IApiClient _apiClient;
+        private readonly IIndiceCreationClient _apiClient;
 
         public IndiceCreationTest(ITestOutputHelper output)
         {
             Services.AddSyncfusionBlazor();
             Services.AddSingleton(Substitute.For<ILogger<IndiceCreation>>());
-            _apiClient = Substitute.For<IApiClient>();
+            _apiClient = Substitute.For<IIndiceCreationClient>();
             Services.AddSingleton(_apiClient);
             Component = RenderComponent<IndiceCreation>();
             _mockCreator = new MockCreator(output);

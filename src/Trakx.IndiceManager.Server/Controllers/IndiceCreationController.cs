@@ -1,6 +1,7 @@
 ﻿using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
+using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
 using Nethereum.Util;
 using Trakx.Common.Models;
@@ -40,12 +41,8 @@ namespace Trakx.IndiceManager.Server.Controllers
             
             if (details == null)
                 return NotFound($"Sorry {address} doesn't correspond to any ERC20 token.");
-           
-            var componentDetailModel = new ComponentDetailModel
-            {
-                Address = details.Address,
-                Symbol = details.Symbol
-            };
+
+            var componentDetailModel = new ComponentDetailModel(details);
             return new JsonResult(componentDetailModel);
         }
 
@@ -71,6 +68,8 @@ namespace Trakx.IndiceManager.Server.Controllers
         /// <param name="componentDefinition">The component that we want to save.</param>
         /// <returns>An object with a response 201 if the adding was successful</returns>
         [HttpPost]
+        [ProducesResponseType(StatusCodes.Status201Created)]
+        [ProducesResponseType(StatusCodes.Status400BadRequest)]
         public async Task<ActionResult<ComponentDetailModel>> SaveComponentDefinition(ComponentDetailModel componentDefinition)
         {
             if (!componentDefinition.IsValid())
@@ -79,7 +78,7 @@ namespace Trakx.IndiceManager.Server.Controllers
             var isAdded = await _componentRetriever.TryToSaveComponentDefinition(componentDefinition);
 
             if (isAdded )
-                return CreatedAtAction("The component has been added to the database.", componentDefinition);
+                return CreatedAtAction(nameof(SaveComponentDefinition), componentDefinition);
             
             return BadRequest("Object already in database.");
         }

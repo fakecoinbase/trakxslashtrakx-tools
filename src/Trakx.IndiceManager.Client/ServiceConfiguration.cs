@@ -1,5 +1,4 @@
-﻿using System;
-using System.Net.Http;
+﻿using System.Net.Http;
 using Ardalis.GuardClauses;
 using Microsoft.Extensions.DependencyInjection;
 
@@ -15,8 +14,10 @@ namespace Trakx.IndiceManager.Client
             var clientHandler = new HttpClientHandler{ServerCertificateCustomValidationCallback = (message, cert, chain,
                 errors) => true}; //enable SSL certificate verification in developement
 
-            serviceCollection.AddSingleton<IApiClient, ApiClient>(serviceProvider =>
-                new ApiClient(baseUrl, new HttpClient(clientHandler)));
+            serviceCollection.AddSingleton<IIndiceCreationClient, IndiceCreationClient>(serviceProvider => new IndiceCreationClient(baseUrl, new HttpClient(clientHandler)));
+            serviceCollection.AddSingleton<IIndiceSupplyClient, IndiceSupplyClient>(serviceProvider => new IndiceSupplyClient(baseUrl, new HttpClient(clientHandler)));
+            serviceCollection.AddSingleton<IWrappingClient, WrappingClient>(serviceProvider => new WrappingClient(baseUrl, new HttpClient(clientHandler)));
+            
             return serviceCollection;
         }
     }

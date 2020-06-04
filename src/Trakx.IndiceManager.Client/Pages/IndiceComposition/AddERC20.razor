@@ -1,7 +1,119 @@
 ﻿@page "/IndiceComposition/add_erc20"
+@using System.ComponentModel.DataAnnotations
+@using Nethereum.Util
+@using Syncfusion.Blazor.Cards
+@using Syncfusion.Blazor.Buttons
+@using Syncfusion.Blazor.Notifications
+@using Syncfusion.Blazor.Inputs
+@using Trakx.Common.Models
+@inject IIndiceCreationClient client
 
-<h3>AddERC20</h3>
+<SfToast @ref="ToastObj" TimeOut=8000>
+    <ToastPosition X="Right"></ToastPosition>
+</SfToast>
+<legend>Add ERC20 Component</legend>
+<div class ="breaKline">
+    <EditForm EditContext="@EditContext" OnValidSubmit="GetComponent">
+        <DataAnnotationsValidator />
+        <ValidationSummary />
+        <br />
+        <legend >Please enter the Ethereum contract address of the ERC 20 :</legend>
+        <SfTextBox @ref="AddressTextBox" ID="tab" Placeholder="Contract address" FloatLabelType="@FloatLabelType.Auto" Input="OnInput" @bind-Value="InputModel.Address" CssClass="@CssClass"></SfTextBox>
+        <div class="breaKline">
+            <SfButton @ref="GetModelButton" IsPrimary="true" Type="submit">Search Component</SfButton>
+        </div>
+
+    </EditForm>
+</div>
+
+<div class="breaKline">
+    @if (RetrievedComponent != null)
+    {
+        <div style="text-align: center">
+            <SfCard>
+                <div class="newIcon">@RetrievedComponent.Symbol</div>
+                <CardHeader Title=@RetrievedComponent.Name />
+                <CardContent Content="@($"Address : {RetrievedComponent.Address}")" />
+                <CardContent Content="@($"Decimals : {RetrievedComponent.Decimals}")"></CardContent>
+            </SfCard>
+        </div>
+        
+
+        <p>Do you want to save this component in the database to add it later to your composition ?</p>
+        <SfButton IsPrimary="true" OnClick="SaveComponent">Save</SfButton>
+    }
+</div>
 
 @code {
+    public SfTextBox AddressTextBox { get; set; }
+    public SfButton GetModelButton { get; set; }
+    public class ComponentInput
+    {
+        [Required]
+        [IsValidEthereumAddress]
 
+        public string Address { get; set; }
+    }
+    private class IsValidEthereumAddress : ValidationAttribute
+    {
+        public override bool IsValid(object value)
+        {
+            string strValue = value as string;
+            if (!strValue.IsValidEthereumAddressHexFormat())
+            {
+                ErrorMessage = "Must be a valid ethereum address.";
+                return false;
+            }
+            return true;
+        }
+    }
+    public string CssClass { get; set; }
+    public SfToast ToastObj { get; set; }
+    public EditContext EditContext { get; set; }
+    public ComponentInput InputModel = new ComponentInput();
+    public ComponentDetailModel? RetrievedComponent = null;
+    public string? ErrorMessage = null;
+
+    /// <inheritdoc />
+    protected override void OnInitialized()
+    {
+        EditContext = new EditContext(InputModel);
+        base.OnInitialized();
+    }
+
+    public void OnInput(InputEventArgs args)
+    {
+        CssClass = args.Value.IsValidEthereumAddressHexFormat() ? "e-success" : "e-error";
+        this.StateHasChanged();
+    }
+
+
+    public async Task GetComponent()
+    {
+        RetrievedComponent = null;
+        try
+        {
+            RetrievedComponent = (await client.GetComponentByAddressAsync(InputModel.Address)).Result;
+        }
+        catch (ApiException ex)
+        {
+            ErrorMessage = ex.Response;
+            await InvokeAsync(() =>ToastObj.Show(new ToastModel { Title = "Error!", Content = $"{ErrorMessage}", CssClass = "e-toast-danger" }));
+        }
+    }
+
+    public async Task SaveComponent()
+    {
+        try
+        {
+            await client.SaveComponentDefinitionAsync(RetrievedComponent);
+            await ToastObj.Show(new ToastModel {Title = "Success!", Content = "Component added successfully to the database", CssClass = "e-toast-success"});
+            RetrievedComponent = null;
+        }
+        catch (ApiException ex)
+        {
+            ErrorMessage = ex.Response;
+            await ToastObj.Show(new ToastModel { Title = "Error!", Content = $"{ErrorMessage}", CssClass = "e-toast-danger"});
+        }
+    }
 }

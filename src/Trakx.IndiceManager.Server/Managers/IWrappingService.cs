@@ -22,7 +22,7 @@ namespace Trakx.IndiceManager.Server.Managers
         /// <summary>
         /// Allows to validate a transaction when wrapping tokens or unwrapping tokens.
         /// To validate : must find the transaction and the transaction hash in Coinbase custody
-        /// & verify in database that the hash isn't already there to avoid double spend attack.
+        /// and verify in database that the hash isn't already there to avoid double spend attack.
         /// When we find it, we put the transaction immediately in the database with this hash.
         /// </summary>
         /// <param name="transaction">The transaction that we want to verify.</param>

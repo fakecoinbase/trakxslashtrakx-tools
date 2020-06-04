@@ -1,0 +1,672 @@
+{
+  "x-generator": "NSwag v13.6.0.0 (NJsonSchema v10.1.18.0 (Newtonsoft.Json v12.0.0.0))",
+  "openapi": "3.0.0",
+  "info": {
+    "title": "Trakx Indice Manager Api",
+    "description": "Trakx' API used to create and administrate indices.",
+    "version": "v0.1"
+  },
+  "paths": {
+    "/IndiceCreation/GetComponentByAddress": {
+      "get": {
+        "tags": [
+          "IndiceCreation"
+        ],
+        "summary": "Tries to retrieve a component and its details using its address on chain.",
+        "operationId": "IndiceCreation_GetComponentByAddress",
+        "parameters": [
+          {
+            "name": "address",
+            "in": "query",
+            "description": "The ethereum address of the component.",
+            "schema": {
+              "type": "string",
+              "nullable": true
+            },
+            "x-position": 1
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Details about the component at the given address, if they were found.",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ComponentDetailModel"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/IndiceCreation/GetAllComponents": {
+      "get": {
+        "tags": [
+          "IndiceCreation"
+        ],
+        "summary": "Tries to retrieve all of the components that are currently in database.\n            ",
+        "operationId": "IndiceCreation_GetAllComponents",
+        "responses": {
+          "200": {
+            "description": "A list of ComponentDetailModel.",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "array",
+                  "items": {
+                    "$ref": "#/components/schemas/ComponentDetailModel"
+                  }
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/IndiceCreation/SaveComponentDefinition": {
+      "post": {
+        "tags": [
+          "IndiceCreation"
+        ],
+        "summary": "Tries to put a new component in the database to use it later in a new indice.",
+        "operationId": "IndiceCreation_SaveComponentDefinition",
+        "requestBody": {
+          "x-name": "componentDefinition",
+          "description": "The component that we want to save.",
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/ComponentDetailModel"
+              }
+            }
+          },
+          "required": true,
+          "x-position": 1
+        },
+        "responses": {
+          "201": {
+            "description": "An object with a response 201 if the adding was successful",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ComponentDetailModel"
+                }
+              }
+            }
+          },
+          "400": {
+            "description": "",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ProblemDetails"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/IndiceCreation/GetAllIndices": {
+      "get": {
+        "tags": [
+          "IndiceCreation"
+        ],
+        "summary": "Tries to retrieve all of the indices in our database.",
+        "operationId": "IndiceCreation_GetAllIndices",
+        "responses": {
+          "200": {
+            "description": "A list of indices with details about them.",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "array",
+                  "items": {
+                    "$ref": "#/components/schemas/IndiceDetailModel"
+                  }
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/IndiceCreation/GetCompositionsBySymbol": {
+      "get": {
+        "tags": [
+          "IndiceCreation"
+        ],
+        "summary": "Tries to get all of the compositions for an indice.",
+        "operationId": "IndiceCreation_GetCompositionsBySymbol",
+        "requestBody": {
+          "x-name": "symbol",
+          "description": "The symbol of the indice that we want the compositions. Not to be confused with the composition symbol.",
+          "content": {
+            "application/json": {
+              "schema": {
+                "type": "string"
+              }
+            }
+          },
+          "required": true,
+          "x-position": 1
+        },
+        "responses": {
+          "200": {
+            "description": "A list of the past and present composition for a given indice",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "array",
+                  "items": {
+                    "$ref": "#/components/schemas/IndiceCompositionModel"
+                  }
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/IndiceCreation/SaveIndiceDefinition": {
+      "post": {
+        "tags": [
+          "IndiceCreation"
+        ],
+        "summary": "Tries to save a new indice in our database.",
+        "operationId": "IndiceCreation_SaveIndiceDefinition",
+        "requestBody": {
+          "x-name": "indiceToSave",
+          "description": "The indice that we want to save.",
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/IndiceDetailModel"
+              }
+            }
+          },
+          "required": true,
+          "x-position": 1
+        },
+        "responses": {
+          "200": {
+            "description": "An object with a response 201 if the adding was successful",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/IndiceDetailModel"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/IndiceCreation/SaveIndiceComposition": {
+      "post": {
+        "tags": [
+          "IndiceCreation"
+        ],
+        "summary": "Tries to save a new composition for an indice in our database.",
+        "operationId": "IndiceCreation_SaveIndiceComposition",
+        "requestBody": {
+          "x-name": "compositionToSave",
+          "description": "The composition that the user want to save.",
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/IndiceCompositionModel"
+              }
+            }
+          },
+          "required": true,
+          "x-position": 1
+        },
+        "responses": {
+          "200": {
+            "description": "An object with a response 201 if the adding was successful.",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/IndiceCompositionModel"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/IndiceSupply/SaveTransaction": {
+      "post": {
+        "tags": [
+          "IndiceSupply"
+        ],
+        "summary": "Tries to save a transaction of issuing or redeeming of indices in the database.",
+        "operationId": "IndiceSupply_SaveTransaction",
+        "requestBody": {
+          "x-name": "transactionToSave",
+          "description": "The transaction that we want to save.",
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/IndiceSupplyTransactionModel"
+              }
+            }
+          },
+          "required": true,
+          "x-position": 1
+        },
+        "responses": {
+          "200": {
+            "description": "An object with a response 201 if the adding was successful",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "boolean"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/IndiceSupply/RetrieveTransactions": {
+      "get": {
+        "tags": [
+          "IndiceSupply"
+        ],
+        "summary": "Tries to retrieve all of the issuing and redeeming of indices made by a specific user.",
+        "operationId": "IndiceSupply_RetrieveTransactions",
+        "requestBody": {
+          "x-name": "userName",
+          "description": "The user that made the transactions.",
+          "content": {
+            "application/json": {
+              "schema": {
+                "type": "string"
+              }
+            }
+          },
+          "required": true,
+          "x-position": 1
+        },
+        "responses": {
+          "200": {
+            "description": "A list of IndiceSupplyTransactionModel with all the transactions.",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "array",
+                  "items": {
+                    "$ref": "#/components/schemas/IndiceSupplyTransactionModel"
+                  }
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/Wrapping/GetTrakxAddressFromSymbol": {
+      "get": {
+        "tags": [
+          "Wrapping"
+        ],
+        "summary": "Allows to return a corresponding address to a token in order for the user to make the transfer to a specific address. ",
+        "operationId": "Wrapping_GetTrakxAddressFromSymbol",
+        "requestBody": {
+          "x-name": "symbol",
+          "description": "The symbol of the token for which we want the Trakx's address.",
+          "content": {
+            "application/json": {
+              "schema": {
+                "type": "string"
+              }
+            }
+          },
+          "required": true,
+          "x-position": 1
+        },
+        "responses": {
+          "200": {
+            "description": "The Trakx address associated to the ",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "string"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/Wrapping/WrapTokens": {
+      "post": {
+        "tags": [
+          "Wrapping"
+        ],
+        "summary": "This route allow to wrap and unwrap tokens. It will register the transaction in the database and send the correct\namount of tokens/wrapped tokens to the user.",
+        "operationId": "Wrapping_WrapTokens",
+        "requestBody": {
+          "x-name": "transaction",
+          "description": "The WrappingTransactionModel which that has all the information needed to\n            complete the transaction.",
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/WrappingTransactionModel"
+              }
+            }
+          },
+          "required": true,
+          "x-position": 1
+        },
+        "responses": {
+          "200": {
+            "description": "Return a BadRequest object if the informations in  are wrong.\n            Else it return an OK object result.\n            ",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "string"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/Wrapping/GetAllTransactionByUser": {
+      "get": {
+        "tags": [
+          "Wrapping"
+        ],
+        "summary": "This route allow to retrieve all the transaction associated to an user.",
+        "operationId": "Wrapping_GetAllTransactionByUser",
+        "requestBody": {
+          "x-name": "user",
+          "description": "Here is the name of the user that is register in all the transactions.",
+          "content": {
+            "application/json": {
+              "schema": {
+                "type": "string"
+              }
+            }
+          },
+          "required": true,
+          "x-position": 1
+        },
+        "responses": {
+          "200": {
+            "description": "All the transaction or a BadRequest object if the user doesn't have any transaction associated.",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "array",
+                  "items": {
+                    "$ref": "#/components/schemas/WrappingTransactionModel"
+                  }
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/Wrapping/GetTrakxBalance": {
+      "get": {
+        "tags": [
+          "Wrapping"
+        ],
+        "summary": "This route allows to retrieve the Trakx's balance, either with native or wrapped tokens.",
+        "operationId": "Wrapping_GetTrakxBalance",
+        "responses": {
+          "200": {
+            "description": "An Ok object list composed by all the balances with status 200 or a BadRequest Object if it failed.",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "array",
+                  "items": {
+                    "$ref": "#/components/schemas/AccountBalanceModel"
+                  }
+                }
+              }
+            }
+          }
+        }
+      }
+    }
+  },
+  "components": {
+    "schemas": {
+      "ComponentDetailModel": {
+        "type": "object",
+        "additionalProperties": false,
+        "properties": {
+          "address": {
+            "type": "string"
+          },
+          "symbol": {
+            "type": "string"
+          },
+          "quantity": {
+            "type": "number",
+            "format": "decimal",
+            "nullable": true
+          },
+          "name": {
+            "type": "string",
+            "nullable": true
+          },
+          "coinGeckoId": {
+            "type": "string",
+            "nullable": true
+          },
+          "decimals": {
+            "type": "integer"
+          }
+        }
+      },
+      "ProblemDetails": {
+        "type": "object",
+        "additionalProperties": false,
+        "properties": {
+          "type": {
+            "type": "string",
+            "nullable": true
+          },
+          "title": {
+            "type": "string",
+            "nullable": true
+          },
+          "status": {
+            "type": "integer",
+            "format": "int32",
+            "nullable": true
+          },
+          "detail": {
+            "type": "string",
+            "nullable": true
+          },
+          "instance": {
+            "type": "string",
+            "nullable": true
+          },
+          "extensions": {
+            "type": "object",
+            "nullable": true,
+            "additionalProperties": {}
+          }
+        }
+      },
+      "IndiceDetailModel": {
+        "type": "object",
+        "additionalProperties": false,
+        "properties": {
+          "symbol": {
+            "type": "string"
+          },
+          "name": {
+            "type": "string"
+          },
+          "creationDate": {
+            "type": "string",
+            "format": "date-time",
+            "nullable": true
+          },
+          "indiceState": {
+            "type": "string",
+            "nullable": true
+          },
+          "address": {
+            "type": "string",
+            "nullable": true
+          },
+          "description": {
+            "type": "string"
+          },
+          "naturalUnit": {
+            "type": "integer"
+          }
+        }
+      },
+      "IndiceCompositionModel": {
+        "type": "object",
+        "additionalProperties": false,
+        "properties": {
+          "indiceDetail": {
+            "$ref": "#/components/schemas/IndiceDetailModel"
+          },
+          "address": {
+            "type": "string"
+          },
+          "symbol": {
+            "type": "string"
+          },
+          "creationDate": {
+            "type": "string",
+            "format": "date-time"
+          },
+          "components": {
+            "type": "array",
+            "items": {
+              "$ref": "#/components/schemas/ComponentDetailModel"
+            }
+          },
+          "version": {
+            "type": "integer"
+          }
+        }
+      },
+      "IndiceSupplyTransactionModel": {
+        "type": "object",
+        "additionalProperties": false,
+        "properties": {
+          "creationTimestamp": {
+            "type": "string",
+            "format": "date-time"
+          },
+          "indiceComposition": {
+            "$ref": "#/components/schemas/IndiceCompositionModel"
+          },
+          "transactionType": {
+            "nullable": true,
+            "oneOf": [
+              {
+                "$ref": "#/components/schemas/SupplyTransactionType"
+              }
+            ]
+          },
+          "indiceQuantity": {
+            "type": "number",
+            "format": "decimal"
+          },
+          "user": {
+            "type": "string"
+          },
+          "transactionHash": {
+            "type": "string",
+            "nullable": true
+          },
+          "senderAddress": {
+            "type": "string"
+          },
+          "ethereumBlockId": {
+            "type": "integer",
+            "format": "int32",
+            "nullable": true
+          }
+        }
+      },
+      "SupplyTransactionType": {
+        "type": "integer",
+        "description": "",
+        "x-enumNames": [
+          "Redeem",
+          "Issue"
+        ],
+        "enum": [
+          0,
+          1
+        ]
+      },
+      "WrappingTransactionModel": {
+        "type": "object",
+        "additionalProperties": false,
+        "properties": {
+          "trakxAddress": {
+            "type": "string"
+          },
+          "senderAddress": {
+            "type": "string"
+          },
+          "receiverAddress": {
+            "type": "string"
+          },
+          "date": {
+            "type": "string",
+            "format": "date-time"
+          },
+          "fromCurrency": {
+            "type": "string"
+          },
+          "toCurrency": {
+            "type": "string"
+          },
+          "ethereumBlockId": {
+            "type": "integer",
+            "format": "int32",
+            "nullable": true
+          },
+          "nativeBlockId": {
+            "type": "integer",
+            "format": "int32",
+            "nullable": true
+          },
+          "ethereumTransactionHash": {
+            "type": "string",
+            "nullable": true
+          },
+          "nativeChainTransactionHash": {
+            "type": "string",
+            "nullable": true
+          }
+        }
+      },
+      "AccountBalanceModel": {
+        "type": "object",
+        "additionalProperties": false,
+        "properties": {
+          "token": {
+            "type": "string"
+          },
+          "balance": {
+            "type": "number",
+            "format": "decimal"
+          }
+        }
+      }
+    }
+  }
+}

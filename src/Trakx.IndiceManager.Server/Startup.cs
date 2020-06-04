@@ -1,7 +1,6 @@
 using System;
 using System.IO;
 using System.Reflection;
-using CryptoCompare;
 using Microsoft.AspNetCore.Builder;
 using Microsoft.AspNetCore.Hosting;
 using Microsoft.AspNetCore.Http;
@@ -23,6 +22,7 @@ namespace Trakx.IndiceManager.Server
     {
         private const string ApiName = "Trakx Indice Manager Api";
         private const string ApiVersion = "v0.1";
+        private const string ApiDescription = "Trakx' API used to create and administrate indices.";
         public Startup(IConfiguration configuration)
         {
             Configuration = configuration;
@@ -43,18 +43,30 @@ namespace Trakx.IndiceManager.Server
             services.AddMappings();
             // DB Creation and Seeding
             services.AddTransient<IDatabaseInitialiser, DatabaseInitialiser>();
-
-            services.AddCoinGeckoClient();
+            
             services.AddSwaggerGen(c =>
             {
-                c.SwaggerDoc(ApiVersion, new OpenApiInfo { Title = ApiName, Version = ApiVersion });
+                c.SwaggerDoc(ApiVersion, new OpenApiInfo { Title = ApiName, Version = ApiVersion, Description = ApiDescription});
                 // Set the comments path for the Swagger JSON and UI.
                 var xmlFile = $"{Assembly.GetExecutingAssembly().GetName().Name}.xml";
                 var xmlPath = Path.Combine(AppContext.BaseDirectory, xmlFile);
                 c.IncludeXmlComments(xmlPath);
             });
-            services.AddEthereumInteraction();
+
+            //this is only to allow auto generating client on build in Trakx.IndiceManager.Client
+            services.AddOpenApiDocument(settings =>
+            {
+                settings.PostProcess = document =>
+                {
+                    document.Info.Version = ApiVersion;
+                    document.Info.Title = ApiName;
+                    document.Info.Description = ApiDescription;
+                };
+            });
+
+            services.AddEthereumInteraction(Environment.GetEnvironmentVariable("INFURA_API_KEY"));
             services.AddMemoryCache();
+            services.AddCoinGeckoClient();
         }
 
         // This method gets called by the runtime. Use this method to configure the HTTP request pipeline.
@@ -68,7 +80,7 @@ namespace Trakx.IndiceManager.Server
             app.UseHttpsRedirection();
 
             app.UseRouting();
-            app.UseSwagger();
+            SwaggerBuilderExtensions.UseSwagger(app);
             app.UseSwaggerUI(c =>
             {
                 c.SwaggerEndpoint($"/swagger/{ApiVersion}/swagger.json", ApiName);
