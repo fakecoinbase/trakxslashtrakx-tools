@@ -70,6 +70,12 @@ namespace Trakx.Tests.Data
             return randomDay;
         }
 
+        public ushort GetRandomNaturalUnit() => (ushort)_random.Next(0, 18);
+        
+        public uint GetRandomCompositionVersion() => (uint)_random.Next(0, 30);
+        public decimal GetRandomPrice() => _random.Next(1, int.MaxValue)/1e5m;
+        public TimeSpan GetRandomTimeSpan() => TimeSpan.FromSeconds(_random.Next(1, (int)TimeSpan.FromDays(1000).TotalSeconds));
+
         public IIndiceComposition GetIndiceComposition(int componentCount)
         {
             var componentQuantities = Enumerable.Range(0, componentCount)
@@ -81,8 +87,10 @@ namespace Trakx.Tests.Data
             var randomIndiceDefinition = GetRandomIndiceDefinition();
             indiceComposition.IndiceDefinition.Returns(randomIndiceDefinition);
             indiceComposition.Address.Returns(GetRandomAddressEthereum());
-            indiceComposition.Symbol.Returns(randomIndiceDefinition.Symbol + GetRandomYearMonthSuffix());
-            indiceComposition.CreationDate.Returns(GetRandomDateTime());
+            var creationDate = GetRandomDateTime();
+            indiceComposition.CreationDate.Returns(creationDate);
+            var compositionSymbol = randomIndiceDefinition.GetCompositionSymbol(creationDate);
+            indiceComposition.Symbol.Returns(compositionSymbol);
             return indiceComposition;
         }
 

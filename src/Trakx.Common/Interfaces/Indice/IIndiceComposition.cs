@@ -57,8 +57,5 @@ namespace Trakx.Common.Interfaces.Indice
 
         public static string GetCompositionId(this IIndiceComposition composition) =>
              $"{composition.IndiceDefinition.Symbol}|{composition.Version}";
-
-        public static string GetCompositionSymbol(this IIndiceComposition composition) =>
-            $"{composition.IndiceDefinition.Symbol}{composition.CreationDate.AddDays(10):yyMM}";
     }
 }

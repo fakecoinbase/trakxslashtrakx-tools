@@ -1,7 +1,4 @@
-﻿using System;
-using System.Collections.Generic;
-using FluentAssertions;
-using Trakx.Common.Core;
+﻿using FluentAssertions;
 using Trakx.Common.Interfaces.Indice;
 using Trakx.Persistence.DAO;
 using Trakx.Tests.Data;
@@ -16,14 +13,14 @@ namespace Trakx.Tests.Unit.Persistence.DAO
 
         public FromIndiceCompositionToDaoTest(ITestOutputHelper output)
         {
-            var mockCreator= new MockCreator(output);
+            var mockCreator = new MockCreator(output);
             _newComposition = mockCreator.GetIndiceComposition(3);
         }
 
         [Fact]
         public void FromModelToIndiceComposition_should_create_composition_on_new_indice()
         {
-            var result= new IndiceCompositionDao(_newComposition);
+            var result = new IndiceCompositionDao(_newComposition);
 
             VerifyComposition(result);
             VerifyIndiceModification(result);
@@ -32,7 +29,7 @@ namespace Trakx.Tests.Unit.Persistence.DAO
 
         private void VerifyComposition(IndiceCompositionDao result)
         {
-            result.Symbol.Should().Be(_newComposition.GetCompositionSymbol());
+            result.Symbol.Should().Be(_newComposition.Symbol);
             result.CreationDate.Should().Be(_newComposition.CreationDate);
             result.Version.Should().Be(_newComposition.Version);
             result.Id.Should().Be(result.GetCompositionId());

@@ -8,8 +8,6 @@ namespace Trakx.Common.Core
     /// <inheritdoc />
     public class IndiceComposition : IIndiceComposition
     {
-        //public IndiceComposition() { }
-
         public IndiceComposition(IIndiceDefinition definition, List<IComponentQuantity> components, uint version,
             DateTime creationDate, string address)
         {

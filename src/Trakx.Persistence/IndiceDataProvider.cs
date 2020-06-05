@@ -29,7 +29,9 @@ namespace Trakx.Persistence
         /// <inheritdoc />
         public async Task<List<string>> GetAllIndiceSymbols(CancellationToken cancellationToken = default)
         {
-            var indiceSymbols = await _dbContext.IndiceDefinitions.AsNoTracking().Select(i => i.Symbol)
+            var indiceSymbols = await _dbContext.IndiceDefinitions
+                .AsNoTracking()
+                .Select(i => i.Symbol)
                 .ToListAsync(cancellationToken);
             return indiceSymbols;
         }
@@ -39,6 +41,7 @@ namespace Trakx.Persistence
         {
             var indiceDefinition = await _dbContext.IndiceDefinitions
                 .Include(i => i.IndiceCompositionDaos)
+                .AsNoTracking()
                 .SingleAsync(i => i.Symbol.Equals(indiceSymbol, StringComparison.InvariantCultureIgnoreCase), 
                     cancellationToken);
 
@@ -52,15 +55,19 @@ namespace Trakx.Persistence
         {
             try
             {
-                var cacheKey = $"{indiceSymbol}|asOf|{asOfUtc:yyMMddHHmm}";
+                var cacheKey = $"composition|{indiceSymbol}|asOf|{asOfUtc:yyMMddHHmm}";
                 var def = await _memoryCache.GetOrCreateAsync(cacheKey, async entry =>
                 {
-                    entry.SetSlidingExpiration(TimeSpan.FromMinutes(1));
-                    
                     var version = await GetVersionAtDate(indiceSymbol, asOfUtc, cancellationToken);
-                    var composition = await RetrieveFullComposition(indiceSymbol, version.Value, cancellationToken);
+                    if (version == default)
+                    {
+                        entry.AbsoluteExpirationRelativeToNow = TimeSpan.FromTicks(1);
+                        return default;
+                    }
 
-                    entry.AbsoluteExpirationRelativeToNow = composition != null && composition.IsValid() 
+                    var composition = await RetrieveFullComposition(indiceSymbol, version.Value, cancellationToken);
+                    
+                    entry.AbsoluteExpirationRelativeToNow = composition != null && composition.IsValid()
                         ? TimeSpan.FromMinutes(1)
                         : TimeSpan.FromTicks(1);
                     return composition;
@@ -80,15 +87,13 @@ namespace Trakx.Persistence
         {
             try
             {
-                var cacheKey = $"{compositionSymbol}";
+                var cacheKey = $"composition|{compositionSymbol}";
                 var def = await _memoryCache.GetOrCreateAsync(cacheKey, async entry =>
                 {
-                    entry.SetSlidingExpiration(TimeSpan.FromSeconds(120));
-
                     var composition = await RetrieveFullComposition(compositionSymbol, cancellationToken);
 
                     entry.AbsoluteExpirationRelativeToNow = composition != null && composition.IsValid()
-                        ? TimeSpan.FromSeconds(120)
+                        ? TimeSpan.FromDays(1)
                         : TimeSpan.FromTicks(1);
                     return composition;
                 });
@@ -130,8 +135,6 @@ namespace Trakx.Persistence
                 var cacheKey = $"initial-valuation|{composition.Symbol}|{quoteCurrency}";
                 var intitialValuation = await _memoryCache.GetOrCreateAsync(cacheKey, async entry =>
                 {
-                    entry.SetSlidingExpiration(TimeSpan.FromDays(1));
-
                     var valuation = await _dbContext.IndiceValuations
                         .IncludeAllLinkedEntities()
                         .Where(c => c.IndiceCompositionDao.Id == composition.GetCompositionId()
@@ -158,7 +161,10 @@ namespace Trakx.Persistence
         public async Task<List<IComponentDefinition>> GetAllComponentsFromCurrentCompositions(CancellationToken cancellationToken = default)
         {
             //TODO simplify that to exclude components not in use when they start to happen.
-            var components = await _dbContext.ComponentDefinitions.Select(c => (IComponentDefinition)c).ToListAsync(cancellationToken);
+            var components = await _dbContext.ComponentDefinitions
+                .Select(c => (IComponentDefinition)c)
+                .AsNoTracking()
+                .ToListAsync(cancellationToken);
 
             return components;
         }
@@ -182,45 +188,47 @@ namespace Trakx.Persistence
                 .AsNoTracking()
                 .Where(c => c.Symbol == compositionSymbol)
                 .OrderByDescending(c => c.Version)
-                .FirstAsync(cancellationToken);
+                .FirstOrDefaultAsync(cancellationToken);
             return composition;
         }
 
         /// <inheritdoc />
-        public async Task<List<IIndiceComposition>?> GetAllCompositionForIndice(string indiceSymbol) 
+        public async Task<List<IIndiceComposition>?> GetAllCompositionForIndice(string indiceSymbol, CancellationToken cancellationToken = default) 
         {
-            var indice = await _dbContext.IndiceDefinitions.FirstOrDefaultAsync(i => i.Symbol == indiceSymbol);
+            var indice = await _dbContext.IndiceDefinitions
+                .AsNoTracking()
+                .FirstOrDefaultAsync(i => i.Symbol == indiceSymbol, cancellationToken);
 
             if (indice == null)
                 return null;
 
-            return await _dbContext.IndiceCompositions.Where(c => c.IndiceDefinitionDao == indice)
-                .ToListAsync<IIndiceComposition>();
+            return await _dbContext.IndiceCompositions
+                .AsNoTracking()
+                .Where(c => c.IndiceDefinitionDao == indice)
+                .ToListAsync<IIndiceComposition>(cancellationToken);
         }
 
         /// <inheritdoc />
-        public async Task<List<IIndiceDefinition>> GetAllIndices()
+        public async Task<List<IIndiceDefinition>> GetAllIndices(CancellationToken cancellationToken = default)
         {
-            var indices = await _dbContext.IndiceDefinitions.ToListAsync<IIndiceDefinition>();
+            var indices = await _dbContext.IndiceDefinitions.
+                ToListAsync<IIndiceDefinition>(cancellationToken);
             return indices;
         } 
 
         /// <inheritdoc />
-        public async Task<bool> TryToGetIndiceByAddress(string? indiceAddress)
+        public async Task<bool> TryToGetIndiceByAddress(string? indiceAddress, CancellationToken cancellationToken = default)
         {
-            if (await _dbContext.IndiceDefinitions.FirstOrDefaultAsync(i => i.Address == indiceAddress) != null)
-                return true;
-
-            return false;
+            return await _dbContext.IndiceDefinitions
+                .AnyAsync(i => i.Address == indiceAddress, cancellationToken);
         } 
 
         /// <inheritdoc />
-        public async Task<bool> TryToGetCompositionByAddress(string compositionAddress)
+        public async Task<bool> TryToGetCompositionByAddress(string compositionAddress, CancellationToken cancellationToken = default)
         {
-            if (await _dbContext.IndiceCompositions.FirstOrDefaultAsync(c => c.Address == compositionAddress) != null)
-                return true;
-
-            return false;
+            return await _dbContext.IndiceCompositions
+                .AnyAsync(c => c.Address == compositionAddress,
+                cancellationToken);
         } 
     }
 }

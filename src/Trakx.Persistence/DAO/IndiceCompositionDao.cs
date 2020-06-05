@@ -12,13 +12,13 @@ namespace Trakx.Persistence.DAO
     {
         // Non-nullable field is uninitialized. Consider declaring as nullable.
         // This constructor is for serialisation only
-        #pragma warning disable CS8618
+        #nullable disable
         public IndiceCompositionDao(string address, string symbol)
         {
             Address = address;
             Symbol = symbol;
         }
-        #pragma warning restore CS8618
+        #nullable restore
 
         public IndiceCompositionDao(IndiceDefinitionDao indiceDefinition, 
             uint version, DateTime creationDate, string address, string symbol)
@@ -39,8 +39,8 @@ namespace Trakx.Persistence.DAO
             Version = composition.Version;
             CreationDate = composition.CreationDate;
             Address = composition.Address;
-            Symbol = IndiceDefinition.GetCompositionSymbol(CreationDate);
-            Id = $"{IndiceDefinition.Symbol}|{Version}";
+            Symbol = composition.Symbol;
+            Id = composition.GetCompositionId();
             
             ComponentQuantityDaos = composition.ComponentQuantities.Select(c => new ComponentQuantityDao(this,
                 new ComponentDefinitionDao(c.ComponentDefinition.Address, c.ComponentDefinition.Name, c.ComponentDefinition.Symbol, c.ComponentDefinition.CoinGeckoId, c.ComponentDefinition.Decimals), Convert.ToUInt64(c.Quantity.DescaleComponentQuantity(c.ComponentDefinition.Decimals, IndiceDefinitionDao.NaturalUnit)))).ToList<ComponentQuantityDao>();

@@ -10,7 +10,7 @@ namespace Trakx.Persistence.DAO
     {
         // Non-nullable field is uninitialized. Consider declaring as nullable.
         // This constructor is for serialisation only
-        #pragma warning disable CS8618
+        #nullable disable
         public ComponentQuantityDao() { }
 
         public ComponentQuantityDao(IndiceCompositionDao indiceComposition,
@@ -22,7 +22,7 @@ namespace Trakx.Persistence.DAO
             Quantity = ((decimal)unscaledQuantity).ScaleComponentQuantity(componentDefinition.Decimals, indiceComposition.IndiceDefinitionDao.NaturalUnit);
             UpdateId();
         }
-        #pragma warning restore CS8618
+        #nullable restore
 
         /// <summary>
         /// Unique identifier generated and used as a primary key on the database object.
