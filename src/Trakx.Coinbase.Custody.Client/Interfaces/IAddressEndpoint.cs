@@ -1,6 +1,5 @@
 ﻿using System.Threading;
 using System.Threading.Tasks;
-using JetBrains.Annotations;
 using Trakx.Coinbase.Custody.Client.Models;
 
 namespace Trakx.Coinbase.Custody.Client.Interfaces
@@ -15,8 +14,9 @@ namespace Trakx.Coinbase.Custody.Client.Interfaces
         /// </summary>
         /// <param name="currency">The currency of the address, optional parameter</param>
         /// <param name="state">The <see cref="AddressState"/>, optional parameter</param>
+        /// <param name="cancellationToken">A token that can be used to request cancellation of the asynchronous operation.</param>
         /// <returns>A <see cref="PagedResponse{AddressResponse}"/> if request succeed.</returns>
-        Task<PagedResponse<AddressResponse>> ListAddressesAsync([CanBeNull] string currency = null,
-            [CanBeNull] string state = null, CancellationToken cancellationToken = default);
+        Task<PagedResponse<AddressResponse>> ListAddressesAsync(string? currency = null,
+           string? state = null, CancellationToken cancellationToken = default);
     }
 }

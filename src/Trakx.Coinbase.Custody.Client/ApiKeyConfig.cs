@@ -1,5 +1,4 @@
-﻿using System;
-using System.Threading.Tasks;
+﻿using System.Threading.Tasks;
 using Flurl.Http;
 using Flurl.Http.Configuration;
 using Trakx.Coinbase.Custody.Client.Interfaces;

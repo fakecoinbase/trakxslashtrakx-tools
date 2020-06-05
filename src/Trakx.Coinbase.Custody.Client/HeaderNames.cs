@@ -1,8 +1,4 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Text;
-
-namespace Trakx.Coinbase.Custody.Client
+﻿namespace Trakx.Coinbase.Custody.Client
 {
     public static class HeaderNames
     {

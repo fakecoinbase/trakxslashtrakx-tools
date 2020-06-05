@@ -1,6 +1,4 @@
-﻿using Trakx.Coinbase.Custody.Client;
-
-namespace Trakx.Coinbase.Custody.Client.Interfaces
+﻿namespace Trakx.Coinbase.Custody.Client.Interfaces
 {
     public interface IApiKeyConfig
     {

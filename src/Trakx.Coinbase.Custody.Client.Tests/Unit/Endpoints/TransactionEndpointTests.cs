@@ -22,13 +22,13 @@ namespace Trakx.Coinbase.Custody.Client.Tests.Unit.Endpoints
         [Fact]
         public async Task ListTransactionsAsync_should_call_API_with_query_parameters()
         {
-            await _transactionEndpoint.ListTransactionsAsync("eur",TransactionState.Gassing);
+            await _transactionEndpoint.ListTransactionsAsync("eur", TransactionState.Gassing);
             HttpTest.ShouldHaveCalled(EndpointUrl)
-                .WithQueryParamValues(("eur", "TransactionState.Gassing"))
-                .WithoutQueryParams("currency", "state")
+                .WithQueryParamValues(new { currency = "eur", state = TransactionState.Gassing })
+                .WithQueryParams("currency", "state")
                 .WithVerb(HttpMethod.Get);
         }
-        
+
         [Fact]
         public async Task ListTransactionsAsync_should_call_API_without_query_parameters()
         {
@@ -59,10 +59,10 @@ namespace Trakx.Coinbase.Custody.Client.Tests.Unit.Endpoints
         public void GetTransactionAsync_should_return_error_if_parameter_null_or_empty()
         {
             Func<Task> nullAction = async () => await _transactionEndpoint.GetTransactionAsync(null);
-            nullAction.Should().ThrowExactly<System.ArgumentNullException>();
+            nullAction.Should().ThrowExactly<ArgumentNullException>();
 
             Func<Task> emptyAction = async () => await _transactionEndpoint.GetTransactionAsync("");
-            emptyAction.Should().ThrowExactly<System.ArgumentException>();
+            emptyAction.Should().ThrowExactly<ArgumentException>();
 
             HttpTest.ShouldNotHaveMadeACall();
         }
