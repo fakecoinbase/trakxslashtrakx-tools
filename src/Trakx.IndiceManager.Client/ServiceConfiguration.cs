@@ -11,8 +11,7 @@ namespace Trakx.IndiceManager.Client
         {
             Guard.Against.NullOrEmpty(baseUrl, nameof(baseUrl));
 
-            var clientHandler = new HttpClientHandler{ServerCertificateCustomValidationCallback = (message, cert, chain,
-                errors) => true}; //enable SSL certificate verification in developement
+            var clientHandler = new HttpClientHandler();
 
             serviceCollection.AddSingleton<IIndiceCreationClient, IndiceCreationClient>(serviceProvider => new IndiceCreationClient(baseUrl, new HttpClient(clientHandler)));
             serviceCollection.AddSingleton<IIndiceSupplyClient, IndiceSupplyClient>(serviceProvider => new IndiceSupplyClient(baseUrl, new HttpClient(clientHandler)));
