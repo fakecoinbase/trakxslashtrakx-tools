@@ -1,0 +1,23 @@
+﻿{
+  "data": [
+    {
+      "symbol": "btc",
+      "name": "Bitcoin",
+      "decimals": 8
+    },
+    {
+      "symbol": "bch",
+      "name": "Bitcoin Cash",
+      "decimals": 12
+    },
+    {
+      "symbol": "ltc",
+      "name": "Litecoin",
+      "decimals": 7
+    }
+  ],
+  "pagination": {
+    "before": "btc",
+    "after": "ltc"
+  }
+}

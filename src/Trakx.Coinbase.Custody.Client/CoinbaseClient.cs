@@ -13,13 +13,15 @@ namespace Trakx.Coinbase.Custody.Client
         private readonly IAddressEndpoint _addressEndpoint;
         private readonly IWalletEndpoint _walletEndpoint;
         private readonly ITransactionEndpoint _transactionEndpoint;
-        
+        private readonly ICurrencyEndpoint _currencyEndpoint;
+
         public CoinbaseClient(IApiKeyConfig api) : base("https://api.custody.coinbase.com/api/v1/")
         {
             api.Configure(this);
             _transactionEndpoint = new TransactionEndpoint(this);
             _walletEndpoint = new WalletEndpoint(this);
             _addressEndpoint = new AddressEndpoint(this);
+            _currencyEndpoint=new CurrencyEndpoint(this);
         }
 
         #region Implementation of IAddressEndpoint
@@ -61,6 +63,16 @@ namespace Trakx.Coinbase.Custody.Client
         public async Task<Transaction> GetTransactionAsync(string transactionId, CancellationToken cancellationToken = default)
         {
             return await _transactionEndpoint.GetTransactionAsync(transactionId, cancellationToken);
+        }
+
+        #endregion
+
+        #region Implementation of ICurrencyEndpoint
+
+        /// <inheritdoc />
+        public Task<PagedResponse<Currency>> ListCurrenciesAsync( CancellationToken cancellationToken = default)
+        {
+            return _currencyEndpoint.ListCurrenciesAsync( cancellationToken);
         }
 
         #endregion
