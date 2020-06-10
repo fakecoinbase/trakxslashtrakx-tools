@@ -244,6 +244,28 @@ namespace Trakx.Persistence.Migrations
                     b.ToTable("IndiceValuations");
                 });
 
+            modelBuilder.Entity("Trakx.Persistence.DAO.UserAddressDao", b =>
+                {
+                    b.Property<string>("Id")
+                        .HasColumnType("nvarchar(450)");
+
+                    b.Property<string>("Address")
+                        .IsRequired()
+                        .HasColumnType("nvarchar(max)");
+
+                    b.Property<string>("ChainId")
+                        .IsRequired()
+                        .HasColumnType("nvarchar(max)");
+
+                    b.Property<string>("UserId")
+                        .IsRequired()
+                        .HasColumnType("nvarchar(max)");
+
+                    b.HasKey("Id");
+
+                    b.ToTable("UserAddresses");
+                });
+
             modelBuilder.Entity("Trakx.Persistence.DAO.WrappingTransactionDao", b =>
                 {
                     b.Property<long>("Id")

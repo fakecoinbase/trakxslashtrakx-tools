@@ -6,6 +6,7 @@
 @using Syncfusion.Blazor.Notifications
 @using Syncfusion.Blazor.Inputs
 @using Trakx.Common.Models
+@using Trakx.Common.Utils
 @inject IIndiceCreationClient client
 
 <SfToast @ref="ToastObj" TimeOut=8000>
@@ -54,19 +55,7 @@
 
         public string Address { get; set; }
     }
-    private class IsValidEthereumAddress : ValidationAttribute
-    {
-        public override bool IsValid(object value)
-        {
-            string strValue = value as string;
-            if (!strValue.IsValidEthereumAddressHexFormat())
-            {
-                ErrorMessage = "Must be a valid ethereum address.";
-                return false;
-            }
-            return true;
-        }
-    }
+    
     public string CssClass { get; set; }
     public SfToast ToastObj { get; set; }
     public EditContext EditContext { get; set; }

@@ -44,7 +44,7 @@ namespace Trakx.Persistence
                 .AsNoTracking()
                 .SingleAsync(i => i.Symbol.Equals(indiceSymbol, StringComparison.InvariantCultureIgnoreCase), 
                     cancellationToken);
-
+            
             var symbols = indiceDefinition.IndiceCompositionDaos.Select(c => c.Symbol).ToList();
             return symbols;
         }

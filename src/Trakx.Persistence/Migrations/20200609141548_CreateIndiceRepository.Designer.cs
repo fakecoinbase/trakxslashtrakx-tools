@@ -10,7 +10,7 @@ using Trakx.Persistence;
 namespace Trakx.Persistence.Migrations
 {
     [DbContext(typeof(IndiceRepositoryContext))]
-    [Migration("20200515134952_CreateIndiceRepository")]
+    [Migration("20200609141548_CreateIndiceRepository")]
     partial class CreateIndiceRepository
     {
         protected override void BuildTargetModel(ModelBuilder modelBuilder)
@@ -244,6 +244,28 @@ namespace Trakx.Persistence.Migrations
                     b.HasIndex("IndiceCompositionDaoId");
 
                     b.ToTable("IndiceValuations");
+                });
+
+            modelBuilder.Entity("Trakx.Persistence.DAO.UserAddressDao", b =>
+                {
+                    b.Property<string>("Id")
+                        .HasColumnType("nvarchar(450)");
+
+                    b.Property<string>("Address")
+                        .IsRequired()
+                        .HasColumnType("nvarchar(max)");
+
+                    b.Property<string>("ChainId")
+                        .IsRequired()
+                        .HasColumnType("nvarchar(max)");
+
+                    b.Property<string>("UserId")
+                        .IsRequired()
+                        .HasColumnType("nvarchar(max)");
+
+                    b.HasKey("Id");
+
+                    b.ToTable("UserAddresses");
                 });
 
             modelBuilder.Entity("Trakx.Persistence.DAO.WrappingTransactionDao", b =>

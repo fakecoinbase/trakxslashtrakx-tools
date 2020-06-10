@@ -39,6 +39,20 @@ namespace Trakx.Persistence.Migrations
                 });
 
             migrationBuilder.CreateTable(
+                name: "UserAddresses",
+                columns: table => new
+                {
+                    Id = table.Column<string>(nullable: false),
+                    ChainId = table.Column<string>(nullable: false),
+                    UserId = table.Column<string>(nullable: false),
+                    Address = table.Column<string>(nullable: false)
+                },
+                constraints: table =>
+                {
+                    table.PrimaryKey("PK_UserAddresses", x => x.Id);
+                });
+
+            migrationBuilder.CreateTable(
                 name: "WrappingTransactions",
                 columns: table => new
                 {
@@ -229,6 +243,9 @@ namespace Trakx.Persistence.Migrations
 
             migrationBuilder.DropTable(
                 name: "IndiceSupplyTransactions");
+
+            migrationBuilder.DropTable(
+                name: "UserAddresses");
 
             migrationBuilder.DropTable(
                 name: "WrappingTransactions");

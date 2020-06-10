@@ -1,4 +1,6 @@
-﻿using Microsoft.EntityFrameworkCore;
+﻿using System;
+using System.Linq;
+using Microsoft.EntityFrameworkCore;
 using Trakx.Persistence.DAO;
 
 namespace Trakx.Persistence
@@ -23,13 +25,14 @@ namespace Trakx.Persistence
         public DbSet<IndiceCompositionDao> IndiceCompositions { get; set; }
         public DbSet<IndiceValuationDao> IndiceValuations { get; set; }
         public DbSet<WrappingTransactionDao> WrappingTransactions { get; set; }
-
+        public DbSet<UserAddressDao> UserAddresses { get; set; }
+        
         #region Overrides of DbContext
 
         /// <inheritdoc />
         protected override void OnModelCreating(ModelBuilder modelBuilder)
         {
-            base.OnModelCreating(modelBuilder);
+            base.OnModelCreating(modelBuilder); 
         }
 
         #endregion
