@@ -8,7 +8,7 @@ namespace Trakx.Common.Core
         public WrappingTransaction(DateTime timeStamp, string fromCurrency, string toCurrency,
             TransactionState transactionState, string? ethereumTransactionHash, string? nativeChainTransactionHash,
             int? nativeChainBlockId, int? ethereumBlockId, decimal amount, string senderAddress,
-            string receiverAddress, string user)
+            string receiverAddress, string user,TransactionType transactionType)
         {
             TimeStamp = timeStamp;
             FromCurrency = fromCurrency;
@@ -22,6 +22,7 @@ namespace Trakx.Common.Core
             SenderAddress = senderAddress;
             ReceiverAddress = receiverAddress;
             User = user;
+            TransactionType = transactionType;
         }
 
         #region Implementation of IWrappingTransaction
@@ -61,6 +62,10 @@ namespace Trakx.Common.Core
 
         /// <inheritdoc />
         public string User { get; }
+
+        /// <inheritdoc />
+        public TransactionType TransactionType { get; }
+
         #endregion
     }
 }

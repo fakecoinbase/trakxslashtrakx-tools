@@ -67,6 +67,11 @@ namespace Trakx.Common.Interfaces.Transaction
         /// The identity of the user who executed the transaction.
         /// </summary>
         string User { get; }
+
+        /// <summary>
+        /// The type of the transaction : wrapping or unwrapping.
+        /// </summary>
+        TransactionType TransactionType { get; }
     }
 
     public enum TransactionState
@@ -74,5 +79,11 @@ namespace Trakx.Common.Interfaces.Transaction
         Pending,
         Complete,
         Failed
+    }
+
+    public enum TransactionType
+    {
+        Wrap,
+        Unwrap
     }
 }

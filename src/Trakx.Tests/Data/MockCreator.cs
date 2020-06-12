@@ -108,6 +108,7 @@ namespace Trakx.Tests.Data
             transaction.EthereumTransactionHash.Returns(GetRandomEthereumTransactionHash());
             transaction.TimeStamp.Returns(GetRandomDateTime());
             transaction.TransactionState.Returns(transactionState);
+            transaction.TransactionType.Returns(TransactionType.Wrap);
             if (transactionState != TransactionState.Complete) return transaction;
 
             transaction.NativeChainBlockId.Returns(_random.Next(600000));

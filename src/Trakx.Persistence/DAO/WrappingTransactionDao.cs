@@ -21,12 +21,13 @@ namespace Trakx.Persistence.DAO
             SenderAddress = transaction.SenderAddress;
             ReceiverAddress = transaction.ReceiverAddress;
             User = transaction.User;
+            TransactionType = transaction.TransactionType;
         }
 
         public WrappingTransactionDao(DateTime timeStamp, string fromCurrency, string toCurrency,
             TransactionState transactionState, string? ethereumTransactionHash, string? nativeChainTransactionHash,
             int? nativeChainBlockId, int? ethereumBlockId, decimal amount, string senderAddress,
-            string receiverAddress, string user)
+            string receiverAddress, string user,TransactionType transactionType)
         {
             TimeStamp = timeStamp;
             FromCurrency = fromCurrency;
@@ -40,6 +41,7 @@ namespace Trakx.Persistence.DAO
             SenderAddress = senderAddress;
             ReceiverAddress = receiverAddress;
             User = user;
+            TransactionType = transactionType;
         }
 
         [DatabaseGenerated(DatabaseGeneratedOption.Identity)]
@@ -89,5 +91,9 @@ namespace Trakx.Persistence.DAO
         /// <inheritdoc />
         [Required]
         public string User { get; set; }
+
+        /// <inheritdoc />
+        [Required]
+        public TransactionType TransactionType { get; set; }
     }
 }

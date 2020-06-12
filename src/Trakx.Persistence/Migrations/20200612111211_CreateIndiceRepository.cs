@@ -68,7 +68,8 @@ namespace Trakx.Persistence.Migrations
                     Amount = table.Column<decimal>(type: "decimal(38, 18)", nullable: false),
                     SenderAddress = table.Column<string>(maxLength: 256, nullable: false),
                     ReceiverAddress = table.Column<string>(maxLength: 256, nullable: false),
-                    User = table.Column<string>(nullable: false)
+                    User = table.Column<string>(nullable: false),
+                    TransactionType = table.Column<int>(nullable: false)
                 },
                 constraints: table =>
                 {

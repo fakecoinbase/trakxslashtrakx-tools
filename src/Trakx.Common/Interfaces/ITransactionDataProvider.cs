@@ -1,4 +1,5 @@
-﻿using System.Collections.Generic;
+﻿using System;
+using System.Collections.Generic;
 using System.Threading.Tasks;
 using Trakx.Common.Interfaces.Transaction;
 
@@ -38,5 +39,11 @@ namespace Trakx.Common.Interfaces
         /// <param name="userName">The name of the user for who we're looking for the transactions.</param>
         /// <returns>A list of <see cref="IIndiceSupplyTransaction"/>.</returns>
         Task<List<IIndiceSupplyTransaction>> GetAllIndiceSupplyTransactionsByUser(string userName);
+
+        /// <summary>
+        /// Allows to retrieve the last wrapping transaction made.
+        /// </summary>
+        /// <returns></returns>
+        Task<DateTime> GetLastWrappingTransactionDatetime();
     }
 }

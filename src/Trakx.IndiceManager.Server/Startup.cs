@@ -12,6 +12,7 @@ using Trakx.IndiceManager.Server.Data;
 using Trakx.Persistence;
 using Trakx.Persistence.Initialisation;
 using Microsoft.OpenApi.Models;
+using Trakx.Coinbase.Custody.Client;
 using Trakx.Common.Ethereum;
 using Trakx.Common.Sources.CoinGecko;
 
@@ -67,6 +68,10 @@ namespace Trakx.IndiceManager.Server
             services.AddEthereumInteraction(Environment.GetEnvironmentVariable("INFURA_API_KEY"));
             services.AddMemoryCache();
             services.AddCoinGeckoClient();
+            services.AddSingleton<ICoinbaseTransactionListener, CoinbaseTransactionListener>();
+            services.AddCoinbaseLibrary(Environment.GetEnvironmentVariable("COINBASE_API_KEY"),
+                Environment.GetEnvironmentVariable("COINBASE_PASSPHRASE_KEY"));
+            services.AddHostedService<BalanceUpdateService>();
         }
 
         // This method gets called by the runtime. Use this method to configure the HTTP request pipeline.

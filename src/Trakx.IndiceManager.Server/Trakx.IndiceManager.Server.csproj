@@ -32,6 +32,7 @@
   </ItemGroup>
 
   <ItemGroup>
+    <ProjectReference Include="..\Trakx.Coinbase.Custody.Client\Trakx.Coinbase.Custody.Client.csproj" />
     <ProjectReference Include="..\Trakx.Persistence\Trakx.Persistence.csproj" />
   </ItemGroup>
 

@@ -1,7 +1,9 @@
-﻿using System.Collections.Generic;
+﻿using System;
+using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
 using Microsoft.EntityFrameworkCore;
+using Trakx.Common.Extensions;
 using Trakx.Common.Interfaces;
 using Trakx.Common.Interfaces.Transaction;
 
@@ -45,6 +47,13 @@ namespace Trakx.Persistence
                 .ToListAsync<IIndiceSupplyTransaction>();
 
             return transactions;
+        }
+
+        public async Task<DateTime> GetLastWrappingTransactionDatetime()
+        {
+            var transaction = await _dbContext.WrappingTransactions.Where(t=>t.TransactionType==TransactionType.Wrap).OrderByDescending(t=>t.TimeStamp).ToListAsync();
+            if(transaction.Count==0) return DateTime.MinValue;
+            return transaction[0].TimeStamp;
         }
     }
 }

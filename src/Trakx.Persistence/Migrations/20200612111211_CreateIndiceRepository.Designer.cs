@@ -10,7 +10,7 @@ using Trakx.Persistence;
 namespace Trakx.Persistence.Migrations
 {
     [DbContext(typeof(IndiceRepositoryContext))]
-    [Migration("20200609141548_CreateIndiceRepository")]
+    [Migration("20200612111211_CreateIndiceRepository")]
     partial class CreateIndiceRepository
     {
         protected override void BuildTargetModel(ModelBuilder modelBuilder)
@@ -313,6 +313,9 @@ namespace Trakx.Persistence.Migrations
                         .HasMaxLength(50);
 
                     b.Property<int>("TransactionState")
+                        .HasColumnType("int");
+
+                    b.Property<int>("TransactionType")
                         .HasColumnType("int");
 
                     b.Property<string>("User")

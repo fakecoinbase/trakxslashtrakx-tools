@@ -108,10 +108,22 @@ namespace Trakx.Tests.Unit.Persistence
             result[0].SenderAddress.Should().Be(transaction.SenderAddress);
         }
 
-        public async Task<WrappingTransactionDao> AddNewWrappingTransactionInDatabase()
+        [Fact]
+        public async Task GetLastWrappingTransactionDatetime_should_have_the_bigger_timestamp()
+        {
+            await AddNewWrappingTransactionInDatabase(DateTime.MaxValue);
+            await AddNewWrappingTransactionInDatabase(new DateTime(2021, 10, 10));
+            
+
+            var timestamp = await _transactionDataProvider.GetLastWrappingTransactionDatetime();
+            timestamp.Should().Be(DateTime.MaxValue);
+        }
+
+        public async Task<WrappingTransactionDao> AddNewWrappingTransactionInDatabase(DateTime? transactionDateTime=default)
         {
             var transaction = _mockCreator.GetWrappingTransaction(TransactionState.Pending);
             var transactionDao = new WrappingTransactionDao(transaction);
+            transactionDao.TimeStamp = transactionDateTime ?? transactionDao.TimeStamp;
             await _context.WrappingTransactions.AddAsync(transactionDao);
             await _context.SaveChangesAsync();
             return transactionDao;

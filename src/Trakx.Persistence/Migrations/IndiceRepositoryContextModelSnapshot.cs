@@ -313,6 +313,9 @@ namespace Trakx.Persistence.Migrations
                     b.Property<int>("TransactionState")
                         .HasColumnType("int");
 
+                    b.Property<int>("TransactionType")
+                        .HasColumnType("int");
+
                     b.Property<string>("User")
                         .IsRequired()
                         .HasColumnType("nvarchar(max)");
