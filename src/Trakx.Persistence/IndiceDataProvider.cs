@@ -203,6 +203,7 @@ namespace Trakx.Persistence
                 return null;
 
             return await _dbContext.IndiceCompositions
+                .IncludeAllLinkedEntities()
                 .AsNoTracking()
                 .Where(c => c.IndiceDefinitionDao == indice)
                 .ToListAsync<IIndiceComposition>(cancellationToken);

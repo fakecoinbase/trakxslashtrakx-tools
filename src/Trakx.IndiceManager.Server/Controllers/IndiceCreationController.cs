@@ -107,7 +107,7 @@ namespace Trakx.IndiceManager.Server.Controllers
         /// <param name="symbol">The symbol of the indice that we want the compositions. Not to be confused with the composition symbol.</param>
         /// <returns>A list of the past and present composition for a given indice</returns>
         [HttpGet]
-        public async Task<ActionResult<List<IndiceCompositionModel>>> GetCompositionsBySymbol([FromBody]string symbol)
+        public async Task<ActionResult<List<IndiceCompositionModel>>> GetCompositionsBySymbol([FromQuery]string symbol)
         {
             var allCompositions = await _indiceRetriever.GetAllCompositionForIndiceFromDatabase(symbol);
 

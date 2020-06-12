@@ -36,13 +36,13 @@ namespace Trakx.IndiceManager.Client
         /// <summary>Tries to retrieve all of the components that are currently in database.</summary>
         /// <returns>A list of ComponentDetailModel.</returns>
         /// <exception cref="ApiException">A server side error occurred.</exception>
-        System.Threading.Tasks.Task<Response<System.Collections.Generic.ICollection<ComponentDetailModel>>> GetAllComponentsAsync();
+        System.Threading.Tasks.Task<Response<System.Collections.Generic.List<ComponentDetailModel>>> GetAllComponentsAsync();
     
         /// <param name="cancellationToken">A cancellation token that can be used by other objects or threads to receive notice of cancellation.</param>
         /// <summary>Tries to retrieve all of the components that are currently in database.</summary>
         /// <returns>A list of ComponentDetailModel.</returns>
         /// <exception cref="ApiException">A server side error occurred.</exception>
-        System.Threading.Tasks.Task<Response<System.Collections.Generic.ICollection<ComponentDetailModel>>> GetAllComponentsAsync(System.Threading.CancellationToken cancellationToken);
+        System.Threading.Tasks.Task<Response<System.Collections.Generic.List<ComponentDetailModel>>> GetAllComponentsAsync(System.Threading.CancellationToken cancellationToken);
     
         /// <summary>Tries to put a new component in the database to use it later in a new indice.</summary>
         /// <param name="componentDefinition">The component that we want to save.</param>
@@ -60,26 +60,26 @@ namespace Trakx.IndiceManager.Client
         /// <summary>Tries to retrieve all of the indices in our database.</summary>
         /// <returns>A list of indices with details about them.</returns>
         /// <exception cref="ApiException">A server side error occurred.</exception>
-        System.Threading.Tasks.Task<Response<System.Collections.Generic.ICollection<IndiceDetailModel>>> GetAllIndicesAsync();
+        System.Threading.Tasks.Task<Response<System.Collections.Generic.List<IndiceDetailModel>>> GetAllIndicesAsync();
     
         /// <param name="cancellationToken">A cancellation token that can be used by other objects or threads to receive notice of cancellation.</param>
         /// <summary>Tries to retrieve all of the indices in our database.</summary>
         /// <returns>A list of indices with details about them.</returns>
         /// <exception cref="ApiException">A server side error occurred.</exception>
-        System.Threading.Tasks.Task<Response<System.Collections.Generic.ICollection<IndiceDetailModel>>> GetAllIndicesAsync(System.Threading.CancellationToken cancellationToken);
+        System.Threading.Tasks.Task<Response<System.Collections.Generic.List<IndiceDetailModel>>> GetAllIndicesAsync(System.Threading.CancellationToken cancellationToken);
     
         /// <summary>Tries to get all of the compositions for an indice.</summary>
         /// <param name="symbol">The symbol of the indice that we want the compositions. Not to be confused with the composition symbol.</param>
         /// <returns>A list of the past and present composition for a given indice</returns>
         /// <exception cref="ApiException">A server side error occurred.</exception>
-        System.Threading.Tasks.Task<Response<System.Collections.Generic.ICollection<IndiceCompositionModel>>> GetCompositionsBySymbolAsync(string symbol);
+        System.Threading.Tasks.Task<Response<System.Collections.Generic.List<IndiceCompositionModel>>> GetCompositionsBySymbolAsync(string symbol);
     
         /// <param name="cancellationToken">A cancellation token that can be used by other objects or threads to receive notice of cancellation.</param>
         /// <summary>Tries to get all of the compositions for an indice.</summary>
         /// <param name="symbol">The symbol of the indice that we want the compositions. Not to be confused with the composition symbol.</param>
         /// <returns>A list of the past and present composition for a given indice</returns>
         /// <exception cref="ApiException">A server side error occurred.</exception>
-        System.Threading.Tasks.Task<Response<System.Collections.Generic.ICollection<IndiceCompositionModel>>> GetCompositionsBySymbolAsync(string symbol, System.Threading.CancellationToken cancellationToken);
+        System.Threading.Tasks.Task<Response<System.Collections.Generic.List<IndiceCompositionModel>>> GetCompositionsBySymbolAsync(string symbol, System.Threading.CancellationToken cancellationToken);
     
         /// <summary>Tries to save a new indice in our database.</summary>
         /// <param name="indiceToSave">The indice that we want to save.</param>
@@ -222,7 +222,7 @@ namespace Trakx.IndiceManager.Client
         /// <summary>Tries to retrieve all of the components that are currently in database.</summary>
         /// <returns>A list of ComponentDetailModel.</returns>
         /// <exception cref="ApiException">A server side error occurred.</exception>
-        public System.Threading.Tasks.Task<Response<System.Collections.Generic.ICollection<ComponentDetailModel>>> GetAllComponentsAsync()
+        public System.Threading.Tasks.Task<Response<System.Collections.Generic.List<ComponentDetailModel>>> GetAllComponentsAsync()
         {
             return GetAllComponentsAsync(System.Threading.CancellationToken.None);
         }
@@ -231,7 +231,7 @@ namespace Trakx.IndiceManager.Client
         /// <summary>Tries to retrieve all of the components that are currently in database.</summary>
         /// <returns>A list of ComponentDetailModel.</returns>
         /// <exception cref="ApiException">A server side error occurred.</exception>
-        public async System.Threading.Tasks.Task<Response<System.Collections.Generic.ICollection<ComponentDetailModel>>> GetAllComponentsAsync(System.Threading.CancellationToken cancellationToken)
+        public async System.Threading.Tasks.Task<Response<System.Collections.Generic.List<ComponentDetailModel>>> GetAllComponentsAsync(System.Threading.CancellationToken cancellationToken)
         {
             var urlBuilder_ = new System.Text.StringBuilder();
             urlBuilder_.Append(BaseUrl != null ? BaseUrl.TrimEnd('/') : "").Append("/IndiceCreation/GetAllComponents");
@@ -264,8 +264,8 @@ namespace Trakx.IndiceManager.Client
                         var status_ = ((int)response_.StatusCode).ToString();
                         if (status_ == "200") 
                         {
-                            var objectResponse_ = await ReadObjectResponseAsync<System.Collections.Generic.ICollection<ComponentDetailModel>>(response_, headers_).ConfigureAwait(false);
-                            return new Response<System.Collections.Generic.ICollection<ComponentDetailModel>>((int)response_.StatusCode, headers_, objectResponse_.Object);
+                            var objectResponse_ = await ReadObjectResponseAsync<System.Collections.Generic.List<ComponentDetailModel>>(response_, headers_).ConfigureAwait(false);
+                            return new Response<System.Collections.Generic.List<ComponentDetailModel>>((int)response_.StatusCode, headers_, objectResponse_.Object);
                         }
                         else
                         if (status_ != "200" && status_ != "204")
@@ -274,7 +274,7 @@ namespace Trakx.IndiceManager.Client
                             throw new ApiException("The HTTP status code of the response was not expected (" + (int)response_.StatusCode + ").", (int)response_.StatusCode, responseData_, headers_, null);
                         }
             
-                        return new Response<System.Collections.Generic.ICollection<ComponentDetailModel>>((int)response_.StatusCode, headers_, default(System.Collections.Generic.ICollection<ComponentDetailModel>)); 
+                        return new Response<System.Collections.Generic.List<ComponentDetailModel>>((int)response_.StatusCode, headers_, default(System.Collections.Generic.List<ComponentDetailModel>)); 
                     }
                     finally
                     {
@@ -374,7 +374,7 @@ namespace Trakx.IndiceManager.Client
         /// <summary>Tries to retrieve all of the indices in our database.</summary>
         /// <returns>A list of indices with details about them.</returns>
         /// <exception cref="ApiException">A server side error occurred.</exception>
-        public System.Threading.Tasks.Task<Response<System.Collections.Generic.ICollection<IndiceDetailModel>>> GetAllIndicesAsync()
+        public System.Threading.Tasks.Task<Response<System.Collections.Generic.List<IndiceDetailModel>>> GetAllIndicesAsync()
         {
             return GetAllIndicesAsync(System.Threading.CancellationToken.None);
         }
@@ -383,7 +383,7 @@ namespace Trakx.IndiceManager.Client
         /// <summary>Tries to retrieve all of the indices in our database.</summary>
         /// <returns>A list of indices with details about them.</returns>
         /// <exception cref="ApiException">A server side error occurred.</exception>
-        public async System.Threading.Tasks.Task<Response<System.Collections.Generic.ICollection<IndiceDetailModel>>> GetAllIndicesAsync(System.Threading.CancellationToken cancellationToken)
+        public async System.Threading.Tasks.Task<Response<System.Collections.Generic.List<IndiceDetailModel>>> GetAllIndicesAsync(System.Threading.CancellationToken cancellationToken)
         {
             var urlBuilder_ = new System.Text.StringBuilder();
             urlBuilder_.Append(BaseUrl != null ? BaseUrl.TrimEnd('/') : "").Append("/IndiceCreation/GetAllIndices");
@@ -416,8 +416,8 @@ namespace Trakx.IndiceManager.Client
                         var status_ = ((int)response_.StatusCode).ToString();
                         if (status_ == "200") 
                         {
-                            var objectResponse_ = await ReadObjectResponseAsync<System.Collections.Generic.ICollection<IndiceDetailModel>>(response_, headers_).ConfigureAwait(false);
-                            return new Response<System.Collections.Generic.ICollection<IndiceDetailModel>>((int)response_.StatusCode, headers_, objectResponse_.Object);
+                            var objectResponse_ = await ReadObjectResponseAsync<System.Collections.Generic.List<IndiceDetailModel>>(response_, headers_).ConfigureAwait(false);
+                            return new Response<System.Collections.Generic.List<IndiceDetailModel>>((int)response_.StatusCode, headers_, objectResponse_.Object);
                         }
                         else
                         if (status_ != "200" && status_ != "204")
@@ -426,7 +426,7 @@ namespace Trakx.IndiceManager.Client
                             throw new ApiException("The HTTP status code of the response was not expected (" + (int)response_.StatusCode + ").", (int)response_.StatusCode, responseData_, headers_, null);
                         }
             
-                        return new Response<System.Collections.Generic.ICollection<IndiceDetailModel>>((int)response_.StatusCode, headers_, default(System.Collections.Generic.ICollection<IndiceDetailModel>)); 
+                        return new Response<System.Collections.Generic.List<IndiceDetailModel>>((int)response_.StatusCode, headers_, default(System.Collections.Generic.List<IndiceDetailModel>)); 
                     }
                     finally
                     {
@@ -444,7 +444,7 @@ namespace Trakx.IndiceManager.Client
         /// <param name="symbol">The symbol of the indice that we want the compositions. Not to be confused with the composition symbol.</param>
         /// <returns>A list of the past and present composition for a given indice</returns>
         /// <exception cref="ApiException">A server side error occurred.</exception>
-        public System.Threading.Tasks.Task<Response<System.Collections.Generic.ICollection<IndiceCompositionModel>>> GetCompositionsBySymbolAsync(string symbol)
+        public System.Threading.Tasks.Task<Response<System.Collections.Generic.List<IndiceCompositionModel>>> GetCompositionsBySymbolAsync(string symbol)
         {
             return GetCompositionsBySymbolAsync(symbol, System.Threading.CancellationToken.None);
         }
@@ -454,22 +454,21 @@ namespace Trakx.IndiceManager.Client
         /// <param name="symbol">The symbol of the indice that we want the compositions. Not to be confused with the composition symbol.</param>
         /// <returns>A list of the past and present composition for a given indice</returns>
         /// <exception cref="ApiException">A server side error occurred.</exception>
-        public async System.Threading.Tasks.Task<Response<System.Collections.Generic.ICollection<IndiceCompositionModel>>> GetCompositionsBySymbolAsync(string symbol, System.Threading.CancellationToken cancellationToken)
+        public async System.Threading.Tasks.Task<Response<System.Collections.Generic.List<IndiceCompositionModel>>> GetCompositionsBySymbolAsync(string symbol, System.Threading.CancellationToken cancellationToken)
         {
-            if (symbol == null)
-                throw new System.ArgumentNullException("symbol");
-    
             var urlBuilder_ = new System.Text.StringBuilder();
-            urlBuilder_.Append(BaseUrl != null ? BaseUrl.TrimEnd('/') : "").Append("/IndiceCreation/GetCompositionsBySymbol");
+            urlBuilder_.Append(BaseUrl != null ? BaseUrl.TrimEnd('/') : "").Append("/IndiceCreation/GetCompositionsBySymbol?");
+            if (symbol != null) 
+            {
+                urlBuilder_.Append(System.Uri.EscapeDataString("symbol") + "=").Append(System.Uri.EscapeDataString(ConvertToString(symbol, System.Globalization.CultureInfo.InvariantCulture))).Append("&");
+            }
+            urlBuilder_.Length--;
     
             var client_ = _httpClient;
             try
             {
                 using (var request_ = new System.Net.Http.HttpRequestMessage())
                 {
-                    var content_ = new System.Net.Http.StringContent(Newtonsoft.Json.JsonConvert.SerializeObject(symbol, _settings.Value));
-                    content_.Headers.ContentType = System.Net.Http.Headers.MediaTypeHeaderValue.Parse("application/json");
-                    request_.Content = content_;
                     request_.Method = new System.Net.Http.HttpMethod("GET");
                     request_.Headers.Accept.Add(System.Net.Http.Headers.MediaTypeWithQualityHeaderValue.Parse("application/json"));
     
@@ -493,8 +492,8 @@ namespace Trakx.IndiceManager.Client
                         var status_ = ((int)response_.StatusCode).ToString();
                         if (status_ == "200") 
                         {
-                            var objectResponse_ = await ReadObjectResponseAsync<System.Collections.Generic.ICollection<IndiceCompositionModel>>(response_, headers_).ConfigureAwait(false);
-                            return new Response<System.Collections.Generic.ICollection<IndiceCompositionModel>>((int)response_.StatusCode, headers_, objectResponse_.Object);
+                            var objectResponse_ = await ReadObjectResponseAsync<System.Collections.Generic.List<IndiceCompositionModel>>(response_, headers_).ConfigureAwait(false);
+                            return new Response<System.Collections.Generic.List<IndiceCompositionModel>>((int)response_.StatusCode, headers_, objectResponse_.Object);
                         }
                         else
                         if (status_ != "200" && status_ != "204")
@@ -503,7 +502,7 @@ namespace Trakx.IndiceManager.Client
                             throw new ApiException("The HTTP status code of the response was not expected (" + (int)response_.StatusCode + ").", (int)response_.StatusCode, responseData_, headers_, null);
                         }
             
-                        return new Response<System.Collections.Generic.ICollection<IndiceCompositionModel>>((int)response_.StatusCode, headers_, default(System.Collections.Generic.ICollection<IndiceCompositionModel>)); 
+                        return new Response<System.Collections.Generic.List<IndiceCompositionModel>>((int)response_.StatusCode, headers_, default(System.Collections.Generic.List<IndiceCompositionModel>)); 
                     }
                     finally
                     {
@@ -787,14 +786,14 @@ namespace Trakx.IndiceManager.Client
         /// <param name="userName">The user that made the transactions.</param>
         /// <returns>A list of IndiceSupplyTransactionModel with all the transactions.</returns>
         /// <exception cref="ApiException">A server side error occurred.</exception>
-        System.Threading.Tasks.Task<Response<System.Collections.Generic.ICollection<IndiceSupplyTransactionModel>>> RetrieveTransactionsAsync(string userName);
+        System.Threading.Tasks.Task<Response<System.Collections.Generic.List<IndiceSupplyTransactionModel>>> RetrieveTransactionsAsync(string userName);
     
         /// <param name="cancellationToken">A cancellation token that can be used by other objects or threads to receive notice of cancellation.</param>
         /// <summary>Tries to retrieve all of the issuing and redeeming of indices made by a specific user.</summary>
         /// <param name="userName">The user that made the transactions.</param>
         /// <returns>A list of IndiceSupplyTransactionModel with all the transactions.</returns>
         /// <exception cref="ApiException">A server side error occurred.</exception>
-        System.Threading.Tasks.Task<Response<System.Collections.Generic.ICollection<IndiceSupplyTransactionModel>>> RetrieveTransactionsAsync(string userName, System.Threading.CancellationToken cancellationToken);
+        System.Threading.Tasks.Task<Response<System.Collections.Generic.List<IndiceSupplyTransactionModel>>> RetrieveTransactionsAsync(string userName, System.Threading.CancellationToken cancellationToken);
     
     }
     
@@ -913,7 +912,7 @@ namespace Trakx.IndiceManager.Client
         /// <param name="userName">The user that made the transactions.</param>
         /// <returns>A list of IndiceSupplyTransactionModel with all the transactions.</returns>
         /// <exception cref="ApiException">A server side error occurred.</exception>
-        public System.Threading.Tasks.Task<Response<System.Collections.Generic.ICollection<IndiceSupplyTransactionModel>>> RetrieveTransactionsAsync(string userName)
+        public System.Threading.Tasks.Task<Response<System.Collections.Generic.List<IndiceSupplyTransactionModel>>> RetrieveTransactionsAsync(string userName)
         {
             return RetrieveTransactionsAsync(userName, System.Threading.CancellationToken.None);
         }
@@ -923,7 +922,7 @@ namespace Trakx.IndiceManager.Client
         /// <param name="userName">The user that made the transactions.</param>
         /// <returns>A list of IndiceSupplyTransactionModel with all the transactions.</returns>
         /// <exception cref="ApiException">A server side error occurred.</exception>
-        public async System.Threading.Tasks.Task<Response<System.Collections.Generic.ICollection<IndiceSupplyTransactionModel>>> RetrieveTransactionsAsync(string userName, System.Threading.CancellationToken cancellationToken)
+        public async System.Threading.Tasks.Task<Response<System.Collections.Generic.List<IndiceSupplyTransactionModel>>> RetrieveTransactionsAsync(string userName, System.Threading.CancellationToken cancellationToken)
         {
             if (userName == null)
                 throw new System.ArgumentNullException("userName");
@@ -962,8 +961,8 @@ namespace Trakx.IndiceManager.Client
                         var status_ = ((int)response_.StatusCode).ToString();
                         if (status_ == "200") 
                         {
-                            var objectResponse_ = await ReadObjectResponseAsync<System.Collections.Generic.ICollection<IndiceSupplyTransactionModel>>(response_, headers_).ConfigureAwait(false);
-                            return new Response<System.Collections.Generic.ICollection<IndiceSupplyTransactionModel>>((int)response_.StatusCode, headers_, objectResponse_.Object);
+                            var objectResponse_ = await ReadObjectResponseAsync<System.Collections.Generic.List<IndiceSupplyTransactionModel>>(response_, headers_).ConfigureAwait(false);
+                            return new Response<System.Collections.Generic.List<IndiceSupplyTransactionModel>>((int)response_.StatusCode, headers_, objectResponse_.Object);
                         }
                         else
                         if (status_ != "200" && status_ != "204")
@@ -972,7 +971,7 @@ namespace Trakx.IndiceManager.Client
                             throw new ApiException("The HTTP status code of the response was not expected (" + (int)response_.StatusCode + ").", (int)response_.StatusCode, responseData_, headers_, null);
                         }
             
-                        return new Response<System.Collections.Generic.ICollection<IndiceSupplyTransactionModel>>((int)response_.StatusCode, headers_, default(System.Collections.Generic.ICollection<IndiceSupplyTransactionModel>)); 
+                        return new Response<System.Collections.Generic.List<IndiceSupplyTransactionModel>>((int)response_.StatusCode, headers_, default(System.Collections.Generic.List<IndiceSupplyTransactionModel>)); 
                     }
                     finally
                     {
@@ -1121,25 +1120,25 @@ namespace Trakx.IndiceManager.Client
         /// <param name="user">Here is the name of the user that is register in all the transactions.</param>
         /// <returns>All the transaction or a BadRequest object if the user doesn't have any transaction associated.</returns>
         /// <exception cref="ApiException">A server side error occurred.</exception>
-        System.Threading.Tasks.Task<Response<System.Collections.Generic.ICollection<WrappingTransactionModel>>> GetAllTransactionByUserAsync(string user);
+        System.Threading.Tasks.Task<Response<System.Collections.Generic.List<WrappingTransactionModel>>> GetAllTransactionByUserAsync(string user);
     
         /// <param name="cancellationToken">A cancellation token that can be used by other objects or threads to receive notice of cancellation.</param>
         /// <summary>This route allow to retrieve all the transaction associated to an user.</summary>
         /// <param name="user">Here is the name of the user that is register in all the transactions.</param>
         /// <returns>All the transaction or a BadRequest object if the user doesn't have any transaction associated.</returns>
         /// <exception cref="ApiException">A server side error occurred.</exception>
-        System.Threading.Tasks.Task<Response<System.Collections.Generic.ICollection<WrappingTransactionModel>>> GetAllTransactionByUserAsync(string user, System.Threading.CancellationToken cancellationToken);
+        System.Threading.Tasks.Task<Response<System.Collections.Generic.List<WrappingTransactionModel>>> GetAllTransactionByUserAsync(string user, System.Threading.CancellationToken cancellationToken);
     
         /// <summary>This route allows to retrieve the Trakx's balance, either with native or wrapped tokens.</summary>
         /// <returns>An Ok object list composed by all the balances with status 200 or a BadRequest Object if it failed.</returns>
         /// <exception cref="ApiException">A server side error occurred.</exception>
-        System.Threading.Tasks.Task<Response<System.Collections.Generic.ICollection<AccountBalanceModel>>> GetTrakxBalanceAsync();
+        System.Threading.Tasks.Task<Response<System.Collections.Generic.List<AccountBalanceModel>>> GetTrakxBalanceAsync();
     
         /// <param name="cancellationToken">A cancellation token that can be used by other objects or threads to receive notice of cancellation.</param>
         /// <summary>This route allows to retrieve the Trakx's balance, either with native or wrapped tokens.</summary>
         /// <returns>An Ok object list composed by all the balances with status 200 or a BadRequest Object if it failed.</returns>
         /// <exception cref="ApiException">A server side error occurred.</exception>
-        System.Threading.Tasks.Task<Response<System.Collections.Generic.ICollection<AccountBalanceModel>>> GetTrakxBalanceAsync(System.Threading.CancellationToken cancellationToken);
+        System.Threading.Tasks.Task<Response<System.Collections.Generic.List<AccountBalanceModel>>> GetTrakxBalanceAsync(System.Threading.CancellationToken cancellationToken);
     
     }
     
@@ -1341,7 +1340,7 @@ namespace Trakx.IndiceManager.Client
         /// <param name="user">Here is the name of the user that is register in all the transactions.</param>
         /// <returns>All the transaction or a BadRequest object if the user doesn't have any transaction associated.</returns>
         /// <exception cref="ApiException">A server side error occurred.</exception>
-        public System.Threading.Tasks.Task<Response<System.Collections.Generic.ICollection<WrappingTransactionModel>>> GetAllTransactionByUserAsync(string user)
+        public System.Threading.Tasks.Task<Response<System.Collections.Generic.List<WrappingTransactionModel>>> GetAllTransactionByUserAsync(string user)
         {
             return GetAllTransactionByUserAsync(user, System.Threading.CancellationToken.None);
         }
@@ -1351,7 +1350,7 @@ namespace Trakx.IndiceManager.Client
         /// <param name="user">Here is the name of the user that is register in all the transactions.</param>
         /// <returns>All the transaction or a BadRequest object if the user doesn't have any transaction associated.</returns>
         /// <exception cref="ApiException">A server side error occurred.</exception>
-        public async System.Threading.Tasks.Task<Response<System.Collections.Generic.ICollection<WrappingTransactionModel>>> GetAllTransactionByUserAsync(string user, System.Threading.CancellationToken cancellationToken)
+        public async System.Threading.Tasks.Task<Response<System.Collections.Generic.List<WrappingTransactionModel>>> GetAllTransactionByUserAsync(string user, System.Threading.CancellationToken cancellationToken)
         {
             if (user == null)
                 throw new System.ArgumentNullException("user");
@@ -1390,8 +1389,8 @@ namespace Trakx.IndiceManager.Client
                         var status_ = ((int)response_.StatusCode).ToString();
                         if (status_ == "200") 
                         {
-                            var objectResponse_ = await ReadObjectResponseAsync<System.Collections.Generic.ICollection<WrappingTransactionModel>>(response_, headers_).ConfigureAwait(false);
-                            return new Response<System.Collections.Generic.ICollection<WrappingTransactionModel>>((int)response_.StatusCode, headers_, objectResponse_.Object);
+                            var objectResponse_ = await ReadObjectResponseAsync<System.Collections.Generic.List<WrappingTransactionModel>>(response_, headers_).ConfigureAwait(false);
+                            return new Response<System.Collections.Generic.List<WrappingTransactionModel>>((int)response_.StatusCode, headers_, objectResponse_.Object);
                         }
                         else
                         if (status_ != "200" && status_ != "204")
@@ -1400,7 +1399,7 @@ namespace Trakx.IndiceManager.Client
                             throw new ApiException("The HTTP status code of the response was not expected (" + (int)response_.StatusCode + ").", (int)response_.StatusCode, responseData_, headers_, null);
                         }
             
-                        return new Response<System.Collections.Generic.ICollection<WrappingTransactionModel>>((int)response_.StatusCode, headers_, default(System.Collections.Generic.ICollection<WrappingTransactionModel>)); 
+                        return new Response<System.Collections.Generic.List<WrappingTransactionModel>>((int)response_.StatusCode, headers_, default(System.Collections.Generic.List<WrappingTransactionModel>)); 
                     }
                     finally
                     {
@@ -1417,7 +1416,7 @@ namespace Trakx.IndiceManager.Client
         /// <summary>This route allows to retrieve the Trakx's balance, either with native or wrapped tokens.</summary>
         /// <returns>An Ok object list composed by all the balances with status 200 or a BadRequest Object if it failed.</returns>
         /// <exception cref="ApiException">A server side error occurred.</exception>
-        public System.Threading.Tasks.Task<Response<System.Collections.Generic.ICollection<AccountBalanceModel>>> GetTrakxBalanceAsync()
+        public System.Threading.Tasks.Task<Response<System.Collections.Generic.List<AccountBalanceModel>>> GetTrakxBalanceAsync()
         {
             return GetTrakxBalanceAsync(System.Threading.CancellationToken.None);
         }
@@ -1426,7 +1425,7 @@ namespace Trakx.IndiceManager.Client
         /// <summary>This route allows to retrieve the Trakx's balance, either with native or wrapped tokens.</summary>
         /// <returns>An Ok object list composed by all the balances with status 200 or a BadRequest Object if it failed.</returns>
         /// <exception cref="ApiException">A server side error occurred.</exception>
-        public async System.Threading.Tasks.Task<Response<System.Collections.Generic.ICollection<AccountBalanceModel>>> GetTrakxBalanceAsync(System.Threading.CancellationToken cancellationToken)
+        public async System.Threading.Tasks.Task<Response<System.Collections.Generic.List<AccountBalanceModel>>> GetTrakxBalanceAsync(System.Threading.CancellationToken cancellationToken)
         {
             var urlBuilder_ = new System.Text.StringBuilder();
             urlBuilder_.Append(BaseUrl != null ? BaseUrl.TrimEnd('/') : "").Append("/Wrapping/GetTrakxBalance");
@@ -1459,8 +1458,8 @@ namespace Trakx.IndiceManager.Client
                         var status_ = ((int)response_.StatusCode).ToString();
                         if (status_ == "200") 
                         {
-                            var objectResponse_ = await ReadObjectResponseAsync<System.Collections.Generic.ICollection<AccountBalanceModel>>(response_, headers_).ConfigureAwait(false);
-                            return new Response<System.Collections.Generic.ICollection<AccountBalanceModel>>((int)response_.StatusCode, headers_, objectResponse_.Object);
+                            var objectResponse_ = await ReadObjectResponseAsync<System.Collections.Generic.List<AccountBalanceModel>>(response_, headers_).ConfigureAwait(false);
+                            return new Response<System.Collections.Generic.List<AccountBalanceModel>>((int)response_.StatusCode, headers_, objectResponse_.Object);
                         }
                         else
                         if (status_ != "200" && status_ != "204")
@@ -1469,7 +1468,7 @@ namespace Trakx.IndiceManager.Client
                             throw new ApiException("The HTTP status code of the response was not expected (" + (int)response_.StatusCode + ").", (int)response_.StatusCode, responseData_, headers_, null);
                         }
             
-                        return new Response<System.Collections.Generic.ICollection<AccountBalanceModel>>((int)response_.StatusCode, headers_, default(System.Collections.Generic.ICollection<AccountBalanceModel>)); 
+                        return new Response<System.Collections.Generic.List<AccountBalanceModel>>((int)response_.StatusCode, headers_, default(System.Collections.Generic.List<AccountBalanceModel>)); 
                     }
                     finally
                     {

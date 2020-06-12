@@ -1,113 +1,130 @@
 ﻿@page "/IndiceComposition/indice_list"
 @using Syncfusion.Blazor.Grids
+@using Syncfusion.Blazor.Navigations
+@using Syncfusion.Blazor.Notifications
+@using Syncfusion.Blazor.Data
+@using Trakx.Common.Models
+@using System
+@inject IIndiceCreationClient ApiClient;
+@inject NavigationManager NavManager
 
+<SfToast @ref="Toaster" TimeOut=3000>
+    <ToastPosition X="Center" Y="Bottom"></ToastPosition>
+</SfToast>
 <h3>Indice List</h3>
 
 <div class="col-lg-12 control-section">
     <div class="content-wrapper">
         <div class="row">
-            <SfGrid DataSource="@GridData" Toolbar="@(new List<string>() { "Add", "Edit", "Delete", "Update", "Cancel" })" AllowPaging="true" >
-                <GridEditSettings AllowAdding="true" AllowDeleting="true" AllowEditing="true" />
+            <SfGrid DataSource="@IndexList" Toolbar="_toolbarItems" AllowPaging="true">
+                <GridEditSettings AllowAdding="false" />
+                <GridEvents OnToolbarClick="ToolbarClickHandler" TValue="IndiceDetailModel"/>
                 <GridTemplates>
                     <DetailTemplate>
                         @{
-                            var indice = (context as IndiceModel);
-                            <h3>@indice.Name Component details</h3>
+                            var indice = (context as IndiceDetailModel);
+                            GetCompositionsForIndex(indice);
+                            <h3>@indice.Name Compositions</h3>
                             <div class="row">
-                                <SfGrid DataSource="indice.ComponentList">
+                                @if (indice.IndiceCompositions != null)
+                                {
+                                    <SfGrid DataSource="indice.IndiceCompositions">
+                                    <GridTemplates>
+                                        <DetailTemplate Context="child_context">
+                                            @{
+                                                var composition = (child_context as IndiceCompositionModel);
+                                                <h4>@composition.Symbol Components</h4>
+                                                <div class="row">
+                                                    <SfGrid DataSource="composition.Components">
+                                                        <GridColumns>
+                                                            <GridColumn Field="@nameof(ComponentDetailModel.Name)" AutoFit="true"></GridColumn>
+                                                            <GridColumn Field="@nameof(ComponentDetailModel.Symbol)" AutoFit="true"></GridColumn>
+                                                            <GridColumn Field="@nameof(ComponentDetailModel.Quantity)" AutoFit="true"></GridColumn>
+                                                            <GridColumn Field="@nameof(ComponentDetailModel.Address)" AutoFit="true"></GridColumn>
+                                                            <GridColumn Field="@nameof(ComponentDetailModel.CoinGeckoId)" AutoFit="true"></GridColumn>
+                                                            <GridColumn Field="@nameof(ComponentDetailModel.Decimals)" AutoFit="true" TextAlign="TextAlign.Center"></GridColumn>
+                                                        </GridColumns>
+                                                    </SfGrid>
+                                                </div>
+                                            }
+                                        </DetailTemplate>
+                                    </GridTemplates>
                                     <GridColumns>
-                                        <GridColumn Field="@nameof(ComponentModel.Symbol)"></GridColumn>
-                                        <GridColumn Field="@nameof(ComponentModel.Weight)"></GridColumn>
+                                        <GridColumn Field="@nameof(IndiceCompositionModel.Symbol)" AutoFit="true" MinWidth="150"></GridColumn>
+                                        <GridColumn Field="@nameof(IndiceCompositionModel.Address)" AutoFit="true" MinWidth="400"></GridColumn>
+                                        <GridColumn Field="@nameof(IndiceCompositionModel.CreationDate)" AutoFit="true" MinWidth="150" HeaderText="Creation Date" Format="d" Type="ColumnType.Date" TextAlign="TextAlign.Right"></GridColumn>
+                                        <GridColumn Field="@nameof(IndiceCompositionModel.Version)" AutoFit="true" MinWidth="150" TextAlign="TextAlign.Center"></GridColumn>
                                     </GridColumns>
                                 </SfGrid>
+                                }
+                                
                             </div>
                         }
                     </DetailTemplate>
                 </GridTemplates>
-                    <GridColumns>
-                        <GridColumn Field=@nameof(IndiceModel.Id) IsPrimaryKey="true" ValidationRules="@(new { required=true })"></GridColumn>
-                        <GridColumn Field=@nameof(IndiceModel.Name) ValidationRules="@(new { required=true })"></GridColumn>
-                        <GridColumn Field=@nameof(IndiceModel.Symbol) ValidationRules="@(new { required=true})"></GridColumn>
-                        <GridColumn Field=@nameof(IndiceModel.Nav) HeaderText="Net Asset Value" ValidationRules="@(new { required=true})" EditType="EditType.NumericEdit" Format="C2" TextAlign="TextAlign.Right"></GridColumn>
-                        <GridColumn Field=@nameof(IndiceModel.Date) HeaderText="Creation Date" EditType="EditType.DatePickerEdit" Format="d" Type="ColumnType.Date" TextAlign="TextAlign.Right"></GridColumn>
-                        <GridColumn Field=@nameof(IndiceModel.State) EditType="EditType.DropDownEdit"></GridColumn>
-                    </GridColumns>
+                <GridColumns>
+                    <GridColumn Field=@nameof(IndiceDetailModel.Name) ValidationRules="@(new { required=true })" AutoFit="true"></GridColumn>
+                    <GridColumn Field=@nameof(IndiceDetailModel.Symbol) ValidationRules="@(new { required=true})" AutoFit="true"></GridColumn>
+                    <GridColumn Field=@nameof(IndiceDetailModel.IndiceState) HeaderText="Indice State" ValidationRules="@(new { required=true})" AutoFit="true"></GridColumn>
+                    <GridColumn Field=@nameof(IndiceDetailModel.CreationDate) HeaderText="Creation Date" EditType="EditType.DatePickerEdit" Format="d" Type="ColumnType.Date" TextAlign="TextAlign.Center" AutoFit="true"></GridColumn>
+                    <GridColumn Field=@nameof(IndiceDetailModel.Address) EditType="EditType.DropDownEdit" AutoFit="true"></GridColumn>
+                    <GridColumn Field=@nameof(IndiceDetailModel.NaturalUnit) EditType="EditType.DropDownEdit" TextAlign="TextAlign.Center" AutoFit="true"></GridColumn>
+                    <GridColumn Field=@nameof(IndiceDetailModel.Description) EditType="EditType.DropDownEdit" AutoFit="true"></GridColumn>
+                </GridColumns>
             </SfGrid>
         </div>
     </div>
 </div>
 
 @code {
-    //todo: take the data from the database
-
-    private readonly List<IndiceModel> _indiceList = new List<IndiceModel>()
-    {
-        new IndiceModel("1","Indice1","IND1",123.98,IndiceModel.StateType.Published, new DateTime(2020, 04, 01),
-            new List<ComponentModel>()
-            {
-                new ComponentModel("BAT",13.45),
-                new ComponentModel("wXRP", 38.17),
-                new ComponentModel("ETH", 70.32)
-            }),
-        new IndiceModel("2","Indice2", "IND2", 37.45, IndiceModel.StateType.Saved, new DateTime(2020, 05, 01),
-            new List<ComponentModel>()
-            {
-                new ComponentModel("MKR", 49.18),
-                new ComponentModel("wXTZ", 34.55)
-            })
-    };
-
-    public List<IndiceModel> GridData { get; set; }
-
-    #region Overrides of ComponentBase
+    public SfToast Toaster { get; set; }
+    public ICollection<IndiceDetailModel> IndexList { get; set; }
+    private List<Object> _toolbarItems = new List<Object>() { new ItemModel() { Text = "Create Indice", TooltipText = "You will be redirected to the create indice page.", PrefixIcon = "e-add", Id = "create-indice" },
+        "Update", "ExcelExport", "PdfExport" };
 
     /// <inheritdoc />
-    protected override void OnInitialized()
+    protected override async Task OnInitializedAsync()
     {
         base.OnInitialized();
-        GridData = _indiceList;
+        await GetIndexList();
+        StateHasChanged();
     }
 
-    #endregion
-
-    #region IndiceModel class
-    public class IndiceModel
+    public void ToolbarClickHandler(Syncfusion.Blazor.Navigations.ClickEventArgs args)
     {
-        public IndiceModel(string id, string name, string symbol, double nav, StateType state, DateTime date, List<ComponentModel> componentList)
+
+        if (args.Item.Id == "create-indice")
         {
-            Id = id;
-            Name = name;
-            Symbol = symbol;
-            Nav = nav;
-            State = state;
-            Date = date;
-            ComponentList = componentList;
+            NavManager.NavigateTo("./IndiceComposition/indice_creation");
         }
-
-        public enum StateType { Saved, Published };
-
-        public string Id { get; set; }
-        public string Name { get; set; }
-        public string Symbol { get; set; }
-        public double Nav { get; set; }
-        public StateType State { get; set; }
-        public DateTime Date { get; set; }
-
-        public List<ComponentModel> ComponentList;
-        public int ComponentCount => ComponentList.Count;
     }
 
-    public class ComponentModel
+    public async Task GetIndexList()
     {
-        public ComponentModel(string symbol, double weight)
+        if (IndexList != null) return;
+        try
         {
-            Symbol = symbol; Weight = weight;
+            IndexList = (await ApiClient.GetAllIndicesAsync()).Result;
         }
-
-        public string Symbol { get; set; }
-        public double Weight { get; set; }
+        catch
+        {
+            //add toaster to show error message to user, or log it in browser console.
+        }
     }
-    #endregion
 
+    public async Task GetCompositionsForIndex(IndiceDetailModel indice)
+    {
+        if(indice.IndiceCompositions != null) return;
+        try
+        {
+            var compositions = (await ApiClient.GetCompositionsBySymbolAsync(indice.Symbol)).Result;
+            indice.IndiceCompositions = compositions;
+            StateHasChanged();
+        }
+        catch
+        {
+            //add toaster to show error message to user, or log it in browser console.
+        }
+    }
 }
 

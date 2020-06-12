@@ -1,4 +1,5 @@
 ﻿using System;
+using System.Collections.Generic;
 using Trakx.Common.Interfaces.Indice;
 
 namespace Trakx.Common.Models
@@ -36,5 +37,7 @@ namespace Trakx.Common.Models
         public string Description { get; set; }
 
         public ushort NaturalUnit { get; set; }
+
+        public ICollection<IndiceCompositionModel>? IndiceCompositions { get; set; }
     }
 }
