@@ -36,6 +36,7 @@ namespace Trakx.IndiceManager.Server
         {
            services.AddDbContext<IndiceRepositoryContext>(options =>
                 options.UseSqlServer(Configuration.GetConnectionString("SqlServerConnection")));
+        
 
             services.AddControllers();
             services.AddAllManagerForControllers();
@@ -69,6 +70,7 @@ namespace Trakx.IndiceManager.Server
             services.AddMemoryCache();
             services.AddCoinGeckoClient();
             services.AddSingleton<ICoinbaseTransactionListener, CoinbaseTransactionListener>();
+            services.AddSingleton<IUserBalanceUpdater, UserBalanceUpdater>();
             services.AddCoinbaseLibrary(Environment.GetEnvironmentVariable("COINBASE_API_KEY"),
                 Environment.GetEnvironmentVariable("COINBASE_PASSPHRASE_KEY"));
             services.AddHostedService<BalanceUpdateService>();
@@ -81,7 +83,6 @@ namespace Trakx.IndiceManager.Server
             {
                 app.UseDeveloperExceptionPage();
             }
-
             app.UseHttpsRedirection();
 
             app.UseRouting();

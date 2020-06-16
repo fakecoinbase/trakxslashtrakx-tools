@@ -2,6 +2,7 @@
 using System.Reactive.Concurrency;
 using System.Reactive.Linq;
 using System.Threading;
+using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Logging;
 using Trakx.Coinbase.Custody.Client.Interfaces;
 using Trakx.Coinbase.Custody.Client.Models;
@@ -17,25 +18,30 @@ namespace Trakx.IndiceManager.Server.Data
         /// </summary>
         IObservable<Transaction> TransactionStream { get; }
 
-        /// <summary>
+        /// <summary> 
         /// Allows to stop the Observable stream by passing a cancellationToken in parameter.
         /// </summary>
         /// <param name="cancellationToken">The CancellationToken which takes in parameter the time at which we have to stop the execution.</param>
         void StopListening();
     }
 
-    /// <inheritdoc />
+    /// <inheritdoc cref="ICoinbaseTransactionListener"/>
+    /// <inheritdoc cref="IDisposable"/>
     public class CoinbaseTransactionListener : ICoinbaseTransactionListener, IDisposable
     {
         public static readonly TimeSpan PollingInterval = TimeSpan.FromSeconds(10);
         private readonly CancellationTokenSource _cancellationTokenSource ;
         private readonly ITransactionDataProvider _transactionDataProvider;
+        private readonly IServiceScope _initialisationScope;
 
         public CoinbaseTransactionListener(
             ICoinbaseClient coinbaseClient, 
-            ILogger<CoinbaseTransactionListener> logger, ITransactionDataProvider transactionDataProvider, IScheduler scheduler = default)
+            ILogger<CoinbaseTransactionListener> logger, 
+            IServiceScopeFactory serviceScopeFactory, 
+            IScheduler scheduler = default)
         {
-            _transactionDataProvider = transactionDataProvider;
+            _initialisationScope = serviceScopeFactory.CreateScope();
+            _transactionDataProvider = _initialisationScope.ServiceProvider.GetService<ITransactionDataProvider>();
             scheduler ??= Scheduler.Default;
             _cancellationTokenSource = new CancellationTokenSource();
             TransactionStream = Observable.Interval(PollingInterval, scheduler)
@@ -83,6 +89,7 @@ namespace Trakx.IndiceManager.Server.Data
         public void Dispose()
         {
             _cancellationTokenSource.Dispose();
+            _initialisationScope.Dispose();
         }
 
         #endregion

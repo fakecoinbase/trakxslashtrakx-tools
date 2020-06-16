@@ -1,9 +1,6 @@
 ﻿using System;
 using System.Reactive.Concurrency;
-using System.Reactive.Linq;
-using System.Threading;
-using FluentAssertions.Extensions;
-using Flurl.Http;
+using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Reactive.Testing;
 using NSubstitute;
 using NSubstitute.ExceptionExtensions;
@@ -16,26 +13,37 @@ using Xunit.Abstractions;
 
 namespace Trakx.IndiceManager.Server.Tests.Unit.Data
 {
-    public class CoinbaseTransactionListenerTests
+    public sealed class CoinbaseTransactionListenerTests : IDisposable
     {
         private readonly ICoinbaseClient _coinbaseClient;
         private readonly CoinbaseTransactionListener _coinbaseListener;
         private readonly TestScheduler _testScheduler;
-        private readonly CancellationTokenSource _cancellationTokenSource;
         private readonly TimeSpan _runningTime;
+        private readonly ITransactionDataProvider _transactionDataProvider;
 
         public CoinbaseTransactionListenerTests(ITestOutputHelper output)
         {
+            _transactionDataProvider = Substitute.For<ITransactionDataProvider>();
+            var serviceScopeFactory = PrepareScopeResolution();
             _coinbaseClient = Substitute.For<ICoinbaseClient>();
             _testScheduler = new TestScheduler();
             _runningTime = CoinbaseTransactionListener
                 .PollingInterval.Multiply(10)
                 .Add(TimeSpan.FromMilliseconds(100));
-            _cancellationTokenSource = new CancellationTokenSource(_runningTime);
             _coinbaseListener = new CoinbaseTransactionListener(
                 _coinbaseClient,
-                output.ToLogger<CoinbaseTransactionListener>(),
-                Substitute.For<ITransactionDataProvider>(), _testScheduler);
+                output.ToLogger<CoinbaseTransactionListener>(), serviceScopeFactory, _testScheduler);
+        }
+
+        private IServiceScopeFactory PrepareScopeResolution()
+        {
+            var serviceProvider = Substitute.For<IServiceProvider>();
+            serviceProvider.GetService<ITransactionDataProvider>().Returns(_transactionDataProvider);
+            var serviceScope = Substitute.For<IServiceScope>();
+            serviceScope.ServiceProvider.Returns(serviceProvider);
+            var serviceScopeFactory = Substitute.For<IServiceScopeFactory>();
+            serviceScopeFactory.CreateScope().Returns(serviceScope);
+            return serviceScopeFactory;
         }
 
         [Fact]
@@ -83,5 +91,15 @@ namespace Trakx.IndiceManager.Server.Tests.Unit.Data
             _testScheduler.Start();
             return observer;
         }
+
+        #region IDisposable
+
+        /// <inheritdoc />
+        public void Dispose()
+        {
+            _coinbaseListener?.Dispose();
+        }
+
+        #endregion
     }
 }
