@@ -2,7 +2,6 @@ using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Hosting;
-using StackExchange.Redis;
 using Trakx.Common.Interfaces;
 using Trakx.MarketData.Collector.CryptoCompare;
 using Trakx.Persistence;
@@ -13,7 +12,8 @@ namespace Trakx.MarketData.Collector
     {
         public static void Main(string[] args)
         {
-            CreateHostBuilder(args).Build().Run();
+            CreateHostBuilder(args)
+                .Build().Run();
         }
 
         public static IHostBuilder CreateHostBuilder(string[] args) =>

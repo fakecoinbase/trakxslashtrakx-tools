@@ -22,7 +22,7 @@ namespace Trakx.MarketData.Collector.CryptoCompare
 
         public IWebSocketStreamer WebSocketStreamer { get; }
 
-        public CryptoCompareWebSocketClient(IClientWebsocket clientWebSocket, 
+        public CryptoCompareWebSocketClient(IClientWebsocket clientWebSocket,
             IApiDetailsProvider apiDetailsProvider, 
             IWebSocketStreamer webSocketStreamer, 
             ILogger<CryptoCompareWebSocketClient> logger)
@@ -53,7 +53,7 @@ namespace Trakx.MarketData.Collector.CryptoCompare
             try
             {
                 await _client.SendAsync(Encoding.UTF8.GetBytes(serialize),
-                    WebSocketMessageType.Text, true, CancellationToken.None);
+                    WebSocketMessageType.Text, true, _cancellationTokenSource.Token);
             }
             catch (Exception exception)
             {
@@ -65,7 +65,7 @@ namespace Trakx.MarketData.Collector.CryptoCompare
         {
             var message = new RemoveSubscriptionMessage(subscriptions);
             await _client.SendAsync(Encoding.UTF8.GetBytes(JsonSerializer.Serialize(message)),
-                WebSocketMessageType.Text, true, CancellationToken.None);
+                WebSocketMessageType.Text, true, _cancellationTokenSource.Token);
         }
 
         private async Task StartListening(CancellationToken cancellationToken)

@@ -34,13 +34,13 @@ namespace Trakx.MarketData.Collector.CryptoCompare.DTOs.Outbound
         #endregion
     }
 
-    public sealed class AggregateIndiceSubscription : ExchangeBaseQuoteSubscription
+    public sealed class AggregateIndexSubscription : ExchangeBaseQuoteSubscription
     {
-        internal const string TypeValue = AggregateIndice.TypeValue;
+        internal const string TypeValue = AggregateIndex.TypeValue;
         
         /// <inheritdoc />
-        public AggregateIndiceSubscription(string baseCurrency, string quoteCurrency)
-            : base(AggregateIndice.TypeValue, "CCCAGG", baseCurrency, quoteCurrency) { }
+        public AggregateIndexSubscription(string baseCurrency, string quoteCurrency)
+            : base(AggregateIndex.TypeValue, "CCCAGG", baseCurrency, quoteCurrency) { }
     }
 
     public sealed class TradeSubscription : ExchangeBaseQuoteSubscription

@@ -12,6 +12,11 @@ namespace Trakx.MarketData.Collector.CryptoCompare.DTOs.Outbound
         {
             if (reader.TokenType != JsonTokenType.String) throw new FormatException($"{reader.TokenType} should be a string to be read as a CryptoCompareSubscription");
             var subscriptionString = reader.GetString();
+            return ParseSubscriptionString(subscriptionString);
+        }
+
+        public static ICryptoCompareSubscription ParseSubscriptionString(string subscriptionString)
+        {
             var split = subscriptionString.Split("~");
             switch (split[0])
             {
@@ -19,8 +24,8 @@ namespace Trakx.MarketData.Collector.CryptoCompare.DTOs.Outbound
                     return new TradeSubscription(split[1], split[2], split[3]);
                 case TickerSubscription.TypeValue:
                     return new TickerSubscription(split[1], split[2], split[3]);
-                case AggregateIndiceSubscription.TypeValue:
-                    return new AggregateIndiceSubscription(split[2], split[3]);
+                case AggregateIndexSubscription.TypeValue:
+                    return new AggregateIndexSubscription(split[2], split[3]);
                 //todo: case OrderBookL2
                 case FullVolumeSubscription.TypeValue:
                     return new FullVolumeSubscription(split[1]);
@@ -38,7 +43,6 @@ namespace Trakx.MarketData.Collector.CryptoCompare.DTOs.Outbound
                 default:
                     throw new InvalidDataException($"Failed to parse {subscriptionString} as a subscription");
             }
-
         }
 
         public override void Write(Utf8JsonWriter writer, ICryptoCompareSubscription value, JsonSerializerOptions options)

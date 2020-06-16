@@ -143,7 +143,7 @@ namespace Trakx.MarketData.Collector.Tests.Unit.CryptoCompare
         [Fact]
         public async Task AddSubscription_should_send_correct_outbound_message()
         {
-            var subscription = new AggregateIndiceSubscription("ETH", "usd");
+            var subscription = new AggregateIndexSubscription("ETH", "usd");
             await _webSocketClient.AddSubscriptions(subscription);
 
             await _innerClient.Received(1).SendAsync(Arg.Any<ArraySegment<byte>>(), WebSocketMessageType.Text, true, Arg.Any<CancellationToken>());

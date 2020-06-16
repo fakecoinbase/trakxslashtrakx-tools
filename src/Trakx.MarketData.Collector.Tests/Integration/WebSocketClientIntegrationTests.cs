@@ -27,7 +27,7 @@ namespace Trakx.MarketData.Collector.Tests.Integration
             _output = output;
             var logger = output.ToLogger<CryptoCompareWebSocketClient>();
             var streamer = new WebSocketStreamer(output.ToLogger<WebSocketStreamer>());
-            var apiDetailsProvider = new ApiDetailsProvider(Trakx.Tests.Tools.Secrets.CryptoCompareApiKey);
+            var apiDetailsProvider = new ApiDetailsProvider(Trakx.Tests.Tools.Secrets.CryptoCompareApiKey!);
             var clientWebSocket = new WrappedClientWebsocket();
             _client = new CryptoCompareWebSocketClient(clientWebSocket, apiDetailsProvider, streamer, logger);
         }
@@ -49,8 +49,8 @@ namespace Trakx.MarketData.Collector.Tests.Integration
         [Fact]
         public async Task WebSocketClient_should_receive_AggregateIndice_updates()
         {
-            var btcUsdSubscription = new AggregateIndiceSubscription("btc", "usd");
-            await RunTestForSubscriptionType<AggregateIndice>(btcUsdSubscription);
+            var btcUsdSubscription = new AggregateIndexSubscription("btc", "usd");
+            await RunTestForSubscriptionType<AggregateIndex>(btcUsdSubscription);
         }
 
         [Fact]
@@ -85,8 +85,7 @@ namespace Trakx.MarketData.Collector.Tests.Integration
             messagesReceived.OfType<T>().Count().Should().BeGreaterOrEqualTo(1);
             messagesReceived.OfType<SubscribeComplete>().Count().Should().BeGreaterOrEqualTo(1);
             messagesReceived.OfType<LoadComplete>().Count().Should().BeGreaterOrEqualTo(1);
-
-
+            
             await _client.RemoveSubscriptions(subscription).ConfigureAwait(false);
             await Task.Delay(TimeSpan.FromMilliseconds(500));
 
