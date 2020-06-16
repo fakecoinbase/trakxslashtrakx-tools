@@ -51,5 +51,11 @@ namespace Trakx.Tests.Data
 
             return new IndiceValuationDao(componentValuations);
         }
+
+        public UserAddressDao GetRandomUserAddressDao(decimal verificationAmount=0)
+        {
+            
+            return new UserAddressDao(GetRandomIndiceSymbol(),GetRandomString(5),GetRandomAddressEthereum(),verificationAmount,DateTime.Now);
+        }
     }
 }

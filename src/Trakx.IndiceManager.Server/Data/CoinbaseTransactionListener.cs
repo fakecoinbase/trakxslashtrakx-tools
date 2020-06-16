@@ -21,7 +21,6 @@ namespace Trakx.IndiceManager.Server.Data
         /// <summary> 
         /// Allows to stop the Observable stream by passing a cancellationToken in parameter.
         /// </summary>
-        /// <param name="cancellationToken">The CancellationToken which takes in parameter the time at which we have to stop the execution.</param>
         void StopListening();
     }
 

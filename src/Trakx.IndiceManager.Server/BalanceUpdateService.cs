@@ -29,7 +29,7 @@ namespace Trakx.IndiceManager.Server
             while (!stoppingToken.IsCancellationRequested)
             {
                 _logger.LogDebug("Worker running at: {time}", DateTimeOffset.Now);
-                await Task.Delay(TimeSpan.FromMinutes(1), stoppingToken).ConfigureAwait(false);
+                await Task.Delay(TimeSpan.FromMinutes(5), stoppingToken).ConfigureAwait(false);
             }
         }
 
