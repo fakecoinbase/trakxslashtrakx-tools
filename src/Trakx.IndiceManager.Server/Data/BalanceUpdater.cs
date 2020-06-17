@@ -1,4 +1,5 @@
 ﻿using System;
+using Microsoft.Extensions.DependencyInjection;
 using Trakx.Coinbase.Custody.Client.Models;
 using Trakx.Common.Core;
 using Trakx.Common.Interfaces;
@@ -18,13 +19,15 @@ namespace Trakx.IndiceManager.Server.Data
     }
 
     /// <inheritdoc />
-    public class UserBalanceUpdater : IUserBalanceUpdater
+    public class UserBalanceUpdater : IUserBalanceUpdater,IDisposable
     {
         private readonly IUserAddressProvider _userAddressProvider;
+        private readonly IServiceScope _initialisationScope;
 
-        public UserBalanceUpdater(IUserAddressProvider userAddressProvider)
+        public UserBalanceUpdater(IServiceScopeFactory serviceScopeFactory)
         {
-            _userAddressProvider = userAddressProvider;
+            _initialisationScope = serviceScopeFactory.CreateScope();
+            _userAddressProvider = _initialisationScope.ServiceProvider.GetService<IUserAddressProvider>();
         }
 
 
@@ -80,6 +83,10 @@ namespace Trakx.IndiceManager.Server.Data
             }
         }
 
-
+        /// <inheritdoc />
+        public void Dispose()
+        {
+            _initialisationScope.Dispose();
+        }
     }
 }

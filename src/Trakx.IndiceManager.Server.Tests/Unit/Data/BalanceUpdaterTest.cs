@@ -1,4 +1,6 @@
-﻿using FluentAssertions;
+﻿using System;
+using FluentAssertions;
+using Microsoft.Extensions.DependencyInjection;
 using NSubstitute;
 using Trakx.Coinbase.Custody.Client.Models;
 using Trakx.Common.Interfaces;
@@ -9,7 +11,7 @@ using Xunit.Abstractions;
 
 namespace Trakx.IndiceManager.Server.Tests.Unit.Data
 {
-    public class BalanceUpdaterTest
+    public class BalanceUpdaterTest 
     {
         private readonly IUserAddressProvider _userAddressProvider;
         private readonly IUserBalanceUpdater _balanceUpdater;
@@ -18,9 +20,21 @@ namespace Trakx.IndiceManager.Server.Tests.Unit.Data
         public BalanceUpdaterTest(ITestOutputHelper output)
         {
             _userAddressProvider = Substitute.For<IUserAddressProvider>();
-            _balanceUpdater=new UserBalanceUpdater(_userAddressProvider);
+            var serviceScopeFactory = PrepareScopeResolution();
+            _balanceUpdater=new UserBalanceUpdater(serviceScopeFactory);
             _daoCreator=new MockDaoCreator(output);
         }
+        private IServiceScopeFactory PrepareScopeResolution()
+        {
+            var serviceProvider = Substitute.For<IServiceProvider>();
+            serviceProvider.GetService<IUserAddressProvider>().Returns(_userAddressProvider);
+            var serviceScope = Substitute.For<IServiceScope>();
+            serviceScope.ServiceProvider.Returns(serviceProvider);
+            var serviceScopeFactory = Substitute.For<IServiceScopeFactory>();
+            serviceScopeFactory.CreateScope().Returns(serviceScope);
+            return serviceScopeFactory;
+        }
+
 
         [Fact]
         public void OnNext_should_creates_new_temporaryMapping_if_transactionSender_is_unknown()
