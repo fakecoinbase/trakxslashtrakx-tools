@@ -18,11 +18,11 @@ namespace Trakx.Coinbase.Custody.Client.Endpoints
 
         /// <inheritdoc />
         public async Task<PagedResponse<AddressResponse>> ListAddressesAsync(string? currency = null,
-             string? state = null, CancellationToken cancellationToken = default)
+             string? state = null, string? before = null, string? after = null, int? limit = null, CancellationToken cancellationToken = default)
         {
             return await _client
                 .Request("addresses")
-                .SetQueryParams(new { currency, state })
+                .SetQueryParams(new { currency, state,before,after,limit })
                 .GetJsonAsync<PagedResponse<AddressResponse>>(cancellationToken);
         }
     }

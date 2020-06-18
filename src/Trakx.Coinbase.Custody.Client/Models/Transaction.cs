@@ -5,9 +5,25 @@ using Newtonsoft.Json;
 namespace Trakx.Coinbase.Custody.Client.Models
 {
     
-    public class Transaction
+    public class Transaction 
     {
+        public Transaction(Transaction transaction)
+        {
+            Id = transaction.Id;
+            Type = transaction.Type;
+            State = transaction.State;
+            Source = transaction.Source;
+            Destination = transaction.Destination;
+            Currency = transaction.Currency;
+            Hashes = transaction.Hashes;
+        }
+
+        public Transaction()
+        {
+            
+        }
         
+
         [JsonPropertyName("id")]
         public Guid Id { get; set; }
 
@@ -54,6 +70,7 @@ namespace Trakx.Coinbase.Custody.Client.Models
 
         [JsonPropertyName("hashes")]
         public string[] Hashes { get; set; }
+
     }
 
     public static class TransactionType

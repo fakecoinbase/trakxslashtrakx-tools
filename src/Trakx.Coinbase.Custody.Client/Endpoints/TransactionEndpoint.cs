@@ -20,11 +20,14 @@ namespace Trakx.Coinbase.Custody.Client.Endpoints
 
         /// <inheritdoc />
         public async Task<PagedResponse<Transaction>> ListTransactionsAsync(string? currency = null, string? state = null, string? walletId = null, string? type = null,
-            string? startTime = null, string? endTime = null, CancellationToken cancellationToken = default)
+            string? startTime = null, string? endTime = null, string? before = null, string? after = null, int? limit = null, CancellationToken cancellationToken = default)
         {
             return await _client.Request("transactions")
                 .SetQueryParams(new
                 {
+                    before,
+                    after,
+                    limit,
                     currency,
                     state,
                     type,

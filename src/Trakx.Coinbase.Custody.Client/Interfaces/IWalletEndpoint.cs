@@ -13,9 +13,14 @@ namespace Trakx.Coinbase.Custody.Client.Interfaces
         /// Lists current user’s wallets to which the authentication method has access to.
         /// </summary>
         /// <param name="currency">The currency of the wallet, optional parameter.</param>
+        /// <param name="before">Request page before (newer than) this pagination id.</param>
+        /// <param name="after">Request page after (older than) this pagination id.</param>
+        /// <param name="limit">Number of results per request. Maximum 100. Default 25.</param>
         /// <param name="cancellationToken"></param>
-        /// <returns></returns>
-        Task<PagedResponse<Wallet>> ListWalletsAsync(string? currency = null, CancellationToken cancellationToken = default);
+        /// <returns>A <see cref="PagedResponse{Wallet}"/> if request succeed.</returns>
+        Task<PagedResponse<Wallet>> ListWalletsAsync(string? currency = null, string? before = null,
+            string? after = null, int? limit = null, CancellationToken cancellationToken = default);
+
 
         /// <summary>
         /// Allows you to retrieve a specific wallet if you have the wallet Id.

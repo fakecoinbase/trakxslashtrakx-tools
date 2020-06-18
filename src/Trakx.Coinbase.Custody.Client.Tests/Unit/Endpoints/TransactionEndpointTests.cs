@@ -22,10 +22,10 @@ namespace Trakx.Coinbase.Custody.Client.Tests.Unit.Endpoints
         [Fact]
         public async Task ListTransactionsAsync_should_call_API_with_query_parameters()
         {
-            await _transactionEndpoint.ListTransactionsAsync("eur", TransactionState.Gassing);
+            await _transactionEndpoint.ListTransactionsAsync("eur", TransactionState.Gassing,limit:5);
             HttpTest.ShouldHaveCalled(EndpointUrl)
-                .WithQueryParamValues(new { currency = "eur", state = TransactionState.Gassing })
-                .WithQueryParams("currency", "state")
+                .WithQueryParamValues(new { currency = "eur", state = TransactionState.Gassing,limit=5 })
+                .WithQueryParams("currency", "state","limit")
                 .WithVerb(HttpMethod.Get);
         }
 

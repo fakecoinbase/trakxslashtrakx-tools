@@ -18,10 +18,10 @@ namespace Trakx.Coinbase.Custody.Client.Endpoints
         }
 
         /// <inheritdoc />
-        public async Task<PagedResponse<Wallet>> ListWalletsAsync(string? currency = null, CancellationToken cancellationToken = default)
+        public async Task<PagedResponse<Wallet>> ListWalletsAsync(string? currency = null, string? before = null, string? after = null, int? limit = null, CancellationToken cancellationToken = default)
         {
             return await _client.Request("wallets")
-                .SetQueryParam("currency", currency)
+                .SetQueryParams(new{currency,after,before,limit})
                 .GetJsonAsync<PagedResponse<Wallet>>(cancellationToken);
         }
 

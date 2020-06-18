@@ -1,7 +1,11 @@
 ﻿using System;
+using System.Collections.Generic;
+using System.Linq;
 using System.Reactive.Concurrency;
 using System.Reactive.Linq;
 using System.Threading;
+using System.Threading.Tasks;
+using Microsoft.Extensions.Caching.Memory;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Logging;
 using Trakx.Coinbase.Custody.Client.Interfaces;
@@ -31,14 +35,20 @@ namespace Trakx.IndiceManager.Server.Data
         public static readonly TimeSpan PollingInterval = TimeSpan.FromSeconds(10);
         private readonly CancellationTokenSource _cancellationTokenSource ;
         private readonly ITransactionDataProvider _transactionDataProvider;
+        private readonly ICoinbaseClient _coinbaseClient;
+        private readonly IMemoryCache _cache;
+        private readonly ILogger<CoinbaseTransactionListener> _logger;
         private readonly IServiceScope _initialisationScope;
 
         public CoinbaseTransactionListener(
             ICoinbaseClient coinbaseClient, 
             ILogger<CoinbaseTransactionListener> logger, 
-            IServiceScopeFactory serviceScopeFactory, 
+            IServiceScopeFactory serviceScopeFactory, IMemoryCache memoryCache,
             IScheduler scheduler = default)
         {
+            _cache = memoryCache;
+            _logger = logger;
+            _coinbaseClient = coinbaseClient;
             _initialisationScope = serviceScopeFactory.CreateScope();
             _transactionDataProvider = _initialisationScope.ServiceProvider.GetService<ITransactionDataProvider>();
             scheduler ??= Scheduler.Default;
@@ -52,15 +62,28 @@ namespace Trakx.IndiceManager.Server.Data
                         logger.LogDebug("Querying Coinbase Custody for new transactions.");
                         var page = await coinbaseClient
                             .ListTransactionsAsync(startTime:
-                                (await _transactionDataProvider.GetLastWrappingTransactionDatetime()).ToIso8601())
+                                (await _transactionDataProvider.GetLastWrappingTransactionDatetime()).ToIso8601(),limit:100)
                             .ConfigureAwait(false);
                         var transactions = page.Data;
-                        return transactions.ToObservable();
+                        var finalTransactions = transactions.ToList();
+                        while (transactions.Length == 100)
+                        {
+                             page = await coinbaseClient
+                                .ListTransactionsAsync(startTime:
+                                    (await _transactionDataProvider.GetLastWrappingTransactionDatetime()).ToIso8601(), limit: 100,after:page.Pagination.After)
+                                .ConfigureAwait(false);
+                             transactions = page.Data;
+                             foreach (var transaction in transactions)
+                             {
+                                 finalTransactions.Add(transaction);
+                             }
+                        }
+                        return GetDecimalAmount(finalTransactions).ToObservable();
                     }
                     catch (Exception e)
                     {
                         logger.LogError(e, "Failed to get new transactions from Coinbase Custody");
-                        return new Transaction[0].ToObservable(scheduler);
+                        return new ProcessedTransaction[0].ToObservable(scheduler);
                     }
                 })
                 .SelectMany(t => t)
@@ -92,5 +115,28 @@ namespace Trakx.IndiceManager.Server.Data
         }
 
         #endregion
+
+        private IEnumerable<ProcessedTransaction> GetDecimalAmount(List<Transaction> transactionsList)
+        {
+            try
+            {
+                return transactionsList.Select(transaction => new ProcessedTransaction((long) GetOrCreateFromCache(transaction.Currency), transaction)).ToList();
+            }
+            catch (Exception e)
+            {
+                _logger.LogError(e, "Failed to get decimal amounts for transactions from Coinbase Custody");
+                throw;
+            }
+        }
+
+        private object GetOrCreateFromCache(string symbol)
+        {
+            if (_cache.TryGetValue(symbol, out var cacheEntry)) return cacheEntry;
+           
+            cacheEntry = _coinbaseClient.GetCurrencyAsync(symbol).GetAwaiter().GetResult().Decimals;
+
+            _cache.Set(symbol,cacheEntry,TimeSpan.FromDays(1));
+            return cacheEntry;
+        }
     }
 }

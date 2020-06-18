@@ -23,16 +23,16 @@ namespace Trakx.Coinbase.Custody.Client.Tests.Unit.Endpoints
         {
             await _addressEndpoint.ListAddressesAsync();
             HttpTest.ShouldHaveCalled(EndpointUrl)
-                .WithoutQueryParams("currency", "state");
+                .WithoutQueryParams("currency", "state","limit","before","after");
         }
 
         [Fact]
         public async Task ListAddressesAsync_should_call_API_with_query_parameters()
         {
-            await _addressEndpoint.ListAddressesAsync("btc", AddressState.Restored);
+            await _addressEndpoint.ListAddressesAsync("btc", AddressState.Restored,"xrp", limit: 20);
             HttpTest.ShouldHaveCalled(EndpointUrl)
-                .WithQueryParamValues(("btc", AddressState.Restored))
-                .WithQueryParams("currency", "state")
+                .WithQueryParamValues(("btc", AddressState.Restored,"xrp",20))
+                .WithQueryParams("currency", "state","limit","before")
                 .WithVerb(HttpMethod.Get);
         }
 
@@ -52,6 +52,7 @@ namespace Trakx.Coinbase.Custody.Client.Tests.Unit.Endpoints
             response.Data[0].BlockchainLink.Should().Be("https://live.blockcypher.com/btc/address/fake_btc_cold_address");
             response.Pagination.Before.Should().Be("fake_btc_cold_address");
         }
+
 
     }
 }

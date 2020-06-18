@@ -24,12 +24,15 @@ namespace Trakx.Coinbase.Custody.Client
             _currencyEndpoint=new CurrencyEndpoint(this);
         }
 
+        
+
         #region Implementation of IAddressEndpoint
 
         /// <inheritdoc />
-        public async Task<PagedResponse<AddressResponse>> ListAddressesAsync(string? currency = null, string? state = null, CancellationToken cancellationToken = default)
+        public async Task<PagedResponse<AddressResponse>> ListAddressesAsync(string? currency = null, string? state = null, string? before = null, string? after = null,
+            int? limit = null, CancellationToken cancellationToken = default)
         {
-            return await _addressEndpoint.ListAddressesAsync(currency, state, cancellationToken);
+            return await _addressEndpoint.ListAddressesAsync(currency, state, before, after, limit, cancellationToken);
         }
 
         #endregion
@@ -37,9 +40,10 @@ namespace Trakx.Coinbase.Custody.Client
         #region Implementation of IWalletEndpoint
 
         /// <inheritdoc />
-        public async Task<PagedResponse<Wallet>> ListWalletsAsync(string? currency = null, CancellationToken cancellationToken = default)
+        public async Task<PagedResponse<Wallet>> ListWalletsAsync(string? currency = null, string? before = null, string? after = null, int? limit = null,
+            CancellationToken cancellationToken = default)
         {
-            return await _walletEndpoint.ListWalletsAsync(currency, cancellationToken);
+            return await _walletEndpoint.ListWalletsAsync(currency, before, after, limit, cancellationToken);
         }
 
         /// <inheritdoc />
@@ -54,9 +58,10 @@ namespace Trakx.Coinbase.Custody.Client
 
         /// <inheritdoc />
         public async Task<PagedResponse<Transaction>> ListTransactionsAsync(string? currency = null, string? state = null, string? walletId = null, string? type = null,
-            string? startTime = null, string? endTime = null, CancellationToken cancellationToken = default)
+            string? startTime = null, string? endTime = null, string? before = null, string? after = null, int? limit = null,
+            CancellationToken cancellationToken = default)
         {
-            return await _transactionEndpoint.ListTransactionsAsync(currency, state, walletId, type, startTime, endTime, cancellationToken);
+            return await _transactionEndpoint.ListTransactionsAsync(currency, state, walletId, type, startTime, endTime, before, after, limit, cancellationToken);
         }
 
         /// <inheritdoc />
@@ -70,9 +75,16 @@ namespace Trakx.Coinbase.Custody.Client
         #region Implementation of ICurrencyEndpoint
 
         /// <inheritdoc />
-        public Task<PagedResponse<Currency>> ListCurrenciesAsync( CancellationToken cancellationToken = default)
+        public async Task<PagedResponse<Currency>> ListCurrenciesAsync(string? before = null, string? after = null, int? limit = null,
+            CancellationToken cancellationToken = default)
         {
-            return _currencyEndpoint.ListCurrenciesAsync( cancellationToken);
+            return await _currencyEndpoint.ListCurrenciesAsync(before, after, limit, cancellationToken);
+        }
+
+        /// <inheritdoc />
+        public async Task<Currency> GetCurrencyAsync(string symbol, CancellationToken cancellationToken = default)
+        {
+            return await _currencyEndpoint.GetCurrencyAsync(symbol, cancellationToken);
         }
 
         #endregion

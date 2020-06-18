@@ -21,9 +21,9 @@ namespace Trakx.Coinbase.Custody.Client.Tests.Unit.Endpoints
         [Fact]
         public async Task ListWalletsAsync_should_call_API_with_query_parameters()
         {
-            await _walletEndpoint.ListWalletsAsync("eur");
+            await _walletEndpoint.ListWalletsAsync("eur","wallet1", limit: 50);
             HttpTest.ShouldHaveCalled(EndpointUrl)
-                .WithQueryParamValue("currency", "eur")
+                .WithQueryParamValues(new{currency="eur",before="wallet1",limit=50})
                 .WithVerb(HttpMethod.Get);
         }
 

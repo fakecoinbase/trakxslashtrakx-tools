@@ -1,7 +1,10 @@
-﻿using System.Net.Http;
+﻿using System;
+using System.Net.Http;
 using System.Threading.Tasks;
 using FluentAssertions;
+using Flurl;
 using Trakx.Coinbase.Custody.Client.Endpoints;
+using Trakx.Coinbase.Custody.Client.Models;
 using Trakx.Coinbase.Custody.Client.Tests.Unit.Models;
 using Xunit;
 
@@ -33,6 +36,44 @@ namespace Trakx.Coinbase.Custody.Client.Tests.Unit.Endpoints
             response.Data[1].Decimals.Should().Be(12);
 
             response.Pagination.Before.Should().Be("btc");
+        }
+
+        [Fact]
+        public async Task ListCurrenciesAsync_should_call_API_without_query_parameters()
+        {
+            await _currencyEndpoint.ListCurrenciesAsync();
+            HttpTest.ShouldHaveCalled(EndpointUrl)
+                .WithoutQueryParams("limit", "before", "after");
+        }
+
+        [Fact]
+        public async Task ListCurrenciesAsync_should_call_API_with_query_parameters()
+        {
+            await _currencyEndpoint.ListCurrenciesAsync("btc",limit: 20);
+            HttpTest.ShouldHaveCalled(EndpointUrl)
+                .WithQueryParamValues(("btc",  20))
+                .WithQueryParams("limit", "before")
+                .WithVerb(HttpMethod.Get);
+        }
+
+        [Fact]
+        public void GetCurrencyAsync_should_return_error_if_parameter_null_or_empty()
+        {
+            Func<Task> nullAction = async () => await _currencyEndpoint.GetCurrencyAsync(null);
+            nullAction.Should().ThrowExactly<ArgumentNullException>();
+
+            Func<Task> emptyAction = async () => await _currencyEndpoint.GetCurrencyAsync("");
+            emptyAction.Should().ThrowExactly<ArgumentException>();
+
+            HttpTest.ShouldNotHaveMadeACall();
+        }
+
+        [Fact]
+        public async Task GetCurrencyAsync_should_call_API_with_correct_path()
+        {
+            await _currencyEndpoint.GetCurrencyAsync("btc");
+            HttpTest.ShouldHaveCalled(Url.Combine(EndpointUrl, "btc"))
+                .WithVerb(HttpMethod.Get);
         }
     }
 }
