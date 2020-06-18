@@ -4,14 +4,14 @@ namespace Trakx.Common.Pricing
 {
     public struct SourcedPrice :IEquatable<SourcedPrice>
     {
-        public SourcedPrice(string id, string source, decimal price)
+        public SourcedPrice(string symbol, string source, decimal price)
         {
-            Id = id;
+            Symbol = symbol;
             Source = source;
             Price = price;
         }
 
-        public string Id { get; }
+        public string Symbol { get; }
         public string Source { get; }
         public decimal Price { get; }
 
@@ -20,7 +20,7 @@ namespace Trakx.Common.Pricing
         /// <inheritdoc />
         public bool Equals(SourcedPrice other)
         {
-            return string.Equals(Id, other.Id, StringComparison.InvariantCulture)
+            return string.Equals(Symbol, other.Symbol, StringComparison.InvariantCulture)
                    && string.Equals(Source, other.Source, StringComparison.InvariantCultureIgnoreCase)
                    && Price == other.Price;
         }
@@ -33,7 +33,7 @@ namespace Trakx.Common.Pricing
         {
             unchecked
             {
-                var hashCode = StringComparer.InvariantCulture.GetHashCode(Id);
+                var hashCode = StringComparer.InvariantCulture.GetHashCode(Symbol);
                 hashCode = (hashCode * 397) ^ StringComparer.InvariantCultureIgnoreCase.GetHashCode(Source);
                 hashCode = (hashCode * 397) ^ Price.GetHashCode();
                 return hashCode;
