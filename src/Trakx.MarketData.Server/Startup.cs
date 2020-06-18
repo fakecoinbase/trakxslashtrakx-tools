@@ -48,7 +48,9 @@ namespace Trakx.MarketData.Server
             {
                 options.AddPolicy(name: AllowTrakxExchangeOrigin, builder =>
                     {
-                        builder.WithOrigins("http://trakx.io", "http://www.trakx.io", "https://trakx.io", "https://www.trakx.io");
+                        builder.WithOrigins(
+                            "http://trakx.io", "http://www.trakx.io", "https://trakx.io", "https://www.trakx.io",
+                            "http://stage.trakx.io", "http://preprod.trakx.io", "https://stage.trakx.io", "https://preprod.trakx.io");
                     });
             });
 
