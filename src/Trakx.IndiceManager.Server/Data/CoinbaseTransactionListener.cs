@@ -131,11 +131,11 @@ namespace Trakx.IndiceManager.Server.Data
 
         private object GetOrCreateFromCache(string symbol)
         {
-            if (_cache.TryGetValue(symbol, out var cacheEntry)) return cacheEntry;
+            if (_cache.TryGetValue("coinbase_decimal_"+symbol, out var cacheEntry)) return cacheEntry;
            
             cacheEntry = _coinbaseClient.GetCurrencyAsync(symbol).GetAwaiter().GetResult().Decimals;
 
-            _cache.Set(symbol,cacheEntry,TimeSpan.FromDays(1));
+            _cache.Set("coinbase_decimal_"+symbol,cacheEntry,TimeSpan.FromDays(1));
             return cacheEntry;
         }
     }

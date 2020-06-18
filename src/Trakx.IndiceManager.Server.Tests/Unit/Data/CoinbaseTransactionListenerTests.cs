@@ -96,7 +96,7 @@ namespace Trakx.IndiceManager.Server.Tests.Unit.Data
                 new PagedResponse<Transaction> { Data = new Transaction[]{new Transaction(){Currency = "btc"} } });
             
             SimulateObservationsDuringRunningTime();
-            _cache.Received(10).TryGetValue("btc", out var value );
+            _cache.Received(10).TryGetValue("coinbase_decimal_btc", out var value );
         }
 
         [Fact]
