@@ -12,6 +12,7 @@ using Xunit.Abstractions;
 using Syncfusion.Blazor;
 using Syncfusion.Blazor.Grids;
 using Trakx.Common.Models;
+using Trakx.IndiceManager.ApiClient;
 
 namespace Trakx.IndiceManager.Client.Tests.IndiceComposition
 {

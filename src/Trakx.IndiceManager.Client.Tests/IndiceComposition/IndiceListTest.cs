@@ -10,6 +10,7 @@ using NSubstitute;
 using NSubstitute.ExceptionExtensions;
 using Syncfusion.Blazor;
 using Trakx.Common.Models;
+using Trakx.IndiceManager.ApiClient;
 using Trakx.IndiceManager.Client.Pages.IndiceComposition;
 using Trakx.Tests.Data;
 using Xunit;

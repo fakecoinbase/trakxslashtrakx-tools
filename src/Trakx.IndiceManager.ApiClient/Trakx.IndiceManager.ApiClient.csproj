@@ -1,0 +1,31 @@
+﻿<Project Sdk="Microsoft.NET.Sdk">
+
+  <PropertyGroup>
+    <TargetFramework>netcoreapp3.1</TargetFramework>
+    <GenerateApiClient>False</GenerateApiClient>
+  </PropertyGroup>
+
+  <ItemGroup>
+    <PackageReference Include="Microsoft.AspNetCore.Mvc.NewtonsoftJson" Version="3.1.4" />
+    <PackageReference Include="NSwag.MSBuild" Version="13.6.0">
+      <PrivateAssets>all</PrivateAssets>
+      <IncludeAssets>runtime; build; native; contentfiles; analyzers; buildtransitive</IncludeAssets>
+    </PackageReference>
+  </ItemGroup>
+
+  <ItemGroup>
+    <ProjectReference Include="..\Trakx.Common\Trakx.Common.csproj" />
+  </ItemGroup>
+
+  <Target Name="NSwag" BeforeTargets="Build" Condition="'$(GenerateApiClient)'=='True' ">
+    <ItemGroup>
+      <ApiClientBuildEnvironmentVariables Include="COINBASE_API_KEY=notempty" />
+      <ApiClientBuildEnvironmentVariables Include="COINBASE_PASSPHRASE_KEY=notempty" />
+    </ItemGroup>
+    <Copy SourceFiles="@(Reference)" DestinationFolder="$(OutDir)References" />
+    <Exec Command="$(NSwagExe_Core31) run nswag.json /variables:Configuration=$(Configuration) /runtime:NetCore31" 
+          EnvironmentVariables="@(ApiClientBuildEnvironmentVariables)" />
+    <RemoveDir Directories="$(OutDir)References" />
+  </Target>
+
+</Project>
