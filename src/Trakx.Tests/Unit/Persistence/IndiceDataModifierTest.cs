@@ -41,11 +41,11 @@ namespace Trakx.Tests.Unit.Persistence
         [Fact]
         public async Task ModifyComposition_should_return_true_and_modify_composition_and_indice()
         {
-            var firstComposition = new IndiceCompositionDao(new IndiceDefinitionDao("TRX", null, null, 8, null, null), 2, DateTime.Now, null, null);
+            var firstComposition = new IndiceCompositionDao(new IndiceDefinitionDao("TRX", null, null, 8, null, null), 2, DateTime.Now, null);
             await _context.IndiceCompositions.AddAsync(firstComposition);
             await _context.SaveChangesAsync();
 
-            var modifiedComposition = new IndiceCompositionDao(new IndiceDefinitionDao("TRX", null, "new description ", 8, "ethereum address", null), 2, new DateTime(2006, 10, 20), "new address", null);
+            var modifiedComposition = new IndiceCompositionDao(new IndiceDefinitionDao("TRX", null, "new description ", 8, "ethereum address", null), 2, new DateTime(2006, 10, 20), "new address");
             modifiedComposition.ComponentQuantityDaos.Add(new ComponentQuantityDao(modifiedComposition,new ComponentDefinitionDao("addressXX","name","symbol","coinGeckoId",10),3));
             
             var result = await _indiceDataModifier.ModifyComposition(modifiedComposition);

@@ -7,8 +7,12 @@ namespace Trakx.Persistence.DAO
 {
     public class IndiceDefinitionDao : IIndiceDefinition
     {
+        public IndiceDefinitionDao(IIndiceDefinition indiceDefinition) : this(indiceDefinition.Symbol,
+            indiceDefinition.Name, indiceDefinition.Description, indiceDefinition.NaturalUnit, indiceDefinition.Address,
+            indiceDefinition.CreationDate) { }
+
         public IndiceDefinitionDao(string symbol, string name, string description,
-            ushort naturalUnit, string address,
+            ushort naturalUnit, string? address,
             DateTime? creationDate)
         {
             Symbol = symbol;
@@ -31,12 +35,11 @@ namespace Trakx.Persistence.DAO
         public string Name { get; set; }
 
         /// <inheritdoc />
-        [Required]
-        public string Description { get; set; }
+        public string? Description { get; set; }
 
         /// <inheritdoc />
         [MaxLength(256)]
-        public string Address { get; set; }
+        public string? Address { get; set; }
 
         /// <inheritdoc />
         [Required]

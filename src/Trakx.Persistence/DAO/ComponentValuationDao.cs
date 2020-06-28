@@ -8,11 +8,10 @@ namespace Trakx.Persistence.DAO
     /// <inheritdoc />
     public class ComponentValuationDao : IComponentValuation
     {
-        // Non-nullable field is uninitialized. Consider declaring as nullable.
         // This constructor is for serialisation only
-        #pragma warning disable CS8618
+        #nullable disable
         public ComponentValuationDao() {}
-        #pragma warning restore CS8618
+        #nullable restore
 
         public ComponentValuationDao(ComponentQuantityDao componentComponentQuantity, DateTime timeStamp, string quoteCurrency,
             decimal price, string priceSource)

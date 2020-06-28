@@ -49,14 +49,10 @@ namespace Trakx.Tests.Unit.Persistence
         public async Task AddComposition_should_return_true_if_composition_is_added_on_existing_indice()
         {
             var savedIndice = new IndiceDefinitionDao(_indiceSymbol, IndiceName, IndiceDescription, NaturalUnit, null, DateTime.Now);
-            await _context.IndiceDefinitions.AddAsync(savedIndice);
-            await _context.SaveChangesAsync();
-
-            var compositionToAdd = new IndiceCompositionDao(savedIndice, 3, DateTime.Now, null, null);
+            var compositionToAdd = new IndiceCompositionDao(savedIndice, 3, DateTime.Now, null);
             compositionToAdd.ComponentQuantityDaos.Add(new ComponentQuantityDao(compositionToAdd, new ComponentDefinitionDao("address", "name", "symbol", "coinGeckoId", NaturalUnit), 3));
 
-            var result =
-                await _indiceDataCreator.AddNewComposition(compositionToAdd, savedIndice);
+            var result = await _indiceDataCreator.AddNewComposition(compositionToAdd);
 
             var retrievedComposition = await _context.IndiceCompositions.FirstOrDefaultAsync(i => i.Id == compositionToAdd.Id);
 
@@ -69,11 +65,11 @@ namespace Trakx.Tests.Unit.Persistence
         {
             var newIndice = new IndiceDefinitionDao(_indiceSymbol, IndiceName, IndiceDescription, NaturalUnit, null, DateTime.Now);
             
-            var compositionToAdd = new IndiceCompositionDao(newIndice, 2, DateTime.Now, null, null);
+            var compositionToAdd = new IndiceCompositionDao(newIndice, 2, DateTime.Now, null);
             compositionToAdd.ComponentQuantityDaos.Add(new ComponentQuantityDao(compositionToAdd, new ComponentDefinitionDao("ComponentAddress", "name", "symbol", "coinGeckoId", NaturalUnit), 3));
 
             var result =
-                await _indiceDataCreator.AddNewComposition(compositionToAdd, null);
+                await _indiceDataCreator.AddNewComposition(compositionToAdd);
 
             var retrievedComposition = await _context.IndiceCompositions.FirstOrDefaultAsync(i => i.Id == compositionToAdd.Id);
 
@@ -81,8 +77,6 @@ namespace Trakx.Tests.Unit.Persistence
             
             retrievedComposition.CheckCompositionIsAsExpected(compositionToAdd);
         }
-
-        
     }
 
     public static class CompositionCheckExtensions

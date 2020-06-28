@@ -1,5 +1,5 @@
-﻿using System.Threading.Tasks;
-using Microsoft.EntityFrameworkCore;
+﻿using Microsoft.EntityFrameworkCore;
+using System.Threading.Tasks;
 using Trakx.Common.Interfaces;
 using Trakx.Common.Interfaces.Indice;
 using Trakx.Common.Models;
@@ -8,13 +8,13 @@ using Trakx.Persistence.DAO;
 
 namespace Trakx.IndiceManager.Server.Managers
 {
-    public class IndiceDatabaseWriter :IIndiceDatabaseWriter
+    public class IndiceDatabaseWriter : IIndiceDatabaseWriter
     {
         private readonly IndiceRepositoryContext _dbContext;
         private readonly IIndiceDataModifier _indiceDataModifier;
         private readonly IIndiceDataCreator _indiceDataCreator;
 
-        public IndiceDatabaseWriter(IndiceRepositoryContext dbContext,IIndiceDataModifier indiceDataModifier,IIndiceDataCreator indiceDataCreator)
+        public IndiceDatabaseWriter(IndiceRepositoryContext dbContext, IIndiceDataModifier indiceDataModifier, IIndiceDataCreator indiceDataCreator)
         {
             _dbContext = dbContext;
             _indiceDataCreator = indiceDataCreator;
@@ -26,14 +26,14 @@ namespace Trakx.IndiceManager.Server.Managers
         {
             if (indiceCompositionModel.IndiceDetail == null)
                 return false;
-            
+
             var indiceDefinitionInDatabase =
-                await _dbContext.IndiceDefinitions.FirstOrDefaultAsync(i =>
+                await _dbContext.IndiceDefinitions.AsNoTracking().FirstOrDefaultAsync(i =>
                     i.Symbol == indiceCompositionModel.IndiceDetail.Symbol);
-            
+
             var indiceComposition = indiceCompositionModel.ConvertToIIndiceComposition(indiceDefinitionInDatabase);
-            
-            var indiceCompositionDao= new IndiceCompositionDao(indiceComposition);
+
+            var indiceCompositionDao = new IndiceCompositionDao(indiceComposition);
 
             if (await _dbContext.IndiceCompositions.FirstOrDefaultAsync(c =>
                 c.Id == indiceCompositionDao.GetCompositionId() && c.Address == null) != null)
@@ -42,7 +42,7 @@ namespace Trakx.IndiceManager.Server.Managers
 
             if (await _dbContext.IndiceCompositions.FirstOrDefaultAsync(c =>
                 c.Id == indiceCompositionDao.GetCompositionId()) == null)
-                return await _indiceDataCreator.AddNewComposition(indiceCompositionDao, indiceDefinitionInDatabase).ConfigureAwait(false);
+                return await _indiceDataCreator.AddNewComposition(indiceCompositionDao).ConfigureAwait(false);
 
             return false;
         }

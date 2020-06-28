@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.ComponentModel.DataAnnotations;
 using Trakx.Common.Interfaces.Indice;
 
 namespace Trakx.Common.Models
@@ -24,17 +25,19 @@ namespace Trakx.Common.Models
                 ? "Saved" 
                 : "Published";
         }
-        public string Symbol { get; set; }
+        [Required]
+        public string? Symbol { get; set; }
 
-        public string Name { get; set; }
-        
+        [Required]
+        public string? Name { get; set; }
+
         public DateTime? CreationDate { get; set; }
 
         public string? IndiceState { get; set; }
 
         public string? Address { get; set; }
 
-        public string Description { get; set; }
+        public string? Description { get; set; }
 
         public ushort NaturalUnit { get; set; }
 

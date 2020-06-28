@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 using Microsoft.EntityFrameworkCore;
@@ -9,7 +10,7 @@ using Trakx.Persistence.DAO;
 
 namespace Trakx.Persistence
 {
-    public class IndiceDataCreator :IIndiceDataCreator
+    public class IndiceDataCreator : IIndiceDataCreator
     {
         private readonly IndiceRepositoryContext _dbContext;
 
@@ -18,29 +19,20 @@ namespace Trakx.Persistence
             _dbContext = dbContext;
         }
 
-        public async Task<bool> AddNewIndice(IIndiceDefinition indiceDefinitionDao)
+        public async Task<bool> AddNewIndice(IIndiceDefinition indiceDefinition)
         {
-            await _dbContext.IndiceDefinitions.AddAsync((IndiceDefinitionDao)indiceDefinitionDao);
+            await _dbContext.IndiceDefinitions.AddAsync((IndiceDefinitionDao)indiceDefinition);
             return await _dbContext.SaveChangesAsync() > 0;
         }
 
 
-        public async Task<bool> AddNewComposition(IIndiceComposition indiceCompositionDao,IIndiceDefinition? indiceDefinitionDao)
+        public async Task<bool> AddNewComposition(IIndiceComposition indiceComposition)
         {
-            var indiceComposition = (IndiceCompositionDao)indiceCompositionDao;
-
-            await _dbContext.IndiceCompositions.AddAsync(indiceComposition);
-
-            if (indiceDefinitionDao == null)
-            {
-                await _dbContext.IndiceDefinitions.AddAsync(indiceComposition.IndiceDefinitionDao);
-            }
-                
-            else
-            {
-                _dbContext.Entry(await _dbContext.IndiceDefinitions.FirstOrDefaultAsync(i => i.Symbol == indiceComposition.IndiceDefinitionDao.Symbol)).CurrentValues.SetValues(indiceComposition.IndiceDefinitionDao); //modify entity of indiceDefinitionDao
-            }
-
+            var indiceCompositionDao = new IndiceCompositionDao(indiceComposition);
+            
+            indiceCompositionDao.ComponentQuantityDaos.ForEach(o=>_dbContext.ComponentDefinitions.Attach(o.ComponentDefinitionDao));
+            await _dbContext.IndiceCompositions.AddAsync(indiceCompositionDao);
+        
             return await _dbContext.SaveChangesAsync() > 0;
         }
     }

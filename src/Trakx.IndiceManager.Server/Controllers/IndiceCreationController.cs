@@ -19,13 +19,13 @@ namespace Trakx.IndiceManager.Server.Controllers
 
         private readonly IIndiceDatabaseWriter _indiceDatabaseWriter;
 
-        public IndiceCreationController(IComponentInformationRetriever componentRetriever,IIndiceInformationRetriever indiceRetriever,IIndiceDatabaseWriter indiceDatabaseWriter)
+        public IndiceCreationController(IComponentInformationRetriever componentRetriever, IIndiceInformationRetriever indiceRetriever, IIndiceDatabaseWriter indiceDatabaseWriter)
         {
             _componentRetriever = componentRetriever;
             _indiceRetriever = indiceRetriever;
             _indiceDatabaseWriter = indiceDatabaseWriter;
         }
-        
+
         /// <summary>
         /// Tries to retrieve a component and its details using its address on chain.
         /// </summary>
@@ -38,7 +38,7 @@ namespace Trakx.IndiceManager.Server.Controllers
                 return BadRequest($"{address} is not a valid ethereum address");
 
             var details = await _componentRetriever.GetComponentDefinitionFromAddress(address);
-            
+
             if (details == null)
                 return NotFound($"Sorry {address} doesn't correspond to any ERC20 token.");
 
@@ -93,7 +93,7 @@ namespace Trakx.IndiceManager.Server.Controllers
         {
             var indiceDefinitions = await _indiceRetriever.GetAllIndicesFromDatabase();
 
-            if (indiceDefinitions.Count==0)
+            if (indiceDefinitions.Count == 0)
                 return NotFound("There is no indices in the database.");
 
             var indiceDetails = indiceDefinitions.Select(i => new IndiceDetailModel(i)).ToList();
@@ -127,13 +127,18 @@ namespace Trakx.IndiceManager.Server.Controllers
         /// <param name="indiceToSave">The indice that we want to save.</param>
         /// <returns>An object with a response 201 if the adding was successful</returns>
         [HttpPost]
+        [ProducesResponseType(StatusCodes.Status201Created)]
+        [ProducesResponseType(StatusCodes.Status400BadRequest)]
         public async Task<ActionResult<IndiceDetailModel>> SaveIndiceDefinition([FromBody]IndiceDetailModel indiceToSave)
         {
-            if (!indiceToSave.Address.IsValidEthereumAddressHexFormat())
-                return BadRequest($"{indiceToSave.Address} is not a valid ethereum address");
+            if (indiceToSave.Address != null)
+            {
+                if (!indiceToSave.Address.IsValidEthereumAddressHexFormat())
+                    return BadRequest($"{indiceToSave.Address} is not a valid ethereum address");
 
-            if (await _indiceRetriever.SearchIndiceByAddress(indiceToSave.Address))
-                return BadRequest("The indice is already in the database.");
+                if (await _indiceRetriever.SearchIndiceByAddress(indiceToSave.Address))
+                    return BadRequest("The indice is already in the database.");
+            }
 
             var result = await _indiceDatabaseWriter.TrySaveIndice(indiceToSave);
             if (result == true)
@@ -149,14 +154,18 @@ namespace Trakx.IndiceManager.Server.Controllers
         /// <param name="compositionToSave">The composition that the user want to save.</param>
         /// <returns>An object with a response 201 if the adding was successful.</returns>
         [HttpPost]
+        [ProducesResponseType(StatusCodes.Status201Created)]
+        [ProducesResponseType(StatusCodes.Status400BadRequest)]
         public async Task<ActionResult<IndiceCompositionModel>> SaveIndiceComposition([FromBody] IndiceCompositionModel compositionToSave)
         {
-            if (!compositionToSave.Address.IsValidEthereumAddressHexFormat())
-                return BadRequest($"{compositionToSave.Address} is not a valid ethereum address");
+            if (compositionToSave.Address != null)
+            {
+                if (!compositionToSave.Address.IsValidEthereumAddressHexFormat())
+                    return BadRequest($"{compositionToSave.Address} is not a valid ethereum address");
 
-            if (await _indiceRetriever.SearchCompositionByAddress(compositionToSave.Address))
-                return BadRequest("The composition is already in the database.");
-
+                if (await _indiceRetriever.SearchCompositionByAddress(compositionToSave.Address))
+                    return BadRequest("The composition is already in the database.");
+            }
             var result = await _indiceDatabaseWriter.TrySaveComposition(compositionToSave);
 
             if (result == true)

@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.ComponentModel.DataAnnotations;
 using System.Linq;
 using Trakx.Common.Core;
 using Trakx.Common.Interfaces.Indice;
@@ -27,7 +28,7 @@ namespace Trakx.Common.Models
         }
         public IndiceDetailModel IndiceDetail { get; set; }
 
-        public string Address { get; set; }
+        public string? Address { get; set; }
 
         public string Symbol { get; set; }
 
@@ -37,6 +38,9 @@ namespace Trakx.Common.Models
 
         public uint Version { get; set; }
 
+        [Required]
+        public decimal? TargetedNav { get; set; }
+        
         public IIndiceComposition ConvertToIIndiceComposition(IIndiceDefinition indiceDefinition) 
         {
             var indice = indiceDefinition ?? new IndiceDefinition(IndiceDetail.Symbol, IndiceDetail.Name,

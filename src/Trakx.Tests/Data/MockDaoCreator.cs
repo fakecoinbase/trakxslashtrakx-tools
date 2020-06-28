@@ -27,8 +27,7 @@ namespace Trakx.Tests.Data
             return new IndiceCompositionDao(indiceDefinition,
                 GetRandomCompositionVersion(),
                 GetRandomDateTime(),
-                GetRandomAddressEthereum(),
-                GetRandomCompositionSymbol(indiceDefinition.Symbol));
+                GetRandomAddressEthereum());
         }
 
         public IndiceValuationDao GetRandomIndiceValuationDao(

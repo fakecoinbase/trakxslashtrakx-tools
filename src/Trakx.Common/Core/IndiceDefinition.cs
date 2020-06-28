@@ -13,7 +13,7 @@ namespace Trakx.Common.Core
             Name = name;
             Description = description;
             NaturalUnit = naturalUnit;
-            Address = address;
+            Address = address; 
             CreationDate = creationDate;
 
             Debug.Assert(this.IsValid());

@@ -10,18 +10,13 @@ namespace Trakx.Persistence.DAO
 {
     public class IndiceCompositionDao : IIndiceComposition
     {
-        // Non-nullable field is uninitialized. Consider declaring as nullable.
         // This constructor is for serialisation only
         #nullable disable
-        public IndiceCompositionDao(string address, string symbol)
-        {
-            Address = address;
-            Symbol = symbol;
-        }
+        public IndiceCompositionDao() { }
         #nullable restore
 
         public IndiceCompositionDao(IndiceDefinitionDao indiceDefinition, 
-            uint version, DateTime creationDate, string address, string symbol)
+            uint version, DateTime creationDate, string address)
         {
             Id = $"{indiceDefinition.Symbol}|{version}";
             IndiceDefinitionDao = indiceDefinition;
@@ -35,15 +30,21 @@ namespace Trakx.Persistence.DAO
 
         public IndiceCompositionDao(IIndiceComposition composition)
         {
-            IndiceDefinitionDao = new IndiceDefinitionDao(composition.IndiceDefinition.Symbol, composition.IndiceDefinition.Name, composition.IndiceDefinition.Description, composition.IndiceDefinition.NaturalUnit, composition.IndiceDefinition.Address, composition.IndiceDefinition.CreationDate);
+            IndiceDefinitionDao = new IndiceDefinitionDao(composition.IndiceDefinition.Symbol,
+                composition.IndiceDefinition.Name, composition.IndiceDefinition.Description,
+                composition.IndiceDefinition.NaturalUnit, composition.IndiceDefinition.Address,
+                composition.IndiceDefinition.CreationDate);
             Version = composition.Version;
             CreationDate = composition.CreationDate;
             Address = composition.Address;
             Symbol = composition.Symbol;
             Id = composition.GetCompositionId();
-            
+
             ComponentQuantityDaos = composition.ComponentQuantities.Select(c => new ComponentQuantityDao(this,
-                new ComponentDefinitionDao(c.ComponentDefinition.Address, c.ComponentDefinition.Name, c.ComponentDefinition.Symbol, c.ComponentDefinition.CoinGeckoId, c.ComponentDefinition.Decimals), Convert.ToUInt64(c.Quantity.DescaleComponentQuantity(c.ComponentDefinition.Decimals, IndiceDefinitionDao.NaturalUnit)))).ToList<ComponentQuantityDao>();
+                new ComponentDefinitionDao(c.ComponentDefinition.Address, c.ComponentDefinition.Name,
+                    c.ComponentDefinition.Symbol, c.ComponentDefinition.CoinGeckoId, c.ComponentDefinition.Decimals),
+                Convert.ToUInt64(c.Quantity.DescaleComponentQuantity(c.ComponentDefinition.Decimals,
+                    IndiceDefinitionDao.NaturalUnit)))).ToList();
             IndiceValuationDaos=new List<IndiceValuationDao>();
         }
 
@@ -54,10 +55,10 @@ namespace Trakx.Persistence.DAO
         /// Unique identifier generated and used as a primary key on the database object.
         /// </summary>
         [Key]
-        public string Id { get; private set; }
+        public string Id { get; private set;  }
 
         /// <inheritdoc />
-        public string Address { get; set; }
+        public string? Address { get; set; }
 
         /// <inheritdoc />
         public string Symbol { get; set; }
@@ -66,6 +67,7 @@ namespace Trakx.Persistence.DAO
         [NotMapped]
         public IIndiceDefinition IndiceDefinition => IndiceDefinitionDao;
 
+        [Required]
         public IndiceDefinitionDao IndiceDefinitionDao { get; set; }
 
         public List<IndiceValuationDao> IndiceValuationDaos { get; set; }

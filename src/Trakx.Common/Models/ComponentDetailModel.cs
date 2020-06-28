@@ -1,4 +1,5 @@
 ﻿using Ardalis.GuardClauses;
+using System.ComponentModel.DataAnnotations;
 using Trakx.Common.Core;
 using Trakx.Common.Interfaces.Indice;
 
@@ -32,7 +33,10 @@ namespace Trakx.Common.Models
             Decimals = componentDefinition.Decimals;
             CoinGeckoId = componentDefinition.CoinGeckoId;
         }
+
         public string Address { get; set; }
+
+        [Required]
         public string Symbol { get; set; }
         public decimal? Quantity { get; set; }
         public string? Name { get; set; }
@@ -40,6 +44,10 @@ namespace Trakx.Common.Models
         public string? CoinGeckoId { get; set; }
 
         public ushort Decimals { get; set; }
+        public decimal? UsdcValue { get; set; }
+
+        [Required, Range(1e-6, 1)]
+        public decimal? Weight { get; set; }
 
         public bool IsValid()
         {
