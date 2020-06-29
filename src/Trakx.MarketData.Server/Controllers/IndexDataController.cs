@@ -39,15 +39,15 @@ namespace Trakx.MarketData.Server.Controllers
         /// Use this endpoint to retrieve details about the composition of an indice, such as issuance date, short description,
         /// component weights, valuations, associated icons, etc.
         /// </summary>
-        /// <param name="indiceSymbol">The symbol for the indice on which data is requested.</param>
+        /// <param name="indexSymbol">The symbol for the indice on which data is requested.</param>
         /// <returns>Basic information about the indice definition, including issuance and current valuation details.</returns>
         [HttpGet]
-        public async Task<ActionResult<string>> IndexDetailsPriced([FromQuery] string indiceSymbol)
+        public async Task<ActionResult<string>> IndexDetailsPriced([FromQuery] string indexSymbol)
         {
-            var composition = await _indiceProvider.GetCurrentComposition(indiceSymbol);
+            var composition = await _indiceProvider.GetCurrentComposition(indexSymbol);
 
             if (composition == default)
-                return new JsonResult($"failed to retrieve details for indice {indiceSymbol}");
+                return new JsonResult($"failed to retrieve details for indice {indexSymbol}");
 
             var currentValuation = await _navCalculator.GetIndiceValuation(composition)
                 .ConfigureAwait(false);
