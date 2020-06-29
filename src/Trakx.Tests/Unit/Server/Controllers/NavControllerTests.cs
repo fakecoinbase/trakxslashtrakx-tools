@@ -9,7 +9,7 @@ using Trakx.Common.Interfaces;
 using Trakx.Common.Interfaces.Indice;
 using Trakx.Common.Interfaces.Pricing;
 using Trakx.MarketData.Server.Controllers;
-using Trakx.Tests.Data;
+using Trakx.Persistence.Tests;
 using Xunit;
 using Xunit.Abstractions;
 

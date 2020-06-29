@@ -4,14 +4,13 @@ using FluentAssertions;
 using Microsoft.Extensions.Caching.Memory;
 using Microsoft.Extensions.Logging;
 using NSubstitute;
-using Trakx.Persistence;
 using Trakx.Persistence.DAO;
+using Trakx.Persistence.Tests.Model;
 using Trakx.Tests.Data;
-using Trakx.Tests.Unit.Models;
 using Xunit;
 using Xunit.Abstractions;
 
-namespace Trakx.Tests.Unit.Persistence
+namespace Trakx.Persistence.Tests.Unit
 {
     [Collection(nameof(EmptyDbContextCollection))]
     public sealed class IndiceDataProviderTests

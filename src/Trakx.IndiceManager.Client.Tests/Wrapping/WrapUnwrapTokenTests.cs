@@ -15,6 +15,7 @@ using Bunit;
 using Syncfusion.Blazor;
 using Flurl.Http.Testing;
 using Flurl.Http;
+using Trakx.Persistence.Tests;
 
 namespace Trakx.IndiceManager.Client.Tests.Wrapping
 {

@@ -8,8 +8,9 @@ using Trakx.Common.Models;
 using Trakx.IndiceManager.Server.Managers;
 using Trakx.Persistence;
 using Trakx.Persistence.DAO;
+using Trakx.Persistence.Tests;
+using Trakx.Persistence.Tests.Model;
 using Trakx.Tests.Data;
-using Trakx.Tests.Unit.Models;
 using Xunit;
 using Xunit.Abstractions;
 

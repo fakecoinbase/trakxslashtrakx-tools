@@ -1,10 +1,9 @@
 ﻿using System;
 using System.Linq;
 using System.Net.Http;
-using System.Text.Json;
 using System.Threading.Tasks;
 using Flurl.Http;
-using Trakx.Tests.Unit.Models;
+using Trakx.Persistence.Tests.Model;
 using Xunit;
 using Xunit.Abstractions;
 

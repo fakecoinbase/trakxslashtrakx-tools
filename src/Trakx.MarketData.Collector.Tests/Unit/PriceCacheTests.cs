@@ -18,6 +18,7 @@ using Trakx.Common.Utils;
 using Trakx.MarketData.Collector.CryptoCompare;
 using Trakx.MarketData.Collector.CryptoCompare.DTOs.Inbound;
 using Trakx.MarketData.Collector.CryptoCompare.DTOs.Outbound;
+using Trakx.Persistence.Tests;
 using Trakx.Tests.Data;
 using Xunit;
 using Xunit.Abstractions;

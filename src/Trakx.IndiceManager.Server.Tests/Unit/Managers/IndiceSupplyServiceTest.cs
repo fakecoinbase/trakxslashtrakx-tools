@@ -8,6 +8,7 @@ using Trakx.Common.Interfaces;
 using Trakx.Common.Interfaces.Transaction;
 using Trakx.Common.Models;
 using Trakx.IndiceManager.Server.Managers;
+using Trakx.Persistence.Tests;
 using Trakx.Tests.Data;
 using Xunit;
 using Xunit.Abstractions;

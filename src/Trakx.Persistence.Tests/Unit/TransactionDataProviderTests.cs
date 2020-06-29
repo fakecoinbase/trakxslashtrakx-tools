@@ -3,23 +3,22 @@ using System.Threading.Tasks;
 using FluentAssertions;
 using Trakx.Common.Interfaces;
 using Trakx.Common.Interfaces.Transaction;
-using Trakx.Persistence;
 using Trakx.Persistence.DAO;
+using Trakx.Persistence.Tests.Model;
 using Trakx.Tests.Data;
-using Trakx.Tests.Unit.Models;
 using Xunit;
 using Xunit.Abstractions;
 
-namespace Trakx.Tests.Unit.Persistence
+namespace Trakx.Persistence.Tests.Unit
 {
     [Collection(nameof(EmptyDbContextCollection))]
-    public sealed class TransactionDataProviderTest
+    public sealed class TransactionDataProviderTests
     {
         private readonly IndiceRepositoryContext _context;
         private readonly ITransactionDataProvider _transactionDataProvider;
         private readonly MockCreator _mockCreator;
 
-        public TransactionDataProviderTest(EmptyDbContextFixture fixture, ITestOutputHelper output)
+        public TransactionDataProviderTests(EmptyDbContextFixture fixture, ITestOutputHelper output)
         {
             _context = fixture.Context;
             _transactionDataProvider = new TransactionDataProvider(_context);

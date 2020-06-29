@@ -1,7 +1,7 @@
 ﻿using System;
 using Xunit;
 
-namespace Trakx.Tests.Unit.Models
+namespace Trakx.Persistence.Tests.Model
 {
     public sealed class EmptyDbContextFixture : IDisposable
     {

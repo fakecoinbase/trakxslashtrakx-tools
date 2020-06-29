@@ -11,6 +11,7 @@ using Trakx.Common.Extensions;
 using Trakx.Common.Interfaces.Indice;
 using Trakx.Contracts.Set;
 using Trakx.Contracts.Set.Core;
+using Trakx.Persistence.Tests;
 using Trakx.Tests.Data;
 using Xunit;
 using Xunit.Abstractions;

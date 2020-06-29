@@ -3,20 +3,19 @@ using System.Threading.Tasks;
 using FluentAssertions;
 using Microsoft.EntityFrameworkCore;
 using Trakx.Common.Interfaces;
-using Trakx.Persistence;
 using Trakx.Persistence.DAO;
-using Trakx.Tests.Unit.Models;
+using Trakx.Persistence.Tests.Model;
 using Xunit;
 
-namespace Trakx.Tests.Unit.Persistence
+namespace Trakx.Persistence.Tests.Unit
 {
     [Collection(nameof(EmptyDbContextCollection))]
-    public sealed class IndiceDataModifierTest
+    public sealed class IndiceDataModifierTests
     {
         private readonly IndiceRepositoryContext _context;
         private readonly IIndiceDataModifier _indiceDataModifier;
 
-        public IndiceDataModifierTest(EmptyDbContextFixture fixture)
+        public IndiceDataModifierTests(EmptyDbContextFixture fixture)
         {
             _context = fixture.Context;
             _indiceDataModifier = new IndiceDataModifier(_context);

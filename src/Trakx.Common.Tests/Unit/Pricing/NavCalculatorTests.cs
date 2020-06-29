@@ -14,6 +14,7 @@ using Trakx.Common.Pricing;
 using Trakx.Common.Sources.CoinGecko;
 using Trakx.Common.Sources.Messari.Client;
 using Trakx.Common.Utils;
+using Trakx.Persistence.Tests;
 using Trakx.Tests.Data;
 using Xunit;
 using Xunit.Abstractions;

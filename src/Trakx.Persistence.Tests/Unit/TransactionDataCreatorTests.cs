@@ -2,25 +2,24 @@
 using System.Linq;
 using System.Threading.Tasks;
 using FluentAssertions;
+using Microsoft.EntityFrameworkCore;
 using Trakx.Common.Interfaces;
 using Trakx.Common.Interfaces.Transaction;
-using Trakx.Persistence;
 using Trakx.Persistence.DAO;
-using Trakx.Tests.Data;
-using Trakx.Tests.Unit.Models;
+using Trakx.Persistence.Tests.Model;
 using Xunit;
 using Xunit.Abstractions;
 
-namespace Trakx.Tests.Unit.Persistence
+namespace Trakx.Persistence.Tests.Unit
 {
     [Collection(nameof(EmptyDbContextCollection))]
-    public sealed class TransactionDataCreatorTest
+    public sealed class TransactionDataCreatorTests
     {
         private readonly IndiceRepositoryContext _context;
         private readonly ITransactionDataCreator _transactionDataCreator;
         private readonly MockCreator _mockCreator;
 
-        public TransactionDataCreatorTest(EmptyDbContextFixture fixture, ITestOutputHelper output)
+        public TransactionDataCreatorTests(EmptyDbContextFixture fixture, ITestOutputHelper output)
         {
             _context = fixture.Context;
             _transactionDataCreator = new TransactionDataCreator(_context);

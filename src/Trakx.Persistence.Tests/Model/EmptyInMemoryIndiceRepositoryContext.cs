@@ -1,7 +1,6 @@
 ﻿using Microsoft.EntityFrameworkCore;
-using Trakx.Persistence;
 
-namespace Trakx.Tests.Unit.Models
+namespace Trakx.Persistence.Tests.Model
 {
     public class EmptyInMemoryIndiceRepositoryContext : IndiceRepositoryContext
     {

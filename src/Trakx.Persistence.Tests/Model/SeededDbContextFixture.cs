@@ -1,10 +1,10 @@
 ﻿using System;
 using AutoMapper;
 using Microsoft.Extensions.DependencyInjection;
-using Trakx.MarketData.Server.Models;
+using Trakx.Persistence.DAO;
 using Xunit;
 
-namespace Trakx.Tests.Unit.Models
+namespace Trakx.Persistence.Tests.Model
 {
     public sealed class SeededDbContextFixture : IDisposable
     {

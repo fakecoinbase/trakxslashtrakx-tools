@@ -1,26 +1,24 @@
-﻿using System;
-using System.Threading.Tasks;
+﻿using System.Threading.Tasks;
 using FluentAssertions;
 using Microsoft.EntityFrameworkCore;
 using Trakx.Common.Interfaces;
 using Trakx.Common.Interfaces.Transaction;
-using Trakx.Persistence;
 using Trakx.Persistence.DAO;
+using Trakx.Persistence.Tests.Model;
 using Trakx.Tests.Data;
-using Trakx.Tests.Unit.Models;
 using Xunit;
 using Xunit.Abstractions;
 
-namespace Trakx.Tests.Unit.Persistence
+namespace Trakx.Persistence.Tests.Unit
 {
     [Collection(nameof(EmptyDbContextCollection))]
-    public sealed class TransactionDataModifierTest
+    public sealed class TransactionDataModifierTests
     {
         private readonly IndiceRepositoryContext _context;
         private readonly ITransactionDataModifier _transactionDataModifier;
         private readonly MockCreator _mockCreator;
 
-        public TransactionDataModifierTest(EmptyDbContextFixture fixture, ITestOutputHelper output)
+        public TransactionDataModifierTests(EmptyDbContextFixture fixture, ITestOutputHelper output)
         {
             _context = fixture.Context;
             _transactionDataModifier = new TransactionDataModifier(_context);

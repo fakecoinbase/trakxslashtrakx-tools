@@ -5,13 +5,13 @@ using Trakx.Tests.Data;
 using Xunit;
 using Xunit.Abstractions;
 
-namespace Trakx.Tests.Unit.Persistence.DAO
+namespace Trakx.Persistence.Tests.Unit.DAO
 {
-    public class FromIndiceCompositionToDaoTest
+    public class FromIndiceCompositionToDaoTests
     {
         private readonly IIndiceComposition _newComposition;
 
-        public FromIndiceCompositionToDaoTest(ITestOutputHelper output)
+        public FromIndiceCompositionToDaoTests(ITestOutputHelper output)
         {
             var mockCreator = new MockCreator(output);
             _newComposition = mockCreator.GetIndiceComposition(3);

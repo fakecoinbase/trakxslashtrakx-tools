@@ -4,7 +4,7 @@ using Trakx.Common.Core;
 using Trakx.Persistence.DAO;
 using Xunit;
 
-namespace Trakx.Tests.Unit.Persistence.DAO
+namespace Trakx.Persistence.Tests.Unit.DAO
 {
     public class InterfaceToDaoMappingProfileTests
     {

@@ -10,7 +10,7 @@ using Microsoft.Extensions.Caching.Memory;
 using Microsoft.Extensions.DependencyInjection;
 using Trakx.Common.Interfaces.Indice;
 using Trakx.Persistence;
-using Trakx.Tests.Unit.Models;
+using Trakx.Persistence.Tests.Model;
 using Xunit;
 using Xunit.Abstractions;
 

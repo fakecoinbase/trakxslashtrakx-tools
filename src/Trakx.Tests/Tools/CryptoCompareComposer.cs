@@ -10,7 +10,7 @@ using Trakx.Common.Extensions;
 using Trakx.Common.Sources.CoinGecko;
 using Trakx.Common.Sources.Messari.Client;
 using Trakx.MarketData.Collector.CryptoCompare;
-using Trakx.Tests.Unit.Models;
+using Trakx.Persistence.Tests.Model;
 using Xunit;
 using Xunit.Abstractions;
 

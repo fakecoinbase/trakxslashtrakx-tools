@@ -1,26 +1,22 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Text;
-using System.Threading.Tasks;
+﻿using System.Threading.Tasks;
 using FluentAssertions;
 using Microsoft.EntityFrameworkCore;
 using Trakx.Common.Interfaces;
-using Trakx.Persistence;
 using Trakx.Persistence.DAO;
+using Trakx.Persistence.Tests.Model;
 using Trakx.Tests.Data;
-using Trakx.Tests.Unit.Models;
 using Xunit;
 using Xunit.Abstractions;
 
-namespace Trakx.Tests.Unit.Persistence
+namespace Trakx.Persistence.Tests.Unit
 {
     [Collection(nameof(EmptyDbContextCollection))]
-    public class UserAddressProviderTest
+    public class UserAddressProviderTests
     {
         private readonly IndiceRepositoryContext _context;
         private readonly IUserAddressProvider _userAddressProvider;
         private readonly MockDaoCreator _mockDaoCreator;
-        public UserAddressProviderTest(EmptyDbContextFixture fixture, ITestOutputHelper output)
+        public UserAddressProviderTests(EmptyDbContextFixture fixture, ITestOutputHelper output)
         {
             _context = fixture.Context;
             _mockDaoCreator = new MockDaoCreator(output);

@@ -2,7 +2,7 @@
 using System.Linq;
 using FluentAssertions;
 using Trakx.Common.Composition;
-using Trakx.Tests.Data;
+using Trakx.Persistence.Tests;
 using Xunit;
 using Xunit.Abstractions;
 

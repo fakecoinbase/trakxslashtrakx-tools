@@ -1,13 +1,14 @@
 ﻿using System.Linq;
 using FluentAssertions;
 using Trakx.Common.Interfaces.Indice;
+using Trakx.Persistence.Tests.Model;
 using Xunit;
 using Xunit.Abstractions;
 
-namespace Trakx.Tests.Unit.Models.Indice
+namespace Trakx.Persistence.Tests.Unit.Initialisation
 {
     [Collection(nameof(SeededDbContextCollection))]
-    public class IndiceDefinitionTests
+    public class DatabaseInitialiserTests
     {
         private readonly SeededDbContextFixture _fixture;
         private readonly ITestOutputHelper _output;
@@ -16,7 +17,7 @@ namespace Trakx.Tests.Unit.Models.Indice
         private readonly int _expectedCompositionCount;
         private readonly int _expectedQuantitiesCount;
 
-        public IndiceDefinitionTests(SeededDbContextFixture fixture, ITestOutputHelper output)
+        public DatabaseInitialiserTests(SeededDbContextFixture fixture, ITestOutputHelper output)
         {
             _fixture = fixture;
             _output = output;

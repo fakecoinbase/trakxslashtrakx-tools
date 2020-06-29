@@ -1,24 +1,22 @@
 ﻿using System.Threading.Tasks;
 using FluentAssertions;
 using Trakx.Common.Interfaces;
-using Trakx.Common.Interfaces.Indice;
-using Trakx.Persistence;
 using Trakx.Persistence.DAO;
+using Trakx.Persistence.Tests.Model;
 using Trakx.Tests.Data;
-using Trakx.Tests.Unit.Models;
 using Xunit;
 using Xunit.Abstractions;
 
-namespace Trakx.Tests.Unit.Persistence
+namespace Trakx.Persistence.Tests.Unit
 {
     [Collection(nameof(EmptyDbContextCollection))]
-    public class ComponentDataProviderTest
+    public class ComponentDataProviderTests
     {
         private readonly IndiceRepositoryContext _context;
         private readonly IComponentDataProvider _componentDataProvider;
         private readonly MockCreator _mockCreator;
 
-        public ComponentDataProviderTest(EmptyDbContextFixture fixture,ITestOutputHelper output)
+        public ComponentDataProviderTests(EmptyDbContextFixture fixture,ITestOutputHelper output)
         {
             _mockCreator=new MockCreator(output);
             _context = fixture.Context;

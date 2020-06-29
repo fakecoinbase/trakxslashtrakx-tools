@@ -10,7 +10,7 @@ using Trakx.Common.Interfaces.Indice;
 using Trakx.MarketData.Server.Models;
 using NSubstitute;
 using Trakx.MarketData.Server.Controllers;
-using Trakx.Tests.Data;
+using Trakx.Persistence.Tests;
 using Xunit.Abstractions;
 
 

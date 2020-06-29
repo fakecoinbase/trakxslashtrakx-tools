@@ -2,6 +2,7 @@
 using System.Collections.Generic;
 using System.Linq;
 using Trakx.Persistence.DAO;
+using Trakx.Persistence.Tests;
 using Xunit.Abstractions;
 
 namespace Trakx.Tests.Data

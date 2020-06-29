@@ -22,6 +22,7 @@ using Trakx.MarketData.Server.Data;
 using Trakx.MarketData.Server.Hubs;
 using Trakx.MarketData.Server.Models;
 using Trakx.Persistence;
+using Trakx.Persistence.DAO;
 using Trakx.Persistence.Initialisation;
 
 namespace Trakx.MarketData.Server

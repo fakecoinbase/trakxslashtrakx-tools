@@ -11,7 +11,7 @@ using Trakx.Common.Composition;
 using Trakx.Common.Interfaces.Indice;
 using Trakx.Persistence.DAO;
 
-[assembly: InternalsVisibleTo("Trakx.Tests")]
+[assembly: InternalsVisibleTo("Trakx.Persistence.Tests")]
 
 namespace Trakx.Persistence.Initialisation
 {
@@ -52,7 +52,7 @@ namespace Trakx.Persistence.Initialisation
             await _dbContext.SaveChangesAsync().ConfigureAwait(false);
         }
 
-        internal static async Task AddKnownIndicees(IndiceRepositoryContext dbContext, IMapper mapper)
+        public static async Task AddKnownIndicees(IndiceRepositoryContext dbContext, IMapper mapper)
         {
             using var cancellationTokenSource = new CancellationTokenSource();
             var cancellationToken = cancellationTokenSource.Token;

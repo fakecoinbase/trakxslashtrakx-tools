@@ -3,17 +3,16 @@ using System.Threading.Tasks;
 using FluentAssertions;
 using Microsoft.EntityFrameworkCore;
 using Trakx.Common.Interfaces;
-using Trakx.Persistence;
 using Trakx.Persistence.DAO;
+using Trakx.Persistence.Tests.Model;
 using Trakx.Tests.Data;
-using Trakx.Tests.Unit.Models;
 using Xunit;
 using Xunit.Abstractions;
 
-namespace Trakx.Tests.Unit.Persistence
+namespace Trakx.Persistence.Tests.Unit
 {
     [Collection(nameof(EmptyDbContextCollection))]
-    public sealed class IndiceDataCreatorTest
+    public sealed class IndiceDataCreatorTests
     {
         private const string IndiceName = "TrakxTest";
         private const string IndiceDescription = "nothing to describe";
@@ -23,7 +22,7 @@ namespace Trakx.Tests.Unit.Persistence
         private readonly IIndiceDataCreator _indiceDataCreator;
         private readonly string _indiceSymbol;
 
-        public IndiceDataCreatorTest(EmptyDbContextFixture fixture, ITestOutputHelper output)
+        public IndiceDataCreatorTests(EmptyDbContextFixture fixture, ITestOutputHelper output)
         {
             _context = fixture.Context;
             _indiceDataCreator = new IndiceDataCreator(_context);

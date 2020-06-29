@@ -1,27 +1,23 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Text;
-using System.Threading.Tasks;
+﻿using System.Threading.Tasks;
 using FluentAssertions;
 using Microsoft.EntityFrameworkCore;
 using Trakx.Common.Interfaces;
-using Trakx.Persistence;
 using Trakx.Persistence.DAO;
+using Trakx.Persistence.Tests.Model;
 using Trakx.Tests.Data;
-using Trakx.Tests.Unit.Models;
 using Xunit;
 using Xunit.Abstractions;
 
-namespace Trakx.Tests.Unit.Persistence
+namespace Trakx.Persistence.Tests.Unit
 {
     [Collection(nameof(EmptyDbContextCollection))]
-    public class ComponentDataCreatorTest
+    public class ComponentDataCreatorTests
     {
         private readonly IndiceRepositoryContext _context;
         private readonly IComponentDataCreator _componentDataCreator;
         private readonly MockCreator _mockCreator;
 
-        public ComponentDataCreatorTest(EmptyDbContextFixture fixture,ITestOutputHelper output)
+        public ComponentDataCreatorTests(EmptyDbContextFixture fixture,ITestOutputHelper output)
         {
             _mockCreator=new MockCreator(output);
             _context = fixture.Context;

@@ -15,6 +15,7 @@ using Trakx.Common.Models;
 using System.Linq;
 using Trakx.Common.Composition;
 using Trakx.IndiceManager.ApiClient;
+using Trakx.Persistence.Tests;
 
 namespace Trakx.IndiceManager.Client.Tests.IndiceComposition
 {

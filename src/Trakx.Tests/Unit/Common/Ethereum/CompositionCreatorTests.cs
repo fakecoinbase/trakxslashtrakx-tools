@@ -9,6 +9,7 @@ using Trakx.Common.Ethereum;
 using Trakx.Common.Extensions;
 using Trakx.Contracts.Set.Core;
 using Trakx.Contracts.Set;
+using Trakx.Persistence.Tests;
 using Trakx.Tests.Data;
 using Xunit;
 using Xunit.Abstractions;

@@ -9,7 +9,7 @@ using Trakx.Common.Interfaces.Indice;
 using Trakx.Common.Interfaces.Transaction;
 using Xunit.Abstractions;
 
-namespace Trakx.Tests.Data
+namespace Trakx.Persistence.Tests
 {
     public static class TestOutputHelperExtensions
     {
