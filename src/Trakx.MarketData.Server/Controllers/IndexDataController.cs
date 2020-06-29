@@ -16,18 +16,18 @@ namespace Trakx.MarketData.Server.Controllers
     /// </summary>
     [ApiController]
     [Route("[controller]/[action]")]
-    public class IndiceDataController : ControllerBase
+    public class IndexDataController : ControllerBase
     {
         private readonly IIndiceDataProvider _indiceProvider;
         private readonly INavCalculator _navCalculator;
         private readonly IHostEnvironment _hostEnvironment;
 
-        private readonly ILogger<IndiceDataController> _logger;
+        private readonly ILogger<IndexDataController> _logger;
 
-        public IndiceDataController(IIndiceDataProvider indiceProvider,
+        public IndexDataController(IIndiceDataProvider indiceProvider,
             INavCalculator navCalculator,
             IHostEnvironment hostEnvironment,
-            ILogger<IndiceDataController> logger)
+            ILogger<IndexDataController> logger)
         {
             _indiceProvider = indiceProvider;
             _navCalculator = navCalculator;
@@ -42,7 +42,7 @@ namespace Trakx.MarketData.Server.Controllers
         /// <param name="indiceSymbol">The symbol for the indice on which data is requested.</param>
         /// <returns>Basic information about the indice definition, including issuance and current valuation details.</returns>
         [HttpGet]
-        public async Task<ActionResult<string>> IndiceDetailsPriced([FromQuery] string indiceSymbol)
+        public async Task<ActionResult<string>> IndexDetailsPriced([FromQuery] string indiceSymbol)
         {
             var composition = await _indiceProvider.GetCurrentComposition(indiceSymbol);
 
@@ -70,39 +70,6 @@ namespace Trakx.MarketData.Server.Controllers
             var indicePriced = IndicePricedModel.FromIndiceValuations(issuanceValuation, currentValuation);
             indicePriced.ComponentDefinitions.ForEach(d => d.IconUrl = iconBySymbol[d.Symbol.ToLower()]);
             return new JsonResult(indicePriced);
-        }
-    }
-
-    /// <summary>
-    /// Provides endpoints related indice information
-    /// </summary>
-    [ApiController]
-    [Route("[controller]/[action]")]
-    [Obsolete("For backward compatibility with exchange only.")]
-    public class IndexDataController
-    {
-        /// <inheritdoc />
-        private readonly IndiceDataController _indiceDataController;
-
-        public IndexDataController(IIndiceDataProvider indiceProvider,
-            INavCalculator navCalculator,
-            IHostEnvironment hostEnvironment,
-            ILogger<IndiceDataController> logger)
-        {
-            _indiceDataController = new IndiceDataController(indiceProvider, navCalculator, hostEnvironment, logger);
-        }
-
-
-        /// <summary>
-        /// Use this endpoint to retrieve details about the composition of an indice, such as issuance date, short description,
-        /// component weights, valuations, associated icons, etc.
-        /// </summary>
-        /// <param name="indexSymbol">The symbol for the indice on which data is requested.</param>
-        /// <returns>Basic information about the indice definition, including issuance and current valuation details.</returns>
-        [HttpGet]
-        public async Task<ActionResult<string>> IndexDetailsPriced([FromQuery] string indexSymbol)
-        {
-            return await _indiceDataController.IndiceDetailsPriced(indexSymbol).ConfigureAwait(false);
         }
     }
 }

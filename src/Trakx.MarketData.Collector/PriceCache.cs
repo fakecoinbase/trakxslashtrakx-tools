@@ -202,7 +202,7 @@ namespace Trakx.MarketData.Collector
         /// </summary>
         private void BuildRestSourcedList()
         {
-            _restSourcedSymbols.AddRange(AllConstituentsSymbols.Except(WebSocketSourcedSymbols));
+            _restSourcedSymbols.AddRange(AllConstituentsSymbols);
             _logger.LogInformation("Getting prices for [{0}] from Rest.", string.Join(", ", RestSourcedSymbols));
         }
 
@@ -215,6 +215,7 @@ namespace Trakx.MarketData.Collector
 
         private async Task SetNewPriceInCache(CurrencyPair currencyPair, CancellationToken cancellationToken)
         {
+            if (currencyPair.Price == 0) return;
             try
             {
                 await _cache.SetAsync(currencyPair.FromSymbol.GetLatestPriceCacheKey(currencyPair.ToSymbol),

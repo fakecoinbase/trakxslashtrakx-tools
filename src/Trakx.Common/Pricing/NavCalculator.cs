@@ -120,7 +120,7 @@ namespace Trakx.Common.Pricing
                 try
                 {
                     var result = await priceSource.Value(component).ConfigureAwait(false);
-                    if (result.Symbol != default) return result;
+                    if (result.Price != default) return result;
                 }
                 catch (Exception e)
                 {

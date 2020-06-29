@@ -1,5 +1,6 @@
 ﻿using System;
 using System.ComponentModel.DataAnnotations;
+using System.ComponentModel.DataAnnotations.Schema;
 using Trakx.Common.Interfaces;
 
 namespace Trakx.Persistence.DAO
@@ -49,9 +50,11 @@ namespace Trakx.Persistence.DAO
         public string Address { get; set; }
 
         /// <inheritdoc />
+        [Column(TypeName = "decimal(38, 18)")]
         public decimal Balance { get; set; }
 
         /// <inheritdoc />
+        [Column(TypeName = "decimal(38, 18)")]
         public decimal VerificationAmount { get; set; }
 
         /// <inheritdoc />

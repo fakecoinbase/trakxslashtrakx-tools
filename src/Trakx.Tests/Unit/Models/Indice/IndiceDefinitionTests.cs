@@ -2,6 +2,7 @@
 using FluentAssertions;
 using Trakx.Common.Interfaces.Indice;
 using Xunit;
+using Xunit.Abstractions;
 
 namespace Trakx.Tests.Unit.Models.Indice
 {
@@ -9,18 +10,20 @@ namespace Trakx.Tests.Unit.Models.Indice
     public class IndiceDefinitionTests
     {
         private readonly SeededDbContextFixture _fixture;
+        private readonly ITestOutputHelper _output;
         private readonly int _expectedIndiceCount;
         private readonly int _expectedComponentCount;
         private readonly int _expectedCompositionCount;
         private readonly int _expectedQuantitiesCount;
 
-        public IndiceDefinitionTests(SeededDbContextFixture fixture)
+        public IndiceDefinitionTests(SeededDbContextFixture fixture, ITestOutputHelper output)
         {
             _fixture = fixture;
-            _expectedIndiceCount = 9;
-            _expectedCompositionCount = 23 + 7;
-            _expectedComponentCount = 60;
-            _expectedQuantitiesCount = 52 + 53 + 25 + 28 + 28;
+            _output = output;
+            _expectedIndiceCount = 10;
+            _expectedCompositionCount = 23 + 7 + 8;
+            _expectedComponentCount = 63;
+            _expectedQuantitiesCount = 52 + 53 + 25 + 28 + 28 + 32;
         }
 
         [Fact]
@@ -61,9 +64,10 @@ namespace Trakx.Tests.Unit.Models.Indice
         public void IndiceCompositions_should_not_be_empty()
         {
             var indiceCompositions = _fixture.Context.IndiceCompositions.ToList();
+            indiceCompositions.OrderBy(c => c.Symbol).ThenBy(c => c.Version).ToList()
+                .ForEach(s => _output.WriteLine($"{s.Symbol} - v{s.Version}"));
             indiceCompositions.Count.Should().Be(_expectedCompositionCount);
-            indiceCompositions.Where(i => i.Version == 1).Sum(i => i.ComponentQuantityDaos.Count).Should().Be(69);
-            indiceCompositions.Where(i => i.Version == 2).Sum(i => i.ComponentQuantityDaos.Count).Should().Be(70);
+
             foreach (var indiceCompositionDao in indiceCompositions)
             {
                 indiceCompositionDao.IsValid().Should().BeTrue();

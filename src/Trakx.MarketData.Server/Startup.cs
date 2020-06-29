@@ -12,7 +12,6 @@ using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Hosting;
 using Microsoft.OpenApi.Models;
-using StackExchange.Redis;
 using Trakx.Common.Ethereum;
 using Trakx.Common.Interfaces;
 using Trakx.Common.Pricing;

@@ -35,7 +35,7 @@ namespace Trakx.Persistence.DAO
         public string Name { get; set; }
 
         /// <inheritdoc />
-        public string? Description { get; set; }
+        public string Description { get; set; }
 
         /// <inheritdoc />
         [MaxLength(256)]

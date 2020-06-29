@@ -22,7 +22,7 @@ namespace Trakx.Tests.Unit.Server.Controllers
        private readonly IIndiceDataProvider _indiceProvider;
         private readonly INavCalculator _navCalculator;
         private readonly MockCreator _mockCreator;
-        private readonly IndiceDataController _indiceDataController;
+        private readonly IndexDataController _indiceDataController;
 
 
         public IndiceDataControllerTest(ITestOutputHelper output)
@@ -30,7 +30,8 @@ namespace Trakx.Tests.Unit.Server.Controllers
             _indiceProvider = Substitute.For<IIndiceDataProvider>();
             _navCalculator = Substitute.For<INavCalculator>(); 
             _mockCreator = new MockCreator(output);
-            _indiceDataController= new IndiceDataController(_indiceProvider,_navCalculator, Substitute.For<IHostEnvironment>(), Substitute.For<ILogger<IndiceDataController>>());
+            _indiceDataController= new IndexDataController(_indiceProvider,_navCalculator, Substitute.For<IHostEnvironment>(), 
+                Substitute.For<ILogger<IndexDataController>>());
         }
 
         [Fact]
@@ -44,7 +45,7 @@ namespace Trakx.Tests.Unit.Server.Controllers
             _indiceProvider.GetInitialValuation(composition).Returns(valuations);
             _navCalculator.GetIndiceValuation(composition).Returns(valuations);
 
-            var result = await _indiceDataController.IndiceDetailsPriced(symbol);
+            var result = await _indiceDataController.IndexDetailsPriced(symbol);
             
             await _indiceProvider.Received(1).GetInitialValuation(composition);
             IndicePricedModel finalResults = (IndicePricedModel)((JsonResult) result.Result).Value;
@@ -70,7 +71,7 @@ namespace Trakx.Tests.Unit.Server.Controllers
             var symbol = _mockCreator.GetRandomIndiceSymbol();
 
             _indiceProvider.GetCurrentComposition(symbol).ReturnsForAnyArgs((IIndiceComposition)default);
-            var result = await _indiceDataController.IndiceDetailsPriced(symbol);
+            var result = await _indiceDataController.IndexDetailsPriced(symbol);
             ((JsonResult)result.Result).Value.Should().Be($"failed to retrieve details for indice {symbol}");
         }
     }

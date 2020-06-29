@@ -159,6 +159,7 @@ namespace Trakx.Persistence.Migrations
                         .HasColumnType("datetime2");
 
                     b.Property<string>("Description")
+                        .IsRequired()
                         .HasColumnType("nvarchar(max)");
 
                     b.Property<string>("Name")
@@ -247,7 +248,7 @@ namespace Trakx.Persistence.Migrations
                         .HasColumnType("nvarchar(450)");
 
                     b.Property<decimal>("Balance")
-                        .HasColumnType("decimal(18,2)");
+                        .HasColumnType("decimal(38, 18)");
 
                     b.Property<string>("ChainId")
                         .IsRequired()
@@ -268,7 +269,7 @@ namespace Trakx.Persistence.Migrations
                         .HasColumnType("nvarchar(max)");
 
                     b.Property<decimal>("VerificationAmount")
-                        .HasColumnType("decimal(18,2)");
+                        .HasColumnType("decimal(38, 18)");
 
                     b.HasKey("Address");
 

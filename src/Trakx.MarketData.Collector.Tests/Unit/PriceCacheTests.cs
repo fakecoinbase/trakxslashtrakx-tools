@@ -129,7 +129,7 @@ namespace Trakx.MarketData.Collector.Tests.Unit
         }
 
         [Fact]
-        public async Task Receiving_load_complete_should_add_symbol_to_websocket()
+        public async Task Receiving_load_complete_should_assign_rest_symbols()
         {
             var expectedSymbols = PrepareIndiceDataProviderExpectations().ToList();
             var websocketSubscriptionsSucceededSymbols = SimulateReceiveSubscribeCompleteFor2Symbols(expectedSymbols);
@@ -144,7 +144,7 @@ namespace Trakx.MarketData.Collector.Tests.Unit
             loadCompleteObservable.Connect();
 
             _priceCache.RestSourcedSymbols.Should()
-                .BeEquivalentTo(expectedSymbols.Except(websocketSubscriptionsSucceededSymbols));
+                .BeEquivalentTo(expectedSymbols);
         }
 
         private IConnectableObservable<LoadComplete> GetStartableLoadComplete()
