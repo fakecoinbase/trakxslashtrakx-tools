@@ -500,45 +500,45 @@ namespace Trakx.Persistence.Initialisation
                 #endregion
 
                 #region Jul 2020
-                new CompositionData(indiceBySymbols["l1cex"], DateTime.Parse("29-Jun-2020"), componentsBySymbols["ht"], 4.208m, 0.3m),
-                new CompositionData(indiceBySymbols["l1cex"], DateTime.Parse("29-Jun-2020"), componentsBySymbols["leo"], 1.188m, 0.3m),
-                new CompositionData(indiceBySymbols["l1cex"], DateTime.Parse("29-Jun-2020"), componentsBySymbols["okb"], 5.139m, 0.171773827900194m),
-                new CompositionData(indiceBySymbols["l1cex"], DateTime.Parse("29-Jun-2020"), componentsBySymbols["ftt"], 2.91m, 0.157416390131539m),
-                new CompositionData(indiceBySymbols["l1cex"], DateTime.Parse("29-Jun-2020"), componentsBySymbols["kcs"], 0.8704m, 0.0708097819682666m),
+                new CompositionData(indiceBySymbols["l1cex"], DateTime.Parse("30-Jun-2020"), componentsBySymbols["ht"], 4.146m, 0.3m),
+                new CompositionData(indiceBySymbols["l1cex"], DateTime.Parse("30-Jun-2020"), componentsBySymbols["leo"], 1.258m, 0.3m),
+                new CompositionData(indiceBySymbols["l1cex"], DateTime.Parse("30-Jun-2020"), componentsBySymbols["okb"], 5.049m, 0.170411924405849m),
+                new CompositionData(indiceBySymbols["l1cex"], DateTime.Parse("30-Jun-2020"), componentsBySymbols["ftt"], 2.878m, 0.157198106595094m),
+                new CompositionData(indiceBySymbols["l1cex"], DateTime.Parse("30-Jun-2020"), componentsBySymbols["kcs"], 0.8608m, 0.0723899689990569m),
 
-                new CompositionData(indiceBySymbols["l1dex"], DateTime.Parse("29-Jun-2020"), componentsBySymbols["zrx"], 0.336m, 0.448547858645918m),
-                new CompositionData(indiceBySymbols["l1dex"], DateTime.Parse("29-Jun-2020"), componentsBySymbols["knc"], 1.142m, 0.393372721617587m),
-                new CompositionData(indiceBySymbols["l1dex"], DateTime.Parse("29-Jun-2020"), componentsBySymbols["lrc"], 0.07723m, 0.158079419736495m),
+                new CompositionData(indiceBySymbols["l1dex"], DateTime.Parse("30-Jun-2020"), componentsBySymbols["zrx"], 0.3382m, 0.443492759658893m),
+                new CompositionData(indiceBySymbols["l1dex"], DateTime.Parse("30-Jun-2020"), componentsBySymbols["knc"], 1.195m, 0.40434256556833m),
+                new CompositionData(indiceBySymbols["l1dex"], DateTime.Parse("30-Jun-2020"), componentsBySymbols["lrc"], 0.07568m, 0.152164674772777m),
 
-                new CompositionData(indiceBySymbols["l1len"], DateTime.Parse("29-Jun-2020"), componentsBySymbols["mkr"], 468.43m, 0.280352438874545m),
-                new CompositionData(indiceBySymbols["l1len"], DateTime.Parse("29-Jun-2020"), componentsBySymbols["nexo"], 0.1862m, 0.161197056387105m),
-                new CompositionData(indiceBySymbols["l1len"], DateTime.Parse("29-Jun-2020"), componentsBySymbols["comp"], 226.79m, 0.375m),
-                new CompositionData(indiceBySymbols["l1len"], DateTime.Parse("29-Jun-2020"), componentsBySymbols["lend"], 0.1329m, 0.18345050473835m),
+                new CompositionData(indiceBySymbols["l1len"], DateTime.Parse("30-Jun-2020"), componentsBySymbols["mkr"], 448.98m, 0.367755170681435m),
+                new CompositionData(indiceBySymbols["l1len"], DateTime.Parse("30-Jun-2020"), componentsBySymbols["nexo"], 0.1995m, 0.107912314418057m),
+                new CompositionData(indiceBySymbols["l1len"], DateTime.Parse("30-Jun-2020"), componentsBySymbols["comp"], 225.86m, 0.375m),
+                new CompositionData(indiceBySymbols["l1len"], DateTime.Parse("30-Jun-2020"), componentsBySymbols["lend"], 0.1276m, 0.149332514900507m),
 
-                new CompositionData(indiceBySymbols["l1mc10erc"], DateTime.Parse("29-Jun-2020"), componentsBySymbols["ht"], 4.208m, 0.125478965033973m),
-                new CompositionData(indiceBySymbols["l1mc10erc"], DateTime.Parse("29-Jun-2020"), componentsBySymbols["leo"], 1.188m, 0.113485491053873m),
-                new CompositionData(indiceBySymbols["l1mc10erc"], DateTime.Parse("29-Jun-2020"), componentsBySymbols["link"], 4.665m, 0.15m),
-                new CompositionData(indiceBySymbols["l1mc10erc"], DateTime.Parse("29-Jun-2020"), componentsBySymbols["mkr"], 468.43m, 0.0849865878307026m),
-                new CompositionData(indiceBySymbols["l1mc10erc"], DateTime.Parse("29-Jun-2020"), componentsBySymbols["okb"], 5.139m, 0.0701741937838421m),
-                new CompositionData(indiceBySymbols["l1mc10erc"], DateTime.Parse("29-Jun-2020"), componentsBySymbols["ftt"], 2.91m, 0.0670979251289379m),
-                new CompositionData(indiceBySymbols["l1mc10erc"], DateTime.Parse("29-Jun-2020"), componentsBySymbols["bat"], 0.2552m, 0.0763386991102203m),
-                new CompositionData(indiceBySymbols["l1mc10erc"], DateTime.Parse("29-Jun-2020"), componentsBySymbols["zrx"], 0.336m, 0.0634488243100073m),
-                new CompositionData(indiceBySymbols["l1mc10erc"], DateTime.Parse("29-Jun-2020"), componentsBySymbols["bal"], 11.9m, 0.0989893137484438m),
-                new CompositionData(indiceBySymbols["l1mc10erc"], DateTime.Parse("29-Jun-2020"), componentsBySymbols["comp"], 226.79m, 0.15m),
+                new CompositionData(indiceBySymbols["l1mc10erc"], DateTime.Parse("30-Jun-2020"), componentsBySymbols["ht"], 4.146m, 0.15m),
+                new CompositionData(indiceBySymbols["l1mc10erc"], DateTime.Parse("30-Jun-2020"), componentsBySymbols["leo"], 1.258m, 0.15m),
+                new CompositionData(indiceBySymbols["l1mc10erc"], DateTime.Parse("30-Jun-2020"), componentsBySymbols["link"], 4.597m, 0.15m),
+                new CompositionData(indiceBySymbols["l1mc10erc"], DateTime.Parse("30-Jun-2020"), componentsBySymbols["mkr"], 448.98m, 0.0917851011105737m),
+                new CompositionData(indiceBySymbols["l1mc10erc"], DateTime.Parse("30-Jun-2020"), componentsBySymbols["okb"], 5.049m, 0.0666940692747866m),
+                new CompositionData(indiceBySymbols["l1mc10erc"], DateTime.Parse("30-Jun-2020"), componentsBySymbols["ftt"], 2.878m, 0.0613885942953417m),
+                new CompositionData(indiceBySymbols["l1mc10erc"], DateTime.Parse("30-Jun-2020"), componentsBySymbols["bat"], 0.2564m, 0.0793423711165854m),
+                new CompositionData(indiceBySymbols["l1mc10erc"], DateTime.Parse("30-Jun-2020"), componentsBySymbols["zrx"], 0.3382m, 0.0553874166747006m),
+                new CompositionData(indiceBySymbols["l1mc10erc"], DateTime.Parse("30-Jun-2020"), componentsBySymbols["bal"], 11.9m, 0.0763954274359357m),
+                new CompositionData(indiceBySymbols["l1mc10erc"], DateTime.Parse("30-Jun-2020"), componentsBySymbols["comp"], 225.86m, 0.113238209959307m),
 
-                new CompositionData(indiceBySymbols["l1vol20be"], DateTime.Parse("29-Jun-2020"), componentsBySymbols["usdc"], 1m, 0.7123m),
-                new CompositionData(indiceBySymbols["l1vol20be"], DateTime.Parse("29-Jun-2020"), componentsBySymbols["wbtc"], 9172.4m, 0.14385m),
-                new CompositionData(indiceBySymbols["l1vol20be"], DateTime.Parse("29-Jun-2020"), componentsBySymbols["weth"], 231.47m, 0.14385m),
+                new CompositionData(indiceBySymbols["l1vol20be"], DateTime.Parse("30-Jun-2020"), componentsBySymbols["usdc"], 1m, 0.7412m),
+                new CompositionData(indiceBySymbols["l1vol20be"], DateTime.Parse("30-Jun-2020"), componentsBySymbols["wbtc"], 9129.4m, 0.1294m),
+                new CompositionData(indiceBySymbols["l1vol20be"], DateTime.Parse("30-Jun-2020"), componentsBySymbols["weth"], 225.72m, 0.1294m),
 
-                new CompositionData(indiceBySymbols["l1vol15btc"], DateTime.Parse("29-Jun-2020"), componentsBySymbols["usdc"], 1m, 0.7837m),
-                new CompositionData(indiceBySymbols["l1vol15btc"], DateTime.Parse("29-Jun-2020"), componentsBySymbols["wbtc"], 9172.4m, 0.2163m),
+                new CompositionData(indiceBySymbols["l1vol15btc"], DateTime.Parse("30-Jun-2020"), componentsBySymbols["usdc"], 1m, 0.7892m),
+                new CompositionData(indiceBySymbols["l1vol15btc"], DateTime.Parse("30-Jun-2020"), componentsBySymbols["wbtc"], 9129.4m, 0.2108m),
 
-                new CompositionData(indiceBySymbols["l1btceth"], DateTime.Parse("29-Jun-2020"), componentsBySymbols["weth"], 231.47m, 0.5m),
-                new CompositionData(indiceBySymbols["l1btceth"], DateTime.Parse("29-Jun-2020"), componentsBySymbols["wbtc"], 9172.4m, 0.5m),
+                new CompositionData(indiceBySymbols["l1btceth"], DateTime.Parse("30-Jun-2020"), componentsBySymbols["weth"], 225.72m, 0.5m),
+                new CompositionData(indiceBySymbols["l1btceth"], DateTime.Parse("30-Jun-2020"), componentsBySymbols["wbtc"], 9129.4m, 0.5m),
 
-                new CompositionData(indiceBySymbols["l1btc15gol"], DateTime.Parse("29-Jun-2020"), componentsBySymbols["paxg"], 1764.06m, 0.5m),
-                new CompositionData(indiceBySymbols["l1btc15gol"], DateTime.Parse("29-Jun-2020"), componentsBySymbols["wbtc"], 9172.4m, 0.10815m),
-                new CompositionData(indiceBySymbols["l1btc15gol"], DateTime.Parse("29-Jun-2020"), componentsBySymbols["usdc"], 1m, 0.39185m),
+                new CompositionData(indiceBySymbols["l1btc15gol"], DateTime.Parse("30-Jun-2020"), componentsBySymbols["paxg"], 1790.75m, 0.5m),
+                new CompositionData(indiceBySymbols["l1btc15gol"], DateTime.Parse("30-Jun-2020"), componentsBySymbols["wbtc"], 9129.4m, 0.1054m),
+                new CompositionData(indiceBySymbols["l1btc15gol"], DateTime.Parse("30-Jun-2020"), componentsBySymbols["usdc"], 1m, 0.3946m),
                 #endregion
             };
 
@@ -606,13 +606,13 @@ namespace Trakx.Persistence.Initialisation
                 {"l1vol15btc2006", 100.64102994287913139848m},
                 {"l1vol20be2006", 100.57841190399275939853m},
 
-                {"l1vol20be2007", 100.12338617900282762791548452m},
-                {"l1vol15btc2007", 99.77167495947481364085914086m},
-                {"l1btceth2007", 102.04267069336228800224025974m},
-                {"l1mc10erc2007", 113.84526796179747061019951230m},
-                {"l1len2007", 168.61194997432438488793945064m},
-                {"l1dex2007", 168.54124431233325985609027991m},
-                {"l1cex2007", 101.35868093103523194466287049m},
+                {"l1vol20be2007", 100.38174826228938418567476747m},
+                {"l1vol15btc2007", 99.90634574979176021497149715m},
+                {"l1btceth2007", 103.07231806321222152865286528m},
+                {"l1mc10erc2007", 115.61069451986107815028961066m},
+                {"l1len2007", 175.48815233426105609468809281m},
+                {"l1dex2007", 179.45251611624776380423355475m},
+                {"l1cex2007", 101.94729428263664578394433336m},
             };
     }
 }
