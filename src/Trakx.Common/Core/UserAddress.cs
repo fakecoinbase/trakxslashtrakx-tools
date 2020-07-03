@@ -1,22 +1,21 @@
 ﻿using System;
-using System.Collections.Generic;
-using System.Text;
 using Trakx.Common.Interfaces;
 
 namespace Trakx.Common.Core
 {
-    public class UserAddress: IUserAddress
+    public class UserAddress : IUserAddress
     {
-        public UserAddress(string chainId, string userId, string address, decimal verificationAmount,DateTime creationDate, bool isVerified=false,decimal balance=0)
+        public UserAddress(string chainId, string address, decimal verificationAmount,
+            DateTime creationDate, string? userId = default, bool isVerified = false, decimal balance = 0)
         {
             ChainId = chainId;
-            UserId = userId;
             Address = address;
             VerificationAmount = verificationAmount;
+            CreationDate = creationDate;
+            UserId = userId;
             IsVerified = isVerified;
             Balance = balance;
             Id = this.GetId();
-            CreationDate = creationDate;
         }
 
         #region Implementation of IUserAddress
@@ -28,7 +27,7 @@ namespace Trakx.Common.Core
         public string ChainId { get; }
 
         /// <inheritdoc />
-        public string UserId { get; }
+        public string? UserId { get; }
 
         /// <inheritdoc />
         public string Address { get; }

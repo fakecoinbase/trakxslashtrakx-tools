@@ -1,0 +1,183 @@
+﻿@using System.ComponentModel.DataAnnotations
+@using Syncfusion.Blazor.DropDowns
+@using Syncfusion.Blazor.Inputs
+@using Syncfusion.Blazor.Notifications
+@using Syncfusion.Blazor.Buttons
+@using Trakx.IndiceManager.ApiClient
+@using Trakx.Common.Models
+@using Trakx.Common.Utils
+@using Trakx.Common.Core
+@using Trakx.Common.Interfaces
+@page "/Wrapping/address_mapping"
+@inject IIndiceCreationClient ApiClient
+@inject IAddressMapping AddressMapper
+
+<SfToast @ref="Toaster" ShowCloseButton="true" ShowProgressBar="true">
+    <ToastPosition X="Center" Y="Bottom"></ToastPosition>
+</SfToast>
+
+<h3>Address mapping</h3>
+
+<div class="container">
+    <div>
+        <EditForm OnValidSubmit="Success" OnInvalidSubmit="Failure" EditContext="@EditContext">
+            <DataAnnotationsValidator />
+            <fieldset>
+                <div>Please enter the address where you want to receive your tokens and select the currency.</div>
+                <div>
+                    <div class="col-xs-12 col-sm-12 col-lg-6 col-md-6">
+                        <SfTextBox @bind-Value="@AddressToVerify" Placeholder="Enter the address you want to verify" @ref="AddressToVerifyTextBox" />
+                    </div>
+                    <div class="col-xs-12 col-sm-12 col-lg-6 col-md-6">
+                        <SfAutoComplete TValue="string" TItem="string" Placeholder="Currency" @bind-Value="ChosenCurrencySymbol"
+                                        DataSource="@_allowedCurrencySymbols" @ref="ChosenCurrencySymbolTextBox">
+                            <AutoCompleteFieldSettings Value="Text"></AutoCompleteFieldSettings>
+                        </SfAutoComplete>
+                    </div>
+                </div>
+                <div>
+                    <SfButton Type="Submit" @ref="SubmitButton">Validate my address</SfButton>
+                </div>
+            </fieldset>
+            <fieldset>
+                @if (ShowReadonlyTextBoxes)
+                {
+                    <div>
+                        Now please send the indicated amount to the trakx address below and click on validate.
+                        <br />Once the transaction is collected we will refund the amount sent and your address will be valid
+                        so you will be able to wrap tokens.
+                    </div>
+                    <div class="col-xs-12 col-sm-12 col-lg-6 col-md-6">
+                        Address to send the token to:
+                        <SfTextBox Readonly="true" @bind-Value="@TrakxAddress" @ref="TrakxAddressTextBox" />
+                    </div>
+                    <div class="col-xs-12 col-sm-12 col-lg-6 col-md-6">
+                        Amount to send (in @ChosenCurrencySymbol):
+                        <SfNumericTextBox Readonly="true" TValue="decimal" @bind-Value="@VerificationAmount" @ref="VerificationAmountTextBox" FloatLabelType="FloatLabelType.Always" />
+                    </div>
+                }
+            </fieldset>
+        </EditForm>
+    </div>
+</div>
+
+@code {
+    #region Variables
+    public SfTextBox AddressToVerifyTextBox { get; set; }
+    public SfTextBox TrakxAddressTextBox { get; set; }
+    public SfNumericTextBox<decimal> VerificationAmountTextBox { get; set; }
+    public SfAutoComplete<string, string> ChosenCurrencySymbolTextBox { get; set; }
+    public SfToast Toaster { get; set; }
+    public EditContext EditContext { get; set; }
+    public SfButton SubmitButton { get; set; }
+
+    private readonly List<string> _allowedCurrencySymbols = new List<string>();
+    public static List<ComponentDetailModel>? KnownComponents { get; set; }
+
+    [Required, IsValidEthereumAddress]
+    public string AddressToVerify { get; set; }
+
+    [Required]
+    public string ChosenCurrencySymbol { get; set; }
+    public string TrakxAddress { get; set; }
+    public decimal VerificationAmount { get; set; }
+    public bool ShowReadonlyTextBoxes { get; set; } = false;
+    #endregion
+
+    #region Overrides of ComponentBase
+    protected override async Task OnInitializedAsync()
+    {
+        EditContext = new EditContext(this);
+        try
+        {
+            KnownComponents = (await ApiClient.GetAllComponentsAsync()).Result;
+            _allowedCurrencySymbols.AddRange(KnownComponents.Select(o => o.Symbol));
+        }
+        catch (Exception)
+        {
+            await Toaster.Show(new ToastModel { Title = "Error", Content = "Failed to retrieve available components from the Api.", CssClass = "e-toast-danger" });
+        }
+    }
+    #endregion
+
+    #region Toast
+    /// <summary>
+    /// Function called when the form submission is rejected.
+    /// </summary>
+    /// <returns></returns>
+    public async Task Failure()
+    {
+        await Toaster.Show(new ToastModel
+        {
+            Content = "Your submission failed, please make sure that you filled correctly the form.",
+            Title = "Error !",
+            CssClass = "e-toast-danger"
+        });
+    }
+
+    /// <summary>
+    /// Function called when the form submission is succeeded.
+    /// </summary>
+    /// <returns></returns>
+    public async Task Success()
+    {
+        await AskVerification();
+        await Toaster.Show(new ToastModel
+        {
+            Content = "Your address is correct, to finish please send the amount indicated to the address below.",
+            Title = "Success !",
+            CssClass = "e-toast-success"
+        });
+
+        await GetTrakxAddressAndVerificationAmount();
+    }
+    #endregion
+
+    #region Functions
+    /// <summary>
+    /// Retrieve the trakx address and generate a verification amount for the chosen currency.
+    /// </summary>
+    /// <returns></returns>
+    public async Task GetTrakxAddressAndVerificationAmount()
+    {
+        try
+        {
+            TrakxAddress = await AddressMapper.GetTrakxAddress(ChosenCurrencySymbol);
+            VerificationAmount = await AddressMapper.GetVerificationAmount(ChosenCurrencySymbol);
+            ShowReadonlyTextBoxes = true;
+        }
+        catch (Exception)
+        {
+            await Toaster.Show(new ToastModel
+            {
+                Title = "Error",
+                Content = "Failed to retrieve trakx address or verification amount from the api.",
+                CssClass = "e-toast-danger"
+            });
+        }
+    }
+
+    private async Task AskVerification()
+    {
+        await AddressMapper.VerifyMappingTransaction(ToIUserAddress());
+        await Toaster.Show(new ToastModel
+        {
+            Title = "Pending",
+            Content = "If you have followed the instructions correctly we should receive " +
+                      "your transaction soon. If it happens then we will send you an email " +
+                      "confirming that your address has been validated."
+        });
+    }
+
+    /// <summary>
+    /// Convert view model into an IUserAddress
+    /// </summary>
+    /// <returns></returns>
+    private IUserAddress ToIUserAddress()
+    {
+        return new UserAddress(ChosenCurrencySymbol, AddressToVerify, VerificationAmount, DateTime.Now);
+    }
+
+    #endregion
+
+}

@@ -1,4 +1,4 @@
-using System.Linq;
+﻿using System.Linq;
 using System.Collections.Generic;
 using System.Threading.Tasks;
 using System.Text.Json;
@@ -16,6 +16,9 @@ using Syncfusion.Blazor;
 using Flurl.Http.Testing;
 using Flurl.Http;
 using Trakx.Persistence.Tests;
+using Microsoft.Extensions.DependencyInjection;
+using NSubstitute;
+using Trakx.IndiceManager.ApiClient;
 
 namespace Trakx.IndiceManager.Client.Tests.Wrapping
 {
@@ -57,11 +60,11 @@ namespace Trakx.IndiceManager.Client.Tests.Wrapping
         public async Task FromCurrencyTextBox_should_change_model_from_Currency()
         {
             _model.FromCurrency.Should().BeNullOrEmpty();
-            var selectedCurrency = Component.Instance.CurrencyOptions[1];   
+            var selectedCurrency = Component.Instance.CurrencyOptions[1];
             await Dispatch(Component.Instance.FromCurrencyTextBox.ValueChanged, selectedCurrency);
             _model.FromCurrency.Should().Be(selectedCurrency);
         }
-        
+
         [Fact]
         public async Task FromCurrencyTextBox_should_preserve_value_on_change_of_wrapping_operation()
         {
@@ -107,7 +110,7 @@ namespace Trakx.IndiceManager.Client.Tests.Wrapping
         {
             _model.Wrapping = false;
             Component.Render();
-            
+
             var unwrappingFrom = "unwrappingFrom";
             await Dispatch(Component.Instance.UnwrappingFromAddress.ValueChanged, unwrappingFrom);
             OnlyEthereumAddressShouldBe(unwrappingFrom);
@@ -142,13 +145,13 @@ namespace Trakx.IndiceManager.Client.Tests.Wrapping
             _model.EthereumAddress.Should().Be(ethereumAddress);
             _model.NativeAddress.Should().Be(nativeAddress);
         }
-        
+
         [Fact]
         public async Task IsSubmitDisabled_should_be_true_until_model_is_valid()
         {
             (await Dispatch(() => Component.Instance.EditContext.Validate()))
                 .Should().BeFalse();
-            
+
             var currencyToWrap = Component.Instance.CurrencyOptions[0];
             _model.FromCurrency = currencyToWrap;
             (await Dispatch(() => Component.Instance.EditContext.Validate()))
@@ -186,7 +189,7 @@ namespace Trakx.IndiceManager.Client.Tests.Wrapping
 
             var newModel = Component.Instance.Model;
             newModel.Should().NotBeSameAs(_model);
-            
+
             var newEditContext = Component.Instance.EditContext;
             newEditContext.Should().NotBeSameAs(editContext);
             newEditContext.Model.Should().BeSameAs(newModel);

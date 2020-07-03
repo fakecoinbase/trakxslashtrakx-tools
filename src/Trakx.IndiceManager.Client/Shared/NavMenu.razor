@@ -16,7 +16,8 @@
                 Items = new List<MenuItem> {
                     new MenuItem{ Text = "Balances", Url = "Wrapping/wrapping_balance", IconCss = "fas fa-wallet" },
                     new MenuItem{ Text = "Wrap/Unwrap Tokens", Url = "Wrapping/wrap_unwrap_token", IconCss = "fas fa-exchange-alt" },
-                    new MenuItem{ Text = "History", Url = "Wrapping/wrapping_history", IconCss = "fas fa-history" }
+                    new MenuItem{ Text = "History", Url = "Wrapping/wrapping_history", IconCss = "fas fa-history" },
+                    new MenuItem{ Text = "Verify address", Url = "/Wrapping/address_mapping", IconCss = "fas fa-star" }
                 }
             },
         new MenuItem {
@@ -66,6 +67,9 @@
         color: white;
     }
     .fa-award::before {
+        color: white;
+    }
+    .fa-star::before {
         color: white;
     }
 

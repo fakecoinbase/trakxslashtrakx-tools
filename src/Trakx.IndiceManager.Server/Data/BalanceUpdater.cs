@@ -78,7 +78,7 @@ namespace Trakx.IndiceManager.Server.Data
             }
             else
             {
-                var newUserAddress = new UserAddress(transaction.Currency, transaction.Source, transaction.Source, 0, DateTime.Now,false, transaction.Amount);
+                var newUserAddress = new UserAddress(transaction.Currency, transaction.Source, 0, DateTime.Now,transaction.Source, false, transaction.Amount);
                 _userAddressProvider.AddNewMapping(newUserAddress);
             }
         }
