@@ -1,6 +1,4 @@
 ﻿using System;
-using System.Collections.Generic;
-using System.Text;
 
 namespace Trakx.Common.Interfaces
 {
@@ -12,42 +10,47 @@ namespace Trakx.Common.Interfaces
         /// <summary>
         /// The Id of the mapping
         /// </summary>
-        public string Id { get; }
+        string Id { get; }
 
         /// <summary>
         /// The Id of the currency, commonly it's his symbol.
         /// </summary>
-        public string ChainId { get; }
+        string ChainId { get; }
 
         /// <summary>
         /// The  userId representing the owner of the address.
         /// </summary>
-        public string UserId { get; }
+        string UserId { get; }
 
         /// <summary>
         /// The address to map.
         /// </summary>
-        public string Address { get; }
+        string Address { get; }
 
         /// <summary>
         /// The balance of the user currently held at Trakx.
         /// </summary>
-        public decimal Balance { get; }
+        decimal Balance { get; }
 
         /// <summary>
         /// The amount used to verify the address.
         /// </summary>
-        public decimal VerificationAmount { get; }
+        decimal VerificationAmount { get; }
 
         /// <summary>
         /// A boolean that represents the address verification. 
         /// </summary>
-        public bool IsVerified { get; }
+        bool IsVerified { get; }
 
         /// <summary>
-        /// A Datetime that reprensents the creation date of the mapping
+        /// A Datetime that represents the creation date of the mapping
         /// </summary>
-        public DateTime CreationDate { get; }
+        DateTime CreationDate { get; }
+
+        /// <summary>
+        /// A Datetime that represents the last transaction update.
+        /// </summary>
+        DateTime LastUpdate { get; }
     }
 
     public static class UserAddressExtension

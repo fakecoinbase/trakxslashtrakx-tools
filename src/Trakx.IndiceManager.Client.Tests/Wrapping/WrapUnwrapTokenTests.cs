@@ -1,24 +1,15 @@
 ﻿using System.Linq;
-using System.Collections.Generic;
 using System.Threading.Tasks;
 using System.Text.Json;
 using FluentAssertions;
 using Trakx.IndiceManager.Client.Pages.Wrapping;
-using Trakx.Tests.Data;
 using Trakx.Common.Models;
 using Xunit;
 using Xunit.Abstractions;
-using AngleSharp.Dom;
-using AngleSharp.Html.Dom;
-using Microsoft.AspNetCore.Components;
-using Bunit;
 using Syncfusion.Blazor;
 using Flurl.Http.Testing;
 using Flurl.Http;
 using Trakx.Persistence.Tests;
-using Microsoft.Extensions.DependencyInjection;
-using NSubstitute;
-using Trakx.IndiceManager.ApiClient;
 
 namespace Trakx.IndiceManager.Client.Tests.Wrapping
 {

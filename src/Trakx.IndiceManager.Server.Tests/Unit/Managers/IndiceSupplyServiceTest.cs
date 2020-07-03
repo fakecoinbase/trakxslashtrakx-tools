@@ -9,7 +9,6 @@ using Trakx.Common.Interfaces.Transaction;
 using Trakx.Common.Models;
 using Trakx.IndiceManager.Server.Managers;
 using Trakx.Persistence.Tests;
-using Trakx.Tests.Data;
 using Xunit;
 using Xunit.Abstractions;
 
@@ -28,7 +27,7 @@ namespace Trakx.IndiceManager.Server.Tests.Unit.Managers
             _dataCreator = Substitute.For<ITransactionDataCreator>();
             _indiceSupplyService= new IndiceSupplyService(_dataCreator,_dataProvider);
             var mockCreator = new MockCreator(output);
-            _transactionModel= new IndiceSupplyTransactionModel()
+            _transactionModel= new IndiceSupplyTransactionModel
             {
                 CreationTimestamp = DateTime.MaxValue,
                 IndiceComposition = new IndiceCompositionModel(mockCreator.GetIndiceComposition(0)),

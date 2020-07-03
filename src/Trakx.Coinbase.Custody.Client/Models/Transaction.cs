@@ -14,6 +14,7 @@ namespace Trakx.Coinbase.Custody.Client.Models
             State = transaction.State;
             Source = transaction.Source;
             Destination = transaction.Destination;
+            Amount = transaction.Amount;
             Currency = transaction.Currency;
             Hashes = transaction.Hashes;
         }

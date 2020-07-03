@@ -1,4 +1,6 @@
-﻿using System.Threading.Tasks;
+﻿using System;
+using System.Linq;
+using System.Threading.Tasks;
 using Microsoft.EntityFrameworkCore;
 using Trakx.Common.Interfaces;
 using Trakx.Persistence.DAO;
@@ -25,16 +27,32 @@ namespace Trakx.Persistence
                 await _dbContext.UserAddresses.FirstOrDefaultAsync(i => i.Address == userAddressToValidate.Address);
 
             _dbContext.Entry(retrievedUser).Entity.IsVerified = true;
+            _dbContext.Entry(retrievedUser).Entity.LastUpdate = userAddressToValidate.LastUpdate;
             _dbContext.Entry(retrievedUser).Entity.Balance += retrievedUser.VerificationAmount;
             return await _dbContext.SaveChangesAsync() > 0;
         }
 
         public async Task<bool> UpdateUserBalance(IUserAddress userAddress)
         {
-            _dbContext.Entry(await _dbContext.UserAddresses.FirstOrDefaultAsync(i => i.Address == userAddress.Address)).CurrentValues.SetValues(userAddress); //modify entity of indiceDefinitionDao
+            _dbContext.Entry(await _dbContext.UserAddresses.FirstOrDefaultAsync(i => i.Address == userAddress.Address)).CurrentValues.SetValues(userAddress);
             return await _dbContext.SaveChangesAsync() > 0;
         }
-        
+
+        public DateTime GetLastTransactionDate()
+        {
+            DateTime transactions;
+            try
+            {
+                transactions = _dbContext.UserAddresses.Select(u => u.LastUpdate).Max();
+            }
+            catch
+            {
+                transactions=DateTime.MinValue;
+            }
+
+            return transactions;
+        }
+
         public async Task<bool> AddNewMapping(IUserAddress userAddressToSave)
         {
             var retrievedUser = (UserAddressDao)await TryToGetUserAddressByAddress(userAddressToSave.Address);

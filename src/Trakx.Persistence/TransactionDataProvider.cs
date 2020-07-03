@@ -52,8 +52,7 @@ namespace Trakx.Persistence
         public async Task<DateTime> GetLastWrappingTransactionDatetime()
         {
             var transaction = await _dbContext.WrappingTransactions.Where(t=>t.TransactionType==TransactionType.Wrap).OrderByDescending(t=>t.TimeStamp).ToListAsync();
-            if(transaction.Count==0) return DateTime.MinValue;
-            return transaction[0].TimeStamp;
+            return transaction.Count==0 ? DateTime.MinValue : transaction[0].TimeStamp;
         }
     }
 }

@@ -10,7 +10,6 @@ using Trakx.Persistence;
 using Trakx.Persistence.DAO;
 using Trakx.Persistence.Tests;
 using Trakx.Persistence.Tests.Model;
-using Trakx.Tests.Data;
 using Xunit;
 using Xunit.Abstractions;
 

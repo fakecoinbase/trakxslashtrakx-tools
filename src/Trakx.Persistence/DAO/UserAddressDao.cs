@@ -7,7 +7,8 @@ namespace Trakx.Persistence.DAO
 {
     public class UserAddressDao : IUserAddress
     {
-        public UserAddressDao(string chainId,string userId,string address,decimal verificationAmount,DateTime creationDate,decimal balance=0,bool isVerified=false)
+        public UserAddressDao(string chainId, string userId, string address, decimal verificationAmount,
+            DateTime creationDate, decimal balance = 0, bool isVerified = false)
         {
             IsVerified = isVerified;
             Balance = balance;
@@ -16,20 +17,13 @@ namespace Trakx.Persistence.DAO
             Address = address;
             VerificationAmount = verificationAmount;
             CreationDate = creationDate;
+            LastUpdate = DateTime.UtcNow;
             Id = this.GetId();
         }
 
-        public UserAddressDao(IUserAddress userAddress)
-        {
-            IsVerified = userAddress.IsVerified;
-            Balance = userAddress.Balance;
-            ChainId = userAddress.ChainId;
-            UserId = userAddress.UserId;
-            Address = userAddress.Address;
-            VerificationAmount = userAddress.VerificationAmount;
-            CreationDate = userAddress.CreationDate;
-            Id = userAddress.Id;
-        }
+        public UserAddressDao(IUserAddress userAddress) 
+            : this(userAddress.ChainId, userAddress.UserId, userAddress.Address, userAddress.VerificationAmount,
+                userAddress.CreationDate, userAddress.Balance, userAddress.IsVerified) {}
 
         #region Implementation of IUserAddress
 
@@ -62,6 +56,9 @@ namespace Trakx.Persistence.DAO
 
         /// <inheritdoc />
         public DateTime CreationDate { get; set; }
+
+        /// <inheritdoc />
+        public DateTime LastUpdate { get; set; }
 
         #endregion
     }

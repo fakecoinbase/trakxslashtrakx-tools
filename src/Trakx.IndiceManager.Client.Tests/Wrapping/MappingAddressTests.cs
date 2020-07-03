@@ -1,10 +1,7 @@
-using System.Linq;
 using System.Collections.Generic;
-using System.Net;
 using System.Threading.Tasks;
 using FluentAssertions;
 using Trakx.IndiceManager.Client.Pages.Wrapping;
-using Trakx.Tests.Data;
 using Trakx.Common.Models;
 using Xunit;
 using Xunit.Abstractions;

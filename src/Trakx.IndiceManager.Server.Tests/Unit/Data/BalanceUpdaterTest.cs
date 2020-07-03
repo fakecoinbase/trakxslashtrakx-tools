@@ -11,7 +11,7 @@ using Xunit.Abstractions;
 
 namespace Trakx.IndiceManager.Server.Tests.Unit.Data
 {
-    public class BalanceUpdaterTest 
+    public class BalanceUpdaterTest
     {
         private readonly IUserAddressProvider _userAddressProvider;
         private readonly IUserBalanceUpdater _balanceUpdater;
@@ -21,8 +21,8 @@ namespace Trakx.IndiceManager.Server.Tests.Unit.Data
         {
             _userAddressProvider = Substitute.For<IUserAddressProvider>();
             var serviceScopeFactory = PrepareScopeResolution();
-            _balanceUpdater=new UserBalanceUpdater(serviceScopeFactory);
-            _daoCreator=new MockDaoCreator(output);
+            _balanceUpdater = new UserBalanceUpdater(serviceScopeFactory);
+            _daoCreator = new MockDaoCreator(output);
         }
         private IServiceScopeFactory PrepareScopeResolution()
         {
@@ -39,7 +39,7 @@ namespace Trakx.IndiceManager.Server.Tests.Unit.Data
         [Fact]
         public void OnNext_should_creates_new_temporaryMapping_if_transactionSender_is_unknown()
         {
-            var transaction = new Transaction();
+            var transaction = new ProcessedTransaction(3, new Transaction());
             _userAddressProvider.TryToGetUserAddressByAddress(default).ReturnsForAnyArgs((IUserAddress)null);
 
             _balanceUpdater.OnNext(transaction);
@@ -49,15 +49,15 @@ namespace Trakx.IndiceManager.Server.Tests.Unit.Data
         }
 
         [Fact]
-        public void TryUpdateUserBalance_should_validateMapping_when_sendedAmount_is_verificationAmount()
+        public void TryUpdateUserBalance_should_validateMapping_when_sentAmount_is_verificationAmount()
         {
-            var retrievedUser = _daoCreator.GetRandomUserAddressDao(5);
+            var retrievedUser = _daoCreator.GetRandomUserAddressDao(-50);
             retrievedUser.IsVerified.Should().BeFalse();
-            var transaction = new Transaction{Amount = 5};
+            var processedTransaction = new ProcessedTransaction(1, new Transaction { Amount = 5 });
             _userAddressProvider.UpdateUserBalance(default).ReturnsForAnyArgs(true);
             _userAddressProvider.ValidateMappingAddress(default).ReturnsForAnyArgs(true);
 
-            _balanceUpdater.TryUpdateUserBalance(retrievedUser, transaction);
+            _balanceUpdater.TryUpdateUserBalance(retrievedUser, processedTransaction);
             _userAddressProvider.ReceivedWithAnyArgs(1).ValidateMappingAddress(default);
             _userAddressProvider.DidNotReceiveWithAnyArgs().UpdateUserBalance(default);
         }
@@ -67,7 +67,7 @@ namespace Trakx.IndiceManager.Server.Tests.Unit.Data
         {
             var retrievedUser = _daoCreator.GetRandomUserAddressDao();
             retrievedUser.IsVerified = true;
-            var transaction = new Transaction { Amount = 10 };
+            var transaction = new ProcessedTransaction(10, new Transaction { Amount = 10 });
             _balanceUpdater.TryUpdateUserBalance(retrievedUser, transaction);
             _userAddressProvider.ReceivedWithAnyArgs(1).UpdateUserBalance(default);
             _userAddressProvider.DidNotReceiveWithAnyArgs().ValidateMappingAddress(default);

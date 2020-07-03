@@ -7,13 +7,12 @@ using NSubstitute.ExceptionExtensions;
 using Trakx.Common.Interfaces;
 using Trakx.Common.Interfaces.Indice;
 using Trakx.Common.Models;
+using Trakx.Common.Sources.CoinGecko;
 using Trakx.Common.Sources.Web3.Client;
 using Trakx.IndiceManager.Server.Managers;
 using Trakx.Persistence.Tests;
-using Trakx.Tests.Data;
 using Xunit;
 using Xunit.Abstractions;
-using ICoinGeckoClient = Trakx.Common.Sources.CoinGecko.ICoinGeckoClient;
 
 namespace Trakx.IndiceManager.Server.Tests.Unit.Managers
 {

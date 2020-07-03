@@ -1,4 +1,5 @@
-﻿using System.Threading.Tasks;
+﻿using System;
+using System.Threading.Tasks;
 using FluentAssertions;
 using Microsoft.EntityFrameworkCore;
 using Trakx.Common.Interfaces;
@@ -108,9 +109,30 @@ namespace Trakx.Persistence.Tests.Unit
             retrievedUserAddress.UserId.Should().Be("NewName");
         }
 
-        private async Task<UserAddressDao> SaveUserAddress(decimal verificationAmount=0)
+        [Fact]
+        public async Task GetLastTransactionDate_should_have_the_bigger_timestamp()
+        {
+            await SaveUserAddress(lastUpdate:new DateTime(4040,10,10));
+            await SaveUserAddress(lastUpdate: new DateTime(2021, 10, 10));
+
+
+            var timestamp =  _userAddressProvider.GetLastTransactionDate();
+            timestamp.Should().Be(new DateTime(4040, 10, 10));
+        }
+
+        [Fact]
+        public async Task GetLastTransactionDate_should_return_minimal_Datetime_if_database_empty()
+        {
+            await _context.Database.EnsureDeletedAsync();
+            await _context.SaveChangesAsync();
+
+            var timestamp = _userAddressProvider.GetLastTransactionDate();
+            timestamp.Should().Be(DateTime.MinValue);
+        }
+        private async Task<UserAddressDao> SaveUserAddress(decimal verificationAmount=0,DateTime lastUpdate=default)
         {
             var userAddressToSave = _mockDaoCreator.GetRandomUserAddressDao(verificationAmount);
+            if(lastUpdate!=default)userAddressToSave.LastUpdate = lastUpdate;
             await _context.AddAsync(userAddressToSave);
             await _context.SaveChangesAsync();
             return userAddressToSave;

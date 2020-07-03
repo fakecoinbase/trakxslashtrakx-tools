@@ -7,7 +7,7 @@ using Trakx.Persistence.DAO;
 
 namespace Trakx.IndiceManager.Server.Data
 {
-    public interface IUserBalanceUpdater : IObserver<Transaction>
+    public interface IUserBalanceUpdater : IObserver<ProcessedTransaction>
     {
         /// <summary>
         /// Updates the user balance upon incoming new transactions.
@@ -15,11 +15,11 @@ namespace Trakx.IndiceManager.Server.Data
         /// <param name="transaction">The new transaction to be processed.</param>
         /// <param name="retrievedUser">The user who made the transaction.</param>
         /// <returns>True if a balance was updated, false otherwise.</returns>
-        bool TryUpdateUserBalance(IUserAddress retrievedUser, Transaction transaction);
+        bool TryUpdateUserBalance(IUserAddress retrievedUser, ProcessedTransaction transaction);
     }
 
-    /// <inheritdoc />
-    public class UserBalanceUpdater : IUserBalanceUpdater,IDisposable
+    /// <inheritdoc cref="IUserBalanceUpdater" />
+    public class UserBalanceUpdater : IUserBalanceUpdater, IDisposable
     {
         private readonly IUserAddressProvider _userAddressProvider;
         private readonly IServiceScope _initialisationScope;
@@ -33,20 +33,22 @@ namespace Trakx.IndiceManager.Server.Data
 
         #region Implementation of IUserBalanceUpdater
         /// <inheritdoc />
-        public bool TryUpdateUserBalance(IUserAddress retrievedUser, Transaction transaction)
+        public bool TryUpdateUserBalance(IUserAddress retrievedUser, ProcessedTransaction transaction)
         {
             var retrievedUserDao = new UserAddressDao(retrievedUser);
-            if (transaction.Amount == retrievedUserDao.VerificationAmount)
+            if (transaction.DecimalAmount == retrievedUserDao.VerificationAmount && !retrievedUserDao.IsVerified)
             {
-                 return _userAddressProvider.ValidateMappingAddress(retrievedUserDao).GetAwaiter().GetResult();
+                retrievedUserDao.LastUpdate = transaction.CreatedAt.DateTime;
+                return _userAddressProvider.ValidateMappingAddress(retrievedUserDao).GetAwaiter().GetResult();
             }
-            retrievedUserDao.Balance += transaction.Amount;
+            retrievedUserDao.Balance += transaction.DecimalAmount;
+            retrievedUserDao.LastUpdate = transaction.CreatedAt.DateTime;
             return _userAddressProvider.UpdateUserBalance(retrievedUserDao).GetAwaiter().GetResult();
         }
 
         #endregion
 
-        #region Implementation of IObserver<in Transaction>
+        #region Implementation of IObserver<in ProcessedTransaction>
 
         /// <inheritdoc />
         public void OnCompleted()
@@ -61,16 +63,17 @@ namespace Trakx.IndiceManager.Server.Data
         }
 
         /// <inheritdoc />
-        public void OnNext(Transaction transaction)
+        public void OnNext(ProcessedTransaction value)
         {
-            ManageRetrievedTransaction(transaction);
+            ManageRetrievedTransaction(value);
         }
         #endregion
 
-        private void ManageRetrievedTransaction(Transaction transaction)
+        private void ManageRetrievedTransaction(ProcessedTransaction transaction)
         {
             var retrievedUser =
-                _userAddressProvider.TryToGetUserAddressByAddress(transaction.Source).ConfigureAwait(false).GetAwaiter().GetResult();
+                _userAddressProvider.TryToGetUserAddressByAddress(transaction.Source)
+                    .ConfigureAwait(false).GetAwaiter().GetResult();
 
             if (retrievedUser != null)
             {
@@ -78,7 +81,9 @@ namespace Trakx.IndiceManager.Server.Data
             }
             else
             {
-                var newUserAddress = new UserAddress(transaction.Currency, transaction.Source, 0, DateTime.Now,transaction.Source, false, transaction.Amount);
+                var newUserAddress = new UserAddress(transaction.Currency, transaction.Source, 0, 
+                    DateTime.Now, balance: transaction.Amount)
+                { LastUpdate = transaction.CreatedAt.DateTime };
                 _userAddressProvider.AddNewMapping(newUserAddress);
             }
         }

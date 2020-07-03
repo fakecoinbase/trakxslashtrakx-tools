@@ -1,17 +1,16 @@
 ﻿using System.Threading.Tasks;
 using FluentAssertions;
-using Trakx.Common.Sources.CoinGecko;
-using Trakx.IndiceManager.Server.Managers;
 using Microsoft.Extensions.DependencyInjection;
 using NSubstitute;
 using Trakx.Common.Ethereum;
 using Trakx.Common.Interfaces;
 using Trakx.Common.Interfaces.Indice;
+using Trakx.Common.Sources.CoinGecko;
 using Trakx.Common.Sources.Web3.Client;
+using Trakx.IndiceManager.Server.Managers;
 using Trakx.Tests.Tools;
 using Xunit;
 using Xunit.Abstractions;
-
 
 namespace Trakx.IndiceManager.Server.Tests.Integration.Managers
 {

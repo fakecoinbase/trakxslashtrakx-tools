@@ -44,6 +44,9 @@ namespace Trakx.Common.Core
         /// <inheritdoc />
         public DateTime CreationDate { get; }
 
+        /// <inheritdoc />
+        public DateTime LastUpdate { get; set; }
+
         #endregion
     }
 }

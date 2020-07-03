@@ -20,7 +20,7 @@ namespace Trakx.IndiceManager.Server.Data
         /// <summary>
         /// Stream of incoming transaction on Trakx coinbase wallets
         /// </summary>
-        IObservable<Transaction> TransactionStream { get; }
+        IObservable<ProcessedTransaction> TransactionStream { get; }
 
         /// <summary> 
         /// Allows to stop the Observable stream by passing a cancellationToken in parameter.
@@ -35,6 +35,7 @@ namespace Trakx.IndiceManager.Server.Data
         public static readonly TimeSpan PollingInterval = TimeSpan.FromSeconds(10);
         private readonly CancellationTokenSource _cancellationTokenSource ;
         private readonly ITransactionDataProvider _transactionDataProvider;
+        private readonly IUserAddressProvider _userAddressProvider;
         private readonly ICoinbaseClient _coinbaseClient;
         private readonly IMemoryCache _cache;
         private readonly ILogger<CoinbaseTransactionListener> _logger;
@@ -51,6 +52,7 @@ namespace Trakx.IndiceManager.Server.Data
             _coinbaseClient = coinbaseClient;
             _initialisationScope = serviceScopeFactory.CreateScope();
             _transactionDataProvider = _initialisationScope.ServiceProvider.GetService<ITransactionDataProvider>();
+            _userAddressProvider = _initialisationScope.ServiceProvider.GetService<IUserAddressProvider>();
             scheduler ??= Scheduler.Default;
             _cancellationTokenSource = new CancellationTokenSource();
             TransactionStream = Observable.Interval(PollingInterval, scheduler)
@@ -62,7 +64,7 @@ namespace Trakx.IndiceManager.Server.Data
                         logger.LogDebug("Querying Coinbase Custody for new transactions.");
                         var page = await coinbaseClient
                             .ListTransactionsAsync(startTime:
-                                (await _transactionDataProvider.GetLastWrappingTransactionDatetime()).ToIso8601(),limit:100)
+                                 _userAddressProvider.GetLastTransactionDate().ToIso8601(),limit:100)
                             .ConfigureAwait(false);
                         var transactions = page.Data;
                         var finalTransactions = transactions.ToList();
@@ -70,7 +72,7 @@ namespace Trakx.IndiceManager.Server.Data
                         {
                              page = await coinbaseClient
                                 .ListTransactionsAsync(startTime:
-                                    (await _transactionDataProvider.GetLastWrappingTransactionDatetime()).ToIso8601(), limit: 100,after:page.Pagination.After)
+                                    _userAddressProvider.GetLastTransactionDate().ToIso8601(), limit: 100,after:page.Pagination.After)
                                 .ConfigureAwait(false);
                              transactions = page.Data;
                              foreach (var transaction in transactions)
@@ -101,7 +103,7 @@ namespace Trakx.IndiceManager.Server.Data
         }
 
         /// <inheritdoc />
-        public IObservable<Transaction> TransactionStream { get; }
+        public IObservable<ProcessedTransaction> TransactionStream { get; }
 
         #endregion
 
