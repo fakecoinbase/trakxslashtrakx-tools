@@ -1,11 +1,8 @@
 ﻿using System;
-using System.Threading.Tasks;
 using FluentAssertions;
-using Flurl.Http;
 using Xunit;
 using Microsoft.Extensions.DependencyInjection;
 using Flurl.Http.Testing;
-using Trakx.Coinbase.Custody.Client.Interfaces;
 
 
 namespace Trakx.Coinbase.Custody.Client.Tests.Unit
@@ -24,7 +21,7 @@ namespace Trakx.Coinbase.Custody.Client.Tests.Unit
 
             var serviceCollection = new ServiceCollection();
             Action act = () => serviceCollection.AddCoinbaseLibrary("", "");
-            act.Should().ThrowExactly<System.ArgumentException>();
+            act.Should().ThrowExactly<ArgumentException>();
 
         }
 
@@ -33,27 +30,7 @@ namespace Trakx.Coinbase.Custody.Client.Tests.Unit
         {
             var serviceCollection = new ServiceCollection();
             Action act = () => serviceCollection.AddCoinbaseLibrary(null, null);
-            act.Should().ThrowExactly<System.ArgumentNullException>();
-        }
-
-        [Fact]
-        public async Task ApiKeyConfig_should_pass_ApiKey_and_Passphrase_to_CoinbaseClient()
-        {
-            var passPhrase = "evez6rv4156";
-            var apiKey = "atfratdrtygfyuhjiojko";
-
-            var serviceCollection = new ServiceCollection();
-            serviceCollection.AddCoinbaseLibrary(apiKey, passPhrase);
-            var serviceProvider = serviceCollection.BuildServiceProvider();
-            var apiConfig = serviceProvider.GetRequiredService<IApiKeyConfig>();
-
-            var client = new CoinbaseClient(apiConfig);
-
-            await client.BaseUrl
-                .WithClient(client)
-                .GetJsonAsync();
-
-            _httpTest.ShouldHaveCorrectHeader(apiKey,passPhrase);
+            act.Should().ThrowExactly<ArgumentNullException>();
         }
     }
 }

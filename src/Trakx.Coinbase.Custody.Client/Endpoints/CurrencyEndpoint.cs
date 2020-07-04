@@ -7,22 +7,28 @@ using Trakx.Coinbase.Custody.Client.Models;
 
 namespace Trakx.Coinbase.Custody.Client.Endpoints
 {
-    public class CurrencyEndpoint : ICurrencyEndpoint
+    internal class CurrencyEndpoint : ICurrencyEndpoint
     {
-        private readonly ICoinbaseClient _client;
+        private readonly IFlurlClient _client;
 
-        internal CurrencyEndpoint(ICoinbaseClient client)
+        public CurrencyEndpoint(IFlurlClient client)
         {
             _client = client;
         }
 
         /// <inheritdoc />
-        public async Task<PagedResponse<Currency>> ListCurrenciesAsync(string? before = null, string? after = null, int? limit = null, CancellationToken cancellationToken = default)
+        public async Task<PagedResponse<Currency>> ListCurrenciesAsync(PaginationOptions? paginationOptions = null, CancellationToken cancellationToken = default)
         {
-            return await _client
-                .Request("currencies")
-                .SetQueryParams(new { before, after, limit })
+            paginationOptions ??= PaginationOptions.Default;
+            var page= await _client.Request("currencies")
+                .SetQueryParams(new
+                {
+                    before = paginationOptions.Before,
+                    after = paginationOptions.After,
+                    limit = paginationOptions.PageSize,
+                })
                 .GetJsonAsync<PagedResponse<Currency>>(cancellationToken);
+            return page;
         }
 
         /// <inheritdoc />

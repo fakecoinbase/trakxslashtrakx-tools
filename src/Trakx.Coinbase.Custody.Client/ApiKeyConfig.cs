@@ -16,9 +16,9 @@ namespace Trakx.Coinbase.Custody.Client
             _apiPassphrase = apiPassPhrase;
         }
 
-        public void Configure(CoinbaseClient client)
+        public void Configure(IFlurlClient client)
         {
-            client.Configure(settings => ApiKeyAuth(settings));
+            client.Configure(ApiKeyAuth);
         }
 
         private void ApiKeyAuth(ClientFlurlHttpSettings settings)

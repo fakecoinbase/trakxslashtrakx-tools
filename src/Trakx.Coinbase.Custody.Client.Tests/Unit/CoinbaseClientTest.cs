@@ -1,52 +1,74 @@
-﻿using System;
+﻿using System.Linq;
 using System.Threading.Tasks;
 using FluentAssertions;
-using Flurl.Http;
-using Flurl.Http.Testing;
-using Microsoft.Extensions.DependencyInjection;
+using NSubstitute;
 using Trakx.Coinbase.Custody.Client.Interfaces;
 using Trakx.Coinbase.Custody.Client.Models;
-using Trakx.Coinbase.Custody.Client.Tests.Unit.Models;
 using Xunit;
+using Xunit.Abstractions;
 
 namespace Trakx.Coinbase.Custody.Client.Tests.Unit
 {
-    public class CoinbaseClientTests : IDisposable
+    public class CoinbaseClientTests
     {
-        private readonly ICoinbaseClient _client;
-        private readonly HttpTest _httpTest;
-        public CoinbaseClientTests()
-        {
-            var serviceCollection = new ServiceCollection();
-            serviceCollection.AddCoinbaseLibrary("apiKey", "fhzycdushbvfc");
+        private readonly CoinbaseClient _client;
+        private readonly ICurrencyEndpoint _currencyEndpoint;
 
-            _httpTest=new HttpTest();
-            var serviceProvider = serviceCollection.BuildServiceProvider();
-            _client = serviceProvider.GetRequiredService<ICoinbaseClient>();
+        public CoinbaseClientTests(ITestOutputHelper output)
+        {
+            _currencyEndpoint = Substitute.For<ICurrencyEndpoint>();
+            _client = new CoinbaseClient(null, null, null, _currencyEndpoint);
         }
 
-        public void Dispose()
+        private PagedResponse<Currency> GetPagedResponse(int pageNumber, int size)
         {
-            _httpTest.Dispose();
+            var data = Enumerable.Range(0, size).Select(i =>
+                new Currency
+                {
+                    Decimals = (ushort) (i % size),
+                    Symbol = $"SYM{pageNumber}N{i}",
+                    Name = $"Currency {pageNumber} {i}"
+                }).ToArray();
+            var pageResponse = new PagedResponse<Currency>
+            {
+                Data = data,
+                Pagination = new Pagination
+                {
+                    Before = $"SYM{pageNumber - 1}N{size}",
+                    After = pageNumber == 0 ? null : $"SYM{pageNumber - 1}N{size}"
+                }
+            };
+            return pageResponse;
         }
 
         [Fact]
-        public void  ListAddressesAsync_should_throw_FlurlError_is_request_fail()
+        public async Task GetCurrencies_should_enumerate_page_responses_lazily()
         {
-            _httpTest.RespondWith(status: 404);
-            Func<Task> request = async () => await _client.ListAddressesAsync();
+            var apiCallNumber = 0;
 
-            request.Should().ThrowExactly<FlurlHttpException>("Server respond with 404 status code.");
+            _currencyEndpoint.ListCurrenciesAsync().ReturnsForAnyArgs(ci =>
+            {
+                var page = GetPagedResponse(apiCallNumber, 10);
+                apiCallNumber++;
+                return page;
+            });
+
+            await _client.GetCurrencies(new PaginationOptions(pageSize: 10)).Take(35).ToListAsync();
+
+            await _currencyEndpoint.ReceivedWithAnyArgs(4).ListCurrenciesAsync();
         }
 
         [Fact]
-        public async Task ListAddressesAsync_should_return_List_of_addresses()
+        public async Task GetCurrencies_should_enumerate_page_until_the_end()
         {
-            var sampleResponse = await SampleResponseHelper.GetSampleResponseContent("AddressResponse");
-            _httpTest.RespondWith(sampleResponse);
+            _currencyEndpoint.ListCurrenciesAsync().ReturnsForAnyArgs(
+                GetPagedResponse(0, 10),
+                GetPagedResponse(1, 5));
 
-            var result = await _client.ListAddressesAsync();
-            result.Should().BeOfType<PagedResponse<AddressResponse>>();
+            var allCurrencies = await _client.GetCurrencies(new PaginationOptions(pageSize: 10)).ToListAsync();
+
+            await _currencyEndpoint.ReceivedWithAnyArgs(2).ListCurrenciesAsync();
+            allCurrencies.Count.Should().Be(15);
         }
     }
 }

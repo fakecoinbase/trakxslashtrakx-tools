@@ -3,29 +3,31 @@ using System.Net.Http;
 using System.Threading.Tasks;
 using FluentAssertions;
 using Flurl;
+using Microsoft.Extensions.DependencyInjection;
 using Trakx.Coinbase.Custody.Client.Endpoints;
+using Trakx.Coinbase.Custody.Client.Interfaces;
 using Trakx.Coinbase.Custody.Client.Models;
 using Trakx.Coinbase.Custody.Client.Tests.Unit.Models;
 using Xunit;
 
 namespace Trakx.Coinbase.Custody.Client.Tests.Unit.Endpoints
 {
-    public class CurrencyEndpointTest :EndpointTests
+    public class CurrencyEndpointTest : EndpointTests
     {
         private readonly CurrencyEndpoint _currencyEndpoint;
 
+
         public CurrencyEndpointTest() : base("currencies")
         {
-            _currencyEndpoint = new CurrencyEndpoint(CoinbaseClient);
+            _currencyEndpoint = (CurrencyEndpoint)ServiceProvider.GetRequiredService<ICurrencyEndpoint>();
+            SampleResponse = SampleResponseHelper.GetSampleResponseContent("PagedResponseCurrency").Result;
+            HttpTest.RespondWith(SampleResponse);
         }
 
 
         [Fact]
         public async Task ListCurrenciesAsync_should_deserialize_response_to_model()
         {
-            var sampleResponse = await SampleResponseHelper.GetSampleResponseContent("PagedResponseCurrency");
-            HttpTest.RespondWith(sampleResponse);
-
             var response = await _currencyEndpoint.ListCurrenciesAsync();
 
             response.Data[0].Symbol.Should().Be("btc");
@@ -43,15 +45,17 @@ namespace Trakx.Coinbase.Custody.Client.Tests.Unit.Endpoints
         {
             await _currencyEndpoint.ListCurrenciesAsync();
             HttpTest.ShouldHaveCalled(EndpointUrl)
-                .WithoutQueryParams("limit", "before", "after");
+                .WithoutQueryParams("before", "after")
+                //.WithQueryParamValue("limit", 25)
+                ;
         }
 
         [Fact]
         public async Task ListCurrenciesAsync_should_call_API_with_query_parameters()
         {
-            await _currencyEndpoint.ListCurrenciesAsync("btc",limit: 20);
+            await _currencyEndpoint.ListCurrenciesAsync(new PaginationOptions(pageSize: 20, before: "btc"));
             HttpTest.ShouldHaveCalled(EndpointUrl)
-                .WithQueryParamValues(("btc",  20))
+                .WithQueryParamValues(("btc", 20))
                 .WithQueryParams("limit", "before")
                 .WithVerb(HttpMethod.Get);
         }

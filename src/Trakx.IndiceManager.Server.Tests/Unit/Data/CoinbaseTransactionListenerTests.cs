@@ -1,4 +1,6 @@
 ﻿using System;
+using System.Collections.Generic;
+using System.Linq;
 using System.Reactive.Concurrency;
 using Microsoft.Extensions.Caching.Memory;
 using Microsoft.Extensions.DependencyInjection;
@@ -21,12 +23,15 @@ namespace Trakx.IndiceManager.Server.Tests.Unit.Data
         private readonly TestScheduler _testScheduler;
         private readonly TimeSpan _runningTime;
         private readonly IMemoryCache _cache;
-        private readonly IUserAddressProvider _userAddressProvider;
+        private readonly ITransactionDataProvider _transactionDataProvider;
 
         public CoinbaseTransactionListenerTests(ITestOutputHelper output)
         {
-            _cache = Substitute.For<IMemoryCache>();
-            _userAddressProvider = Substitute.For<IUserAddressProvider>();
+            _cache = new MemoryCache(new MemoryCacheOptions());
+
+            _transactionDataProvider = Substitute.For<ITransactionDataProvider>();
+            _transactionDataProvider.GetLastWrappingTransactionDatetime().ReturnsForAnyArgs(new DateTime(2020, 12, 12));
+
             var serviceScopeFactory = PrepareScopeResolution();
             _coinbaseClient = Substitute.For<ICoinbaseClient>();
             _testScheduler = new TestScheduler();
@@ -35,13 +40,15 @@ namespace Trakx.IndiceManager.Server.Tests.Unit.Data
                 .Add(TimeSpan.FromMilliseconds(100));
             _coinbaseListener = new CoinbaseTransactionListener(
                 _coinbaseClient,
-                output.ToLogger<CoinbaseTransactionListener>(), serviceScopeFactory,_cache, _testScheduler);
+                output.ToLogger<CoinbaseTransactionListener>(), serviceScopeFactory, _cache, _testScheduler);
+            _coinbaseClient.GetCurrencyAsync("btc").ReturnsForAnyArgs(new Currency { Decimals = 5, Symbol = "btc" });
         }
 
         private IServiceScopeFactory PrepareScopeResolution()
         {
             var serviceProvider = Substitute.For<IServiceProvider>();
-            serviceProvider.GetService<IUserAddressProvider>().Returns(_userAddressProvider);
+            serviceProvider.GetService<ITransactionDataProvider>()
+                .ReturnsForAnyArgs(_transactionDataProvider);
             var serviceScope = Substitute.For<IServiceScope>();
             serviceScope.ServiceProvider.Returns(serviceProvider);
             var serviceScopeFactory = Substitute.For<IServiceScopeFactory>();
@@ -52,21 +59,18 @@ namespace Trakx.IndiceManager.Server.Tests.Unit.Data
         [Fact]
         public void CoinbaseClient_should_be_polled_frequently()
         {
-            _coinbaseClient.ListTransactionsAsync().ReturnsForAnyArgs(ci =>
-                new PagedResponse<Transaction> {Data = new Transaction[0]});
-
             var observer = SimulateObservationsDuringRunningTime();
-            _coinbaseClient.ReceivedWithAnyArgs(10).ListTransactionsAsync();
+            _coinbaseClient.ReceivedWithAnyArgs(10).GetTransactions();
             observer.DidNotReceiveWithAnyArgs().OnNext(default);
         }
 
         [Fact]
         public void TransactionStream_should_not_stop_if_coinbaseClient_return_error()
         {
-            _coinbaseClient.ListTransactionsAsync().ThrowsForAnyArgs(new Exception());
+            _coinbaseClient.GetTransactions().ThrowsForAnyArgs(new Exception());
 
             var observer = SimulateObservationsDuringRunningTime();
-            _coinbaseClient.ReceivedWithAnyArgs(10).ListTransactionsAsync();
+            _coinbaseClient.ReceivedWithAnyArgs(10).GetTransactions();
 
             observer.DidNotReceiveWithAnyArgs().OnNext(default);
         }
@@ -74,46 +78,69 @@ namespace Trakx.IndiceManager.Server.Tests.Unit.Data
         [Fact]
         public void TransactionStream_should_not_show_duplicates()
         {
-            var counter = 0;
+            var transactionEnumerable = new List<CoinbaseRawTransaction>
+            {
+                new CoinbaseRawTransaction {Currency = "btc", Hashes = new[] { "abc" }},
+                new CoinbaseRawTransaction {Currency = "btc", Hashes = new[] { "def" }},
+                new CoinbaseRawTransaction {Currency = "btc", Hashes = new[] { "def" }}
+            };
+
+            _coinbaseClient.GetTransactions().ReturnsForAnyArgs(transactionEnumerable.ToAsyncEnumerable());
             _coinbaseClient.GetCurrencyAsync("btc").ReturnsForAnyArgs(new Currency { Decimals = 5, Symbol = "btc" });
-            _coinbaseClient.ListTransactionsAsync().ReturnsForAnyArgs(ci =>
-                new PagedResponse<Transaction>
-                {
-                    Data = new[] {new Transaction { Currency = "btc", Hashes = new[] {$"{counter++ % 3}"}}}
-                });
+
 
             var observer = SimulateObservationsDuringRunningTime();
 
-            observer.ReceivedWithAnyArgs(3).OnNext(default);
-        }
-
-
-        [Fact]
-        public void DecimalCache_should_receive_call_during_stream()
-        {
-            _coinbaseClient.ListTransactionsAsync().ReturnsForAnyArgs(ci =>
-                new PagedResponse<Transaction> { Data = new[]{new Transaction {Currency = "btc"} } });
-            
-            SimulateObservationsDuringRunningTime();
-            _cache.Received(10).TryGetValue("coinbase_decimal_btc", out var value );
+            observer.ReceivedWithAnyArgs(2).OnNext(default);
         }
 
         [Fact]
         public void DecimalCache_should_call_CoinbaseApi_if_value_not_found()
         {
-            _coinbaseClient.ListTransactionsAsync().ReturnsForAnyArgs(ci =>
-                new PagedResponse<Transaction> { Data = new [] { new Transaction { Currency = "btc" } } });
-            _coinbaseClient.GetCurrencyAsync("btc").ReturnsForAnyArgs(new Currency {Decimals = 5, Symbol = "btc"});
+            var transactionEnumerable = new List<CoinbaseRawTransaction> { new CoinbaseRawTransaction { Currency = "btc", Hashes = new[] { "123" } } };
+            _coinbaseClient.GetTransactions().ReturnsForAnyArgs(transactionEnumerable.ToAsyncEnumerable());
+            _coinbaseClient.GetCurrencyAsync("btc").ReturnsForAnyArgs(new Currency { Decimals = 10, Symbol = "btc" });
+
             SimulateObservationsDuringRunningTime();
             _coinbaseClient.Received(1).GetCurrencyAsync("btc");
         }
-        
-        private IObserver<ProcessedTransaction> SimulateObservationsDuringRunningTime()
+
+        [Fact]
+        public void TransactionStream_should_not_call_currency_endpoint_when_currency_is_already_in_cache_and_so_cache_should_be_called()
         {
-            var observer = Substitute.For<IObserver<ProcessedTransaction>>();
+            var transactionEnumerable = new List<CoinbaseRawTransaction> { new CoinbaseRawTransaction { Currency = "btc", Hashes = new[] { "123" } } };
+            _coinbaseClient.GetTransactions().ReturnsForAnyArgs(transactionEnumerable.ToAsyncEnumerable());
+            _cache.Set("coinbase_decimal_btc", new Currency { Decimals = 3, Symbol = "btc" }.Decimals);
+            SimulateObservationsDuringRunningTime();
+            _coinbaseClient.DidNotReceiveWithAnyArgs().GetCurrencyAsync("btc");
+        }
+
+        [Fact]
+        public void TransactionStream_should_not_stop_when_currency_cannot_be_retrieved()
+        {
+            var transactionEnumerable = new List<CoinbaseRawTransaction>
+            {
+                new CoinbaseRawTransaction {Currency = "btc", Hashes = new[] { "abc" }},
+                new CoinbaseRawTransaction {Currency = "btc", Hashes = new[] { "def" }},
+                new CoinbaseRawTransaction {Currency = "eth", Hashes = new[] { "ght" }}
+            };
+            _coinbaseClient.GetTransactions().ReturnsForAnyArgs(transactionEnumerable.ToAsyncEnumerable());
+
+            _coinbaseClient.GetCurrencyAsync("btc").Throws(new Exception());
+            _coinbaseClient.GetCurrencyAsync("eth").Returns(new Currency { Decimals = 10 });
+
+            var observer = SimulateObservationsDuringRunningTime();
+            observer.ReceivedWithAnyArgs(1);
+        }
+
+
+        private IObserver<CoinbaseTransaction> SimulateObservationsDuringRunningTime()
+        {
+            var observer = Substitute.For<IObserver<CoinbaseTransaction>>();
             _coinbaseListener.TransactionStream.Subscribe(observer);
             _testScheduler.Schedule(_runningTime, s => _coinbaseListener.StopListening());
             _testScheduler.Start();
+            _coinbaseClient.ReceivedWithAnyArgs(10).GetTransactions();
             return observer;
         }
 

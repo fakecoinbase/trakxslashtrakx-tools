@@ -1,7 +1,9 @@
-﻿namespace Trakx.Coinbase.Custody.Client.Interfaces
+﻿using Flurl.Http;
+
+namespace Trakx.Coinbase.Custody.Client.Interfaces
 {
     public interface IApiKeyConfig
     {
-        void Configure(CoinbaseClient client);
+        void Configure(IFlurlClient client);
     }
 }

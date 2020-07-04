@@ -39,7 +39,7 @@ namespace Trakx.IndiceManager.Server.Tests.Unit.Data
         [Fact]
         public void OnNext_should_creates_new_temporaryMapping_if_transactionSender_is_unknown()
         {
-            var transaction = new ProcessedTransaction(3, new Transaction());
+            var transaction = new CoinbaseTransaction(new CoinbaseRawTransaction(), 3);
             _userAddressProvider.TryToGetUserAddressByAddress(default).ReturnsForAnyArgs((IUserAddress)null);
 
             _balanceUpdater.OnNext(transaction);
@@ -51,9 +51,9 @@ namespace Trakx.IndiceManager.Server.Tests.Unit.Data
         [Fact]
         public void TryUpdateUserBalance_should_validateMapping_when_sentAmount_is_verificationAmount()
         {
-            var retrievedUser = _daoCreator.GetRandomUserAddressDao(-50);
+            var retrievedUser = _daoCreator.GetRandomUserAddressDao(1234);
             retrievedUser.IsVerified.Should().BeFalse();
-            var processedTransaction = new ProcessedTransaction(1, new Transaction { Amount = 5 });
+            var processedTransaction = new CoinbaseTransaction(new CoinbaseRawTransaction { UnscaledAmount = 12340 }, 1);
             _userAddressProvider.UpdateUserBalance(default).ReturnsForAnyArgs(true);
             _userAddressProvider.ValidateMappingAddress(default).ReturnsForAnyArgs(true);
 
@@ -67,7 +67,7 @@ namespace Trakx.IndiceManager.Server.Tests.Unit.Data
         {
             var retrievedUser = _daoCreator.GetRandomUserAddressDao();
             retrievedUser.IsVerified = true;
-            var transaction = new ProcessedTransaction(10, new Transaction { Amount = 10 });
+            var transaction = new CoinbaseTransaction(new CoinbaseRawTransaction { UnscaledAmount = 10 }, 10);
             _balanceUpdater.TryUpdateUserBalance(retrievedUser, transaction);
             _userAddressProvider.ReceivedWithAnyArgs(1).UpdateUserBalance(default);
             _userAddressProvider.DidNotReceiveWithAnyArgs().ValidateMappingAddress(default);

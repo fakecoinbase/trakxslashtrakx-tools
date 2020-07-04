@@ -7,23 +7,33 @@ using Trakx.Coinbase.Custody.Client.Models;
 namespace Trakx.Coinbase.Custody.Client.Endpoints
 {
     /// <inheritdoc />
-    public class AddressEndpoint : IAddressEndpoint
+    internal class AddressEndpoint : IAddressEndpoint
     {
-        private readonly ICoinbaseClient _client;
+        private readonly IFlurlClient _client;
 
-        internal AddressEndpoint(ICoinbaseClient client)
+        public AddressEndpoint(IFlurlClient client)
         {
             _client = client;
         }
 
         /// <inheritdoc />
         public async Task<PagedResponse<AddressResponse>> ListAddressesAsync(string? currency = null,
-             string? state = null, string? before = null, string? after = null, int? limit = null, CancellationToken cancellationToken = default)
+            string? state = null, PaginationOptions? paginationOptions = default, CancellationToken cancellationToken = default)
         {
-            return await _client
+            paginationOptions ??= PaginationOptions.Default;
+            var page = await _client
                 .Request("addresses")
-                .SetQueryParams(new { currency, state,before,after,limit })
+                .SetQueryParams(new
+                {
+                    currency,
+                    state,
+                    before = paginationOptions.Before,
+                    after = paginationOptions.After,
+                    limit = paginationOptions.PageSize,
+                })
                 .GetJsonAsync<PagedResponse<AddressResponse>>(cancellationToken);
+
+            return page;
         }
     }
 }

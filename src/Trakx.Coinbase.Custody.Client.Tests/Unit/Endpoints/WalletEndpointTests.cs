@@ -3,7 +3,10 @@ using System.Net.Http;
 using System.Threading.Tasks;
 using FluentAssertions;
 using Flurl;
+using Microsoft.Extensions.DependencyInjection;
 using Trakx.Coinbase.Custody.Client.Endpoints;
+using Trakx.Coinbase.Custody.Client.Interfaces;
+using Trakx.Coinbase.Custody.Client.Models;
 using Trakx.Coinbase.Custody.Client.Tests.Unit.Models;
 using Xunit;
 
@@ -15,33 +18,34 @@ namespace Trakx.Coinbase.Custody.Client.Tests.Unit.Endpoints
 
         public WalletEndpointTests() : base("wallets")
         {
-            _walletEndpoint = new WalletEndpoint(CoinbaseClient);
+            _walletEndpoint = (WalletEndpoint)ServiceProvider.GetRequiredService<IWalletEndpoint>();
+            SampleResponse = SampleResponseHelper.GetSampleResponseContent("PagedResponseWallet").Result;
         }
 
         [Fact]
         public async Task ListWalletsAsync_should_call_API_with_query_parameters()
         {
-            await _walletEndpoint.ListWalletsAsync("eur","wallet1", limit: 50);
+            HttpTest.RespondWith(SampleResponse);
+            await _walletEndpoint.ListWalletsAsync("eur", new PaginationOptions(pageSize: 50, before: "wallet1"));
             HttpTest.ShouldHaveCalled(EndpointUrl)
-                .WithQueryParamValues(new{currency="eur",before="wallet1",limit=50})
+                .WithQueryParamValues(new { currency = "eur", before = "wallet1", limit = 50 })
                 .WithVerb(HttpMethod.Get);
         }
 
         [Fact]
         public async Task ListWalletsAsync_should_call_API_without_query_parameters()
         {
+            HttpTest.RespondWith(SampleResponse);
             await _walletEndpoint.ListWalletsAsync();
             HttpTest.ShouldHaveCalled(EndpointUrl)
-                .WithoutQueryParams();
+                .WithQueryParamValue("limit", 25);
         }
 
         [Fact]
         public async Task ListWalletsAsync_should_deserialize_response_to_model()
         {
-            var sampleResponse = await SampleResponseHelper.GetSampleResponseContent("PagedResponseWallet");
-            HttpTest.RespondWith(sampleResponse);
-
-            var response = await _walletEndpoint.ListWalletsAsync();
+            HttpTest.RespondWith(SampleResponse);
+            var response = await _walletEndpoint.ListWalletsAsync(paginationOptions: new PaginationOptions(pageSize: 2));
 
             response.Pagination.After.Should().Be("97881a38-fba1-4563-992c-130a306c5a14");
             response.Data[0].Id.Should().Be("575f6845-9508-4cd7-a794-cb9ab7faf441");
@@ -69,6 +73,7 @@ namespace Trakx.Coinbase.Custody.Client.Tests.Unit.Endpoints
         [Fact]
         public async Task GetWalletAsync_should_call_API_with_correct_path()
         {
+            HttpTest.RespondWith(SampleResponse);
             await _walletEndpoint.GetWalletAsync("2");
             HttpTest.ShouldHaveCalled(Url.Combine(EndpointUrl, "2"))
                 .WithVerb(HttpMethod.Get);
@@ -77,9 +82,8 @@ namespace Trakx.Coinbase.Custody.Client.Tests.Unit.Endpoints
         [Fact]
         public async Task GetWalletAsync_should_deserialize_response_to_model()
         {
-            var sampleResponse = await SampleResponseHelper.GetSampleResponseContent("Wallet");
-            HttpTest.RespondWith(sampleResponse);
-
+            SampleResponse = SampleResponseHelper.GetSampleResponseContent("Wallet").Result;
+            HttpTest.RespondWith(SampleResponse);
             var response = await _walletEndpoint.GetWalletAsync("5");
 
             response.Id.Should().Be("575f6845-9508-4cd7-a794-cb9ab7faf441");

@@ -8,21 +8,30 @@ using Trakx.Coinbase.Custody.Client.Models;
 namespace Trakx.Coinbase.Custody.Client.Endpoints
 {
     /// <inheritdoc />
-    public class WalletEndpoint : IWalletEndpoint
+    internal class WalletEndpoint : IWalletEndpoint
     {
-        private readonly ICoinbaseClient _client;
+        private readonly IFlurlClient _client;
 
-        internal WalletEndpoint(ICoinbaseClient client)
+        public WalletEndpoint(IFlurlClient client)
         {
             _client = client;
         }
 
         /// <inheritdoc />
-        public async Task<PagedResponse<Wallet>> ListWalletsAsync(string? currency = null, string? before = null, string? after = null, int? limit = null, CancellationToken cancellationToken = default)
+        public async Task<PagedResponse<Wallet>> ListWalletsAsync(string? currency = null, 
+            PaginationOptions? paginationOptions = default, CancellationToken cancellationToken = default)
         {
-            return await _client.Request("wallets")
-                .SetQueryParams(new{currency,after,before,limit})
+            paginationOptions ??= PaginationOptions.Default;
+            var page = await _client.Request("wallets")
+                .SetQueryParams(new
+                {
+                    currency,
+                    before = paginationOptions.Before,
+                    after = paginationOptions.After,
+                    limit = paginationOptions.PageSize,
+                })
                 .GetJsonAsync<PagedResponse<Wallet>>(cancellationToken);
+            return page;
         }
 
         /// <inheritdoc />

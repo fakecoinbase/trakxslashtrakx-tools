@@ -7,7 +7,7 @@ using Trakx.Persistence.DAO;
 
 namespace Trakx.IndiceManager.Server.Data
 {
-    public interface IUserBalanceUpdater : IObserver<ProcessedTransaction>
+    public interface IUserBalanceUpdater : IObserver<CoinbaseTransaction>
     {
         /// <summary>
         /// Updates the user balance upon incoming new transactions.
@@ -15,7 +15,7 @@ namespace Trakx.IndiceManager.Server.Data
         /// <param name="transaction">The new transaction to be processed.</param>
         /// <param name="retrievedUser">The user who made the transaction.</param>
         /// <returns>True if a balance was updated, false otherwise.</returns>
-        bool TryUpdateUserBalance(IUserAddress retrievedUser, ProcessedTransaction transaction);
+        bool TryUpdateUserBalance(IUserAddress retrievedUser, CoinbaseTransaction transaction);
     }
 
     /// <inheritdoc cref="IUserBalanceUpdater" />
@@ -33,15 +33,15 @@ namespace Trakx.IndiceManager.Server.Data
 
         #region Implementation of IUserBalanceUpdater
         /// <inheritdoc />
-        public bool TryUpdateUserBalance(IUserAddress retrievedUser, ProcessedTransaction transaction)
+        public bool TryUpdateUserBalance(IUserAddress retrievedUser, CoinbaseTransaction transaction)
         {
             var retrievedUserDao = new UserAddressDao(retrievedUser);
-            if (transaction.DecimalAmount == retrievedUserDao.VerificationAmount && !retrievedUserDao.IsVerified)
+            if (transaction.ScaledAmount == retrievedUserDao.VerificationAmount && !retrievedUserDao.IsVerified)
             {
                 retrievedUserDao.LastUpdate = transaction.CreatedAt.DateTime;
                 return _userAddressProvider.ValidateMappingAddress(retrievedUserDao).GetAwaiter().GetResult();
             }
-            retrievedUserDao.Balance += transaction.DecimalAmount;
+            retrievedUserDao.Balance += transaction.ScaledAmount;
             retrievedUserDao.LastUpdate = transaction.CreatedAt.DateTime;
             return _userAddressProvider.UpdateUserBalance(retrievedUserDao).GetAwaiter().GetResult();
         }
@@ -63,13 +63,13 @@ namespace Trakx.IndiceManager.Server.Data
         }
 
         /// <inheritdoc />
-        public void OnNext(ProcessedTransaction value)
+        public void OnNext(CoinbaseTransaction value)
         {
             ManageRetrievedTransaction(value);
         }
         #endregion
 
-        private void ManageRetrievedTransaction(ProcessedTransaction transaction)
+        private void ManageRetrievedTransaction(CoinbaseTransaction transaction)
         {
             var retrievedUser =
                 _userAddressProvider.TryToGetUserAddressByAddress(transaction.Source)
@@ -82,7 +82,7 @@ namespace Trakx.IndiceManager.Server.Data
             else
             {
                 var newUserAddress = new UserAddress(transaction.Currency, transaction.Source, 0, 
-                    DateTime.Now, balance: transaction.Amount)
+                    DateTime.Now, balance: transaction.UnscaledAmount)
                 { LastUpdate = transaction.CreatedAt.DateTime };
                 _userAddressProvider.AddNewMapping(newUserAddress);
             }

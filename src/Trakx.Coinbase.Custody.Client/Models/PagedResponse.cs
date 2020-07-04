@@ -2,13 +2,15 @@
 
 namespace Trakx.Coinbase.Custody.Client.Models
 {
-    public class PagedResponse<T> 
+    public class PagedResponse<T>
     {
-        [JsonPropertyName("pagination")] 
+        #nullable disable
+        [JsonPropertyName("pagination")]
         public Pagination Pagination { get; set; }
 
 
-        [JsonPropertyName("data")] 
+        [JsonPropertyName("data")]
         public T[] Data { get; set; }
+        #nullable restore
     }
 }

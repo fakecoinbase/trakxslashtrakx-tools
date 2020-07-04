@@ -21,6 +21,7 @@
 	<s:Boolean x:Key="/Default/UserDictionary/Words/=Levenshtein/@EntryIndiceedValue">True</s:Boolean>
 	<s:Boolean x:Key="/Default/UserDictionary/Words/=messari/@EntryIndexedValue">True</s:Boolean>
 	<s:Boolean x:Key="/Default/UserDictionary/Words/=Messari/@EntryIndiceedValue">True</s:Boolean>
+	<s:Boolean x:Key="/Default/UserDictionary/Words/=passphrase/@EntryIndexedValue">True</s:Boolean>
 	<s:Boolean x:Key="/Default/UserDictionary/Words/=Peatio/@EntryIndexedValue">True</s:Boolean>
 	<s:Boolean x:Key="/Default/UserDictionary/Words/=Rebalance/@EntryIndexedValue">True</s:Boolean>
 	<s:Boolean x:Key="/Default/UserDictionary/Words/=rebalance/@EntryIndiceedValue">True</s:Boolean>

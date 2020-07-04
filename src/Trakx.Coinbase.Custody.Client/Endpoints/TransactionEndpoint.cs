@@ -1,4 +1,5 @@
-﻿using System.Threading;
+﻿using System;
+using System.Threading;
 using System.Threading.Tasks;
 using Ardalis.GuardClauses;
 using Flurl.Http;
@@ -8,42 +9,51 @@ using Trakx.Coinbase.Custody.Client.Models;
 namespace Trakx.Coinbase.Custody.Client.Endpoints
 {
     /// <inheritdoc />
-    public class TransactionEndpoint : ITransactionEndpoint
+    internal class TransactionEndpoint : ITransactionEndpoint
     {
-        private readonly ICoinbaseClient _client;
+        private readonly IFlurlClient _client;
 
-        internal TransactionEndpoint(ICoinbaseClient client)
+        public TransactionEndpoint(IFlurlClient client)
         {
             _client = client;
         }
 
 
         /// <inheritdoc />
-        public async Task<PagedResponse<Transaction>> ListTransactionsAsync(string? currency = null, string? state = null, string? walletId = null, string? type = null,
-            string? startTime = null, string? endTime = null, string? before = null, string? after = null, int? limit = null, CancellationToken cancellationToken = default)
+        public async Task<PagedResponse<CoinbaseRawTransaction>> ListTransactionsAsync(string? currency = null, 
+            TransactionState? state = null, 
+            string? walletId = null, 
+            TransactionType? type = null,
+            DateTime? startTime = null, 
+            DateTime? endTime = null, 
+            PaginationOptions? paginationOptions = default,
+            CancellationToken cancellationToken = default)
         {
-            return await _client.Request("transactions")
+            paginationOptions ??= PaginationOptions.Default;
+            var page= await _client.Request("transactions")
                 .SetQueryParams(new
                 {
-                    before,
-                    after,
-                    limit,
                     currency,
-                    state,
-                    type,
+                    state=state?.ToString(),
+                    type=type?.ToString(),
                     wallet_id = walletId,
-                    start_time = startTime,
-                    end_time = endTime
+                    start_time = startTime?.ToString("o"),
+                    end_time = endTime?.ToString("o"),
+                    before = paginationOptions.Before,
+                    after = paginationOptions.After,
+                    limit = paginationOptions.PageSize,
                 })
-                .GetJsonAsync<PagedResponse<Transaction>>(cancellationToken);
+                .GetJsonAsync<PagedResponse<CoinbaseRawTransaction>>(cancellationToken);
+            return page;
         }
 
+
         /// <inheritdoc />
-        public async Task<Transaction> GetTransactionAsync(string transactionId, CancellationToken cancellationToken = default)
+        public async Task<CoinbaseRawTransaction> GetTransactionAsync(string transactionId, CancellationToken cancellationToken = default)
         {
             Guard.Against.NullOrEmpty(transactionId, nameof(transactionId));
             return await _client.Request("transactions", transactionId)
-                .GetJsonAsync<Transaction>(cancellationToken);
+                .GetJsonAsync<CoinbaseRawTransaction>(cancellationToken);
         }
     }
 }
