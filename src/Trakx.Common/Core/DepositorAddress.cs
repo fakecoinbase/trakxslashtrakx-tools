@@ -13,7 +13,7 @@ namespace Trakx.Common.Core
             decimal balance = 0,
             decimal? verificationAmount = default,
             bool isVerified = false,
-            IUser? userAddress = default,
+            IUser? user = default,
             DateTime? created = default,
             DateTime? lastModified = default)
         {
@@ -22,7 +22,7 @@ namespace Trakx.Common.Core
             VerificationAmount = verificationAmount;
             IsVerified = isVerified;
             Address = address;
-            User = userAddress;
+            User = user;
             CurrencySymbol = currencySymbol;
             Id = this.GetId();
             var now = DateTime.UtcNow;
