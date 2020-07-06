@@ -3,7 +3,7 @@
 namespace Trakx.Common.Interfaces
 {
     /// <summary>
-    /// Represents represents the user's address mapping.
+    /// Represents the user's address mapping.
     /// </summary>
     public interface IUser : IHasCreatedLastModified
     {

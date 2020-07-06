@@ -73,7 +73,7 @@ namespace Trakx.IndiceManager.Server.Data
                     address.IsVerified = true;
                 }
 
-                address.TryUpdateBalance(transaction.UnscaledAmount);
+                address.TryUpdateBalance(transaction.ScaledAmount);
                 _addressRetriever.UpdateDepositorAddress(address);
             }
         }

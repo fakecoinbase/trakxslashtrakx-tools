@@ -80,7 +80,7 @@ namespace Trakx.Common.Core
             lock (_balanceLock)
             {
                 var newBalance = Balance + balanceChange;
-                var updateIsValid = newBalance < 0;
+                var updateIsValid = newBalance > 0;
 
                 if (!updateIsValid) return false;
 

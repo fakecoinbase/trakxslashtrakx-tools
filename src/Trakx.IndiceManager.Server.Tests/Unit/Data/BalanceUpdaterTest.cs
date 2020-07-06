@@ -81,7 +81,7 @@ namespace Trakx.IndiceManager.Server.Tests.Unit.Data
             var address = _daoCreator.GetRandomDepositorAddressDao(isVerified: true);
             var transaction = GetRandomCoinbaseTransaction();
             _balanceUpdater.OnNext(transaction);
-            _depositorAddressRetriever.ReceivedWithAnyArgs(1)
+            _depositorAddressRetriever.Received(1)
                 .UpdateDepositorAddress(Arg.Is<IDepositorAddress>(t => t.Balance == address.Balance + transaction.ScaledAmount));
         }
 
