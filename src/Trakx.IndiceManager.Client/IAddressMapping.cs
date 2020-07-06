@@ -31,7 +31,7 @@ namespace Trakx.IndiceManager.Client
         /// <summary>
         /// Tell to the server to start verifying that the IUserAddress have send the amount to the correct address.
         /// </summary>
-        /// <param name="userAddress">all the information about the mapping transaction</param>
-        Task VerifyMappingTransaction(IUserAddress userAddress);
+        /// <param name="user">all the information about the mapping transaction</param>
+        Task VerifyMappingTransaction(IUser user);
     }
 }

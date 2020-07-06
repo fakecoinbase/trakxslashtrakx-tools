@@ -1,19 +1,34 @@
-﻿using Microsoft.EntityFrameworkCore;
+﻿using System;
+using Microsoft.EntityFrameworkCore;
+using Microsoft.EntityFrameworkCore.ChangeTracking;
 using Trakx.Persistence.DAO;
+using Trakx.Common.Interfaces;
 
 namespace Trakx.Persistence
 {
     public partial class IndiceRepositoryContext : DbContext
     {
         /// <inheritdoc />
-        public IndiceRepositoryContext(DbContextOptions options) 
+        public IndiceRepositoryContext(DbContextOptions options)
             : base(options)
-        {}
+        {
+            ChangeTracker.Tracked += OnEntityTracked;
+            ChangeTracker.StateChanged += OnEntityStateChanged;
+        }
 
-        public IndiceRepositoryContext(): base(new DbContextOptionsBuilder<IndiceRepositoryContext>()
-            .UseSqlServer("Server=localhost,1533;Database=IndiceRepository;Trusted_Connection=False;MultipleActiveResultSets=true;User Id=SA;Password=oh_no_this-needs_toChange4Real")
-            .Options)
-        {}
+        void OnEntityTracked(object? sender, EntityTrackedEventArgs e)
+        {
+            if (!e.FromQuery && e.Entry.State == EntityState.Added 
+                             && e.Entry.Entity is IHasCreatedLastModified entity)
+                entity.Created = DateTime.UtcNow;
+        }
+
+        void OnEntityStateChanged(object? sender, EntityStateChangedEventArgs e)
+        {
+            if (e.NewState == EntityState.Modified 
+                && e.Entry.Entity is IHasCreatedLastModified entity)
+                entity.LastModified = DateTime.UtcNow;
+        }
 
         public DbSet<ComponentQuantityDao> ComponentQuantities { get; set; }
         public DbSet<ComponentDefinitionDao> ComponentDefinitions { get; set; }
@@ -23,7 +38,8 @@ namespace Trakx.Persistence
         public DbSet<IndiceCompositionDao> IndiceCompositions { get; set; }
         public DbSet<IndiceValuationDao> IndiceValuations { get; set; }
         public DbSet<WrappingTransactionDao> WrappingTransactions { get; set; }
-        public DbSet<UserAddressDao> UserAddresses { get; set; }
+        public DbSet<UserDao> Users { get; set; }
+        public DbSet<DepositorAddressDao> DepositorAddresses { get; set; }
         
         #region Overrides of DbContext
 

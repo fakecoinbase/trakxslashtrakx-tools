@@ -70,10 +70,10 @@ namespace Trakx.IndiceManager.Server
             services.AddMemoryCache();
             services.AddCoinGeckoClient();
             services.AddSingleton<ICoinbaseTransactionListener, CoinbaseTransactionListener>();
-            services.AddSingleton<IUserBalanceUpdater, UserBalanceUpdater>();
+            services.AddSingleton<IBalanceUpdater, BalanceUpdater>();
             services.AddCoinbaseLibrary(Environment.GetEnvironmentVariable("COINBASE_API_KEY"),
                 Environment.GetEnvironmentVariable("COINBASE_PASSPHRASE_KEY"));
-            services.AddHostedService<BalanceUpdateService>();
+            services.AddHostedService<BalanceUpdaterService>();
         }
 
         // This method gets called by the runtime. Use this method to configure the HTTP request pipeline.

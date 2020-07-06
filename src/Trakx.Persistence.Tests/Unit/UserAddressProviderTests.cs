@@ -15,124 +15,61 @@ namespace Trakx.Persistence.Tests.Unit
     public class UserAddressProviderTests
     {
         private readonly IndiceRepositoryContext _context;
-        private readonly IUserAddressProvider _userAddressProvider;
+        private readonly IUserDataProvider _userDataProvider;
         private readonly MockDaoCreator _mockDaoCreator;
+
         public UserAddressProviderTests(EmptyDbContextFixture fixture, ITestOutputHelper output)
         {
             _context = fixture.Context;
             _mockDaoCreator = new MockDaoCreator(output);
-            _userAddressProvider=new UserAddressProvider(_context);
+            _userDataProvider = new UserDataProvider(_context);
         }
 
         [Fact]
-        public async Task GetUserAddressByAddress_should_return_correct_UserAddress()
+        public async Task TryToGetUserAddressByUserId_should_return_correct_UserAddress()
         {
             var userAddressToSave = await SaveUserAddress();
 
-            var retrievedUserAddress = await _userAddressProvider.TryToGetUserAddressByAddress(userAddressToSave.Address);
+            var retrievedUserAddress = await _userDataProvider.TryGetUserById(userAddressToSave.Id);
 
             retrievedUserAddress.Should().NotBeNull("It exists in the database.");
-            retrievedUserAddress.UserId.Should().Be(userAddressToSave.UserId);
+            retrievedUserAddress.Id.Should().Be(userAddressToSave.Id);
+            retrievedUserAddress.Created.Should().Be(userAddressToSave.Created);
             retrievedUserAddress.Id.Should().Be(userAddressToSave.Id);
         }
 
         [Fact]
-        public async Task GetUserAddressByAddress_should_return_null_if_userAddress_doesnt_exist()
+        public async Task TryToGetUserAddressByUserId_should_return_null_if_userAddress_doesnt_exist()
         {
-            var retrievedUserAddress = await _userAddressProvider.TryToGetUserAddressByAddress(_mockDaoCreator.GetRandomAddressEthereum());
+            var retrievedUserAddress = await _userDataProvider.TryGetUserById(_mockDaoCreator.GetRandomString(8));
             retrievedUserAddress.Should().BeNull();
-        }
-
-        [Fact]
-        public async Task ValidateMappingAddress_should_validate_new_mapping()
-        {
-            var userAddressToSave = await SaveUserAddress();
-            userAddressToSave.IsVerified.Should().BeFalse();
-
-            await _userAddressProvider.ValidateMappingAddress(userAddressToSave);
-
-            var retrievedUserAddress =
-                await _context.UserAddresses.FirstOrDefaultAsync(u => u.Address == userAddressToSave.Address);
-            retrievedUserAddress.IsVerified.Should().BeTrue();
-        }
-
-        [Fact]
-        public async Task UpdateUserBalance_should_update_the_balance()
-        {
-            var userAddressToSave = await SaveUserAddress();
-            userAddressToSave.Balance.Should().Be(0);
-
-            userAddressToSave.Balance += 20;
-            await _userAddressProvider.UpdateUserBalance(userAddressToSave);
-
-            var retrievedUserAddress =
-                await _context.UserAddresses.FirstOrDefaultAsync(u => u.Address == userAddressToSave.Address);
-            retrievedUserAddress.Balance.Should().Be(20);
         }
 
         [Fact]
         public async Task AddNewMapping_should_create_new_mapping_if_mapping_not_in_database_yet()
         {
-            var newUserAddress = _mockDaoCreator.GetRandomUserAddressDao(5);
+            var newUserAddress = _mockDaoCreator.GetUserDao();
 
-            var isSaved = await _userAddressProvider.AddNewMapping(newUserAddress);
+            var isSaved = await _userDataProvider.TryAddNewUser(newUserAddress);
 
             isSaved.Should().BeTrue();
             var retrievedUserAddress =
-                await _context.UserAddresses.FirstOrDefaultAsync(u => u.Address == newUserAddress.Address);
-            retrievedUserAddress.VerificationAmount.Should().Be(5);
+                await _context.Users.FirstOrDefaultAsync(u => u.Id == newUserAddress.Id);
+            retrievedUserAddress.Id.Should().Be(newUserAddress.Id);
         }
 
         [Fact]
-        public async Task AddNewMapping_should_not_modify_userAddress_if_it_is_already_in_database_and_verified()
+        public async Task AddNewMapping_should_not_add_UserAddress_if_it_is_already_in_database()
         {
             var userAddressToSave = await SaveUserAddress();
-            await _userAddressProvider.ValidateMappingAddress(userAddressToSave);
 
-            var isSaved = await _userAddressProvider.AddNewMapping(userAddressToSave);
-            isSaved.Should().BeFalse();
+            var isModified = await _userDataProvider.TryAddNewUser(userAddressToSave);
+            isModified.Should().BeFalse();
         }
 
-        [Fact]
-        public async Task AddNewMapping_should_modify_User_Address_if_it_is_not_verified_yet()
+        private async Task<UserDao> SaveUserAddress()
         {
-            var userAddressToSave = await SaveUserAddress(5);
-
-            userAddressToSave.UserId = "NewName";
-            userAddressToSave.VerificationAmount = 50;
-
-            var isModified =await _userAddressProvider.AddNewMapping(userAddressToSave);
-            isModified.Should().BeTrue();
-            var retrievedUserAddress =
-                await _context.UserAddresses.FirstOrDefaultAsync(u => u.Address == userAddressToSave.Address);
-            retrievedUserAddress.VerificationAmount.Should().Be(50);
-            retrievedUserAddress.UserId.Should().Be("NewName");
-        }
-
-        [Fact]
-        public async Task GetLastTransactionDate_should_have_the_bigger_timestamp()
-        {
-            await SaveUserAddress(lastUpdate:new DateTime(4040,10,10));
-            await SaveUserAddress(lastUpdate: new DateTime(2021, 10, 10));
-
-
-            var timestamp =  _userAddressProvider.GetLastTransactionDate();
-            timestamp.Should().Be(new DateTime(4040, 10, 10));
-        }
-
-        [Fact]
-        public async Task GetLastTransactionDate_should_return_minimal_Datetime_if_database_empty()
-        {
-            await _context.Database.EnsureDeletedAsync();
-            await _context.SaveChangesAsync();
-
-            var timestamp = _userAddressProvider.GetLastTransactionDate();
-            timestamp.Should().Be(DateTime.MinValue);
-        }
-        private async Task<UserAddressDao> SaveUserAddress(decimal verificationAmount=0,DateTime lastUpdate=default)
-        {
-            var userAddressToSave = _mockDaoCreator.GetRandomUserAddressDao(verificationAmount);
-            if(lastUpdate!=default)userAddressToSave.LastUpdate = lastUpdate;
+            var userAddressToSave = _mockDaoCreator.GetUserDao();
             await _context.AddAsync(userAddressToSave);
             await _context.SaveChangesAsync();
             return userAddressToSave;

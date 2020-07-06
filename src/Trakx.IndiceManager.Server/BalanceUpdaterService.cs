@@ -7,20 +7,28 @@ using Trakx.IndiceManager.Server.Data;
 
 namespace Trakx.IndiceManager.Server
 {
-    public class BalanceUpdateService : BackgroundService
+    /// <summary>
+    /// Long running tasks in charge of listening to events about new deposits on Coinbase
+    /// Custody wallets, and update internal ledger balances in consequence.
+    /// </summary>
+    /// <inheritdoc cref="BackgroundService"/>
+    public class BalanceUpdaterService : BackgroundService
     {
-        private readonly IUserBalanceUpdater _balanceUpdater;
-        private readonly ILogger<BalanceUpdateService> _logger;
+        private readonly IBalanceUpdater _balanceUpdater;
+        private readonly ILogger<BalanceUpdaterService> _logger;
         private readonly ICoinbaseTransactionListener _coinbaseTransactionListener;
-        private IDisposable _balanceUpdateSubscription;
+        private IDisposable? _balanceUpdateSubscription;
 
-        public BalanceUpdateService(ICoinbaseTransactionListener coinbaseTransactionListener, 
-            IUserBalanceUpdater balanceUpdater, ILogger<BalanceUpdateService> logger)
+        /// <inheritdoc />
+        public BalanceUpdaterService(ICoinbaseTransactionListener coinbaseTransactionListener, 
+            IBalanceUpdater balanceUpdater, ILogger<BalanceUpdaterService> logger)
         {
             _balanceUpdater = balanceUpdater;
             _coinbaseTransactionListener = coinbaseTransactionListener;
             _logger = logger;
         }
+
+        /// <inheritdoc />
         protected override async Task ExecuteAsync(CancellationToken stoppingToken)
         {
             _balanceUpdateSubscription = _coinbaseTransactionListener
@@ -39,7 +47,7 @@ namespace Trakx.IndiceManager.Server
         public override void Dispose()
         {
             base.Dispose();
-            _balanceUpdateSubscription.Dispose();
+            _balanceUpdateSubscription?.Dispose();
         }
 
         #endregion

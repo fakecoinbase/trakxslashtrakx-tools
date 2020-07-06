@@ -3,57 +3,35 @@ using Microsoft.Extensions.DependencyInjection;
 using Trakx.Coinbase.Custody.Client.Models;
 using Trakx.Common.Core;
 using Trakx.Common.Interfaces;
-using Trakx.Persistence.DAO;
 
 namespace Trakx.IndiceManager.Server.Data
 {
-    public interface IUserBalanceUpdater : IObserver<CoinbaseTransaction>
-    {
-        /// <summary>
-        /// Updates the user balance upon incoming new transactions.
-        /// </summary>
-        /// <param name="transaction">The new transaction to be processed.</param>
-        /// <param name="retrievedUser">The user who made the transaction.</param>
-        /// <returns>True if a balance was updated, false otherwise.</returns>
-        bool TryUpdateUserBalance(IUserAddress retrievedUser, CoinbaseTransaction transaction);
-    }
+    /// <summary>
+    /// This service is used to change update the balances of depositor addresses
+    /// based on incoming Coinbase Custody transactions.
+    /// </summary>
+    public interface IBalanceUpdater : IObserver<CoinbaseTransaction> {}
 
-    /// <inheritdoc cref="IUserBalanceUpdater" />
-    public class UserBalanceUpdater : IUserBalanceUpdater, IDisposable
+    /// <inheritdoc cref="IBalanceUpdater" />
+    /// <inheritdoc cref="IDisposable" />
+    public sealed class BalanceUpdater : IBalanceUpdater, IDisposable
     {
-        private readonly IUserAddressProvider _userAddressProvider;
         private readonly IServiceScope _initialisationScope;
+        private readonly IDepositorAddressRetriever _addressRetriever;
 
-        public UserBalanceUpdater(IServiceScopeFactory serviceScopeFactory)
+        /// <inheritdoc />
+        public BalanceUpdater(IServiceScopeFactory serviceScopeFactory)
         {
             _initialisationScope = serviceScopeFactory.CreateScope();
-            _userAddressProvider = _initialisationScope.ServiceProvider.GetService<IUserAddressProvider>();
+            _addressRetriever = _initialisationScope.ServiceProvider.GetService<IDepositorAddressRetriever>();
         }
 
-
-        #region Implementation of IUserBalanceUpdater
-        /// <inheritdoc />
-        public bool TryUpdateUserBalance(IUserAddress retrievedUser, CoinbaseTransaction transaction)
-        {
-            var retrievedUserDao = new UserAddressDao(retrievedUser);
-            if (transaction.ScaledAmount == retrievedUserDao.VerificationAmount && !retrievedUserDao.IsVerified)
-            {
-                retrievedUserDao.LastUpdate = transaction.CreatedAt.DateTime;
-                return _userAddressProvider.ValidateMappingAddress(retrievedUserDao).GetAwaiter().GetResult();
-            }
-            retrievedUserDao.Balance += transaction.ScaledAmount;
-            retrievedUserDao.LastUpdate = transaction.CreatedAt.DateTime;
-            return _userAddressProvider.UpdateUserBalance(retrievedUserDao).GetAwaiter().GetResult();
-        }
-
-        #endregion
-
-        #region Implementation of IObserver<in ProcessedTransaction>
+        #region Implementation of IObserver<in CoinbaseTransaction>
 
         /// <inheritdoc />
         public void OnCompleted()
         {
-            throw new NotImplementedException();
+            //not implemented yet.
         }
 
         /// <inheritdoc />
@@ -67,24 +45,36 @@ namespace Trakx.IndiceManager.Server.Data
         {
             ManageRetrievedTransaction(value);
         }
+
         #endregion
 
         private void ManageRetrievedTransaction(CoinbaseTransaction transaction)
         {
-            var retrievedUser =
-                _userAddressProvider.TryToGetUserAddressByAddress(transaction.Source)
+            if(transaction.ScaledAmount == 0m) return;
+
+            var depositorAddressId = DepositorAddressExtension.GetDepositorAddressId(transaction.Currency, transaction.Source);
+            var retrievedAddress = _addressRetriever
+                    .GetDepositorAddressById(depositorAddressId)
                     .ConfigureAwait(false).GetAwaiter().GetResult();
 
-            if (retrievedUser != null)
+            if (retrievedAddress == null)
             {
-                TryUpdateUserBalance(retrievedUser, transaction);
+                var newDepositorAddress = new DepositorAddress(transaction.Source, 
+                    transaction.Currency, transaction.ScaledAmount);
+                _addressRetriever.AddNewAddress(newDepositorAddress);
             }
             else
             {
-                var newUserAddress = new UserAddress(transaction.Currency, transaction.Source, 0, 
-                    DateTime.Now, balance: transaction.UnscaledAmount)
-                { LastUpdate = transaction.CreatedAt.DateTime };
-                _userAddressProvider.AddNewMapping(newUserAddress);
+                var address = new DepositorAddress(retrievedAddress);
+                if (!retrievedAddress.IsVerified
+                    && retrievedAddress.User != default
+                    && retrievedAddress.VerificationAmount == transaction.ScaledAmount)
+                {
+                    address.IsVerified = true;
+                }
+
+                address.TryUpdateBalance(transaction.UnscaledAmount);
+                _addressRetriever.UpdateDepositorAddress(address);
             }
         }
 

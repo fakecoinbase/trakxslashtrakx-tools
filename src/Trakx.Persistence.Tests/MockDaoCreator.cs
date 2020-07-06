@@ -1,6 +1,8 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Linq;
+using NSubstitute;
+using Trakx.Common.Interfaces;
 using Trakx.Persistence.DAO;
 using Trakx.Persistence.Tests;
 using Xunit.Abstractions;
@@ -52,10 +54,21 @@ namespace Trakx.Tests.Data
             return new IndiceValuationDao(componentValuations);
         }
 
-        public UserAddressDao GetRandomUserAddressDao(decimal verificationAmount=0)
+        public UserDao GetUserDao()
         {
-            
-            return new UserAddressDao(GetRandomIndiceSymbol(),GetRandomString(5),GetRandomAddressEthereum(),verificationAmount,DateTime.Now);
+            return new UserDao(GetRandomUser());
+        }
+
+        public DepositorAddressDao GetRandomDepositorAddressDao(
+            decimal? verificationAmount = default,
+            bool isVerified = false,
+            bool associateUser = true)
+        {
+            verificationAmount ??= GetRandomPrice();
+            return new DepositorAddressDao(GetRandomAddressEthereum(), 
+                GetRandomString(3), 0, 
+                verificationAmount, isVerified, 
+                user: associateUser ? GetRandomUser() : default);
         }
     }
 }

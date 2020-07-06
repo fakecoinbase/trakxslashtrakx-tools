@@ -13,21 +13,21 @@ namespace Trakx.IndiceManager.Server.Tests.Unit.Data
 {
     public class BalanceUpdaterTest
     {
-        private readonly IUserAddressProvider _userAddressProvider;
-        private readonly IUserBalanceUpdater _balanceUpdater;
+        private readonly IDepositorAddressRetriever _depositorAddressRetriever;
+        private readonly IBalanceUpdater _balanceUpdater;
         private readonly MockDaoCreator _daoCreator;
 
         public BalanceUpdaterTest(ITestOutputHelper output)
         {
-            _userAddressProvider = Substitute.For<IUserAddressProvider>();
+            _depositorAddressRetriever = Substitute.For<IDepositorAddressRetriever>();
             var serviceScopeFactory = PrepareScopeResolution();
-            _balanceUpdater = new UserBalanceUpdater(serviceScopeFactory);
+            _balanceUpdater = new BalanceUpdater(serviceScopeFactory);
             _daoCreator = new MockDaoCreator(output);
         }
         private IServiceScopeFactory PrepareScopeResolution()
         {
             var serviceProvider = Substitute.For<IServiceProvider>();
-            serviceProvider.GetService<IUserAddressProvider>().Returns(_userAddressProvider);
+            serviceProvider.GetService<IDepositorAddressRetriever>().Returns(_depositorAddressRetriever);
             var serviceScope = Substitute.For<IServiceScope>();
             serviceScope.ServiceProvider.Returns(serviceProvider);
             var serviceScopeFactory = Substitute.For<IServiceScopeFactory>();
@@ -35,42 +35,54 @@ namespace Trakx.IndiceManager.Server.Tests.Unit.Data
             return serviceScopeFactory;
         }
 
+        private CoinbaseTransaction GetRandomCoinbaseTransaction()
+        {
+            var transaction = new CoinbaseTransaction(
+                    new CoinbaseRawTransaction
+                    {
+                        Currency = _daoCreator.GetRandomString(3), 
+                        Source = _daoCreator.GetRandomAddressEthereum(),
+                        UnscaledAmount = _daoCreator.GetRandomUnscaledAmount(),
+                    }, _daoCreator.GetRandomNaturalUnit());
+            return transaction;
+        }
+
 
         [Fact]
         public void OnNext_should_creates_new_temporaryMapping_if_transactionSender_is_unknown()
         {
-            var transaction = new CoinbaseTransaction(new CoinbaseRawTransaction(), 3);
-            _userAddressProvider.TryToGetUserAddressByAddress(default).ReturnsForAnyArgs((IUserAddress)null);
+            var transaction = GetRandomCoinbaseTransaction();
+            _depositorAddressRetriever.GetDepositorAddressById(default).ReturnsForAnyArgs((IDepositorAddress)null);
 
             _balanceUpdater.OnNext(transaction);
-            _userAddressProvider.ReceivedWithAnyArgs(1).AddNewMapping(default);
-            _userAddressProvider.DidNotReceiveWithAnyArgs().UpdateUserBalance(default);
-            _userAddressProvider.DidNotReceiveWithAnyArgs().ValidateMappingAddress(default);
+            _depositorAddressRetriever.ReceivedWithAnyArgs(1)
+                .AddNewAddress(Arg.Is<IDepositorAddress>(a => a.Address == transaction.Source 
+                                                              && a.Balance == transaction.ScaledAmount));
+            _depositorAddressRetriever.DidNotReceiveWithAnyArgs().UpdateDepositorAddress(default);
         }
 
         [Fact]
-        public void TryUpdateUserBalance_should_validateMapping_when_sentAmount_is_verificationAmount()
+        public void OnNext_should_verify_address_when_sentAmount_is_verificationAmount()
         {
-            var retrievedUser = _daoCreator.GetRandomUserAddressDao(1234);
-            retrievedUser.IsVerified.Should().BeFalse();
-            var processedTransaction = new CoinbaseTransaction(new CoinbaseRawTransaction { UnscaledAmount = 12340 }, 1);
-            _userAddressProvider.UpdateUserBalance(default).ReturnsForAnyArgs(true);
-            _userAddressProvider.ValidateMappingAddress(default).ReturnsForAnyArgs(true);
+            var transaction = GetRandomCoinbaseTransaction();
+            var retrievedAddress = _daoCreator.GetRandomDepositorAddressDao(transaction.ScaledAmount);
+            retrievedAddress.IsVerified.Should().BeFalse();
 
-            _balanceUpdater.TryUpdateUserBalance(retrievedUser, processedTransaction);
-            _userAddressProvider.ReceivedWithAnyArgs(1).ValidateMappingAddress(default);
-            _userAddressProvider.DidNotReceiveWithAnyArgs().UpdateUserBalance(default);
+            _balanceUpdater.OnNext(transaction);
+
+            _depositorAddressRetriever.DidNotReceiveWithAnyArgs().AddNewAddress(default);
+            _depositorAddressRetriever.ReceivedWithAnyArgs(1).UpdateDepositorAddress(
+                Arg.Is<IDepositorAddress>(a => a.Address == transaction.Source && a.IsVerified));
         }
 
         [Fact]
-        public void TryUpdateUserBalance_should_TryToUpdate_UserBalance()
+        public void OnNext_should_TryToUpdate_UserBalance()
         {
-            var retrievedUser = _daoCreator.GetRandomUserAddressDao();
-            retrievedUser.IsVerified = true;
-            var transaction = new CoinbaseTransaction(new CoinbaseRawTransaction { UnscaledAmount = 10 }, 10);
-            _balanceUpdater.TryUpdateUserBalance(retrievedUser, transaction);
-            _userAddressProvider.ReceivedWithAnyArgs(1).UpdateUserBalance(default);
-            _userAddressProvider.DidNotReceiveWithAnyArgs().ValidateMappingAddress(default);
+            var address = _daoCreator.GetRandomDepositorAddressDao(isVerified: true);
+            var transaction = GetRandomCoinbaseTransaction();
+            _balanceUpdater.OnNext(transaction);
+            _depositorAddressRetriever.ReceivedWithAnyArgs(1)
+                .UpdateDepositorAddress(Arg.Is<IDepositorAddress>(t => t.Balance == address.Balance + transaction.ScaledAmount));
         }
 
     }

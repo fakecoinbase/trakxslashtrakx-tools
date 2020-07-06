@@ -1,10 +1,12 @@
 ﻿using System;
+using System.Collections.Generic;
 using System.Linq;
 using System.Reflection;
 using Nethereum.RPC.Eth.DTOs;
 using Newtonsoft.Json.Linq;
 using NSubstitute;
 using Trakx.Common.Core;
+using Trakx.Common.Interfaces;
 using Trakx.Common.Interfaces.Indice;
 using Trakx.Common.Interfaces.Transaction;
 using Xunit.Abstractions;
@@ -71,9 +73,9 @@ namespace Trakx.Persistence.Tests
         }
 
         public ushort GetRandomNaturalUnit() => (ushort)_random.Next(0, 18);
-        
         public uint GetRandomCompositionVersion() => (uint)_random.Next(0, 30);
         public decimal GetRandomPrice() => _random.Next(1, int.MaxValue)/1e5m;
+        public long GetRandomUnscaledAmount() => _random.Next(1, int.MaxValue);
         public TimeSpan GetRandomTimeSpan() => TimeSpan.FromSeconds(_random.Next(1, (int)TimeSpan.FromDays(1000).TotalSeconds));
 
         public IIndiceComposition GetIndiceComposition(int componentCount)
@@ -192,6 +194,16 @@ namespace Trakx.Persistence.Tests
 
             var indiceValuation = new IndiceValuation(composition, componentValuations, DateTime.Now);
             return indiceValuation;
+        }
+
+        public IUser GetRandomUser()
+        {
+            var user = Substitute.For<IUser>();
+            var id = GetRandomString(8);
+            user.Id.Returns(id);
+            var list = new List<IDepositorAddress>();
+            user.Addresses.Returns(list);
+            return user;
         }
     }
 }

@@ -173,9 +173,11 @@
     /// Convert view model into an IUserAddress
     /// </summary>
     /// <returns></returns>
-    private IUserAddress ToIUserAddress()
+    private IUser ToIUserAddress()
     {
-        return new UserAddress(ChosenCurrencySymbol, AddressToVerify, VerificationAmount, DateTime.Now);
+        var depositorAddress = new DepositorAddress(AddressToVerify, ChosenCurrencySymbol, VerificationAmount);
+        return new User("HARDCODED_USER_IS_SHOULD_COME_FROM_AUTHENTICATION",
+            new [] {(IDepositorAddress)depositorAddress}.ToList());
     }
 
     #endregion

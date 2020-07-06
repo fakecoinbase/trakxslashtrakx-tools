@@ -43,7 +43,7 @@ namespace Trakx.IndiceManager.Server.Data
             service.AddScoped<IComponentInformationRetriever, ComponentInformationRetriever>();
             service.AddScoped<IComponentDataCreator, ComponentDataCreator>();
             service.AddScoped<IComponentDataProvider, ComponentDataProvider>();
-            service.AddScoped<IUserAddressProvider, UserAddressProvider>();
+            service.AddScoped<IUserDataProvider, UserDataProvider>();
             return service;
         } 
 

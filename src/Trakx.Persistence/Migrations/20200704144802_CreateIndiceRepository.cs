@@ -39,21 +39,15 @@ namespace Trakx.Persistence.Migrations
                 });
 
             migrationBuilder.CreateTable(
-                name: "UserAddresses",
+                name: "Users",
                 columns: table => new
                 {
-                    Address = table.Column<string>(nullable: false),
                     Id = table.Column<string>(nullable: false),
-                    ChainId = table.Column<string>(nullable: false),
-                    UserId = table.Column<string>(nullable: false),
-                    Balance = table.Column<decimal>(type: "decimal(38, 18)", nullable: false),
-                    VerificationAmount = table.Column<decimal>(type: "decimal(38, 18)", nullable: false),
-                    IsVerified = table.Column<bool>(nullable: false),
                     CreationDate = table.Column<DateTime>(nullable: false)
                 },
                 constraints: table =>
                 {
-                    table.PrimaryKey("PK_UserAddresses", x => x.Address);
+                    table.PrimaryKey("PK_Users", x => x.Id);
                 });
 
             migrationBuilder.CreateTable(
@@ -100,6 +94,29 @@ namespace Trakx.Persistence.Migrations
                         principalTable: "IndiceDefinitions",
                         principalColumn: "Symbol",
                         onDelete: ReferentialAction.Cascade);
+                });
+
+            migrationBuilder.CreateTable(
+                name: "DepositorAddresses",
+                columns: table => new
+                {
+                    Id = table.Column<string>(nullable: false),
+                    UserAddressDaoId = table.Column<string>(nullable: true),
+                    Balance = table.Column<decimal>(type: "decimal(38, 18)", nullable: false),
+                    VerificationAmount = table.Column<decimal>(type: "decimal(38, 18)", nullable: false),
+                    IsVerified = table.Column<bool>(nullable: false),
+                    Address = table.Column<string>(nullable: false),
+                    CurrencySymbol = table.Column<string>(nullable: false)
+                },
+                constraints: table =>
+                {
+                    table.PrimaryKey("PK_DepositorAddresses", x => x.Id);
+                    table.ForeignKey(
+                        name: "FK_DepositorAddresses_Users_UserAddressDaoId",
+                        column: x => x.UserAddressDaoId,
+                        principalTable: "Users",
+                        principalColumn: "Id",
+                        onDelete: ReferentialAction.Restrict);
                 });
 
             migrationBuilder.CreateTable(
@@ -226,6 +243,11 @@ namespace Trakx.Persistence.Migrations
                 column: "IndiceValuationDaoId");
 
             migrationBuilder.CreateIndex(
+                name: "IX_DepositorAddresses_UserAddressDaoId",
+                table: "DepositorAddresses",
+                column: "UserAddressDaoId");
+
+            migrationBuilder.CreateIndex(
                 name: "IX_IndiceCompositions_IndiceDefinitionDaoSymbol",
                 table: "IndiceCompositions",
                 column: "IndiceDefinitionDaoSymbol");
@@ -247,10 +269,10 @@ namespace Trakx.Persistence.Migrations
                 name: "ComponentValuations");
 
             migrationBuilder.DropTable(
-                name: "IndiceSupplyTransactions");
+                name: "DepositorAddresses");
 
             migrationBuilder.DropTable(
-                name: "UserAddresses");
+                name: "IndiceSupplyTransactions");
 
             migrationBuilder.DropTable(
                 name: "WrappingTransactions");
@@ -260,6 +282,9 @@ namespace Trakx.Persistence.Migrations
 
             migrationBuilder.DropTable(
                 name: "IndiceValuations");
+
+            migrationBuilder.DropTable(
+                name: "Users");
 
             migrationBuilder.DropTable(
                 name: "ComponentDefinitions");

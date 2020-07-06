@@ -116,6 +116,38 @@ namespace Trakx.Persistence.Migrations
                     b.ToTable("ComponentValuations");
                 });
 
+            modelBuilder.Entity("Trakx.Persistence.DAO.DepositorAddressDao", b =>
+                {
+                    b.Property<string>("Id")
+                        .HasColumnType("nvarchar(450)");
+
+                    b.Property<string>("Address")
+                        .IsRequired()
+                        .HasColumnType("nvarchar(max)");
+
+                    b.Property<decimal>("Balance")
+                        .HasColumnType("decimal(38, 18)");
+
+                    b.Property<string>("CurrencySymbol")
+                        .IsRequired()
+                        .HasColumnType("nvarchar(max)");
+
+                    b.Property<bool>("IsVerified")
+                        .HasColumnType("bit");
+
+                    b.Property<string>("UserAddressDaoId")
+                        .HasColumnType("nvarchar(450)");
+
+                    b.Property<decimal>("VerificationAmount")
+                        .HasColumnType("decimal(38, 18)");
+
+                    b.HasKey("Id");
+
+                    b.HasIndex("UserAddressDaoId");
+
+                    b.ToTable("DepositorAddresses");
+                });
+
             modelBuilder.Entity("Trakx.Persistence.DAO.IndiceCompositionDao", b =>
                 {
                     b.Property<string>("Id")
@@ -242,38 +274,17 @@ namespace Trakx.Persistence.Migrations
                     b.ToTable("IndiceValuations");
                 });
 
-            modelBuilder.Entity("Trakx.Persistence.DAO.UserAddressDao", b =>
+            modelBuilder.Entity("Trakx.Persistence.DAO.UserDao", b =>
                 {
-                    b.Property<string>("Address")
+                    b.Property<string>("Id")
                         .HasColumnType("nvarchar(450)");
-
-                    b.Property<decimal>("Balance")
-                        .HasColumnType("decimal(38, 18)");
-
-                    b.Property<string>("ChainId")
-                        .IsRequired()
-                        .HasColumnType("nvarchar(max)");
 
                     b.Property<DateTime>("CreationDate")
                         .HasColumnType("datetime2");
 
-                    b.Property<string>("Id")
-                        .IsRequired()
-                        .HasColumnType("nvarchar(max)");
+                    b.HasKey("Id");
 
-                    b.Property<bool>("IsVerified")
-                        .HasColumnType("bit");
-
-                    b.Property<string>("UserId")
-                        .IsRequired()
-                        .HasColumnType("nvarchar(max)");
-
-                    b.Property<decimal>("VerificationAmount")
-                        .HasColumnType("decimal(38, 18)");
-
-                    b.HasKey("Address");
-
-                    b.ToTable("UserAddresses");
+                    b.ToTable("Users");
                 });
 
             modelBuilder.Entity("Trakx.Persistence.DAO.WrappingTransactionDao", b =>
@@ -361,6 +372,13 @@ namespace Trakx.Persistence.Migrations
                     b.HasOne("Trakx.Persistence.DAO.IndiceValuationDao", null)
                         .WithMany("ComponentValuationDaos")
                         .HasForeignKey("IndiceValuationDaoId");
+                });
+
+            modelBuilder.Entity("Trakx.Persistence.DAO.DepositorAddressDao", b =>
+                {
+                    b.HasOne("Trakx.Persistence.DAO.UserDao", "UserAddressDao")
+                        .WithMany("AddressDaos")
+                        .HasForeignKey("UserAddressDaoId");
                 });
 
             modelBuilder.Entity("Trakx.Persistence.DAO.IndiceCompositionDao", b =>
