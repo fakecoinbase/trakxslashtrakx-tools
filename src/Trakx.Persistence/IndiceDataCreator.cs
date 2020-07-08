@@ -28,8 +28,23 @@ namespace Trakx.Persistence
 
         public async Task<bool> AddNewComposition(IIndiceComposition indiceComposition)
         {
-            var indiceCompositionDao = new IndiceCompositionDao(indiceComposition);
+            if (indiceComposition.IndiceDefinition == null) return false;
+            var definitionDao = await _dbContext.IndiceDefinitions.FindAsync(new[] {indiceComposition.IndiceDefinition.Symbol});
+
+            if (definitionDao == default)
+            {
+                definitionDao = new IndiceDefinitionDao(indiceComposition.IndiceDefinition);
+            }
+            else
+            {
+                _dbContext.IndiceDefinitions.Attach(definitionDao);
+            }
             
+            var indiceCompositionDao = new IndiceCompositionDao(indiceComposition)
+            {
+                IndiceDefinitionDao = definitionDao
+            };
+
             indiceCompositionDao.ComponentQuantityDaos.ForEach(o=>_dbContext.ComponentDefinitions.Attach(o.ComponentDefinitionDao));
             await _dbContext.IndiceCompositions.AddAsync(indiceCompositionDao);
         

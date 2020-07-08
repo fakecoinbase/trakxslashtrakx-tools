@@ -1,4 +1,5 @@
 ﻿using System.Collections.Generic;
+using System.Linq;
 using System.Threading.Tasks;
 using FluentAssertions;
 using Microsoft.AspNetCore.Mvc;
@@ -8,7 +9,7 @@ using Trakx.Coinbase.Custody.Client.Models;
 using Trakx.Common.Core;
 using Trakx.Common.Interfaces;
 using Trakx.IndiceManager.Server.Controllers;
-using Trakx.IndiceManager.Server.Managers;
+using Trakx.IndiceManager.Server.Models;
 using Trakx.Persistence.Tests;
 using Xunit;
 using Xunit.Abstractions;
@@ -17,7 +18,6 @@ namespace Trakx.IndiceManager.Server.Tests.Unit.Controllers
 {
     public class AddressMappingControllerTests
     {
-        private readonly ICoinbaseInformationRetriever _coinbaseRetriever;
         private readonly AddressMappingController _controller;
         private readonly MockCreator _mockCreator;
         private readonly ICoinbaseClient _coinbaseClient;
@@ -25,11 +25,10 @@ namespace Trakx.IndiceManager.Server.Tests.Unit.Controllers
 
         public AddressMappingControllerTests(ITestOutputHelper output)
         {
-            _coinbaseRetriever = Substitute.For<ICoinbaseInformationRetriever>();
             _coinbaseClient = Substitute.For<ICoinbaseClient>();
             _depositorAddressRetriever = Substitute.For<IDepositorAddressRetriever>();
             _mockCreator = new MockCreator(output);
-            _controller = new AddressMappingController(_coinbaseRetriever, _coinbaseClient, _depositorAddressRetriever);
+            _controller = new AddressMappingController(_coinbaseClient, _depositorAddressRetriever);
         }
 
         [Fact]
@@ -38,15 +37,20 @@ namespace Trakx.IndiceManager.Server.Tests.Unit.Controllers
             var symbol = _mockCreator.GetRandomCompositionSymbol();
 
             var expectedAddress = _mockCreator.GetRandomAddressEthereum();
-            _coinbaseRetriever.GetTrakxAddressBySymbol(symbol).Returns(expectedAddress);
+            FakeWalletReturn(symbol, expectedAddress);
 
             var address = await _controller.GetTrakxAddress(symbol);
 
             var result = (string)((OkObjectResult)address.Result).Value;
             result.Should().Be(expectedAddress);
 
-            await _coinbaseRetriever.ReceivedWithAnyArgs(1)
-                .GetTrakxAddressBySymbol(default);
+            await _coinbaseClient.Received(1).GetWallets(symbol).ToListAsync();
+        }
+
+        private void FakeWalletReturn(string symbol, string address)
+        {
+            _coinbaseClient.GetWallets(symbol).Returns(
+                new[] {new Wallet {ColdAddress = address } }.ToAsyncEnumerable());
         }
 
         [Fact]
@@ -55,8 +59,8 @@ namespace Trakx.IndiceManager.Server.Tests.Unit.Controllers
             var invalidSymbol = "";
             await _controller.GetTrakxAddress(invalidSymbol);
 
-            await _coinbaseRetriever.DidNotReceiveWithAnyArgs()
-                .GetTrakxAddressBySymbol(default);
+            await _coinbaseClient.DidNotReceiveWithAnyArgs()
+                .GetWallets(default).ToListAsync();
         }
 
         [Fact]
@@ -64,8 +68,8 @@ namespace Trakx.IndiceManager.Server.Tests.Unit.Controllers
         {
             var symbol = _mockCreator.GetRandomCompositionSymbol();
             await _controller.GetTrakxAddress(symbol);
-            _coinbaseRetriever.GetTrakxAddressBySymbol(default)
-                .ReturnsForAnyArgs((string)null);
+            FakeWalletReturn(symbol, default);
+            _coinbaseClient.GetWallets().ReturnsForAnyArgs(AsyncEnumerable.Empty<Wallet>());
 
             var address = await _controller.GetTrakxAddress(symbol);
             var result = (NotFoundObjectResult)address.Result;
@@ -76,26 +80,25 @@ namespace Trakx.IndiceManager.Server.Tests.Unit.Controllers
         [Fact]
         public async Task GetAllSymbolAvailableOnCoinbase_should_send_a_list_of_symbols()
         {
-            var symbolList = new List<string>
+            var symbolList = new List<Currency>
             {
-                _mockCreator.GetRandomCompositionSymbol(),
-                _mockCreator.GetRandomCompositionSymbol()
+                new Currency {Symbol = "abc"},
+                new Currency {Symbol = "def"},
             };
-            _coinbaseRetriever.GetAllCurrencySymbols().ReturnsForAnyArgs(symbolList);
+            _coinbaseClient.GetCurrencies().ReturnsForAnyArgs(symbolList.ToAsyncEnumerable());
 
             var result = await _controller.GetAllSymbolAvailableOnCoinbase();
-            var returnedList = (List<string>)((OkObjectResult)result.Result).Value;
+            var returnedList = await ((IAsyncEnumerable<string>)((OkObjectResult)result.Result).Value).ToListAsync();
 
             returnedList.Count.Should().Be(2);
-            returnedList[0].Should().Be(symbolList[0]);
-            returnedList[0].Should().Be(symbolList[0]);
-            returnedList[1].Should().Be(symbolList[1]);
+            returnedList[0].Should().Be(symbolList[0].Symbol);
+            returnedList[1].Should().Be(symbolList[1].Symbol);
         }
 
         [Fact]
         public async Task GetAllSymbolAvailableOnCoinbase_should_return_not_found_error_if_database_is_empty()
         {
-            _coinbaseRetriever.GetAllCurrencySymbols().ReturnsForAnyArgs(new List<string>());
+            _coinbaseClient.GetCurrencies().ReturnsForAnyArgs(new List<Currency>().ToAsyncEnumerable());
 
             var result = await _controller.GetAllSymbolAvailableOnCoinbase();
             ((NotFoundObjectResult)result.Result).Value.Should()
@@ -116,7 +119,7 @@ namespace Trakx.IndiceManager.Server.Tests.Unit.Controllers
             var user = Substitute.For<IUser>();
             var badAddress = new DepositAddressModel { CurrencySymbol = currencySymbol, Address = address };
 
-            var result = await _controller.RegisterUserAsAddressOwner(badAddress, user, default).ConfigureAwait(false);
+            var result = await _controller.RegisterUserAsAddressOwner(badAddress).ConfigureAwait(false);
             var errorMessage = ((BadRequestObjectResult)result.Result).Value.ToString();
             errorMessage.Should().StartWith("Invalid deposit address, please try again.");
 
@@ -136,7 +139,7 @@ namespace Trakx.IndiceManager.Server.Tests.Unit.Controllers
             _depositorAddressRetriever.GetDepositorAddressById(verifiedAddress.ToDepositAddress().Id)
                 .Returns(depositAddress);
 
-            var result = await _controller.RegisterUserAsAddressOwner(verifiedAddress, user, default).ConfigureAwait(false);
+            var result = await _controller.RegisterUserAsAddressOwner(verifiedAddress).ConfigureAwait(false);
             var errorMessage = ((BadRequestObjectResult)result.Result).Value.ToString();
             errorMessage.Should().Be("This address has already been verified.");
 
@@ -160,12 +163,13 @@ namespace Trakx.IndiceManager.Server.Tests.Unit.Controllers
             _depositorAddressRetriever.GetDepositorAddressById(verifiedAddress.ToDepositAddress().Id)
                 .Returns(depositAddress, addressAfterAssociationWithCandidate);
 
-            _depositorAddressRetriever.AssociateCandidateUser(depositAddress, user, 2)
+            _depositorAddressRetriever.AssociateCandidateUser(depositAddress, Arg.Any<IUser?>(), 2)
                 .Returns(true);
 
             _coinbaseClient.GetCurrencyAsync(depositAddress.CurrencySymbol).Returns(new Currency { Decimals = 2 });
 
-            var result = await _controller.RegisterUserAsAddressOwner(verifiedAddress, user, default).ConfigureAwait(false);
+            var result = await _controller.RegisterUserAsAddressOwner(verifiedAddress)
+                .ConfigureAwait(false);
             var acceptedResult = (IDepositorAddress)((AcceptedResult)result.Result).Value;
 
             acceptedResult.User.Should().Be(user);

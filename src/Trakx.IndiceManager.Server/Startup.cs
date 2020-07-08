@@ -14,6 +14,7 @@ using Trakx.Persistence.Initialisation;
 using Microsoft.OpenApi.Models;
 using Trakx.Coinbase.Custody.Client;
 using Trakx.Common.Ethereum;
+using Trakx.Common.Interfaces;
 using Trakx.Common.Sources.CoinGecko;
 
 
@@ -65,6 +66,8 @@ namespace Trakx.IndiceManager.Server
                     document.Info.Description = ApiDescription;
                 };
             });
+
+            services.AddScoped<IDepositorAddressRetriever, DepositorAddressRetriever>();
 
             services.AddEthereumInteraction(Environment.GetEnvironmentVariable("INFURA_API_KEY"));
             services.AddMemoryCache();

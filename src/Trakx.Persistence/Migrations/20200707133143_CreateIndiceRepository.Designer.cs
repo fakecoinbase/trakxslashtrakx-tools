@@ -10,7 +10,7 @@ using Trakx.Persistence;
 namespace Trakx.Persistence.Migrations
 {
     [DbContext(typeof(IndiceRepositoryContext))]
-    [Migration("20200704144802_CreateIndiceRepository")]
+    [Migration("20200707133143_CreateIndiceRepository")]
     partial class CreateIndiceRepository
     {
         protected override void BuildTargetModel(ModelBuilder modelBuilder)
@@ -130,6 +130,9 @@ namespace Trakx.Persistence.Migrations
                     b.Property<decimal>("Balance")
                         .HasColumnType("decimal(38, 18)");
 
+                    b.Property<DateTime>("Created")
+                        .HasColumnType("datetime2");
+
                     b.Property<string>("CurrencySymbol")
                         .IsRequired()
                         .HasColumnType("nvarchar(max)");
@@ -137,15 +140,18 @@ namespace Trakx.Persistence.Migrations
                     b.Property<bool>("IsVerified")
                         .HasColumnType("bit");
 
-                    b.Property<string>("UserAddressDaoId")
+                    b.Property<DateTime?>("LastModified")
+                        .HasColumnType("datetime2");
+
+                    b.Property<string>("UserDaoId")
                         .HasColumnType("nvarchar(450)");
 
-                    b.Property<decimal>("VerificationAmount")
+                    b.Property<decimal?>("VerificationAmount")
                         .HasColumnType("decimal(38, 18)");
 
                     b.HasKey("Id");
 
-                    b.HasIndex("UserAddressDaoId");
+                    b.HasIndex("UserDaoId");
 
                     b.ToTable("DepositorAddresses");
                 });
@@ -281,7 +287,10 @@ namespace Trakx.Persistence.Migrations
                     b.Property<string>("Id")
                         .HasColumnType("nvarchar(450)");
 
-                    b.Property<DateTime>("CreationDate")
+                    b.Property<DateTime>("Created")
+                        .HasColumnType("datetime2");
+
+                    b.Property<DateTime?>("LastModified")
                         .HasColumnType("datetime2");
 
                     b.HasKey("Id");
@@ -378,9 +387,9 @@ namespace Trakx.Persistence.Migrations
 
             modelBuilder.Entity("Trakx.Persistence.DAO.DepositorAddressDao", b =>
                 {
-                    b.HasOne("Trakx.Persistence.DAO.UserDao", "UserAddressDao")
+                    b.HasOne("Trakx.Persistence.DAO.UserDao", "UserDao")
                         .WithMany("AddressDaos")
-                        .HasForeignKey("UserAddressDaoId");
+                        .HasForeignKey("UserDaoId");
                 });
 
             modelBuilder.Entity("Trakx.Persistence.DAO.IndiceCompositionDao", b =>

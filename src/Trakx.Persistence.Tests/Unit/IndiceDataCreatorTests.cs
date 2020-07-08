@@ -51,6 +51,9 @@ namespace Trakx.Persistence.Tests.Unit
             var compositionToAdd = new IndiceCompositionDao(savedIndice, 3, DateTime.Now, null);
             compositionToAdd.ComponentQuantityDaos.Add(new ComponentQuantityDao(compositionToAdd, new ComponentDefinitionDao("address", "name", "symbol", "coinGeckoId", NaturalUnit), 3));
 
+            _context.IndiceDefinitions.Add(savedIndice);
+            _context.SaveChanges();
+
             var result = await _indiceDataCreator.AddNewComposition(compositionToAdd);
 
             var retrievedComposition = await _context.IndiceCompositions.FirstOrDefaultAsync(i => i.Id == compositionToAdd.Id);
@@ -65,10 +68,10 @@ namespace Trakx.Persistence.Tests.Unit
             var newIndice = new IndiceDefinitionDao(_indiceSymbol, IndiceName, IndiceDescription, NaturalUnit, null, DateTime.Now);
             
             var compositionToAdd = new IndiceCompositionDao(newIndice, 2, DateTime.Now, null);
-            compositionToAdd.ComponentQuantityDaos.Add(new ComponentQuantityDao(compositionToAdd, new ComponentDefinitionDao("ComponentAddress", "name", "symbol", "coinGeckoId", NaturalUnit), 3));
+            compositionToAdd.ComponentQuantityDaos.Add(new ComponentQuantityDao(compositionToAdd,
+                new ComponentDefinitionDao("ComponentAddress", "name", "symbol", "coinGeckoId", NaturalUnit), 3));
 
-            var result =
-                await _indiceDataCreator.AddNewComposition(compositionToAdd);
+            var result = await _indiceDataCreator.AddNewComposition(compositionToAdd);
 
             var retrievedComposition = await _context.IndiceCompositions.FirstOrDefaultAsync(i => i.Id == compositionToAdd.Id);
 

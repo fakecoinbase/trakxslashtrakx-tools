@@ -143,18 +143,33 @@ namespace Trakx.Persistence.Tests
             var componentQuantity = Substitute.For<IComponentQuantity>();
             quantity ??= (decimal)(_random.NextDouble() + 0.001 * 10000);
             componentQuantity.Quantity.Returns(quantity.Value);
-            address ??= GetRandomAddressEthereum();
-            componentQuantity.ComponentDefinition.Address.Returns(address);
-            decimals ??= (ushort)_random.Next(0, 19);
-            componentQuantity.ComponentDefinition.Decimals.Returns(decimals.Value);
-            symbol ??= GetRandomString(3);
-            componentQuantity.ComponentDefinition.Symbol.Returns(symbol);
-            name ??= "name " + GetRandomString(24);
-            componentQuantity.ComponentDefinition.Name.Returns(name);
-            coinGeckoId ??= "id-" + GetRandomString(5);
-            componentQuantity.ComponentDefinition.CoinGeckoId.Returns(coinGeckoId);
+
+            var definition = GetRandomComponentDefinition(address, symbol, name, coinGeckoId, decimals);
+            componentQuantity.ComponentDefinition.Returns(definition);
 
             return componentQuantity;
+        }
+
+        public IComponentDefinition GetRandomComponentDefinition(string? address = default,
+            string? symbol = default,
+            string? name = default,
+            string? coinGeckoId = default,
+            ushort? decimals = default)
+        {
+            var definition = Substitute.For<IComponentDefinition>();
+
+            address ??= GetRandomAddressEthereum();
+            definition.Address.Returns(address);
+            decimals ??= (ushort)_random.Next(0, 19);
+            definition.Decimals.Returns(decimals.Value);
+            symbol ??= GetRandomString(3);
+            definition.Symbol.Returns(symbol);
+            name ??= "name " + GetRandomString(24);
+            definition.Name.Returns(name);
+            coinGeckoId ??= "id-" + GetRandomString(5);
+            definition.CoinGeckoId.Returns(coinGeckoId);
+            
+            return definition;
         }
 
         public TransactionReceipt GetTransactionReceipt()

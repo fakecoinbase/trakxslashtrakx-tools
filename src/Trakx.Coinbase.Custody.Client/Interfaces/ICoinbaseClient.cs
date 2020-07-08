@@ -13,7 +13,10 @@ namespace Trakx.Coinbase.Custody.Client.Interfaces
             PaginationOptions? paginationOptions = null,
             CancellationToken cancellationToken = default);
 
-        IAsyncEnumerable<Currency> GetCurrencies(PaginationOptions? paginationOptions, 
+        IAsyncEnumerable<Currency> GetCurrencies(PaginationOptions? paginationOptions = null, 
+            CancellationToken cancellationToken = default);
+
+        IAsyncEnumerable<Wallet> GetWallets(string? currency = null, PaginationOptions? paginationOptions = null,
             CancellationToken cancellationToken = default);
     }
 }

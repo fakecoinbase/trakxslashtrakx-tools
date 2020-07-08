@@ -20,8 +20,7 @@ namespace Trakx.Persistence
             var indiceCompositionDao = (IndiceCompositionDao) indiceComposition;
             _dbContext.Entry(await _dbContext.IndiceCompositions.FirstOrDefaultAsync(i => i.Id == indiceCompositionDao.Id)).CurrentValues.SetValues(indiceCompositionDao); //modify entities of indiceCompositionDao
             _dbContext.Entry(await _dbContext.IndiceDefinitions.FirstOrDefaultAsync(i => i.Symbol == indiceCompositionDao.IndiceDefinitionDao.Symbol)).CurrentValues.SetValues(indiceCompositionDao.IndiceDefinitionDao); //modify entity of indiceDefinitionDao
-
-
+            
             var compositionToSave =
                 await _dbContext.IndiceCompositions.FirstOrDefaultAsync(i => i.Id == indiceCompositionDao.Id);
 

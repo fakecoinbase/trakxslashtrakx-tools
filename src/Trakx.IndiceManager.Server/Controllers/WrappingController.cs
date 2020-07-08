@@ -15,7 +15,7 @@ namespace Trakx.IndiceManager.Server.Controllers
         private readonly IWrappingService _wrappingService;
         private readonly ICoinbaseClient _coinbaseClient;
 
-        public WrappingController(IWrappingService wrappingService,ICoinbaseClient coinbaseClient)
+        public WrappingController(IWrappingService wrappingService, ICoinbaseClient coinbaseClient)
         {
             _wrappingService = wrappingService;
             _coinbaseClient = coinbaseClient;

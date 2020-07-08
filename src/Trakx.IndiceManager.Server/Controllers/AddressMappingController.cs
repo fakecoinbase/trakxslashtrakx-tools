@@ -9,7 +9,7 @@ using Microsoft.AspNetCore.Mvc;
 using Trakx.Coinbase.Custody.Client.Interfaces;
 using Trakx.Common.Core;
 using Trakx.Common.Interfaces;
-using Trakx.IndiceManager.Server.Managers;
+using Trakx.IndiceManager.Server.Models;
 
 namespace Trakx.IndiceManager.Server.Controllers
 {
@@ -17,15 +17,12 @@ namespace Trakx.IndiceManager.Server.Controllers
     [Route("[controller]/[action]")]
     public class AddressMappingController : Controller
     {
-        private readonly ICoinbaseInformationRetriever _coinbaseRetriever;
         private readonly ICoinbaseClient _coinbaseClient;
         private readonly IDepositorAddressRetriever _depositorAddressRetriever;
 
-        public AddressMappingController(ICoinbaseInformationRetriever coinbaseRetriever,
-            ICoinbaseClient coinbaseClient,
+        public AddressMappingController(ICoinbaseClient coinbaseClient,
             IDepositorAddressRetriever depositorAddressRetriever)
         {
-            _coinbaseRetriever = coinbaseRetriever;
             _coinbaseClient = coinbaseClient;
             _depositorAddressRetriever = depositorAddressRetriever;
         }
@@ -34,54 +31,55 @@ namespace Trakx.IndiceManager.Server.Controllers
         /// Get one trakx address on coinbase for currencySymbol.
         /// </summary>
         /// <param name="currencySymbol">Symbol of the currency in which the amount is calculated.</param>
+        /// <param name="cancellationToken">A token that can be used to request cancellation of the asynchronous operation.</param>
         /// <returns>Trakx address for currencySymbol.</returns>
         [HttpGet]
-        public async Task<ActionResult<string>> GetTrakxAddress([FromQuery]string currencySymbol)
+        public async Task<ActionResult<string>> GetTrakxAddress([FromQuery]string currencySymbol,
+            CancellationToken cancellationToken = default)
         {
             if (string.IsNullOrEmpty(currencySymbol))
                 return BadRequest($"{currencySymbol} is null or empty");
 
-            var address = await _coinbaseRetriever.GetTrakxAddressBySymbol(currencySymbol);
+            var address = await _coinbaseClient.GetWallets(currencySymbol, cancellationToken: cancellationToken)
+                .FirstOrDefaultAsync(cancellationToken);
             
             if (address == null)
                 return NotFound($"Sorry {currencySymbol} doesn't have any corresponding address on trakx wallet.");
 
-            return Ok(address);
+            return Ok(address.ColdAddress);
         }
 
         /// <summary>
         /// Get symbols of all trakx wallets available on coinbase.
         /// </summary>
+        /// <param name="cancellationToken">A token that can be used to request cancellation of the asynchronous operation.</param>
         /// <returns>List of symbols.</returns>
         [HttpGet]
-        public async Task<ActionResult<List<string>>> GetAllSymbolAvailableOnCoinbase()
+        public async Task<ActionResult<List<string>>> GetAllSymbolAvailableOnCoinbase(
+        CancellationToken cancellationToken = default)
         {
-            var symbolList = await _coinbaseRetriever.GetAllCurrencySymbols();
+            var symbolList = _coinbaseClient.GetCurrencies(cancellationToken: cancellationToken);
             
-            if (symbolList == null || !symbolList.Any())
+            if (symbolList == null || !(await symbolList.AnyAsync(cancellationToken)))
                 return NotFound("Sorry, impossible to retrieve all currency symbols on Coinbase.");
 
-            return Ok(symbolList);
+            return Ok(symbolList.Select(c => c.Symbol));
         }
 
         /// <summary>
         /// Links a user to an address with a verification amount. Once the transfer has been sent to the
-        /// address, the <paramref name="claimedAddress"/> will be set to verified, and the <paramref name="candidate"/>
-        /// will be the owner.
+        /// address, the <paramref name="claimedAddress"/> will be set to verified, and the caller of the
+        /// method will be the owner.
         /// </summary>
         /// <param name="claimedAddress">The address for which the ownership is claimed.</param>
-        /// <param name="candidate">The user claiming that the deposit address.
-        /// #### this is dev only and should come from the authentication context #####
-        /// </param>
         /// <param name="cancellationToken">A token that can be used to request cancellation of the asynchronous operation.</param>
         /// <returns></returns>
         [HttpPost]
         [ProducesResponseType(StatusCodes.Status202Accepted)]
         [ProducesResponseType(StatusCodes.Status400BadRequest)]
         public async Task<ActionResult<IDepositorAddress>> RegisterUserAsAddressOwner(
-            DepositAddressModel claimedAddress, 
-            IUser candidate,
-            CancellationToken cancellationToken)
+            [FromBody] DepositAddressModel claimedAddress, 
+            CancellationToken cancellationToken = default)
         {
             var validationContext = new ValidationContext(claimedAddress); 
             var validationResults = new List<ValidationResult>();
@@ -101,6 +99,7 @@ namespace Trakx.IndiceManager.Server.Controllers
                 .ConfigureAwait(false);
             var decimals = currency.Decimals;
 
+            var candidate = new User("blablabla", new List<IDepositorAddress>());
             var candidateRegistered = await _depositorAddressRetriever.AssociateCandidateUser(depositAddress, candidate, decimals,
                 cancellationToken).ConfigureAwait(false);
             
@@ -113,20 +112,6 @@ namespace Trakx.IndiceManager.Server.Controllers
                     .ConfigureAwait(false);
 
             return Accepted(updatedDepositAddress);
-        }
-    }
-
-    public class DepositAddressModel
-    {
-        [Required, RegularExpression(@"[\w]{2,}")]
-        public string CurrencySymbol { get; set; }
-
-        [Required, RegularExpression(@"[\w]{10,}")]
-        public string Address { get; set; }
-
-        public IDepositorAddress ToDepositAddress()
-        {
-            return new DepositorAddress(Address, CurrencySymbol);
         }
     }
 }

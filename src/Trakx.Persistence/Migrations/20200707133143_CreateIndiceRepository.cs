@@ -43,7 +43,8 @@ namespace Trakx.Persistence.Migrations
                 columns: table => new
                 {
                     Id = table.Column<string>(nullable: false),
-                    CreationDate = table.Column<DateTime>(nullable: false)
+                    Created = table.Column<DateTime>(nullable: false),
+                    LastModified = table.Column<DateTime>(nullable: true)
                 },
                 constraints: table =>
                 {
@@ -101,19 +102,21 @@ namespace Trakx.Persistence.Migrations
                 columns: table => new
                 {
                     Id = table.Column<string>(nullable: false),
-                    UserAddressDaoId = table.Column<string>(nullable: true),
+                    UserDaoId = table.Column<string>(nullable: true),
                     Balance = table.Column<decimal>(type: "decimal(38, 18)", nullable: false),
-                    VerificationAmount = table.Column<decimal>(type: "decimal(38, 18)", nullable: false),
+                    VerificationAmount = table.Column<decimal>(type: "decimal(38, 18)", nullable: true),
                     IsVerified = table.Column<bool>(nullable: false),
                     Address = table.Column<string>(nullable: false),
-                    CurrencySymbol = table.Column<string>(nullable: false)
+                    CurrencySymbol = table.Column<string>(nullable: false),
+                    Created = table.Column<DateTime>(nullable: false),
+                    LastModified = table.Column<DateTime>(nullable: true)
                 },
                 constraints: table =>
                 {
                     table.PrimaryKey("PK_DepositorAddresses", x => x.Id);
                     table.ForeignKey(
-                        name: "FK_DepositorAddresses_Users_UserAddressDaoId",
-                        column: x => x.UserAddressDaoId,
+                        name: "FK_DepositorAddresses_Users_UserDaoId",
+                        column: x => x.UserDaoId,
                         principalTable: "Users",
                         principalColumn: "Id",
                         onDelete: ReferentialAction.Restrict);
@@ -243,9 +246,9 @@ namespace Trakx.Persistence.Migrations
                 column: "IndiceValuationDaoId");
 
             migrationBuilder.CreateIndex(
-                name: "IX_DepositorAddresses_UserAddressDaoId",
+                name: "IX_DepositorAddresses_UserDaoId",
                 table: "DepositorAddresses",
-                column: "UserAddressDaoId");
+                column: "UserDaoId");
 
             migrationBuilder.CreateIndex(
                 name: "IX_IndiceCompositions_IndiceDefinitionDaoSymbol",
