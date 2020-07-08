@@ -1,6 +1,7 @@
 using System;
 using System.IO;
 using System.Reflection;
+using Microsoft.AspNetCore.Authentication.JwtBearer;
 using Microsoft.AspNetCore.Builder;
 using Microsoft.AspNetCore.Hosting;
 using Microsoft.AspNetCore.Http;
@@ -8,6 +9,7 @@ using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Hosting;
 using Microsoft.EntityFrameworkCore;
+using Microsoft.IdentityModel.Tokens;
 using Trakx.IndiceManager.Server.Data;
 using Trakx.Persistence;
 using Trakx.Persistence.Initialisation;
@@ -16,6 +18,8 @@ using Trakx.Coinbase.Custody.Client;
 using Trakx.Common.Ethereum;
 using Trakx.Common.Interfaces;
 using Trakx.Common.Sources.CoinGecko;
+using Trakx.Common.Utils;
+using Trakx.IndiceManager.Server.Middlewares;
 
 
 namespace Trakx.IndiceManager.Server
@@ -35,9 +39,9 @@ namespace Trakx.IndiceManager.Server
         // This method gets called by the runtime. Use this method to add services to the container.
         public void ConfigureServices(IServiceCollection services)
         {
-           services.AddDbContext<IndiceRepositoryContext>(options =>
-                options.UseSqlServer(Configuration.GetConnectionString("SqlServerConnection")));
-        
+            services.AddDbContext<IndiceRepositoryContext>(options =>
+                 options.UseSqlServer(Configuration.GetConnectionString("SqlServerConnection")));
+
 
             services.AddControllers();
             services.AddAllManagerForControllers();
@@ -46,10 +50,10 @@ namespace Trakx.IndiceManager.Server
             services.AddMappings();
             // DB Creation and Seeding
             services.AddTransient<IDatabaseInitialiser, DatabaseInitialiser>();
-            
+
             services.AddSwaggerGen(c =>
             {
-                c.SwaggerDoc(ApiVersion, new OpenApiInfo { Title = ApiName, Version = ApiVersion, Description = ApiDescription});
+                c.SwaggerDoc(ApiVersion, new OpenApiInfo { Title = ApiName, Version = ApiVersion, Description = ApiDescription });
                 // Set the comments path for the Swagger JSON and UI.
                 var xmlFile = $"{Assembly.GetExecutingAssembly().GetName().Name}.xml";
                 var xmlPath = Path.Combine(AppContext.BaseDirectory, xmlFile);
@@ -77,15 +81,37 @@ namespace Trakx.IndiceManager.Server
             services.AddCoinbaseLibrary(Environment.GetEnvironmentVariable("COINBASE_API_KEY"),
                 Environment.GetEnvironmentVariable("COINBASE_PASSPHRASE_KEY"));
             services.AddHostedService<BalanceUpdaterService>();
+
+            services.AddAuthorization();
+            services.AddAuthentication(x =>
+                {
+                    x.DefaultAuthenticateScheme = JwtBearerDefaults.AuthenticationScheme;
+                    x.DefaultChallengeScheme = JwtBearerDefaults.AuthenticationScheme;
+                })
+                .AddJwtBearer(x =>
+                {
+                    x.RequireHttpsMetadata = false;
+                    x.SaveToken = true;
+                    x.TokenValidationParameters = new TokenValidationParameters
+                    {
+                        ValidateIssuerSigningKey = true,
+                        IssuerSigningKey = MockJwtTokens.SecurityKey,
+                        ValidateLifetime = true,
+                        ValidateIssuer = false,
+                        ValidateAudience = false
+                    };
+                });
         }
 
         // This method gets called by the runtime. Use this method to configure the HTTP request pipeline.
         public void Configure(IApplicationBuilder app, IWebHostEnvironment env)
         {
+
             if (env.IsDevelopment())
             {
                 app.UseDeveloperExceptionPage();
             }
+
             app.UseHttpsRedirection();
 
             app.UseRouting();
@@ -95,7 +121,8 @@ namespace Trakx.IndiceManager.Server
                 c.SwaggerEndpoint($"/swagger/{ApiVersion}/swagger.json", ApiName);
                 c.InjectJavascript($"public/index.js");
             });
-
+            app.UseMiddleware<GetLabelsFromBearer>();
+            app.UseAuthentication();
             app.UseAuthorization();
 
             SeedDatabase(app);

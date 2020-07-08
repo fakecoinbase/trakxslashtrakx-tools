@@ -1,6 +1,7 @@
 ﻿using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
+using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
 using Nethereum.Util;
@@ -89,6 +90,7 @@ namespace Trakx.IndiceManager.Server.Controllers
         /// </summary>
         /// <returns>A list of indices with details about them.</returns>
         [HttpGet]
+        [Authorize(Roles = "admin")]
         public async Task<ActionResult<List<IndiceDetailModel>>> GetAllIndices()
         {
             var indiceDefinitions = await _indiceRetriever.GetAllIndicesFromDatabase();

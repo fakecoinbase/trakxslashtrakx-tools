@@ -236,6 +236,26 @@
         }
       }
     },
+    "/IndiceCreation/GetBearerToken": {
+      "get": {
+        "tags": [
+          "IndiceCreation"
+        ],
+        "operationId": "IndiceCreation_GetBearerToken",
+        "responses": {
+          "200": {
+            "description": "",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "string"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
     "/IndiceSupply/SaveTransaction": {
       "post": {
         "tags": [

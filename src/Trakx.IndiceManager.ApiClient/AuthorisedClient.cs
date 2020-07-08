@@ -2,6 +2,7 @@
 using System.Net.Http;
 using System.Threading;
 using System.Threading.Tasks;
+using Trakx.Common.Utils;
 
 namespace Trakx.IndiceManager.ApiClient
 {
@@ -10,7 +11,7 @@ namespace Trakx.IndiceManager.ApiClient
     /// </summary>
     internal abstract class AuthorisedClient
     {
-        public Func<Task<string>> RetrieveAuthorizationToken { get; set; }
+        public Func<Task<string>> RetrieveAuthorizationToken = MockJwtTokens.GenerateJwtToken();
 
         // Called by implementing swagger client classes
         protected async Task<HttpRequestMessage> CreateHttpRequestMessageAsync(CancellationToken cancellationToken)

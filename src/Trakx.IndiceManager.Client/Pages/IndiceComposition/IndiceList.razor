@@ -19,7 +19,7 @@
         <div class="row">
             <SfGrid DataSource="@IndexList" Toolbar="_toolbarItems" AllowPaging="true">
                 <GridEditSettings AllowAdding="false" />
-                <GridEvents OnToolbarClick="ToolbarClickHandler" TValue="IndiceDetailModel"/>
+                <GridEvents OnToolbarClick="ToolbarClickHandler" TValue="IndiceDetailModel" />
                 <GridTemplates>
                     <DetailTemplate>
                         @{
@@ -30,35 +30,35 @@
                                 @if (indice.IndiceCompositions != null)
                                 {
                                     <SfGrid DataSource="indice.IndiceCompositions">
-                                    <GridTemplates>
-                                        <DetailTemplate Context="child_context">
-                                            @{
-                                                var composition = (child_context as IndiceCompositionModel);
-                                                <h4>@composition.Symbol Components</h4>
-                                                <div class="row">
-                                                    <SfGrid DataSource="composition.Components">
-                                                        <GridColumns>
-                                                            <GridColumn Field="@nameof(ComponentDetailModel.Name)" AutoFit="true"></GridColumn>
-                                                            <GridColumn Field="@nameof(ComponentDetailModel.Symbol)" AutoFit="true"></GridColumn>
-                                                            <GridColumn Field="@nameof(ComponentDetailModel.Quantity)" AutoFit="true"></GridColumn>
-                                                            <GridColumn Field="@nameof(ComponentDetailModel.Address)" AutoFit="true"></GridColumn>
-                                                            <GridColumn Field="@nameof(ComponentDetailModel.CoinGeckoId)" AutoFit="true"></GridColumn>
-                                                            <GridColumn Field="@nameof(ComponentDetailModel.Decimals)" AutoFit="true" TextAlign="TextAlign.Center"></GridColumn>
-                                                        </GridColumns>
-                                                    </SfGrid>
-                                                </div>
-                                            }
-                                        </DetailTemplate>
-                                    </GridTemplates>
-                                    <GridColumns>
-                                        <GridColumn Field="@nameof(IndiceCompositionModel.Symbol)" AutoFit="true" MinWidth="150"></GridColumn>
-                                        <GridColumn Field="@nameof(IndiceCompositionModel.Address)" AutoFit="true" MinWidth="400"></GridColumn>
-                                        <GridColumn Field="@nameof(IndiceCompositionModel.CreationDate)" AutoFit="true" MinWidth="150" HeaderText="Creation Date" Format="d" Type="ColumnType.Date" TextAlign="TextAlign.Right"></GridColumn>
-                                        <GridColumn Field="@nameof(IndiceCompositionModel.Version)" AutoFit="true" MinWidth="150" TextAlign="TextAlign.Center"></GridColumn>
-                                    </GridColumns>
-                                </SfGrid>
+                                        <GridTemplates>
+                                            <DetailTemplate Context="child_context">
+                                                @{
+                                                    var composition = (child_context as IndiceCompositionModel);
+                                                    <h4>@composition.Symbol Components</h4>
+                                                    <div class="row">
+                                                        <SfGrid DataSource="composition.Components">
+                                                            <GridColumns>
+                                                                <GridColumn Field="@nameof(ComponentDetailModel.Name)" AutoFit="true"></GridColumn>
+                                                                <GridColumn Field="@nameof(ComponentDetailModel.Symbol)" AutoFit="true"></GridColumn>
+                                                                <GridColumn Field="@nameof(ComponentDetailModel.Quantity)" AutoFit="true"></GridColumn>
+                                                                <GridColumn Field="@nameof(ComponentDetailModel.Address)" AutoFit="true"></GridColumn>
+                                                                <GridColumn Field="@nameof(ComponentDetailModel.CoinGeckoId)" AutoFit="true"></GridColumn>
+                                                                <GridColumn Field="@nameof(ComponentDetailModel.Decimals)" AutoFit="true" TextAlign="TextAlign.Center"></GridColumn>
+                                                            </GridColumns>
+                                                        </SfGrid>
+                                                    </div>
+                                                }
+                                            </DetailTemplate>
+                                        </GridTemplates>
+                                        <GridColumns>
+                                            <GridColumn Field="@nameof(IndiceCompositionModel.Symbol)" AutoFit="true" MinWidth="150"></GridColumn>
+                                            <GridColumn Field="@nameof(IndiceCompositionModel.Address)" AutoFit="true" MinWidth="400"></GridColumn>
+                                            <GridColumn Field="@nameof(IndiceCompositionModel.CreationDate)" AutoFit="true" MinWidth="150" HeaderText="Creation Date" Format="d" Type="ColumnType.Date" TextAlign="TextAlign.Right"></GridColumn>
+                                            <GridColumn Field="@nameof(IndiceCompositionModel.Version)" AutoFit="true" MinWidth="150" TextAlign="TextAlign.Center"></GridColumn>
+                                        </GridColumns>
+                                    </SfGrid>
                                 }
-                                
+
                             </div>
                         }
                     </DetailTemplate>
@@ -115,7 +115,7 @@
 
     public async Task GetCompositionsForIndex(IndiceDetailModel indice)
     {
-        if(indice.IndiceCompositions != null) return;
+        if (indice.IndiceCompositions != null) return;
         try
         {
             var compositions = (await ApiClient.GetCompositionsBySymbolAsync(indice.Symbol)).Result;
