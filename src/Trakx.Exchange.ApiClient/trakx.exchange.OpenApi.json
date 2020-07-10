@@ -1,0 +1,3663 @@
+{
+  "swagger" : "2.0",
+  "info" : {
+    "version" : "2.2",
+    "title" : "Trakx Echange API"
+  },
+  "tags" : [ {
+    "name" : "public",
+    "description" : "Peatio operations about publics"
+  }, {
+    "name" : "account",
+    "description" : "Peatio operations about accounts"
+  }, {
+    "name" : "market",
+    "description" : "Peatio operations about markets"
+  }, {
+    "name" : "admin",
+    "description" : "Barong operations about admins"
+  }, {
+    "name" : "identity",
+    "description" : "Barong operations about identities"
+  }, {
+    "name" : "resource",
+    "description" : "Barong operations about resources"
+  } ],
+  "paths" : {
+    "/barong/admin/metrics" : {
+      "get" : {
+        "tags" : [ "admin" ],
+        "description" : "Returns main statistic in the given time period",
+        "operationId" : "getAdminMetrics",
+        "produces" : [ "application/json" ],
+        "parameters" : [ {
+          "name" : "created_from",
+          "in" : "query",
+          "required" : false,
+          "type" : "string"
+        }, {
+          "name" : "created_to",
+          "in" : "query",
+          "required" : false,
+          "type" : "string"
+        } ],
+        "responses" : {
+          "200" : {
+            "description" : "Returns main statistic in the given time period"
+          },
+          "401" : {
+            "description" : "Invalid bearer token"
+          }
+        },
+        "security" : [ {
+          "BearerToken" : [ ]
+        } ]
+      }
+    },
+    "/barong/admin/activities/admin" : {
+      "get" : {
+        "tags" : [ "admin" ],
+        "description" : "Returns array of activities as paginated collection",
+        "operationId" : "getAdminActivitiesAdmin",
+        "produces" : [ "application/json" ],
+        "parameters" : [ {
+          "name" : "topic",
+          "in" : "query",
+          "required" : false,
+          "type" : "string"
+        }, {
+          "name" : "action",
+          "in" : "query",
+          "required" : false,
+          "type" : "string"
+        }, {
+          "name" : "uid",
+          "in" : "query",
+          "required" : false,
+          "type" : "string"
+        }, {
+          "name" : "email",
+          "in" : "query",
+          "required" : false,
+          "type" : "string"
+        }, {
+          "name" : "target_uid",
+          "in" : "query",
+          "required" : false,
+          "type" : "string"
+        }, {
+          "name" : "range",
+          "in" : "query",
+          "required" : false,
+          "type" : "string",
+          "default" : "created"
+        }, {
+          "name" : "from",
+          "in" : "query",
+          "required" : false,
+          "type" : "string"
+        }, {
+          "name" : "to",
+          "in" : "query",
+          "required" : false,
+          "type" : "string"
+        }, {
+          "name" : "page",
+          "in" : "query",
+          "description" : "Page number (defaults to 1).",
+          "required" : false,
+          "type" : "integer",
+          "default" : 1,
+          "format" : "int32"
+        }, {
+          "name" : "limit",
+          "in" : "query",
+          "description" : "Number of users per page (defaults to 100, maximum is 100).",
+          "required" : false,
+          "type" : "integer",
+          "default" : 100,
+          "maximum" : 100,
+          "minimum" : 1,
+          "format" : "int32"
+        } ],
+        "responses" : {
+          "200" : {
+            "description" : "Returns array of activities as paginated collection"
+          },
+          "401" : {
+            "description" : "Invalid bearer token"
+          }
+        },
+        "security" : [ {
+          "BearerToken" : [ ]
+        } ]
+      }
+    },
+    "/barong/admin/activities" : {
+      "get" : {
+        "tags" : [ "admin" ],
+        "description" : "Returns array of activities as paginated collection",
+        "operationId" : "getAdminActivities",
+        "produces" : [ "application/json" ],
+        "parameters" : [ {
+          "name" : "topic",
+          "in" : "query",
+          "required" : false,
+          "type" : "string"
+        }, {
+          "name" : "action",
+          "in" : "query",
+          "required" : false,
+          "type" : "string"
+        }, {
+          "name" : "uid",
+          "in" : "query",
+          "required" : false,
+          "type" : "string"
+        }, {
+          "name" : "email",
+          "in" : "query",
+          "required" : false,
+          "type" : "string"
+        }, {
+          "name" : "from",
+          "in" : "query",
+          "required" : false,
+          "type" : "string"
+        }, {
+          "name" : "to",
+          "in" : "query",
+          "required" : false,
+          "type" : "string"
+        }, {
+          "name" : "page",
+          "in" : "query",
+          "description" : "Page number (defaults to 1).",
+          "required" : false,
+          "type" : "integer",
+          "default" : 1,
+          "format" : "int32"
+        }, {
+          "name" : "limit",
+          "in" : "query",
+          "description" : "Number of users per page (defaults to 100, maximum is 100).",
+          "required" : false,
+          "type" : "integer",
+          "default" : 100,
+          "maximum" : 100,
+          "minimum" : 1,
+          "format" : "int32"
+        } ],
+        "responses" : {
+          "200" : {
+            "description" : "Returns array of activities as paginated collection"
+          },
+          "401" : {
+            "description" : "Invalid bearer token"
+          }
+        },
+        "security" : [ {
+          "BearerToken" : [ ]
+        } ]
+      }
+    },
+    "/barong/admin/permissions" : {
+      "get" : {
+        "tags" : [ "admin" ],
+        "description" : "Returns array of permissions as paginated collection",
+        "operationId" : "getAdminPermissions",
+        "produces" : [ "application/json" ],
+        "parameters" : [ {
+          "name" : "page",
+          "in" : "query",
+          "description" : "Page number (defaults to 1).",
+          "required" : false,
+          "type" : "integer",
+          "default" : 1,
+          "format" : "int32"
+        }, {
+          "name" : "limit",
+          "in" : "query",
+          "description" : "Number of users per page (defaults to 100, maximum is 100).",
+          "required" : false,
+          "type" : "integer",
+          "default" : 100,
+          "maximum" : 100,
+          "minimum" : 1,
+          "format" : "int32"
+        } ],
+        "responses" : {
+          "200" : {
+            "description" : "Returns array of permissions as paginated collection"
+          },
+          "401" : {
+            "description" : "Invalid bearer token"
+          }
+        },
+        "security" : [ {
+          "BearerToken" : [ ]
+        } ]
+      },
+      "post" : {
+        "tags" : [ "admin" ],
+        "description" : "Create permission",
+        "operationId" : "postAdminPermissions",
+        "consumes" : [ "application/json" ],
+        "produces" : [ "application/json" ],
+        "parameters" : [ {
+          "name" : "role",
+          "in" : "formData",
+          "required" : true,
+          "type" : "string"
+        }, {
+          "name" : "verb",
+          "in" : "formData",
+          "required" : true,
+          "type" : "string"
+        }, {
+          "name" : "path",
+          "in" : "formData",
+          "required" : true,
+          "type" : "string"
+        }, {
+          "name" : "action",
+          "in" : "formData",
+          "required" : true,
+          "type" : "string"
+        } ],
+        "responses" : {
+          "201" : {
+            "description" : "Create permission"
+          },
+          "401" : {
+            "description" : "Invalid bearer token"
+          }
+        },
+        "security" : [ {
+          "BearerToken" : [ ]
+        } ]
+      },
+      "put" : {
+        "tags" : [ "admin" ],
+        "description" : "Update Permission",
+        "operationId" : "putAdminPermissions",
+        "consumes" : [ "application/json" ],
+        "produces" : [ "application/json" ],
+        "parameters" : [ {
+          "name" : "id",
+          "in" : "formData",
+          "description" : "Permission id",
+          "required" : true,
+          "type" : "string"
+        }, {
+          "name" : "role",
+          "in" : "formData",
+          "description" : "permission field - role",
+          "required" : false,
+          "type" : "string"
+        }, {
+          "name" : "req_type",
+          "in" : "formData",
+          "description" : "permission field - request type",
+          "required" : false,
+          "type" : "boolean"
+        }, {
+          "name" : "path",
+          "in" : "formData",
+          "description" : "permission field - request path",
+          "required" : false,
+          "type" : "string"
+        }, {
+          "name" : "action",
+          "in" : "formData",
+          "required" : false,
+          "type" : "string"
+        } ],
+        "responses" : {
+          "200" : {
+            "description" : "Update Permission"
+          },
+          "401" : {
+            "description" : "Invalid bearer token"
+          }
+        },
+        "security" : [ {
+          "BearerToken" : [ ]
+        } ]
+      },
+      "delete" : {
+        "tags" : [ "admin" ],
+        "description" : "Deletes permission",
+        "operationId" : "deleteAdminPermissions",
+        "produces" : [ "application/json" ],
+        "parameters" : [ {
+          "name" : "id",
+          "in" : "query",
+          "description" : "permission id",
+          "required" : true,
+          "type" : "integer",
+          "format" : "int32"
+        } ],
+        "responses" : {
+          "204" : {
+            "description" : "Deletes permission"
+          },
+          "401" : {
+            "description" : "Invalid bearer token"
+          }
+        },
+        "security" : [ {
+          "BearerToken" : [ ]
+        } ]
+      }
+    },
+    "/barong/admin/users/{uid}" : {
+      "get" : {
+        "tags" : [ "admin" ],
+        "description" : "Returns user info",
+        "operationId" : "getAdminUsersUid",
+        "produces" : [ "application/json" ],
+        "parameters" : [ {
+          "name" : "uid",
+          "in" : "path",
+          "description" : "user uniq id",
+          "required" : true,
+          "type" : "string"
+        } ],
+        "responses" : {
+          "200" : {
+            "description" : "Returns user info"
+          },
+          "401" : {
+            "description" : "Invalid bearer token"
+          }
+        },
+        "security" : [ {
+          "BearerToken" : [ ]
+        } ]
+      }
+    },
+    "/barong/admin/users/labels" : {
+      "get" : {
+        "tags" : [ "admin" ],
+        "description" : "Returns array of users as paginated collection",
+        "operationId" : "getAdminUsersLabels",
+        "produces" : [ "application/json" ],
+        "parameters" : [ {
+          "name" : "key",
+          "in" : "query",
+          "description" : "Label key",
+          "required" : true,
+          "type" : "string"
+        }, {
+          "name" : "value",
+          "in" : "query",
+          "description" : "Label value",
+          "required" : true,
+          "type" : "string"
+        }, {
+          "name" : "page",
+          "in" : "query",
+          "description" : "Page number (defaults to 1).",
+          "required" : false,
+          "type" : "integer",
+          "default" : 1,
+          "format" : "int32"
+        }, {
+          "name" : "limit",
+          "in" : "query",
+          "description" : "Number of users per page (defaults to 100, maximum is 1000).",
+          "required" : false,
+          "type" : "integer",
+          "default" : 100,
+          "format" : "int32"
+        } ],
+        "responses" : {
+          "200" : {
+            "description" : "Returns array of users as paginated collection"
+          },
+          "401" : {
+            "description" : "Invalid bearer token"
+          }
+        },
+        "security" : [ {
+          "BearerToken" : [ ]
+        } ]
+      },
+      "post" : {
+        "tags" : [ "admin" ],
+        "description" : "Adds label for user",
+        "operationId" : "postAdminUsersLabels",
+        "consumes" : [ "application/json" ],
+        "produces" : [ "application/json" ],
+        "parameters" : [ {
+          "name" : "uid",
+          "in" : "formData",
+          "description" : "user uniq id",
+          "required" : true,
+          "type" : "string"
+        }, {
+          "name" : "key",
+          "in" : "formData",
+          "description" : "label key. [a-z0-9_-]+ should be used. Min - 3, max - 255 characters.",
+          "required" : true,
+          "type" : "string"
+        }, {
+          "name" : "value",
+          "in" : "formData",
+          "description" : "label value. [A-Za-z0-9_-] should be used. Min - 3, max - 255 characters.",
+          "required" : true,
+          "type" : "string"
+        }, {
+          "name" : "scope",
+          "in" : "formData",
+          "description" : "Label scope: 'public' or 'private'. Default is public",
+          "required" : false,
+          "type" : "string"
+        } ],
+        "responses" : {
+          "201" : {
+            "description" : "Adds label for user"
+          },
+          "401" : {
+            "description" : "Invalid bearer token"
+          }
+        },
+        "security" : [ {
+          "BearerToken" : [ ]
+        } ]
+      },
+      "put" : {
+        "tags" : [ "admin" ],
+        "description" : "Update user label scope",
+        "operationId" : "putAdminUsersLabels",
+        "consumes" : [ "application/json" ],
+        "produces" : [ "application/json" ],
+        "parameters" : [ {
+          "name" : "uid",
+          "in" : "formData",
+          "description" : "user uniq id",
+          "required" : true,
+          "type" : "string"
+        }, {
+          "name" : "key",
+          "in" : "formData",
+          "description" : "Label key.",
+          "required" : true,
+          "type" : "string"
+        }, {
+          "name" : "scope",
+          "in" : "formData",
+          "description" : "label key. [a-z0-9_-]+ should be used. Min - 3, max - 255 characters.",
+          "required" : true,
+          "type" : "string"
+        }, {
+          "name" : "value",
+          "in" : "formData",
+          "description" : "Label value.",
+          "required" : true,
+          "type" : "string"
+        } ],
+        "responses" : {
+          "200" : {
+            "description" : "Update user label scope"
+          },
+          "400" : {
+            "description" : "Required params are empty"
+          },
+          "401" : {
+            "description" : "Invalid bearer token"
+          },
+          "404" : {
+            "description" : "Record is not found"
+          },
+          "422" : {
+            "description" : "Validation errors"
+          }
+        },
+        "security" : [ {
+          "BearerToken" : [ ]
+        } ]
+      },
+      "delete" : {
+        "tags" : [ "admin" ],
+        "description" : "Deletes label for user",
+        "operationId" : "deleteAdminUsersLabels",
+        "produces" : [ "application/json" ],
+        "parameters" : [ {
+          "name" : "uid",
+          "in" : "query",
+          "description" : "user uniq id",
+          "required" : true,
+          "type" : "string"
+        }, {
+          "name" : "key",
+          "in" : "query",
+          "description" : "label key. [a-z0-9_-]+ should be used. Min - 3, max - 255 characters.",
+          "required" : true,
+          "type" : "string"
+        }, {
+          "name" : "scope",
+          "in" : "query",
+          "description" : "label key. [a-z0-9_-]+ should be used. Min - 3, max - 255 characters.",
+          "required" : true,
+          "type" : "string"
+        } ],
+        "responses" : {
+          "204" : {
+            "description" : "Deletes label for user"
+          },
+          "401" : {
+            "description" : "Invalid bearer token"
+          }
+        },
+        "security" : [ {
+          "BearerToken" : [ ]
+        } ]
+      }
+    },
+    "/barong/admin/users/labels/update" : {
+      "post" : {
+        "tags" : [ "admin" ],
+        "description" : "Update user label scope",
+        "operationId" : "postAdminUsersLabelsUpdate",
+        "consumes" : [ "application/json" ],
+        "produces" : [ "application/json" ],
+        "parameters" : [ {
+          "name" : "uid",
+          "in" : "formData",
+          "description" : "user uniq id",
+          "required" : true,
+          "type" : "string"
+        }, {
+          "name" : "key",
+          "in" : "formData",
+          "description" : "Label key.",
+          "required" : true,
+          "type" : "string"
+        }, {
+          "name" : "scope",
+          "in" : "formData",
+          "description" : "label key. [a-z0-9_-]+ should be used. Min - 3, max - 255 characters.",
+          "required" : true,
+          "type" : "string"
+        }, {
+          "name" : "value",
+          "in" : "formData",
+          "description" : "Label value.",
+          "required" : true,
+          "type" : "string"
+        } ],
+        "responses" : {
+          "201" : {
+            "description" : "Update user label scope"
+          },
+          "400" : {
+            "description" : "Required params are empty"
+          },
+          "401" : {
+            "description" : "Invalid bearer token"
+          },
+          "404" : {
+            "description" : "Record is not found"
+          },
+          "422" : {
+            "description" : "Validation errors"
+          }
+        },
+        "security" : [ {
+          "BearerToken" : [ ]
+        } ]
+      }
+    },
+    "/barong/admin/users/labels/list" : {
+      "get" : {
+        "tags" : [ "admin" ],
+        "description" : "Returns existing labels keys and values",
+        "operationId" : "getAdminUsersLabelsList",
+        "produces" : [ "application/json" ],
+        "parameters" : [ ],
+        "responses" : {
+          "200" : {
+            "description" : "Returns existing labels keys and values"
+          },
+          "401" : {
+            "description" : "Invalid bearer token"
+          }
+        },
+        "security" : [ {
+          "BearerToken" : [ ]
+        } ]
+      }
+    },
+    "/barong/admin/users/documents/pending" : {
+      "get" : {
+        "tags" : [ "admin" ],
+        "description" : "Returns array of users with pending documents as paginated collection",
+        "operationId" : "getAdminUsersDocumentsPending",
+        "produces" : [ "application/json" ],
+        "parameters" : [ {
+          "name" : "extended",
+          "in" : "query",
+          "description" : "When true endpoint returns full information about users",
+          "required" : false,
+          "type" : "boolean"
+        }, {
+          "name" : "uid",
+          "in" : "query",
+          "required" : false,
+          "type" : "string"
+        }, {
+          "name" : "email",
+          "in" : "query",
+          "required" : false,
+          "type" : "string"
+        }, {
+          "name" : "role",
+          "in" : "query",
+          "required" : false,
+          "type" : "string"
+        }, {
+          "name" : "first_name",
+          "in" : "query",
+          "required" : false,
+          "type" : "string"
+        }, {
+          "name" : "last_name",
+          "in" : "query",
+          "required" : false,
+          "type" : "string"
+        }, {
+          "name" : "country",
+          "in" : "query",
+          "required" : false,
+          "type" : "string"
+        }, {
+          "name" : "level",
+          "in" : "query",
+          "required" : false,
+          "type" : "integer",
+          "format" : "int32"
+        }, {
+          "name" : "state",
+          "in" : "query",
+          "required" : false,
+          "type" : "string"
+        }, {
+          "name" : "range",
+          "in" : "query",
+          "required" : false,
+          "type" : "string",
+          "default" : "created"
+        }, {
+          "name" : "from",
+          "in" : "query",
+          "required" : false,
+          "type" : "string"
+        }, {
+          "name" : "to",
+          "in" : "query",
+          "required" : false,
+          "type" : "string"
+        }, {
+          "name" : "page",
+          "in" : "query",
+          "description" : "Page number (defaults to 1).",
+          "required" : false,
+          "type" : "integer",
+          "default" : 1,
+          "format" : "int32"
+        }, {
+          "name" : "limit",
+          "in" : "query",
+          "description" : "Number of users per page (defaults to 100, maximum is 1000).",
+          "required" : false,
+          "type" : "integer",
+          "default" : 100,
+          "format" : "int32"
+        } ],
+        "responses" : {
+          "200" : {
+            "description" : "Returns array of users with pending documents as paginated collection"
+          },
+          "401" : {
+            "description" : "Invalid bearer token"
+          }
+        },
+        "security" : [ {
+          "BearerToken" : [ ]
+        } ]
+      }
+    },
+    "/barong/admin/users" : {
+      "get" : {
+        "tags" : [ "admin" ],
+        "description" : "Returns array of users as paginated collection",
+        "operationId" : "getAdminUsers",
+        "produces" : [ "application/json" ],
+        "parameters" : [ {
+          "name" : "extended",
+          "in" : "query",
+          "description" : "When true endpoint returns full information about users",
+          "required" : false,
+          "type" : "boolean"
+        }, {
+          "name" : "uid",
+          "in" : "query",
+          "required" : false,
+          "type" : "string"
+        }, {
+          "name" : "email",
+          "in" : "query",
+          "required" : false,
+          "type" : "string"
+        }, {
+          "name" : "role",
+          "in" : "query",
+          "required" : false,
+          "type" : "string"
+        }, {
+          "name" : "first_name",
+          "in" : "query",
+          "required" : false,
+          "type" : "string"
+        }, {
+          "name" : "last_name",
+          "in" : "query",
+          "required" : false,
+          "type" : "string"
+        }, {
+          "name" : "country",
+          "in" : "query",
+          "required" : false,
+          "type" : "string"
+        }, {
+          "name" : "level",
+          "in" : "query",
+          "required" : false,
+          "type" : "integer",
+          "format" : "int32"
+        }, {
+          "name" : "state",
+          "in" : "query",
+          "required" : false,
+          "type" : "string"
+        }, {
+          "name" : "range",
+          "in" : "query",
+          "required" : false,
+          "type" : "string",
+          "default" : "created"
+        }, {
+          "name" : "from",
+          "in" : "query",
+          "required" : false,
+          "type" : "string"
+        }, {
+          "name" : "to",
+          "in" : "query",
+          "required" : false,
+          "type" : "string"
+        }, {
+          "name" : "page",
+          "in" : "query",
+          "description" : "Page number (defaults to 1).",
+          "required" : false,
+          "type" : "integer",
+          "default" : 1,
+          "format" : "int32"
+        }, {
+          "name" : "limit",
+          "in" : "query",
+          "description" : "Number of users per page (defaults to 100, maximum is 100).",
+          "required" : false,
+          "type" : "integer",
+          "default" : 100,
+          "maximum" : 100,
+          "minimum" : 1,
+          "format" : "int32"
+        } ],
+        "responses" : {
+          "200" : {
+            "description" : "Returns array of users as paginated collection"
+          },
+          "401" : {
+            "description" : "Invalid bearer token"
+          }
+        },
+        "security" : [ {
+          "BearerToken" : [ ]
+        } ]
+      },
+      "put" : {
+        "tags" : [ "admin" ],
+        "description" : "Update user attributes",
+        "operationId" : "putAdminUsers",
+        "consumes" : [ "application/json" ],
+        "produces" : [ "application/json" ],
+        "parameters" : [ {
+          "name" : "uid",
+          "in" : "formData",
+          "description" : "user uniq id",
+          "required" : true,
+          "type" : "string"
+        }, {
+          "name" : "state",
+          "in" : "formData",
+          "description" : "user state",
+          "required" : false,
+          "type" : "string"
+        }, {
+          "name" : "otp",
+          "in" : "formData",
+          "description" : "user 2fa status",
+          "required" : false,
+          "type" : "boolean"
+        } ],
+        "responses" : {
+          "200" : {
+            "description" : "Update user attributes"
+          },
+          "401" : {
+            "description" : "Invalid bearer token"
+          }
+        },
+        "security" : [ {
+          "BearerToken" : [ ]
+        } ]
+      }
+    },
+    "/barong/admin/users/role" : {
+      "post" : {
+        "tags" : [ "admin" ],
+        "description" : "Update user role",
+        "operationId" : "postAdminUsersRole",
+        "consumes" : [ "application/json" ],
+        "produces" : [ "application/json" ],
+        "parameters" : [ {
+          "name" : "uid",
+          "in" : "formData",
+          "description" : "user uniq id",
+          "required" : true,
+          "type" : "string"
+        }, {
+          "name" : "role",
+          "in" : "formData",
+          "description" : "user role",
+          "required" : true,
+          "type" : "string"
+        } ],
+        "responses" : {
+          "201" : {
+            "description" : "Update user role"
+          },
+          "401" : {
+            "description" : "Invalid bearer token"
+          }
+        },
+        "security" : [ {
+          "BearerToken" : [ ]
+        } ]
+      }
+    },
+    "/barong/admin/users/update" : {
+      "post" : {
+        "tags" : [ "admin" ],
+        "description" : "Update user attributes",
+        "operationId" : "postAdminUsersUpdate",
+        "consumes" : [ "application/json" ],
+        "produces" : [ "application/json" ],
+        "parameters" : [ {
+          "name" : "uid",
+          "in" : "formData",
+          "description" : "user uniq id",
+          "required" : true,
+          "type" : "string"
+        }, {
+          "name" : "state",
+          "in" : "formData",
+          "description" : "user state",
+          "required" : false,
+          "type" : "string"
+        }, {
+          "name" : "otp",
+          "in" : "formData",
+          "description" : "user 2fa status",
+          "required" : false,
+          "type" : "boolean"
+        } ],
+        "responses" : {
+          "201" : {
+            "description" : "Update user attributes"
+          },
+          "401" : {
+            "description" : "Invalid bearer token"
+          }
+        },
+        "security" : [ {
+          "BearerToken" : [ ]
+        } ]
+      }
+    },
+    "/barong/identity/users/password/confirm_code" : {
+      "post" : {
+        "tags" : [ "identity" ],
+        "description" : "Sets new account password",
+        "operationId" : "postIdentityUsersPasswordConfirmCode",
+        "consumes" : [ "application/json" ],
+        "produces" : [ "application/json" ],
+        "parameters" : [ {
+          "name" : "reset_password_token",
+          "in" : "formData",
+          "description" : "Token from email",
+          "required" : true,
+          "type" : "string"
+        }, {
+          "name" : "password",
+          "in" : "formData",
+          "description" : "User password",
+          "required" : true,
+          "type" : "string"
+        }, {
+          "name" : "confirm_password",
+          "in" : "formData",
+          "description" : "User password",
+          "required" : true,
+          "type" : "string"
+        }, {
+          "name" : "lang",
+          "in" : "formData",
+          "description" : "Language in iso-2 format",
+          "required" : false,
+          "type" : "string"
+        } ],
+        "responses" : {
+          "201" : {
+            "description" : "Resets password"
+          },
+          "400" : {
+            "description" : "Required params are empty"
+          },
+          "404" : {
+            "description" : "Record is not found"
+          },
+          "422" : {
+            "description" : "Validation errors"
+          }
+        }
+      }
+    },
+    "/barong/identity/users/password/generate_code" : {
+      "post" : {
+        "tags" : [ "identity" ],
+        "description" : "Send password reset instructions",
+        "operationId" : "postIdentityUsersPasswordGenerateCode",
+        "consumes" : [ "application/json" ],
+        "produces" : [ "application/json" ],
+        "parameters" : [ {
+          "name" : "email",
+          "in" : "formData",
+          "description" : "Account email",
+          "required" : true,
+          "type" : "string"
+        }, {
+          "name" : "lang",
+          "in" : "formData",
+          "description" : "Language in iso-2 format",
+          "required" : false,
+          "type" : "string"
+        } ],
+        "responses" : {
+          "201" : {
+            "description" : "Generated password reset code"
+          },
+          "400" : {
+            "description" : "Required params are missing"
+          },
+          "404" : {
+            "description" : "User doesn't exist"
+          },
+          "422" : {
+            "description" : "Validation errors"
+          }
+        }
+      }
+    },
+    "/barong/identity/users/email/confirm_code" : {
+      "post" : {
+        "tags" : [ "identity" ],
+        "description" : "Confirms an account",
+        "operationId" : "postIdentityUsersEmailConfirmCode",
+        "consumes" : [ "application/json" ],
+        "produces" : [ "application/json" ],
+        "parameters" : [ {
+          "name" : "token",
+          "in" : "formData",
+          "description" : "Token from email",
+          "required" : true,
+          "type" : "string"
+        }, {
+          "name" : "lang",
+          "in" : "formData",
+          "description" : "Language in iso-2 format",
+          "required" : false,
+          "type" : "string"
+        } ],
+        "responses" : {
+          "201" : {
+            "description" : "Confirms an account"
+          },
+          "400" : {
+            "description" : "Required params are missing"
+          },
+          "422" : {
+            "description" : "Validation errors"
+          }
+        }
+      }
+    },
+    "/barong/identity/users/email/generate_code" : {
+      "post" : {
+        "tags" : [ "identity" ],
+        "description" : "Send confirmations instructions",
+        "operationId" : "postIdentityUsersEmailGenerateCode",
+        "consumes" : [ "application/json" ],
+        "produces" : [ "application/json" ],
+        "parameters" : [ {
+          "name" : "email",
+          "in" : "formData",
+          "description" : "Account email",
+          "required" : true,
+          "type" : "string"
+        }, {
+          "name" : "lang",
+          "in" : "formData",
+          "description" : "Client env language",
+          "required" : false,
+          "type" : "string"
+        } ],
+        "responses" : {
+          "201" : {
+            "description" : "Generated verification code"
+          },
+          "400" : {
+            "description" : "Required params are missing"
+          },
+          "422" : {
+            "description" : "Validation errors"
+          }
+        }
+      }
+    },
+    "/barong/identity/users/register_geetest" : {
+      "get" : {
+        "tags" : [ "identity" ],
+        "description" : "Register Geetest captcha",
+        "operationId" : "getIdentityUsersRegisterGeetest",
+        "produces" : [ "application/json" ],
+        "parameters" : [ ],
+        "responses" : {
+          "200" : {
+            "description" : "Register Geetest captcha"
+          }
+        }
+      }
+    },
+    "/barong/identity/users" : {
+      "post" : {
+        "tags" : [ "identity" ],
+        "description" : "Creates new user",
+        "operationId" : "postIdentityUsers",
+        "consumes" : [ "application/json" ],
+        "produces" : [ "application/json" ],
+        "parameters" : [ {
+          "name" : "email",
+          "in" : "formData",
+          "description" : "User Email",
+          "required" : true,
+          "type" : "string"
+        }, {
+          "name" : "password",
+          "in" : "formData",
+          "description" : "User Password",
+          "required" : true,
+          "type" : "string"
+        }, {
+          "name" : "refid",
+          "in" : "formData",
+          "description" : "Referral uid",
+          "required" : false,
+          "type" : "string"
+        }, {
+          "name" : "lang",
+          "in" : "formData",
+          "description" : "Client env language",
+          "required" : false,
+          "type" : "string"
+        }, {
+          "name" : "captcha_response",
+          "in" : "formData",
+          "description" : "Response from captcha widget",
+          "required" : false,
+          "type" : "string"
+        } ],
+        "responses" : {
+          "201" : {
+            "description" : "Creates new user"
+          },
+          "400" : {
+            "description" : "Required params are missing"
+          },
+          "422" : {
+            "description" : "Validation errors"
+          }
+        }
+      }
+    },
+    "/barong/identity/sessions" : {
+      "post" : {
+        "tags" : [ "identity" ],
+        "description" : "Start a new session",
+        "operationId" : "postIdentitySessions",
+        "consumes" : [ "application/json" ],
+        "produces" : [ "application/json" ],
+        "parameters" : [ {
+          "name" : "email",
+          "in" : "formData",
+          "required" : true,
+          "type" : "string"
+        }, {
+          "name" : "password",
+          "in" : "formData",
+          "required" : true,
+          "type" : "string"
+        }, {
+          "name" : "captcha_response",
+          "in" : "formData",
+          "description" : "Response from captcha widget",
+          "required" : false,
+          "type" : "string"
+        }, {
+          "name" : "otp_code",
+          "in" : "formData",
+          "description" : "Code from Google Authenticator",
+          "required" : false,
+          "type" : "string"
+        } ],
+        "responses" : {
+          "201" : {
+            "description" : "Start a new session"
+          },
+          "400" : {
+            "description" : "Required params are empty"
+          },
+          "404" : {
+            "description" : "Record is not found"
+          }
+        }
+      },
+      "delete" : {
+        "tags" : [ "identity" ],
+        "description" : "Destroy current session",
+        "operationId" : "deleteIdentitySessions",
+        "produces" : [ "application/json" ],
+        "parameters" : [ ],
+        "responses" : {
+          "204" : {
+            "description" : "Destroy current session"
+          },
+          "400" : {
+            "description" : "Required params are empty"
+          },
+          "404" : {
+            "description" : "Record is not found"
+          }
+        }
+      }
+    },
+    "/barong/identity/version" : {
+      "get" : {
+        "tags" : [ "identity" ],
+        "description" : "Get barong version",
+        "operationId" : "getIdentityVersion",
+        "produces" : [ "application/json" ],
+        "parameters" : [ ],
+        "responses" : {
+          "200" : {
+            "description" : "Get barong version"
+          }
+        }
+      }
+    },
+    "/barong/identity/time" : {
+      "get" : {
+        "tags" : [ "identity" ],
+        "description" : "Get server current unix timestamp.",
+        "operationId" : "getIdentityTime",
+        "produces" : [ "application/json" ],
+        "parameters" : [ ],
+        "responses" : {
+          "200" : {
+            "description" : "Get server current unix timestamp."
+          }
+        }
+      }
+    },
+    "/barong/identity/ping" : {
+      "get" : {
+        "tags" : [ "identity" ],
+        "description" : "Test connectivity",
+        "operationId" : "getIdentityPing",
+        "produces" : [ "application/json" ],
+        "parameters" : [ ],
+        "responses" : {
+          "200" : {
+            "description" : "Test connectivity"
+          }
+        }
+      }
+    },
+    "/barong/resource/api_keys" : {
+      "get" : {
+        "tags" : [ "resource" ],
+        "description" : "List all api keys for current account.",
+        "operationId" : "getResourceApiKeys",
+        "produces" : [ "application/json" ],
+        "parameters" : [ {
+          "name" : "page",
+          "in" : "query",
+          "description" : "Page number (defaults to 1).",
+          "required" : false,
+          "type" : "integer",
+          "default" : 1,
+          "format" : "int32"
+        }, {
+          "name" : "limit",
+          "in" : "query",
+          "description" : "Number of api keys per page (defaults to 100, maximum is 1000).",
+          "required" : false,
+          "type" : "integer",
+          "default" : 100,
+          "format" : "int32"
+        } ],
+        "responses" : {
+          "200" : {
+            "description" : "List all api keys for current account."
+          },
+          "400" : {
+            "description" : "Require 2FA and totp code"
+          },
+          "401" : {
+            "description" : "Invalid bearer token"
+          }
+        },
+        "security" : [ {
+          "BearerToken" : [ ]
+        } ]
+      },
+      "post" : {
+        "tags" : [ "resource" ],
+        "description" : "Create an api key",
+        "operationId" : "postResourceApiKeys",
+        "consumes" : [ "application/json" ],
+        "produces" : [ "application/json" ],
+        "parameters" : [ {
+          "name" : "algorithm",
+          "in" : "formData",
+          "required" : true,
+          "type" : "string"
+        }, {
+          "name" : "kid",
+          "in" : "formData",
+          "required" : false,
+          "type" : "string"
+        }, {
+          "name" : "scope",
+          "in" : "formData",
+          "description" : "comma separated scopes",
+          "required" : false,
+          "type" : "string"
+        }, {
+          "name" : "totp_code",
+          "in" : "formData",
+          "description" : "Code from Google Authenticator",
+          "required" : true,
+          "type" : "string"
+        } ],
+        "responses" : {
+          "201" : {
+            "description" : "Create an api key"
+          },
+          "400" : {
+            "description" : "Required params are empty"
+          },
+          "401" : {
+            "description" : "Invalid bearer token"
+          },
+          "422" : {
+            "description" : "Validation errors"
+          }
+        },
+        "security" : [ {
+          "BearerToken" : [ ]
+        } ]
+      }
+    },
+    "/barong/resource/api_keys/{kid}" : {
+      "delete" : {
+        "tags" : [ "resource" ],
+        "description" : "Delete an api key",
+        "operationId" : "deleteResourceApiKeysKid",
+        "produces" : [ "application/json" ],
+        "parameters" : [ {
+          "name" : "kid",
+          "in" : "path",
+          "required" : true,
+          "type" : "string"
+        }, {
+          "name" : "totp_code",
+          "in" : "query",
+          "description" : "Code from Google Authenticator",
+          "required" : true,
+          "type" : "string"
+        } ],
+        "responses" : {
+          "204" : {
+            "description" : "Succefully deleted"
+          },
+          "400" : {
+            "description" : "Required params are empty"
+          },
+          "401" : {
+            "description" : "Invalid bearer token"
+          },
+          "404" : {
+            "description" : "Record is not found"
+          }
+        },
+        "security" : [ {
+          "BearerToken" : [ ]
+        } ]
+      },
+      "patch" : {
+        "tags" : [ "resource" ],
+        "description" : "Updates an api key",
+        "operationId" : "patchResourceApiKeysKid",
+        "consumes" : [ "application/json" ],
+        "produces" : [ "application/json" ],
+        "parameters" : [ {
+          "name" : "kid",
+          "in" : "path",
+          "required" : true,
+          "type" : "string"
+        }, {
+          "name" : "scope",
+          "in" : "formData",
+          "description" : "comma separated scopes",
+          "required" : false,
+          "type" : "string"
+        }, {
+          "name" : "state",
+          "in" : "formData",
+          "description" : "State of API Key. \"active\" state means key is active and can be used for auth",
+          "required" : false,
+          "type" : "string"
+        }, {
+          "name" : "totp_code",
+          "in" : "formData",
+          "description" : "Code from Google Authenticator",
+          "required" : true,
+          "type" : "string"
+        } ],
+        "responses" : {
+          "200" : {
+            "description" : "Updates an api key"
+          },
+          "400" : {
+            "description" : "Required params are empty"
+          },
+          "401" : {
+            "description" : "Invalid bearer token"
+          },
+          "404" : {
+            "description" : "Record is not found"
+          },
+          "422" : {
+            "description" : "Validation errors"
+          }
+        },
+        "security" : [ {
+          "BearerToken" : [ ]
+        } ]
+      }
+    },
+    "/barong/resource/otp/verify" : {
+      "post" : {
+        "tags" : [ "resource" ],
+        "description" : "Verify 2FA code",
+        "operationId" : "postResourceOtpVerify",
+        "consumes" : [ "application/json" ],
+        "produces" : [ "application/json" ],
+        "parameters" : [ {
+          "name" : "code",
+          "in" : "formData",
+          "description" : "Code from Google Authenticator",
+          "required" : true,
+          "type" : "string"
+        } ],
+        "responses" : {
+          "201" : {
+            "description" : "Verify 2FA code"
+          },
+          "400" : {
+            "description" : "2FA has not been enabled for this account or code is missing"
+          },
+          "401" : {
+            "description" : "Invalid bearer token"
+          },
+          "422" : {
+            "description" : "Validation errors"
+          }
+        },
+        "security" : [ {
+          "BearerToken" : [ ]
+        } ]
+      }
+    },
+    "/barong/resource/otp/enable" : {
+      "post" : {
+        "tags" : [ "resource" ],
+        "description" : "Enable 2FA",
+        "operationId" : "postResourceOtpEnable",
+        "consumes" : [ "application/json" ],
+        "produces" : [ "application/json" ],
+        "parameters" : [ {
+          "name" : "code",
+          "in" : "formData",
+          "description" : "Code from Google Authenticator",
+          "required" : true,
+          "type" : "string"
+        } ],
+        "responses" : {
+          "201" : {
+            "description" : "Enable 2FA"
+          },
+          "400" : {
+            "description" : "2FA has been enabled for this account or code is missing"
+          },
+          "401" : {
+            "description" : "Invalid bearer token"
+          },
+          "422" : {
+            "description" : "Validation errors"
+          }
+        },
+        "security" : [ {
+          "BearerToken" : [ ]
+        } ]
+      }
+    },
+    "/barong/resource/otp/generate_qrcode" : {
+      "post" : {
+        "tags" : [ "resource" ],
+        "description" : "Generate qr code for 2FA",
+        "operationId" : "postResourceOtpGenerateQrcode",
+        "consumes" : [ "application/json" ],
+        "produces" : [ "application/json" ],
+        "parameters" : [ ],
+        "responses" : {
+          "201" : {
+            "description" : "Generate qr code for 2FA"
+          },
+          "400" : {
+            "description" : "2FA has been enabled for this account"
+          },
+          "401" : {
+            "description" : "Invalid bearer token"
+          }
+        },
+        "security" : [ {
+          "BearerToken" : [ ]
+        } ]
+      }
+    },
+    "/barong/resource/phones/verify" : {
+      "post" : {
+        "tags" : [ "resource" ],
+        "description" : "Verify a phone",
+        "operationId" : "postResourcePhonesVerify",
+        "consumes" : [ "application/json" ],
+        "produces" : [ "application/json" ],
+        "parameters" : [ {
+          "name" : "phone_number",
+          "in" : "formData",
+          "description" : "Phone number with country code",
+          "required" : true,
+          "type" : "string"
+        }, {
+          "name" : "verification_code",
+          "in" : "formData",
+          "description" : "Verification code from sms",
+          "required" : true,
+          "type" : "string"
+        } ],
+        "responses" : {
+          "201" : {
+            "description" : "Verify a phone"
+          },
+          "400" : {
+            "description" : "Required params are empty"
+          },
+          "401" : {
+            "description" : "Invalid bearer token"
+          },
+          "404" : {
+            "description" : "Record is not found"
+          }
+        },
+        "security" : [ {
+          "BearerToken" : [ ]
+        } ]
+      }
+    },
+    "/barong/resource/phones/send_code" : {
+      "post" : {
+        "tags" : [ "resource" ],
+        "description" : "Resend activation code",
+        "operationId" : "postResourcePhonesSendCode",
+        "consumes" : [ "application/json" ],
+        "produces" : [ "application/json" ],
+        "parameters" : [ {
+          "name" : "phone_number",
+          "in" : "formData",
+          "description" : "Phone number with country code",
+          "required" : true,
+          "type" : "string"
+        } ],
+        "responses" : {
+          "201" : {
+            "description" : "Resend activation code"
+          },
+          "400" : {
+            "description" : "Required params are empty"
+          },
+          "401" : {
+            "description" : "Invalid bearer token"
+          },
+          "404" : {
+            "description" : "Record is not found"
+          },
+          "422" : {
+            "description" : "Validation errors"
+          }
+        },
+        "security" : [ {
+          "BearerToken" : [ ]
+        } ]
+      }
+    },
+    "/barong/resource/phones" : {
+      "get" : {
+        "tags" : [ "resource" ],
+        "description" : "Returns list of user's phones",
+        "operationId" : "getResourcePhones",
+        "produces" : [ "application/json" ],
+        "parameters" : [ ],
+        "responses" : {
+          "200" : {
+            "description" : "Returns list of user's phones"
+          },
+          "401" : {
+            "description" : "Invalid bearer token"
+          }
+        },
+        "security" : [ {
+          "BearerToken" : [ ]
+        } ]
+      },
+      "post" : {
+        "tags" : [ "resource" ],
+        "description" : "Add new phone",
+        "operationId" : "postResourcePhones",
+        "consumes" : [ "application/json" ],
+        "produces" : [ "application/json" ],
+        "parameters" : [ {
+          "name" : "phone_number",
+          "in" : "formData",
+          "description" : "Phone number with country code",
+          "required" : true,
+          "type" : "string"
+        } ],
+        "responses" : {
+          "201" : {
+            "description" : "Add new phone"
+          },
+          "400" : {
+            "description" : "Required params are empty"
+          },
+          "401" : {
+            "description" : "Invalid bearer token"
+          },
+          "404" : {
+            "description" : "Record is not found"
+          },
+          "422" : {
+            "description" : "Validation errors"
+          }
+        },
+        "security" : [ {
+          "BearerToken" : [ ]
+        } ]
+      }
+    },
+    "/barong/resource/documents" : {
+      "get" : {
+        "tags" : [ "resource" ],
+        "description" : "Return current user documents list",
+        "operationId" : "getResourceDocuments",
+        "produces" : [ "application/json" ],
+        "parameters" : [ ],
+        "responses" : {
+          "200" : {
+            "description" : "Return current user documents list"
+          },
+          "401" : {
+            "description" : "Invalid bearer token"
+          }
+        },
+        "security" : [ {
+          "BearerToken" : [ ]
+        } ]
+      },
+      "post" : {
+        "tags" : [ "resource" ],
+        "description" : "Upload a new document for current user",
+        "operationId" : "postResourceDocuments",
+        "consumes" : [ "application/json" ],
+        "produces" : [ "application/json" ],
+        "parameters" : [ {
+          "name" : "doc_type",
+          "in" : "formData",
+          "description" : "Document type",
+          "required" : true,
+          "type" : "string"
+        }, {
+          "name" : "doc_number",
+          "in" : "formData",
+          "description" : "Document number",
+          "required" : true,
+          "type" : "string"
+        }, {
+          "name" : "uploads",
+          "in" : "formData",
+          "description" : "Array of Rack::Multipart::UploadedFile",
+          "required" : true,
+          "type" : "array",
+          "items" : {
+            "type" : "file"
+          },
+          "collectionFormat" : "multi"
+        }, {
+          "name" : "doc_expire",
+          "in" : "formData",
+          "description" : "Document expiration date",
+          "required" : false,
+          "type" : "string",
+          "format" : "date"
+        } ],
+        "responses" : {
+          "201" : {
+            "description" : "Document is uploaded"
+          },
+          "400" : {
+            "description" : "Required params are empty"
+          },
+          "401" : {
+            "description" : "Invalid bearer token"
+          },
+          "422" : {
+            "description" : "Validation errors"
+          }
+        },
+        "security" : [ {
+          "BearerToken" : [ ]
+        } ]
+      }
+    },
+    "/barong/resource/profiles" : {
+      "post" : {
+        "tags" : [ "resource" ],
+        "description" : "Create a profile for current_user",
+        "operationId" : "postResourceProfiles",
+        "consumes" : [ "application/json" ],
+        "produces" : [ "application/json" ],
+        "parameters" : [ {
+          "name" : "first_name",
+          "in" : "formData",
+          "required" : true,
+          "type" : "string"
+        }, {
+          "name" : "last_name",
+          "in" : "formData",
+          "required" : true,
+          "type" : "string"
+        }, {
+          "name" : "dob",
+          "in" : "formData",
+          "required" : true,
+          "type" : "string",
+          "format" : "date"
+        }, {
+          "name" : "address",
+          "in" : "formData",
+          "required" : true,
+          "type" : "string"
+        }, {
+          "name" : "postcode",
+          "in" : "formData",
+          "required" : true,
+          "type" : "string"
+        }, {
+          "name" : "city",
+          "in" : "formData",
+          "required" : true,
+          "type" : "string"
+        }, {
+          "name" : "country",
+          "in" : "formData",
+          "required" : true,
+          "type" : "string"
+        } ],
+        "responses" : {
+          "201" : {
+            "description" : "Create a profile for current_user"
+          },
+          "400" : {
+            "description" : "Required params are empty"
+          },
+          "401" : {
+            "description" : "Invalid bearer token"
+          },
+          "409" : {
+            "description" : "Profile already exists"
+          },
+          "422" : {
+            "description" : "Validation errors"
+          }
+        },
+        "security" : [ {
+          "BearerToken" : [ ]
+        } ]
+      }
+    },
+    "/barong/resource/profiles/me" : {
+      "get" : {
+        "tags" : [ "resource" ],
+        "description" : "Return profile of current resource owner",
+        "operationId" : "getResourceProfilesMe",
+        "produces" : [ "application/json" ],
+        "parameters" : [ ],
+        "responses" : {
+          "200" : {
+            "description" : "Return profile of current resource owner"
+          },
+          "401" : {
+            "description" : "Invalid bearer token"
+          },
+          "404" : {
+            "description" : "User has no profile"
+          }
+        },
+        "security" : [ {
+          "BearerToken" : [ ]
+        } ]
+      }
+    },
+    "/barong/resource/labels/{key}" : {
+      "get" : {
+        "tags" : [ "resource" ],
+        "description" : "Return a label by key.",
+        "operationId" : "getResourceLabelsKey",
+        "produces" : [ "application/json" ],
+        "parameters" : [ {
+          "name" : "key",
+          "in" : "path",
+          "description" : "Label key.",
+          "required" : true,
+          "type" : "string"
+        } ],
+        "responses" : {
+          "200" : {
+            "description" : "Return a label by key."
+          },
+          "400" : {
+            "description" : "Required params are empty"
+          },
+          "401" : {
+            "description" : "Invalid bearer token"
+          },
+          "404" : {
+            "description" : "Record is not found"
+          }
+        },
+        "security" : [ {
+          "BearerToken" : [ ]
+        } ]
+      },
+      "delete" : {
+        "tags" : [ "resource" ],
+        "description" : "Delete a label  with 'public' scope.",
+        "operationId" : "deleteResourceLabelsKey",
+        "produces" : [ "application/json" ],
+        "parameters" : [ {
+          "name" : "key",
+          "in" : "path",
+          "description" : "Label key.",
+          "required" : true,
+          "type" : "string"
+        } ],
+        "responses" : {
+          "204" : {
+            "description" : "Succefully deleted"
+          },
+          "400" : {
+            "description" : "Required params are empty"
+          },
+          "401" : {
+            "description" : "Invalid bearer token"
+          },
+          "404" : {
+            "description" : "Record is not found"
+          }
+        },
+        "security" : [ {
+          "BearerToken" : [ ]
+        } ]
+      },
+      "patch" : {
+        "tags" : [ "resource" ],
+        "description" : "Update a label with 'public' scope.",
+        "operationId" : "patchResourceLabelsKey",
+        "consumes" : [ "application/json" ],
+        "produces" : [ "application/json" ],
+        "parameters" : [ {
+          "name" : "key",
+          "in" : "path",
+          "description" : "Label key.",
+          "required" : true,
+          "type" : "string"
+        }, {
+          "name" : "value",
+          "in" : "formData",
+          "description" : "Label value.",
+          "required" : true,
+          "type" : "string"
+        } ],
+        "responses" : {
+          "200" : {
+            "description" : "Update a label with 'public' scope."
+          },
+          "400" : {
+            "description" : "Required params are empty"
+          },
+          "401" : {
+            "description" : "Invalid bearer token"
+          },
+          "404" : {
+            "description" : "Record is not found"
+          },
+          "422" : {
+            "description" : "Validation errors"
+          }
+        },
+        "security" : [ {
+          "BearerToken" : [ ]
+        } ]
+      }
+    },
+    "/barong/resource/labels" : {
+      "get" : {
+        "tags" : [ "resource" ],
+        "description" : "List all labels for current user.",
+        "operationId" : "getResourceLabels",
+        "produces" : [ "application/json" ],
+        "parameters" : [ ],
+        "responses" : {
+          "200" : {
+            "description" : "List all labels for current user."
+          },
+          "401" : {
+            "description" : "Invalid bearer token"
+          }
+        },
+        "security" : [ {
+          "BearerToken" : [ ]
+        } ]
+      },
+      "post" : {
+        "tags" : [ "resource" ],
+        "description" : "Create a label with 'public' scope.",
+        "operationId" : "postResourceLabels",
+        "consumes" : [ "application/json" ],
+        "produces" : [ "application/json" ],
+        "parameters" : [ {
+          "name" : "key",
+          "in" : "formData",
+          "description" : "Label key.",
+          "required" : true,
+          "type" : "string"
+        }, {
+          "name" : "value",
+          "in" : "formData",
+          "description" : "Label value.",
+          "required" : true,
+          "type" : "string"
+        } ],
+        "responses" : {
+          "201" : {
+            "description" : "Create a label with 'public' scope."
+          },
+          "400" : {
+            "description" : "Required params are empty"
+          },
+          "401" : {
+            "description" : "Invalid bearer token"
+          },
+          "422" : {
+            "description" : "Validation errors"
+          }
+        },
+        "security" : [ {
+          "BearerToken" : [ ]
+        } ]
+      }
+    },
+    "/barong/resource/users/password" : {
+      "put" : {
+        "tags" : [ "resource" ],
+        "description" : "Sets new account password",
+        "operationId" : "putResourceUsersPassword",
+        "consumes" : [ "application/json" ],
+        "produces" : [ "application/json" ],
+        "parameters" : [ {
+          "name" : "old_password",
+          "in" : "formData",
+          "description" : "Previous account password",
+          "required" : true,
+          "type" : "string"
+        }, {
+          "name" : "new_password",
+          "in" : "formData",
+          "description" : "User password",
+          "required" : true,
+          "type" : "string"
+        }, {
+          "name" : "confirm_password",
+          "in" : "formData",
+          "description" : "User password",
+          "required" : true,
+          "type" : "string"
+        }, {
+          "name" : "lang",
+          "in" : "formData",
+          "description" : "Language in iso-2 format",
+          "required" : false,
+          "type" : "string"
+        } ],
+        "responses" : {
+          "201" : {
+            "description" : "Changes password"
+          },
+          "400" : {
+            "description" : "Required params are empty"
+          },
+          "404" : {
+            "description" : "Record is not found"
+          },
+          "422" : {
+            "description" : "Validation errors"
+          }
+        }
+      }
+    },
+    "/barong/resource/users/activity/{topic}" : {
+      "get" : {
+        "tags" : [ "resource" ],
+        "description" : "Returns user activity",
+        "operationId" : "getResourceUsersActivityTopic",
+        "produces" : [ "application/json" ],
+        "parameters" : [ {
+          "name" : "page",
+          "in" : "query",
+          "description" : "Page number (defaults to 1).",
+          "required" : false,
+          "type" : "integer",
+          "default" : 1,
+          "format" : "int32"
+        }, {
+          "name" : "limit",
+          "in" : "query",
+          "description" : "Number of activity per page (defaults to 100, maximum is 1000).",
+          "required" : false,
+          "type" : "integer",
+          "default" : 100,
+          "format" : "int32"
+        }, {
+          "name" : "topic",
+          "in" : "path",
+          "description" : "Topic of user activity. Allowed: [all, password, session, otp]",
+          "required" : true,
+          "type" : "string"
+        } ],
+        "responses" : {
+          "200" : {
+            "description" : "Returns user activity"
+          }
+        }
+      }
+    },
+    "/barong/resource/users/me" : {
+      "get" : {
+        "tags" : [ "resource" ],
+        "description" : "Returns current user",
+        "operationId" : "getResourceUsersMe",
+        "produces" : [ "application/json" ],
+        "parameters" : [ ],
+        "responses" : {
+          "200" : {
+            "description" : "Returns current user"
+          }
+        }
+      },
+      "delete" : {
+        "tags" : [ "resource" ],
+        "description" : "Returns current user",
+        "operationId" : "deleteResourceUsersMe",
+        "produces" : [ "application/json" ],
+        "parameters" : [ {
+          "name" : "password",
+          "in" : "query",
+          "description" : "Account password",
+          "required" : true,
+          "type" : "string"
+        }, {
+          "name" : "otp_code",
+          "in" : "query",
+          "description" : "Code from Google Authenticator",
+          "required" : false,
+          "type" : "string"
+        } ],
+        "responses" : {
+          "204" : {
+            "description" : "Returns current user"
+          }
+        }
+      }
+    },
+    "/peatio/public/health/ready" : {
+      "get" : {
+        "tags" : [ "public" ],
+        "description" : "Get application readiness status",
+        "operationId" : "getPublicHealthReady",
+        "produces" : [ "application/json" ],
+        "parameters" : [ ],
+        "responses" : {
+          "200" : {
+            "description" : "Get application readiness status"
+          }
+        }
+      }
+    },
+    "/peatio/public/health/alive" : {
+      "get" : {
+        "tags" : [ "public" ],
+        "description" : "Get application liveness status",
+        "operationId" : "getPublicHealthAlive",
+        "produces" : [ "application/json" ],
+        "parameters" : [ ],
+        "responses" : {
+          "200" : {
+            "description" : "Get application liveness status"
+          }
+        }
+      }
+    },
+    "/peatio/public/version" : {
+      "get" : {
+        "tags" : [ "public" ],
+        "description" : "Get running Peatio version and build details.",
+        "operationId" : "getPublicVersion",
+        "produces" : [ "application/json" ],
+        "parameters" : [ ],
+        "responses" : {
+          "200" : {
+            "description" : "Get running Peatio version and build details."
+          }
+        }
+      }
+    },
+    "/peatio/public/timestamp" : {
+      "get" : {
+        "tags" : [ "public" ],
+        "description" : "Get server current time, in seconds since Unix epoch.",
+        "operationId" : "getPublicTimestamp",
+        "produces" : [ "application/json" ],
+        "parameters" : [ ],
+        "responses" : {
+          "200" : {
+            "description" : "Get server current time, in seconds since Unix epoch."
+          }
+        }
+      }
+    },
+    "/peatio/public/member-levels" : {
+      "get" : {
+        "tags" : [ "public" ],
+        "description" : "Returns hash of minimum levels and the privileges they provide.",
+        "operationId" : "getPublicMemberLevels",
+        "produces" : [ "application/json" ],
+        "parameters" : [ ],
+        "responses" : {
+          "200" : {
+            "description" : "Returns hash of minimum levels and the privileges they provide."
+          }
+        }
+      }
+    },
+    "/peatio/public/markets/{market}/tickers" : {
+      "get" : {
+        "tags" : [ "public" ],
+        "description" : "Get ticker of specific market.",
+        "operationId" : "getPublicMarketsMarketTickers",
+        "produces" : [ "application/json" ],
+        "parameters" : [ {
+          "name" : "market",
+          "in" : "path",
+          "description" : "",
+          "required" : true,
+          "type" : "string",
+          "enum" : [ "btcusd", "ethbtc", "ethusd", "trstbtc", "trsteth", "trstusd" ]
+        } ],
+        "responses" : {
+          "200" : {
+            "description" : "Get ticker of specific market."
+          }
+        }
+      }
+    },
+    "/peatio/public/markets/tickers" : {
+      "get" : {
+        "tags" : [ "public" ],
+        "description" : "Get ticker of all markets.",
+        "operationId" : "getPublicMarketsTickers",
+        "produces" : [ "application/json" ],
+        "parameters" : [ ],
+        "responses" : {
+          "200" : {
+            "description" : "Get ticker of all markets."
+          }
+        }
+      }
+    },
+    "/peatio/public/markets/{market}/k-line" : {
+      "get" : {
+        "tags" : [ "public" ],
+        "description" : "Get OHLC(k line) of specific market.",
+        "operationId" : "getPublicMarketsMarketKLine",
+        "produces" : [ "application/json" ],
+        "parameters" : [ {
+          "name" : "market",
+          "in" : "path",
+          "description" : "",
+          "required" : true,
+          "type" : "string",
+          "enum" : [ "btcusd", "ethbtc", "ethusd", "trstbtc", "trsteth", "trstusd" ]
+        }, {
+          "name" : "period",
+          "in" : "query",
+          "description" : "Time period of K line, default to 1. You can choose between 1, 5, 15, 30, 60, 120, 240, 360, 720, 1440, 4320, 10080",
+          "required" : false,
+          "type" : "integer",
+          "default" : 1,
+          "format" : "int32",
+          "enum" : [ 1, 5, 15, 30, 60, 120, 240, 360, 720, 1440, 4320, 10080 ]
+        }, {
+          "name" : "time_from",
+          "in" : "query",
+          "description" : "An integer represents the seconds elapsed since Unix epoch. If set, only k-line data after that time will be returned.",
+          "required" : false,
+          "type" : "integer",
+          "format" : "int32"
+        }, {
+          "name" : "time_to",
+          "in" : "query",
+          "description" : "An integer represents the seconds elapsed since Unix epoch. If set, only k-line data till that time will be returned.",
+          "required" : false,
+          "type" : "integer",
+          "format" : "int32"
+        }, {
+          "name" : "limit",
+          "in" : "query",
+          "description" : "Limit the number of returned data points default to 30. Ignored if time_from and time_to are given.",
+          "required" : false,
+          "type" : "integer",
+          "default" : 30,
+          "maximum" : 10000,
+          "minimum" : 1,
+          "format" : "int32"
+        } ],
+        "responses" : {
+          "200" : {
+            "description" : "Get OHLC(k line) of specific market."
+          }
+        }
+      }
+    },
+    "/peatio/public/markets/{market}/depth" : {
+      "get" : {
+        "tags" : [ "public" ],
+        "description" : "Get depth or specified market. Both asks and bids are sorted from highest price to lowest.",
+        "operationId" : "getPublicMarketsMarketDepth",
+        "produces" : [ "application/json" ],
+        "parameters" : [ {
+          "name" : "market",
+          "in" : "path",
+          "description" : "",
+          "required" : true,
+          "type" : "string",
+          "enum" : [ "btcusd", "ethbtc", "ethusd", "trstbtc", "trsteth", "trstusd" ]
+        }, {
+          "name" : "limit",
+          "in" : "query",
+          "description" : "Limit the number of returned price levels. Default to 300.",
+          "required" : false,
+          "type" : "integer",
+          "default" : 300,
+          "maximum" : 1000,
+          "minimum" : 1,
+          "format" : "int32"
+        } ],
+        "responses" : {
+          "200" : {
+            "description" : "Get depth or specified market. Both asks and bids are sorted from highest price to lowest."
+          }
+        }
+      }
+    },
+    "/peatio/public/markets/{market}/trades" : {
+      "get" : {
+        "tags" : [ "public" ],
+        "description" : "Get recent trades on market, each trade is included only once. Trades are sorted in reverse creation order.",
+        "operationId" : "getPublicMarketsMarketTrades",
+        "produces" : [ "application/json" ],
+        "parameters" : [ {
+          "name" : "market",
+          "in" : "path",
+          "description" : "",
+          "required" : true,
+          "type" : "string",
+          "enum" : [ "btcusd", "ethbtc", "ethusd", "trstbtc", "trsteth", "trstusd" ]
+        }, {
+          "name" : "limit",
+          "in" : "query",
+          "description" : "Limit the number of returned trades. Default to 100.",
+          "required" : false,
+          "type" : "integer",
+          "default" : 100,
+          "maximum" : 1000,
+          "minimum" : 1,
+          "format" : "int32"
+        }, {
+          "name" : "page",
+          "in" : "query",
+          "description" : "Specify the page of paginated results.",
+          "required" : false,
+          "type" : "integer",
+          "default" : 1,
+          "format" : "int32"
+        }, {
+          "name" : "timestamp",
+          "in" : "query",
+          "description" : "An integer represents the seconds elapsed since Unix epoch.If set, only trades executed before the time will be returned.",
+          "required" : false,
+          "type" : "integer",
+          "format" : "int32"
+        }, {
+          "name" : "order_by",
+          "in" : "query",
+          "description" : "If set, returned trades will be sorted in specific order, default to 'desc'.",
+          "required" : false,
+          "type" : "string",
+          "default" : "desc",
+          "enum" : [ "asc", "desc" ]
+        } ],
+        "responses" : {
+          "200" : {
+            "description" : "Get recent trades on market, each trade is included only once. Trades are sorted in reverse creation order.",
+            "schema" : {
+              "type" : "array",
+              "items" : {
+                "$ref" : "#/definitions/Peatio_Trade"
+              }
+            }
+          }
+        }
+      }
+    },
+    "/peatio/public/markets/{market}/order-book" : {
+      "get" : {
+        "tags" : [ "public" ],
+        "description" : "Get the order book of specified market.",
+        "operationId" : "getPublicMarketsMarketOrderBook",
+        "produces" : [ "application/json" ],
+        "parameters" : [ {
+          "name" : "market",
+          "in" : "path",
+          "description" : "",
+          "required" : true,
+          "type" : "string",
+          "enum" : [ "btcusd", "ethbtc", "ethusd", "trstbtc", "trsteth", "trstusd" ]
+        }, {
+          "name" : "asks_limit",
+          "in" : "query",
+          "description" : "Limit the number of returned sell orders. Default to 20.",
+          "required" : false,
+          "type" : "integer",
+          "default" : 20,
+          "maximum" : 200,
+          "minimum" : 1,
+          "format" : "int32"
+        }, {
+          "name" : "bids_limit",
+          "in" : "query",
+          "description" : "Limit the number of returned buy orders. Default to 20.",
+          "required" : false,
+          "type" : "integer",
+          "default" : 20,
+          "maximum" : 200,
+          "minimum" : 1,
+          "format" : "int32"
+        } ],
+        "responses" : {
+          "200" : {
+            "description" : "Get the order book of specified market.",
+            "schema" : {
+              "type" : "array",
+              "items" : {
+                "$ref" : "#/definitions/Peatio_OrderBook"
+              }
+            }
+          }
+        }
+      }
+    },
+    "/peatio/public/markets" : {
+      "get" : {
+        "tags" : [ "public" ],
+        "description" : "Get all available markets.",
+        "operationId" : "getPublicMarkets",
+        "produces" : [ "application/json" ],
+        "parameters" : [ ],
+        "responses" : {
+          "200" : {
+            "description" : "Get all available markets.",
+            "schema" : {
+              "type" : "array",
+              "items" : {
+                "$ref" : "#/definitions/Peatio_Market"
+              }
+            }
+          }
+        }
+      }
+    },
+    "/peatio/public/currencies" : {
+      "get" : {
+        "tags" : [ "public" ],
+        "description" : "Get list of currencies",
+        "operationId" : "getPublicCurrencies",
+        "produces" : [ "application/json" ],
+        "parameters" : [ {
+          "name" : "type",
+          "in" : "query",
+          "description" : "Currency type",
+          "required" : false,
+          "type" : "string",
+          "enum" : [ "fiat", "coin" ]
+        } ],
+        "responses" : {
+          "200" : {
+            "description" : "Get list of currencies",
+            "schema" : {
+              "type" : "array",
+              "items" : {
+                "$ref" : "#/definitions/Peatio_Currency"
+              }
+            }
+          }
+        }
+      }
+    },
+    "/peatio/public/currencies/{id}" : {
+      "get" : {
+        "tags" : [ "public" ],
+        "description" : "Get a currency",
+        "operationId" : "getPublicCurrenciesId",
+        "produces" : [ "application/json" ],
+        "parameters" : [ {
+          "name" : "id",
+          "in" : "path",
+          "description" : "Currency code.",
+          "required" : true,
+          "type" : "string",
+          "enum" : [ "btc", "eth", "trst", "usd", "BTC", "ETH", "TRST", "USD" ]
+        } ],
+        "responses" : {
+          "200" : {
+            "description" : "Get a currency",
+            "schema" : {
+              "$ref" : "#/definitions/Peatio_Currency"
+            }
+          }
+        }
+      }
+    },
+    "/peatio/account/balances/{currency}" : {
+      "get" : {
+        "tags" : [ "account" ],
+        "description" : "Get user account by currency",
+        "operationId" : "getAccountBalancesCurrency",
+        "produces" : [ "application/json" ],
+        "parameters" : [ {
+          "name" : "currency",
+          "in" : "path",
+          "description" : "The currency code.",
+          "required" : true,
+          "type" : "string",
+          "enum" : [ "btc", "eth", "trst", "usd" ]
+        } ],
+        "responses" : {
+          "200" : {
+            "description" : "Get user account by currency",
+            "schema" : {
+              "$ref" : "#/definitions/Peatio_Account"
+            }
+          }
+        }
+      }
+    },
+    "/peatio/account/balances" : {
+      "get" : {
+        "tags" : [ "account" ],
+        "description" : "Get list of user accounts",
+        "operationId" : "getAccountBalances",
+        "produces" : [ "application/json" ],
+        "parameters" : [ ],
+        "responses" : {
+          "200" : {
+            "description" : "Get list of user accounts",
+            "schema" : {
+              "type" : "array",
+              "items" : {
+                "$ref" : "#/definitions/Peatio_Account"
+              }
+            }
+          }
+        }
+      }
+    },
+    "/peatio/account/deposit_address/{currency}" : {
+      "get" : {
+        "tags" : [ "account" ],
+        "description" : "Returns deposit address for account you want to deposit to by currency. The address may be blank because address generation process is still in progress. If this case you should try again later.",
+        "operationId" : "getAccountDepositAddressCurrency",
+        "produces" : [ "application/json" ],
+        "parameters" : [ {
+          "name" : "currency",
+          "in" : "path",
+          "description" : "The account you want to deposit to.",
+          "required" : true,
+          "type" : "string",
+          "enum" : [ "btc", "eth", "trst", "BTC", "ETH", "TRST" ]
+        }, {
+          "name" : "address_format",
+          "in" : "query",
+          "description" : "Address format legacy/cash",
+          "required" : false,
+          "type" : "string",
+          "enum" : [ "legacy", "cash" ]
+        } ],
+        "responses" : {
+          "200" : {
+            "description" : "Returns deposit address for account you want to deposit to by currency. The address may be blank because address generation process is still in progress. If this case you should try again later.",
+            "schema" : {
+              "$ref" : "#/definitions/Peatio_Deposit"
+            }
+          }
+        }
+      }
+    },
+    "/peatio/account/deposits/{txid}" : {
+      "get" : {
+        "tags" : [ "account" ],
+        "description" : "Get details of specific deposit.",
+        "operationId" : "getAccountDepositsTxid",
+        "produces" : [ "application/json" ],
+        "parameters" : [ {
+          "name" : "txid",
+          "in" : "path",
+          "description" : "Deposit transaction id",
+          "required" : true,
+          "type" : "string"
+        } ],
+        "responses" : {
+          "200" : {
+            "description" : "Get details of specific deposit.",
+            "schema" : {
+              "$ref" : "#/definitions/Peatio_Deposit"
+            }
+          }
+        }
+      }
+    },
+    "/peatio/account/deposits" : {
+      "get" : {
+        "tags" : [ "account" ],
+        "description" : "Get your deposits history.",
+        "operationId" : "getAccountDeposits",
+        "produces" : [ "application/json" ],
+        "parameters" : [ {
+          "name" : "currency",
+          "in" : "query",
+          "description" : "Currency code",
+          "required" : false,
+          "type" : "string",
+          "enum" : [ "btc", "eth", "trst", "usd", "BTC", "ETH", "TRST", "USD" ]
+        }, {
+          "name" : "state",
+          "in" : "query",
+          "description" : "",
+          "required" : false,
+          "type" : "string",
+          "enum" : [ "submitted", "canceled", "rejected", "accepted", "collected" ]
+        }, {
+          "name" : "limit",
+          "in" : "query",
+          "description" : "Number of deposits per page (defaults to 100, maximum is 100).",
+          "required" : false,
+          "type" : "integer",
+          "default" : 100,
+          "maximum" : 100,
+          "minimum" : 1,
+          "format" : "int32"
+        }, {
+          "name" : "page",
+          "in" : "query",
+          "description" : "Page number (defaults to 1).",
+          "required" : false,
+          "type" : "integer",
+          "default" : 1,
+          "format" : "int32"
+        } ],
+        "responses" : {
+          "200" : {
+            "description" : "Get your deposits history.",
+            "schema" : {
+              "type" : "array",
+              "items" : {
+                "$ref" : "#/definitions/Peatio_Deposit"
+              }
+            }
+          }
+        }
+      }
+    },
+    "/peatio/account/withdraws" : {
+      "get" : {
+        "tags" : [ "account" ],
+        "description" : "List your withdraws as paginated collection.",
+        "operationId" : "getAccountWithdraws",
+        "produces" : [ "application/json" ],
+        "parameters" : [ {
+          "name" : "currency",
+          "in" : "query",
+          "description" : "Currency code.",
+          "required" : false,
+          "type" : "string",
+          "enum" : [ "btc", "eth", "trst", "BTC", "ETH", "TRST" ]
+        }, {
+          "name" : "limit",
+          "in" : "query",
+          "description" : "Number of withdraws per page (defaults to 100, maximum is 100).",
+          "required" : false,
+          "type" : "integer",
+          "default" : 100,
+          "maximum" : 100,
+          "minimum" : 1,
+          "format" : "int32"
+        }, {
+          "name" : "page",
+          "in" : "query",
+          "description" : "Page number (defaults to 1).",
+          "required" : false,
+          "type" : "integer",
+          "default" : 1,
+          "format" : "int32"
+        } ],
+        "responses" : {
+          "200" : {
+            "description" : "List your withdraws as paginated collection.",
+            "schema" : {
+              "type" : "array",
+              "items" : {
+                "$ref" : "#/definitions/Peatio_Withdraw"
+              }
+            }
+          }
+        }
+      },
+      "post" : {
+        "tags" : [ "account" ],
+        "description" : "Creates new crypto withdrawal.",
+        "operationId" : "postAccountWithdraws",
+        "consumes" : [ "application/json" ],
+        "produces" : [ "application/json" ],
+        "parameters" : [ {
+          "name" : "otp",
+          "in" : "formData",
+          "description" : "OTP to perform action",
+          "required" : true,
+          "type" : "integer",
+          "format" : "int32"
+        }, {
+          "name" : "rid",
+          "in" : "formData",
+          "description" : "Wallet address on the Blockchain.",
+          "required" : true,
+          "type" : "string"
+        }, {
+          "name" : "currency",
+          "in" : "formData",
+          "description" : "The currency code.",
+          "required" : true,
+          "type" : "string",
+          "enum" : [ "btc", "eth", "trst", "BTC", "ETH", "TRST" ]
+        }, {
+          "name" : "amount",
+          "in" : "formData",
+          "description" : "The amount to withdraw.",
+          "required" : true,
+          "type" : "number",
+          "format" : "double"
+        }, {
+          "name" : "note",
+          "in" : "formData",
+          "description" : "Optional metadata to be applied to the transaction. Used to tag transactions with memorable comments.",
+          "required" : false,
+          "type" : "string"
+        } ],
+        "responses" : {
+          "201" : {
+            "description" : "Creates new crypto withdrawal."
+          }
+        }
+      }
+    },
+    "/peatio/market/trades" : {
+      "get" : {
+        "tags" : [ "market" ],
+        "description" : "Get your executed trades. Trades are sorted in reverse creation order.",
+        "operationId" : "getMarketTrades",
+        "produces" : [ "application/json" ],
+        "parameters" : [ {
+          "name" : "market",
+          "in" : "query",
+          "description" : "",
+          "required" : false,
+          "type" : "string",
+          "enum" : [ "btcusd", "ethbtc", "ethusd", "trstbtc", "trsteth", "trstusd" ]
+        }, {
+          "name" : "limit",
+          "in" : "query",
+          "description" : "Limit the number of returned trades. Default to 100.",
+          "required" : false,
+          "type" : "integer",
+          "default" : 100,
+          "maximum" : 1000,
+          "minimum" : 1,
+          "format" : "int32"
+        }, {
+          "name" : "page",
+          "in" : "query",
+          "description" : "Specify the page of paginated results.",
+          "required" : false,
+          "type" : "integer",
+          "default" : 1,
+          "format" : "int32"
+        }, {
+          "name" : "time_from",
+          "in" : "query",
+          "description" : "An integer represents the seconds elapsed since Unix epoch.If set, only trades executed after the time will be returned.",
+          "required" : false,
+          "type" : "integer",
+          "format" : "int32"
+        }, {
+          "name" : "time_to",
+          "in" : "query",
+          "description" : "An integer represents the seconds elapsed since Unix epoch.If set, only trades executed before the time will be returned.",
+          "required" : false,
+          "type" : "integer",
+          "format" : "int32"
+        }, {
+          "name" : "order_by",
+          "in" : "query",
+          "description" : "If set, returned trades will be sorted in specific order, default to 'desc'.",
+          "required" : false,
+          "type" : "string",
+          "default" : "desc",
+          "enum" : [ "asc", "desc" ]
+        } ],
+        "responses" : {
+          "200" : {
+            "description" : "Get your executed trades. Trades are sorted in reverse creation order.",
+            "schema" : {
+              "type" : "array",
+              "items" : {
+                "$ref" : "#/definitions/Peatio_Trade"
+              }
+            }
+          }
+        }
+      }
+    },
+    "/peatio/market/orders/cancel" : {
+      "post" : {
+        "tags" : [ "market" ],
+        "description" : "Cancel all my orders.",
+        "operationId" : "postMarketOrdersCancel",
+        "consumes" : [ "application/json" ],
+        "produces" : [ "application/json" ],
+        "parameters" : [ {
+          "name" : "market",
+          "in" : "formData",
+          "description" : "",
+          "required" : false,
+          "type" : "string",
+          "enum" : [ "btcusd", "ethbtc", "ethusd", "trstbtc", "trsteth", "trstusd" ]
+        }, {
+          "name" : "side",
+          "in" : "formData",
+          "description" : "If present, only sell orders (asks) or buy orders (bids) will be canncelled.",
+          "required" : false,
+          "type" : "string",
+          "enum" : [ "sell", "buy" ]
+        } ],
+        "responses" : {
+          "201" : {
+            "description" : "Cancel all my orders.",
+            "schema" : {
+              "$ref" : "#/definitions/Peatio_Order"
+            }
+          }
+        }
+      }
+    },
+    "/peatio/market/orders/{id}/cancel" : {
+      "post" : {
+        "tags" : [ "market" ],
+        "description" : "Cancel an order.",
+        "operationId" : "postMarketOrdersIdCancel",
+        "consumes" : [ "application/json" ],
+        "produces" : [ "application/json" ],
+        "parameters" : [ {
+          "name" : "id",
+          "in" : "path",
+          "description" : "",
+          "required" : true,
+          "type" : "integer",
+          "format" : "int32"
+        } ],
+        "responses" : {
+          "201" : {
+            "description" : "Cancel an order."
+          }
+        }
+      }
+    },
+    "/peatio/market/orders" : {
+      "get" : {
+        "tags" : [ "market" ],
+        "description" : "Get your orders, results is paginated.",
+        "operationId" : "getMarketOrders",
+        "produces" : [ "application/json" ],
+        "parameters" : [ {
+          "name" : "market",
+          "in" : "query",
+          "description" : "",
+          "required" : false,
+          "type" : "string",
+          "enum" : [ "btcusd", "ethbtc", "ethusd", "trstbtc", "trsteth", "trstusd" ]
+        }, {
+          "name" : "state",
+          "in" : "query",
+          "description" : "Filter order by state.",
+          "required" : false,
+          "type" : "string",
+          "enum" : [ "pending", "wait", "done", "cancel", "reject" ]
+        }, {
+          "name" : "limit",
+          "in" : "query",
+          "description" : "Limit the number of returned orders, default to 100.",
+          "required" : false,
+          "type" : "integer",
+          "default" : 100,
+          "maximum" : 1000,
+          "minimum" : 0,
+          "format" : "int32"
+        }, {
+          "name" : "page",
+          "in" : "query",
+          "description" : "Specify the page of paginated results.",
+          "required" : false,
+          "type" : "integer",
+          "default" : 1,
+          "format" : "int32"
+        }, {
+          "name" : "order_by",
+          "in" : "query",
+          "description" : "If set, returned orders will be sorted in specific order, default to \"desc\".",
+          "required" : false,
+          "type" : "string",
+          "default" : "desc",
+          "enum" : [ "asc", "desc" ]
+        }, {
+          "name" : "ord_type",
+          "in" : "query",
+          "description" : "Filter order by ord_type.",
+          "required" : false,
+          "type" : "string",
+          "enum" : [ "market", "limit" ]
+        }, {
+          "name" : "type",
+          "in" : "query",
+          "description" : "Filter order by type.",
+          "required" : false,
+          "type" : "string",
+          "enum" : [ "buy", "sell" ]
+        } ],
+        "responses" : {
+          "200" : {
+            "description" : "Get your orders, results is paginated.",
+            "schema" : {
+              "type" : "array",
+              "items" : {
+                "$ref" : "#/definitions/Peatio_Order"
+              }
+            }
+          }
+        }
+      },
+      "post" : {
+        "tags" : [ "market" ],
+        "description" : "Create a Sell/Buy order.",
+        "operationId" : "postMarketOrders",
+        "consumes" : [ "application/json" ],
+        "produces" : [ "application/json" ],
+        "parameters" : [ {
+          "name" : "market",
+          "in" : "formData",
+          "description" : "",
+          "required" : true,
+          "type" : "string",
+          "enum" : [ "btcusd", "ethbtc", "ethusd", "trstbtc", "trsteth", "trstusd" ]
+        }, {
+          "name" : "side",
+          "in" : "formData",
+          "description" : "",
+          "required" : true,
+          "type" : "string",
+          "enum" : [ "sell", "buy" ]
+        }, {
+          "name" : "volume",
+          "in" : "formData",
+          "description" : "",
+          "required" : true,
+          "type" : "number",
+          "format" : "double"
+        }, {
+          "name" : "ord_type",
+          "in" : "formData",
+          "description" : "",
+          "required" : false,
+          "type" : "string",
+          "default" : "limit",
+          "enum" : [ "market", "limit" ]
+        }, {
+          "name" : "price",
+          "in" : "formData",
+          "description" : "",
+          "required" : true,
+          "type" : "number",
+          "format" : "double"
+        } ],
+        "responses" : {
+          "201" : {
+            "description" : "Create a Sell/Buy order.",
+            "schema" : {
+              "$ref" : "#/definitions/Peatio_Order"
+            }
+          }
+        }
+      }
+    },
+    "/peatio/market/orders/{id}" : {
+      "get" : {
+        "tags" : [ "market" ],
+        "description" : "Get information of specified order.",
+        "operationId" : "getMarketOrdersId",
+        "produces" : [ "application/json" ],
+        "parameters" : [ {
+          "name" : "id",
+          "in" : "path",
+          "description" : "",
+          "required" : true,
+          "type" : "integer",
+          "format" : "int32"
+        } ],
+        "responses" : {
+          "200" : {
+            "description" : "Get information of specified order.",
+            "schema" : {
+              "$ref" : "#/definitions/Peatio_Order"
+            }
+          }
+        }
+      }
+    }
+  },
+  "definitions" : {
+    "Barong_Label" : {
+      "type" : "object",
+      "properties" : {
+        "key" : {
+          "type" : "string",
+          "description" : "Label key. [a-z0-9_-]+ should be used. Min - 3, max - 255 characters."
+        },
+        "value" : {
+          "type" : "string",
+          "description" : "Label value. [A-Za-z0-9_-] should be used. Min - 3, max - 255 characters."
+        },
+        "scope" : {
+          "type" : "string",
+          "description" : "Label scope: 'public' or 'private'"
+        },
+        "created_at" : {
+          "type" : "string"
+        },
+        "updated_at" : {
+          "type" : "string"
+        }
+      }
+    },
+    "Barong_APIKey" : {
+      "type" : "object",
+      "properties" : {
+        "kid" : {
+          "type" : "string",
+          "description" : "jwt public key"
+        },
+        "algorithm" : {
+          "type" : "string",
+          "description" : "cryptographic hash function type"
+        },
+        "scope" : {
+          "type" : "string",
+          "description" : "serialized array of scopes"
+        },
+        "state" : {
+          "type" : "string",
+          "description" : "active/non-active state of key"
+        },
+        "secret" : {
+          "type" : "string"
+        },
+        "created_at" : {
+          "type" : "string"
+        },
+        "updated_at" : {
+          "type" : "string"
+        }
+      }
+    },
+    "Barong_Profile" : {
+      "type" : "object",
+      "properties" : {
+        "first_name" : {
+          "type" : "string"
+        },
+        "last_name" : {
+          "type" : "string"
+        },
+        "dob" : {
+          "type" : "string",
+          "format" : "date",
+          "description" : "Birthday date"
+        },
+        "address" : {
+          "type" : "string"
+        },
+        "postcode" : {
+          "type" : "string"
+        },
+        "city" : {
+          "type" : "string"
+        },
+        "country" : {
+          "type" : "string"
+        },
+        "metadata" : {
+          "type" : "object",
+          "description" : "Profile additional fields",
+          "properties" : { }
+        }
+      }
+    },
+    "Barong_User" : {
+      "type" : "object",
+      "properties" : {
+        "email" : {
+          "type" : "string"
+        },
+        "uid" : {
+          "type" : "string"
+        },
+        "role" : {
+          "type" : "string"
+        },
+        "level" : {
+          "type" : "integer",
+          "format" : "int32"
+        },
+        "otp" : {
+          "type" : "boolean",
+          "description" : "is 2FA enabled for account"
+        },
+        "state" : {
+          "type" : "string"
+        }
+      }
+    },
+    "Barong_UserWithProfile" : {
+      "type" : "object",
+      "properties" : {
+        "email" : {
+          "type" : "string"
+        },
+        "uid" : {
+          "type" : "string"
+        },
+        "role" : {
+          "type" : "string"
+        },
+        "level" : {
+          "type" : "integer",
+          "format" : "int32"
+        },
+        "otp" : {
+          "type" : "boolean",
+          "description" : "is 2FA enabled for account"
+        },
+        "state" : {
+          "type" : "string"
+        },
+        "profile" : {
+          "$ref" : "#/definitions/Barong_Profile"
+        },
+        "created_at" : {
+          "type" : "string"
+        },
+        "updated_at" : {
+          "type" : "string"
+        }
+      }
+    },
+    "Barong_UserWithFullInfo" : {
+      "type" : "object",
+      "properties" : {
+        "email" : {
+          "type" : "string"
+        },
+        "uid" : {
+          "type" : "string"
+        },
+        "role" : {
+          "type" : "string"
+        },
+        "level" : {
+          "type" : "integer",
+          "format" : "int32"
+        },
+        "otp" : {
+          "type" : "boolean"
+        },
+        "state" : {
+          "type" : "string"
+        },
+        "profile" : {
+          "$ref" : "#/definitions/Barong_Profile"
+        },
+        "labels" : {
+          "$ref" : "#/definitions/Barong_Label"
+        },
+        "phones" : {
+          "$ref" : "#/definitions/Barong_Phone"
+        },
+        "documents" : {
+          "$ref" : "#/definitions/Barong_Document"
+        },
+        "created_at" : {
+          "type" : "string"
+        },
+        "updated_at" : {
+          "type" : "string"
+        }
+      }
+    },
+    "Barong_Phone" : {
+      "type" : "object",
+      "properties" : {
+        "country" : {
+          "type" : "string"
+        },
+        "number" : {
+          "type" : "string"
+        }
+      }
+    },
+    "Barong_Document" : {
+      "type" : "object",
+      "properties" : {
+        "uploads" : {
+          "type" : "array",
+          "description" : "Array of file urls"
+        },
+        "doc_type" : {
+          "type" : "string",
+          "description" : "document type: passport, driver license"
+        },
+        "doc_number" : {
+          "type" : "string",
+          "description" : "document number: AB123123 type"
+        },
+        "doc_expire" : {
+          "type" : "string",
+          "description" : "expire date of uploaded documents"
+        },
+        "metadata" : {
+          "type" : "string",
+          "description" : "any additional stored data"
+        },
+        "created_at" : {
+          "type" : "string"
+        },
+        "updated_at" : {
+          "type" : "string"
+        }
+      }
+    },
+    "Barong_Activity" : {
+      "type" : "object",
+      "properties" : {
+        "user_ip" : {
+          "type" : "string"
+        },
+        "user_agent" : {
+          "type" : "string"
+        },
+        "topic" : {
+          "type" : "string"
+        },
+        "action" : {
+          "type" : "string"
+        },
+        "result" : {
+          "type" : "string"
+        },
+        "data" : {
+          "type" : "string"
+        },
+        "created_at" : {
+          "type" : "string"
+        }
+      }
+    },
+    "Peatio_Trade" : {
+      "type" : "object",
+      "properties" : {
+        "id" : {
+          "type" : "string",
+          "description" : "Trade ID."
+        },
+        "price" : {
+          "type" : "number",
+          "format" : "double",
+          "description" : "Trade price."
+        },
+        "volume" : {
+          "type" : "number",
+          "format" : "double",
+          "description" : "Trade volume."
+        },
+        "funds" : {
+          "type" : "number",
+          "format" : "double",
+          "description" : "Trade funds."
+        },
+        "market" : {
+          "type" : "string",
+          "description" : "Trade market id."
+        },
+        "created_at" : {
+          "type" : "string",
+          "description" : "Trade create time in iso8601 format."
+        },
+        "taker_type" : {
+          "type" : "string",
+          "description" : "Trade maker order type (sell or buy)."
+        },
+        "side" : {
+          "type" : "string",
+          "description" : "Trade side."
+        },
+        "order_id" : {
+          "type" : "integer",
+          "format" : "int32",
+          "description" : "Order id."
+        }
+      },
+      "description" : "Get your executed trades. Trades are sorted in reverse creation order."
+    },
+    "Peatio_OrderBook" : {
+      "type" : "object",
+      "properties" : {
+        "asks" : {
+          "type" : "array",
+          "description" : "Asks in orderbook",
+          "items" : {
+            "$ref" : "#/definitions/Peatio_Order"
+          }
+        },
+        "bids" : {
+          "type" : "array",
+          "description" : "Bids in orderbook",
+          "items" : {
+            "$ref" : "#/definitions/Peatio_Order"
+          }
+        }
+      },
+      "description" : "Get the order book of specified market."
+    },
+    "Peatio_Order" : {
+      "type" : "object",
+      "properties" : {
+        "id" : {
+          "type" : "integer",
+          "format" : "int32",
+          "description" : "Unique order id."
+        },
+        "side" : {
+          "type" : "string",
+          "description" : "Either 'sell' or 'buy'."
+        },
+        "ord_type" : {
+          "type" : "string",
+          "description" : "Type of order, either 'limit' or 'market'."
+        },
+        "price" : {
+          "type" : "number",
+          "format" : "double",
+          "description" : "Price for each unit. e.g.If you want to sell/buy 1 btc at 3000 usd, the price is '3000.0'"
+        },
+        "avg_price" : {
+          "type" : "number",
+          "format" : "double",
+          "description" : "Average execution price, average of price in trades."
+        },
+        "state" : {
+          "type" : "string",
+          "description" : "One of 'wait', 'done', or 'cancel'.An order in 'wait' is an active order, waiting fulfillment;a 'done' order is an order fulfilled;'cancel' means the order has been canceled."
+        },
+        "market" : {
+          "type" : "string",
+          "description" : "The market in which the order is placed, e.g. 'btcusd'.All available markets can be found at /api/v2/markets."
+        },
+        "created_at" : {
+          "type" : "string",
+          "description" : "Order create time in iso8601 format."
+        },
+        "updated_at" : {
+          "type" : "string",
+          "description" : "Order updated time in iso8601 format."
+        },
+        "origin_volume" : {
+          "type" : "number",
+          "format" : "double",
+          "description" : "The amount user want to sell/buy.An order could be partially executed,e.g. an order sell 5 btc can be matched with a buy 3 btc order,left 2 btc to be sold; in this case the order's volume would be '5.0',its remaining_volume would be '2.0', its executed volume is '3.0'."
+        },
+        "remaining_volume" : {
+          "type" : "number",
+          "format" : "double",
+          "description" : "The remaining volume, see 'volume'."
+        },
+        "executed_volume" : {
+          "type" : "number",
+          "format" : "double",
+          "description" : "The executed volume, see 'volume'."
+        },
+        "trades_count" : {
+          "type" : "integer",
+          "format" : "int32",
+          "description" : "Count of trades."
+        },
+        "trades" : {
+          "type" : "array",
+          "description" : "Trades wiht this order.",
+          "items" : {
+            "$ref" : "#/definitions/Peatio_Trade"
+          }
+        }
+      },
+      "description" : "Get your orders, results is paginated."
+    },
+    "Peatio_Market" : {
+      "type" : "object",
+      "properties" : {
+        "id" : {
+          "type" : "string",
+          "description" : "Unique market id. It's always in the form of xxxyyy,where xxx is the base currency code, yyy is the quotecurrency code, e.g. 'btcusd'. All available markets canbe found at /api/v2/markets."
+        },
+        "name" : {
+          "type" : "string",
+          "description" : "Market name."
+        },
+        "ask_unit" : {
+          "type" : "string",
+          "description" : "Market ask unit."
+        },
+        "bid_unit" : {
+          "type" : "string",
+          "description" : "Market bid unit."
+        },
+        "ask_fee" : {
+          "type" : "number",
+          "format" : "double",
+          "description" : "Market ask fee."
+        },
+        "bid_fee" : {
+          "type" : "number",
+          "format" : "double",
+          "description" : "Market bid fee."
+        },
+        "min_ask_price" : {
+          "type" : "number",
+          "format" : "double",
+          "description" : "Max ask order price."
+        },
+        "max_bid_price" : {
+          "type" : "number",
+          "format" : "double",
+          "description" : "Max bid order price."
+        },
+        "min_ask_amount" : {
+          "type" : "number",
+          "format" : "double",
+          "description" : "Min ask order amount."
+        },
+        "min_bid_amount" : {
+          "type" : "number",
+          "format" : "double",
+          "description" : "Min bid order amount."
+        },
+        "ask_precision" : {
+          "type" : "number",
+          "format" : "double",
+          "description" : "Precision for ask order."
+        },
+        "bid_precision" : {
+          "type" : "number",
+          "format" : "double",
+          "description" : "Precision for bid order."
+        }
+      },
+      "description" : "Get all available markets."
+    },
+    "Peatio_Currency" : {
+      "type" : "object",
+      "properties" : {
+        "id" : {
+          "type" : "string",
+          "example" : "btc",
+          "description" : "Currency code."
+        },
+        "name" : {
+          "type" : "string",
+          "example" : "Bitcoin",
+          "description" : "Currency name"
+        },
+        "symbol" : {
+          "type" : "string",
+          "example" : "฿",
+          "description" : "Currency symbol"
+        },
+        "explorer_transaction" : {
+          "type" : "string",
+          "example" : "https://testnet.blockchain.info/tx/",
+          "description" : "Currency transaction exprorer url template"
+        },
+        "explorer_address" : {
+          "type" : "string",
+          "example" : "https://testnet.blockchain.info/address/",
+          "description" : "Currency address exprorer url template"
+        },
+        "type" : {
+          "type" : "string",
+          "example" : "coin",
+          "description" : "Currency type"
+        },
+        "deposit_fee" : {
+          "type" : "string",
+          "example" : "0.0",
+          "description" : "Currency deposit fee"
+        },
+        "min_deposit_amount" : {
+          "type" : "string",
+          "example" : "0.0000356",
+          "description" : "Minimal deposit amount"
+        },
+        "withdraw_fee" : {
+          "type" : "string",
+          "example" : "0.0",
+          "description" : "Currency withdraw fee"
+        },
+        "min_withdraw_amount" : {
+          "type" : "string",
+          "example" : "0.0",
+          "description" : "Minimal withdraw amount"
+        },
+        "withdraw_limit_24h" : {
+          "type" : "string",
+          "example" : "0.1",
+          "description" : "Currency 24h withdraw limit"
+        },
+        "withdraw_limit_72h" : {
+          "type" : "string",
+          "example" : "0.2",
+          "description" : "Currency 72h withdraw limit"
+        },
+        "base_factor" : {
+          "type" : "string",
+          "example" : "100000000",
+          "description" : "Currency base factor"
+        },
+        "precision" : {
+          "type" : "string",
+          "example" : "8",
+          "description" : "Currency precision"
+        },
+        "icon_url" : {
+          "type" : "string",
+          "example" : "https://upload.wikimedia.org/wikipedia/commons/0/05/Ethereum_logo_2014.svg",
+          "description" : "Currency icon"
+        }
+      },
+      "description" : "Get a currency"
+    },
+    "Peatio_Account" : {
+      "type" : "object",
+      "properties" : {
+        "currency" : {
+          "type" : "string",
+          "description" : "Currency code."
+        },
+        "balance" : {
+          "type" : "number",
+          "format" : "double",
+          "description" : "Account balance."
+        },
+        "locked" : {
+          "type" : "number",
+          "format" : "double",
+          "description" : "Account locked funds."
+        }
+      },
+      "description" : "Get list of user accounts"
+    },
+    "Peatio_Deposit" : {
+      "type" : "object",
+      "properties" : {
+        "id" : {
+          "type" : "integer",
+          "format" : "int32",
+          "description" : "Unique deposit id."
+        },
+        "currency" : {
+          "type" : "string",
+          "description" : "Deposit currency id."
+        },
+        "amount" : {
+          "type" : "number",
+          "format" : "double",
+          "description" : "Deposit amount."
+        },
+        "fee" : {
+          "type" : "number",
+          "format" : "double",
+          "description" : "Deposit fee."
+        },
+        "txid" : {
+          "type" : "string",
+          "description" : "Deposit transaction id."
+        },
+        "confirmations" : {
+          "type" : "integer",
+          "format" : "int32",
+          "description" : "Number of deposit confirmations."
+        },
+        "state" : {
+          "type" : "string",
+          "description" : "Deposit state."
+        },
+        "created_at" : {
+          "type" : "string",
+          "description" : "The datetime when deposit was created."
+        },
+        "completed_at" : {
+          "type" : "string",
+          "description" : "The datetime when deposit was completed.."
+        }
+      },
+      "description" : "Get your deposits history."
+    },
+    "Peatio_Withdraw" : {
+      "type" : "object",
+      "properties" : {
+        "id" : {
+          "type" : "integer",
+          "format" : "int32",
+          "description" : "The withdrawal id."
+        },
+        "currency" : {
+          "type" : "string",
+          "description" : "The currency code."
+        },
+        "type" : {
+          "type" : "string",
+          "description" : "The withdrawal type"
+        },
+        "amount" : {
+          "type" : "string",
+          "description" : "The withdrawal amount"
+        },
+        "fee" : {
+          "type" : "number",
+          "format" : "double",
+          "description" : "The exchange fee."
+        },
+        "blockchain_txid" : {
+          "type" : "string",
+          "description" : "The withdrawal transaction id."
+        },
+        "rid" : {
+          "type" : "string",
+          "description" : "The beneficiary ID or wallet address on the Blockchain."
+        },
+        "state" : {
+          "type" : "string",
+          "description" : "The withdrawal state."
+        },
+        "confirmations" : {
+          "type" : "integer",
+          "format" : "int32",
+          "description" : "Number of confirmations."
+        },
+        "note" : {
+          "type" : "string",
+          "description" : "Withdraw note."
+        },
+        "created_at" : {
+          "type" : "string",
+          "description" : "The datetimes for the withdrawal."
+        },
+        "updated_at" : {
+          "type" : "string",
+          "description" : "The datetimes for the withdrawal."
+        },
+        "done_at" : {
+          "type" : "string",
+          "description" : "The datetime when withdraw was completed"
+        }
+      },
+      "description" : "List your withdraws as paginated collection."
+    },
+    "Peatio_Member" : {
+      "type" : "object",
+      "properties" : {
+        "uid" : {
+          "type" : "string",
+          "description" : "Member UID."
+        },
+        "email" : {
+          "type" : "string",
+          "description" : "Member email."
+        },
+        "accounts" : {
+          "type" : "array",
+          "description" : "Member accounts.",
+          "items" : {
+            "$ref" : "#/definitions/Peatio_Account"
+          }
+        }
+      }
+    }
+  }
+}
