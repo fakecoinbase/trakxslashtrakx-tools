@@ -61,8 +61,8 @@ namespace Trakx.Coinbase.Custody.Client
         }
 
         /// <inheritdoc />
-        public async IAsyncEnumerable<Wallet> GetWallets(string currency = null, PaginationOptions paginationOptions = null,
-            CancellationToken cancellationToken = default)
+        public async IAsyncEnumerable<Wallet> GetWallets(string? currency = null, PaginationOptions? paginationOptions = null,
+            [EnumeratorCancellation] CancellationToken cancellationToken = default)
         {
             async Task<PagedResponse<Wallet>> FetchPage(PaginationOptions? pagination) =>
                 await _walletEndpoint.ListWalletsAsync(currency, pagination, cancellationToken);
@@ -87,7 +87,7 @@ namespace Trakx.Coinbase.Custody.Client
                 try
                 {
                     page = await fetchPage(paginationOptions).ConfigureAwait(false);
-                    paginationOptions = new PaginationOptions(page.Pagination.After, default, paginationOptions.PageSize);
+                    paginationOptions = new PaginationOptions(page.Pagination?.After, default, paginationOptions?.PageSize);
                 }
                 catch (Exception)
                 {

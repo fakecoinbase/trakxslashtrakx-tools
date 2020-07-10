@@ -39,9 +39,9 @@ namespace Trakx.Coinbase.Custody.Client.Endpoints
                     wallet_id = walletId,
                     start_time = startTime?.ToString("o"),
                     end_time = endTime?.ToString("o"),
-                    before = paginationOptions.Before,
-                    after = paginationOptions.After,
-                    limit = paginationOptions.PageSize,
+                    before = paginationOptions?.Before,
+                    after = paginationOptions?.After,
+                    limit = paginationOptions?.PageSize,
                 })
                 .GetJsonAsync<PagedResponse<CoinbaseRawTransaction>>(cancellationToken);
             return page;

@@ -161,7 +161,9 @@ namespace Trakx.IndiceManager.Server.Tests.Unit.Controllers
                 verificationAmount: 12.34m, user: user);
 
             _depositorAddressRetriever.GetDepositorAddressById(verifiedAddress.ToDepositAddress().Id)
-                .Returns(depositAddress, addressAfterAssociationWithCandidate);
+                .Returns(depositAddress);
+            _depositorAddressRetriever.GetDepositorAddressById(verifiedAddress.ToDepositAddress().Id, includeUser: true)
+                .Returns(addressAfterAssociationWithCandidate);
 
             _depositorAddressRetriever.AssociateCandidateUser(depositAddress, Arg.Any<IUser?>(), 2)
                 .Returns(true);

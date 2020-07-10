@@ -11,10 +11,10 @@ namespace Trakx.Common.Interfaces
         /// <summary>
         /// Tries to update an existing depositor address.
         /// </summary>
-        /// <param name="address">The instance of address used to update the existing address.</param>
+        /// <param name="addressToModify">The instance of address used to update the existing address.</param>
         /// <param name="cancellationToken">A token that can be used to request cancellation of the asynchronous operation.</param>
         /// <returns>True if the balance is modified, false otherwise.</returns>
-        Task<bool> UpdateDepositorAddress(IDepositorAddress address, CancellationToken cancellationToken = default);
+        Task<bool> UpdateDepositorAddress(IDepositorAddress addressToModify, CancellationToken cancellationToken = default);
 
         /// <summary>
         /// Tries to add a new depositor address in the database.
@@ -27,10 +27,11 @@ namespace Trakx.Common.Interfaces
         /// <summary>
         /// Tries to return the depositorAddress associated to a specific id.
         /// </summary>
-        /// <param name="depositorAddressId">The Id of the depositor address.</param>
-        /// <param name="cancellationToken">A token that can be used to request cancellation of the asynchronous operation.</param>
+        /// <param name="depositorAddressId">The Id of the depositor address.</param> 
+        /// <param name="includeUser">A boolean to retrieve user or not.</param>
+        /// <param name="cancellationToken">A token that can be used to request cancellation of the asynchronous operation.</param> 
         /// <returns>A <see cref="IDepositorAddress"/> or null if it doesn't exist.</returns>
-        Task<IDepositorAddress?> GetDepositorAddressById(string depositorAddressId, CancellationToken cancellationToken = default);
+        Task<IDepositorAddress?> GetDepositorAddressById(string depositorAddressId, CancellationToken cancellationToken = default, bool includeUser = false);
 
         /// <summary>
         /// Call this method when a user tries to initiate a new mapping. This will set a random verification

@@ -99,7 +99,7 @@ namespace Trakx.IndiceManager.Server.Controllers
                 .ConfigureAwait(false);
             var decimals = currency.Decimals;
 
-            var candidate = new User("blablabla", new List<IDepositorAddress>());
+            var candidate = new User("blablablassfrr", new List<IDepositorAddress>());
             var candidateRegistered = await _depositorAddressRetriever.AssociateCandidateUser(depositAddress, candidate, decimals,
                 cancellationToken).ConfigureAwait(false);
             
@@ -108,7 +108,7 @@ namespace Trakx.IndiceManager.Server.Controllers
                                   "Please verify the parameters of the indice and try again.");
 
             var updatedDepositAddress = await
-                _depositorAddressRetriever.GetDepositorAddressById(depositAddress.Id, cancellationToken)
+                _depositorAddressRetriever.GetDepositorAddressById(depositAddress.Id, cancellationToken,true)
                     .ConfigureAwait(false);
 
             return Accepted(updatedDepositAddress);

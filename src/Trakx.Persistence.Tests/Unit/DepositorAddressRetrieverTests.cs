@@ -64,6 +64,9 @@ namespace Trakx.Persistence.Tests.Unit
             var depositorAddress = _mockDaoCreator.GetRandomDepositorAddressDao();
             var isAdded = await _depositorAddressRetriever.AddNewAddress(depositorAddress);
             isAdded.Should().BeTrue();
+            var retrievedUser = _context.Users.Find(depositorAddress.UserDao?.Id);
+            retrievedUser.Should().NotBeNull();
+            retrievedUser.AddressDaos.Count.Should().BeGreaterOrEqualTo(1);
         }
 
         [Fact]
@@ -80,7 +83,7 @@ namespace Trakx.Persistence.Tests.Unit
         {
             var savedDepositorAddress = await SaveDepositorAddress()
                 .ConfigureAwait(false);
-            var retrievedDepositorAddress = await 
+            var retrievedDepositorAddress = await
                 _depositorAddressRetriever.GetDepositorAddressById(savedDepositorAddress.Id);
 
             retrievedDepositorAddress.Should().NotBeNull();
@@ -124,8 +127,29 @@ namespace Trakx.Persistence.Tests.Unit
             var updated = await _depositorAddressRetriever.AssociateCandidateUser(savedDepositorAddress, user, 0)
                 .ConfigureAwait(false);
 
-            var retrievedAddress = await _context.DepositorAddresses.FirstAsync(a => a.Id == savedDepositorAddress.Id);
+            var retrievedAddress = await _context.DepositorAddresses.Include(a=>a.UserDao).FirstAsync(a => a.Id == savedDepositorAddress.Id);
             retrievedAddress.User!.Id.Should().NotBe(previousUserId);
+            updated.Should().BeTrue();
+        }
+
+        [Fact]
+        public async Task AssociateCandidateUser_should_override_candidate_with_user_in_database_if_address_not_verified()
+        {
+            var savedDepositorAddress = await SaveDepositorAddress()
+                .ConfigureAwait(false);
+            savedDepositorAddress.IsVerified.Should().BeFalse();
+            var previousUserId = savedDepositorAddress.User!.Id;
+            var savedUser = _mockDaoCreator.GetUserDao();
+            _context.Users.Add(savedUser);
+            _context.SaveChanges();
+
+            var updated = await _depositorAddressRetriever.AssociateCandidateUser(savedDepositorAddress, savedUser, 0)
+                .ConfigureAwait(false);
+
+            var retrievedAddress = await _context.DepositorAddresses.Include(a=>a.UserDao).FirstAsync(a => a.Id == savedDepositorAddress.Id);
+            retrievedAddress.User!.Id.Should().NotBe(previousUserId);
+            retrievedAddress.UserDao.AddressDaos.Should().Contain(retrievedAddress);
+            retrievedAddress.UserDao.Id.Should().Be(savedUser.Id);
             updated.Should().BeTrue();
         }
 
@@ -157,6 +181,24 @@ namespace Trakx.Persistence.Tests.Unit
             updated.Should().BeFalse();
             var existingAddress = await _context.DepositorAddresses.SingleAsync(a => a.Id == savedDepositorAddress.Id);
             existingAddress.UserDao!.Id.Should().NotBe(user.Id);
+        }
+
+        [Fact]
+        public async Task AssociateCandidateUser_should_add_depositorAddress_on_existing_user()
+        {
+            var savedUser = _mockDaoCreator.GetUserDao();
+            savedUser.AddressDaos.Count.Should().Be(0);
+            _context.Users.Add(savedUser);
+            _context.SaveChanges();
+            var depositorAddressToAssociate = _mockDaoCreator.GetRandomDepositorAddressDao();
+            depositorAddressToAssociate.UserDao = savedUser;
+            var isAdded = await _depositorAddressRetriever.AssociateCandidateUser(depositorAddressToAssociate, savedUser, 10);
+            isAdded.Should().BeTrue();
+
+            var retrievedUser = _context.Users.Find(savedUser.Id);
+            retrievedUser.AddressDaos.Count.Should().Be(1);
+            var retrievedAddress = _context.DepositorAddresses.Find(depositorAddressToAssociate.Id);
+            retrievedAddress.UserDao.Id.Should().Be(retrievedUser.Id);
         }
 
         private async Task<DepositorAddressDao> SaveDepositorAddress(bool isVerified = false)
