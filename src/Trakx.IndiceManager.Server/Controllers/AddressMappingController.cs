@@ -34,7 +34,7 @@ namespace Trakx.IndiceManager.Server.Controllers
         /// <param name="cancellationToken">A token that can be used to request cancellation of the asynchronous operation.</param>
         /// <returns>Trakx address for currencySymbol.</returns>
         [HttpGet]
-        public async Task<ActionResult<string>> GetTrakxAddress([FromQuery]string currencySymbol,
+        public async Task<ActionResult<string>> GetTrakxAddress([FromQuery] string currencySymbol,
             CancellationToken cancellationToken = default)
         {
             if (string.IsNullOrEmpty(currencySymbol))
@@ -42,7 +42,7 @@ namespace Trakx.IndiceManager.Server.Controllers
 
             var address = await _coinbaseClient.GetWallets(currencySymbol, cancellationToken: cancellationToken)
                 .FirstOrDefaultAsync(cancellationToken);
-            
+
             if (address == null)
                 return NotFound($"Sorry {currencySymbol} doesn't have any corresponding address on trakx wallet.");
 
@@ -59,7 +59,7 @@ namespace Trakx.IndiceManager.Server.Controllers
         CancellationToken cancellationToken = default)
         {
             var symbolList = _coinbaseClient.GetCurrencies(cancellationToken: cancellationToken);
-            
+
             if (symbolList == null || !(await symbolList.AnyAsync(cancellationToken)))
                 return NotFound("Sorry, impossible to retrieve all currency symbols on Coinbase.");
 
@@ -78,21 +78,21 @@ namespace Trakx.IndiceManager.Server.Controllers
         [ProducesResponseType(StatusCodes.Status202Accepted)]
         [ProducesResponseType(StatusCodes.Status400BadRequest)]
         public async Task<ActionResult<IDepositorAddress>> RegisterUserAsAddressOwner(
-            [FromBody] DepositAddressModel claimedAddress, 
+            [FromBody] DepositAddressModel claimedAddress,
             CancellationToken cancellationToken = default)
         {
-            var validationContext = new ValidationContext(claimedAddress); 
+            var validationContext = new ValidationContext(claimedAddress);
             var validationResults = new List<ValidationResult>();
             if (!Validator.TryValidateObject(claimedAddress, validationContext, validationResults, true))
                 return BadRequest("Invalid deposit address, please try again." + Environment.NewLine +
                                   string.Join(Environment.NewLine, validationResults.Select(v => v.ErrorMessage).ToList()));
 
             var depositorAddressId = DepositorAddressExtension.GetDepositorAddressId(claimedAddress.CurrencySymbol, claimedAddress.Address);
-            var existingAddress = await _depositorAddressRetriever.GetDepositorAddressById(depositorAddressId, cancellationToken)
+            var existingAddress = await _depositorAddressRetriever.GetDepositorAddressById(depositorAddressId, cancellationToken: cancellationToken)
                 .ConfigureAwait(false);
-            if(existingAddress?.IsVerified ?? false)
+            if (existingAddress?.IsVerified ?? false)
                 return BadRequest("This address has already been verified.");
-            
+
             var depositAddress = existingAddress ?? claimedAddress.ToDepositAddress();
 
             var currency = await _coinbaseClient.GetCurrencyAsync(claimedAddress.CurrencySymbol, cancellationToken)
@@ -102,13 +102,13 @@ namespace Trakx.IndiceManager.Server.Controllers
             var candidate = new User("blablablassfrr", new List<IDepositorAddress>());
             var candidateRegistered = await _depositorAddressRetriever.AssociateCandidateUser(depositAddress, candidate, decimals,
                 cancellationToken).ConfigureAwait(false);
-            
-            if(!candidateRegistered)
+
+            if (!candidateRegistered)
                 return BadRequest("The addition in the database has failed. " +
                                   "Please verify the parameters of the indice and try again.");
 
             var updatedDepositAddress = await
-                _depositorAddressRetriever.GetDepositorAddressById(depositAddress.Id, cancellationToken,true)
+                _depositorAddressRetriever.GetDepositorAddressById(depositAddress.Id, true, cancellationToken)
                     .ConfigureAwait(false);
 
             return Accepted(updatedDepositAddress);

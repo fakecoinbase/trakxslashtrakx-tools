@@ -31,7 +31,7 @@ namespace Trakx.Common.Interfaces
         /// <param name="includeUser">A boolean to retrieve user or not.</param>
         /// <param name="cancellationToken">A token that can be used to request cancellation of the asynchronous operation.</param> 
         /// <returns>A <see cref="IDepositorAddress"/> or null if it doesn't exist.</returns>
-        Task<IDepositorAddress?> GetDepositorAddressById(string depositorAddressId, CancellationToken cancellationToken = default, bool includeUser = false);
+        Task<IDepositorAddress?> GetDepositorAddressById(string depositorAddressId, bool includeUser = false, CancellationToken cancellationToken = default);
 
         /// <summary>
         /// Call this method when a user tries to initiate a new mapping. This will set a random verification

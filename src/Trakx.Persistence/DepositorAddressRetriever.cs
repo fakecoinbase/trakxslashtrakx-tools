@@ -74,8 +74,8 @@ namespace Trakx.Persistence
         }
 
         /// <inheritdoc />
-        public async Task<IDepositorAddress?> GetDepositorAddressById(string depositorAddressId,
-            CancellationToken cancellationToken = default,bool includeUser=false)
+        public async Task<IDepositorAddress?> GetDepositorAddressById(string depositorAddressId,bool includeUser=false,
+            CancellationToken cancellationToken = default)
         {
 
             var retrievedDepositorAddress = !includeUser?await _dbContext.DepositorAddresses.AsNoTracking()
@@ -92,7 +92,7 @@ namespace Trakx.Persistence
             int decimals,
             CancellationToken cancellationToken = default)
         {
-            var existingDepositorAddress = await GetDepositorAddressById(claimedAddress.Id, cancellationToken)
+            var existingDepositorAddress = await GetDepositorAddressById(claimedAddress.Id,cancellationToken: cancellationToken)
                 .ConfigureAwait(false);
             var verificationAmount = _random.Next(1, 100_000) * (decimal)Math.Pow(10, -decimals);
             var updatedAddress = new DepositorAddressDao(claimedAddress.Address, claimedAddress.CurrencySymbol, 0,
