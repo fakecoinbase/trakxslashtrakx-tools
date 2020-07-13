@@ -303,7 +303,7 @@ namespace Trakx.IndiceManager.Server.Tests.Unit.Controllers
         public async Task SaveComponentDefinition_should_return_error_if_object_already_in_database()
         {
             var component = new ComponentDetailModel(_mockCreator.GetComponentQuantity().ComponentDefinition);
-            _componentRetriever.TryToSaveComponentDefinition(component).ReturnsForAnyArgs(false);
+            _componentRetriever.TryToSaveComponentDefinition(component).Returns(false);
 
             var result = await _controller.SaveComponentDefinition(component);
             ((BadRequestObjectResult)result.Result).Value.Should().Be("Object already in database.");
@@ -313,7 +313,7 @@ namespace Trakx.IndiceManager.Server.Tests.Unit.Controllers
         public async Task SaveComponentDefinition_should_return_status_code_201_if_addition_success()
         {
             var component = new ComponentDetailModel(_mockCreator.GetComponentQuantity().ComponentDefinition);
-            _componentRetriever.TryToSaveComponentDefinition(component).ReturnsForAnyArgs(true);
+            _componentRetriever.TryToSaveComponentDefinition(component).Returns(true);
 
             var result = await _controller.SaveComponentDefinition(component);
             ((CreatedAtActionResult) result.Result).StatusCode.Should().Be(201);
