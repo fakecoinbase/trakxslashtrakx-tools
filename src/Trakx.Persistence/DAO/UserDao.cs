@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using System.ComponentModel.DataAnnotations;
 using System.ComponentModel.DataAnnotations.Schema;
 using System.Linq;
+using System.Text.Json.Serialization;
 using Ardalis.GuardClauses;
 using Trakx.Common.Interfaces;
 
@@ -30,6 +31,7 @@ namespace Trakx.Persistence.DAO
         public UserDao(IUser user) 
             : this(user.Id, user.Addresses, user.Created, user.LastModified) { }
 
+        [JsonIgnore]
         public List<DepositorAddressDao> AddressDaos { get; set; }
 
         #region Implementation of IUserAddress
@@ -40,6 +42,7 @@ namespace Trakx.Persistence.DAO
 
         /// <inheritdoc />
         [NotMapped]
+        [JsonIgnore]
         public List<IDepositorAddress> Addresses => AddressDaos.Cast<IDepositorAddress>().ToList();
 
         #endregion

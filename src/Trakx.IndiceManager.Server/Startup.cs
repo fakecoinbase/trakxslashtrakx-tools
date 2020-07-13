@@ -41,11 +41,9 @@ namespace Trakx.IndiceManager.Server
         {
             services.AddDbContext<IndiceRepositoryContext>(options =>
                  options.UseSqlServer(Configuration.GetConnectionString("SqlServerConnection")));
-           
 
-            services.AddControllers().AddNewtonsoftJson(options =>
-                options.SerializerSettings.ReferenceLoopHandling = Newtonsoft.Json.ReferenceLoopHandling.Ignore
-            ); 
+
+            services.AddControllers();
             services.AddAllManagerForControllers();
             services.AddDatabaseFunctions();
 

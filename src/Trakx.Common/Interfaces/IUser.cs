@@ -1,4 +1,5 @@
 ﻿using System.Collections.Generic;
+using System.Text.Json.Serialization;
 
 namespace Trakx.Common.Interfaces
 {
@@ -15,6 +16,7 @@ namespace Trakx.Common.Interfaces
         /// <summary>
         /// A list of addresses for the current User.
         /// </summary>
+        [JsonIgnore]
         List<IDepositorAddress> Addresses { get; }
     }
 }
