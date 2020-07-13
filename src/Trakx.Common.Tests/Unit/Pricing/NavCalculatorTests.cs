@@ -1,12 +1,12 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Runtime.CompilerServices;
-using System.Threading.Tasks;
-using CryptoCompare;
+﻿using CryptoCompare;
 using FluentAssertions;
 using Microsoft.Extensions.Caching.Distributed;
 using NSubstitute;
+using NSubstitute.ExceptionExtensions;
+using System;
+using System.Collections.Generic;
+using System.Linq;
+using System.Threading.Tasks;
 using Trakx.Common.Extensions;
 using Trakx.Common.Interfaces;
 using Trakx.Common.Interfaces.Indice;
@@ -15,7 +15,6 @@ using Trakx.Common.Sources.CoinGecko;
 using Trakx.Common.Sources.Messari.Client;
 using Trakx.Common.Utils;
 using Trakx.Persistence.Tests;
-using Trakx.Tests.Data;
 using Xunit;
 using Xunit.Abstractions;
 
@@ -30,6 +29,9 @@ namespace Trakx.Common.Tests.Unit.Pricing
         private readonly ICryptoCompareClient _cryptoCompareClient;
         private readonly IDistributedCache _cache;
         private readonly IDateTimeProvider _dateTimeProvider;
+        private readonly IIndiceComposition _composition;
+        private readonly int _constituentCount;
+
         private static readonly Task<decimal?> FailedFetchPriceResult = Task.FromResult<decimal?>(default);
 
         public NavCalculatorTests(ITestOutputHelper output)
@@ -44,6 +46,8 @@ namespace Trakx.Common.Tests.Unit.Pricing
             _navCalculator =
                 new NavCalculator(_messariClient, _coinGeckoClient, _cache, _cryptoCompareClient,
                     _dateTimeProvider, output.ToLogger<NavCalculator>());
+            _constituentCount = 3;
+            _composition = _mockCreator.GetIndiceComposition(_constituentCount);
         }
 
         [Theory]
@@ -53,18 +57,17 @@ namespace Trakx.Common.Tests.Unit.Pricing
         [InlineData(366 * 3, nameof(HistoryClient.DailyAsync))]
         public async Task GetIndiceValuation_with_asOf_should_ask_CryptCompare_prices_with_adequate_granularity(int daysSinceAsOf, string expectedHistoryMethod)
         {
-            var composition = _mockCreator.GetIndiceComposition(3);
             var asOf = _dateTimeProvider.UtcNow.Subtract(TimeSpan.FromDays(daysSinceAsOf));
 
             MockCryptoCompareHistoricalResponses(asOf);
 
-            var valuation = await _navCalculator.GetIndiceValuation(composition, asOf);
+            var valuation = await _navCalculator.GetIndiceValuation(_composition, asOf);
 
-            CryptoCompareShouldReceiveCallsFor(expectedHistoryMethod, composition);
+            CryptoCompareShouldReceiveCallsFor(expectedHistoryMethod, _composition);
 
             _coinGeckoClient.ReceivedCalls().Should().BeEmpty();
 
-            valuation.ComponentValuations.Count.Should().Be(composition.ComponentQuantities.Count);
+            valuation.ComponentValuations.Count.Should().Be(_constituentCount);
             valuation.NetAssetValue.Should().NotBe(0);
         }
 
@@ -88,43 +91,42 @@ namespace Trakx.Common.Tests.Unit.Pricing
                 .BeEquivalentTo(composition.ComponentQuantities.Select(q => q.ComponentDefinition.Symbol));
         }
 
-        private HistoryResponse GetRandomCryptoCompareHistoryResponse()
+        private HistoryResponse GetRandomCryptoCompareHistoryResponse(List<DateTime> expectedDateTimes = null)
         {
-            var candleData = new List<CandleData> { new CandleData { Close = _mockCreator.GetRandomPrice() } };
-            var response = new HistoryResponse { Data = candleData };
+            expectedDateTimes ??= new List<DateTime> {_mockCreator.GetRandomDateTime()};
+            var candleData =
+                expectedDateTimes.Select(d => new CandleData {Close = _mockCreator.GetRandomPrice(), Time = new DateTimeOffset(d)});
+            var response = new HistoryResponse { Data = candleData.ToList().AsReadOnly() };
             return response;
         }
 
         [Fact]
         public async Task GetIndiceValuation_with_asOf_should_ask_CoingGecko_prices_second()
         {
-            var composition = _mockCreator.GetIndiceComposition(3);
             var asOf = _dateTimeProvider.UtcNow.AddDays(-5);
 
             _coinGeckoClient.GetPriceAsOfFromId(default, asOf)
                 .ReturnsForAnyArgs(Task.FromResult((decimal?)101.23m));
 
-            var valuation = await _navCalculator.GetIndiceValuation(composition, asOf);
+            var valuation = await _navCalculator.GetIndiceValuation(_composition, asOf);
 
             await _cryptoCompareClient.History.ReceivedWithAnyArgs(3).MinutelyAsync(default, default);
 
-            foreach (var coinGeckoId in composition.GetComponentCoinGeckoIds())
+            foreach (var coinGeckoId in _composition.GetComponentCoinGeckoIds())
             {
                 await _coinGeckoClient.Received(1)
                     .GetPriceAsOfFromId(Arg.Is(coinGeckoId), Arg.Is(asOf));
             }
 
-            valuation.ComponentValuations.Count.Should().Be(composition.ComponentQuantities.Count);
+            valuation.ComponentValuations.Count.Should().Be(_constituentCount);
             valuation.NetAssetValue.Should().NotBe(0);
         }
-
+        
         [Fact]
-        public async Task GetIndiceValuation_with_asOf_should_not_ask_for_cached_or_messari_price()
+        public void GetIndiceValuation_with_asOf_should_not_ask_for_cached_or_messari_price()
         {
-            var composition = _mockCreator.GetIndiceComposition(3);
-
             new Func<Task>(async () =>
-                await _navCalculator.GetIndiceValuation(composition, _dateTimeProvider.UtcNow.AddMonths(-1)))
+                await _navCalculator.GetIndiceValuation(_composition, _dateTimeProvider.UtcNow.AddMonths(-1)))
                 .Should().Throw<NavCalculator.FailedToRetrievePriceException>();
 
             _messariClient.ReceivedCalls().Should().BeEmpty();
@@ -133,11 +135,9 @@ namespace Trakx.Common.Tests.Unit.Pricing
 
         [Fact]
         public void GetIndiceValuation_with_asOf_should_throw_on_future_asOf_date()
-        {
-            var composition = _mockCreator.GetIndiceComposition(3);
-
+        { 
             new Func<Task>(async () =>
-                    await _navCalculator.GetIndiceValuation(composition, _dateTimeProvider.UtcNow.AddSeconds(1)))
+                    await _navCalculator.GetIndiceValuation(_composition, _dateTimeProvider.UtcNow.AddSeconds(1)))
                 .Should().Throw<ArgumentOutOfRangeException>();
 
             _messariClient.ReceivedCalls().Should().BeEmpty();
@@ -248,10 +248,9 @@ namespace Trakx.Common.Tests.Unit.Pricing
         [Fact]
         public async Task GetIndiceValuation_should_produce_component_valuations_and_correct_prices_and_weights()
         {
-            var composition = _mockCreator.GetIndiceComposition(3);
-            composition.ComponentQuantities[0].Quantity.Returns(12m);
-            composition.ComponentQuantities[1].Quantity.Returns(78.9m);
-            composition.ComponentQuantities[2].Quantity.Returns(17.92m);
+            _composition.ComponentQuantities[0].Quantity.Returns(12m);
+            _composition.ComponentQuantities[1].Quantity.Returns(78.9m);
+            _composition.ComponentQuantities[2].Quantity.Returns(17.92m);
 
 
             _messariClient.GetLatestPrice("sym0").Returns(21.2m);
@@ -260,7 +259,7 @@ namespace Trakx.Common.Tests.Unit.Pricing
 
             _coinGeckoClient.GetLatestPrice("id-1").Returns(0.32m);
 
-            var valuation = await _navCalculator.GetIndiceValuation(composition);
+            var valuation = await _navCalculator.GetIndiceValuation(_composition);
 
             valuation.ComponentValuations[0].Price.Should().Be(21.2m);
             valuation.ComponentValuations[0].Value.Should().Be(12 * 21.2m);
@@ -304,5 +303,145 @@ namespace Trakx.Common.Tests.Unit.Pricing
             valuation.ComponentValuations.Select(v => v.ComponentQuantity.ComponentDefinition.Symbol)
                 .Should().BeEquivalentTo(wrappedBitcoinSymbol, wrappedEtherSymbol);
         }
+
+        [Fact]
+        public async Task GetIndexValuations_should_only_return_results_for_timestamps_returned_for_all_components()
+        {
+            for (var i = 0; i < _constituentCount; i++)
+            {
+                var dates = Enumerable.Range(0, 4).Select(j => new DateTime(2019, 05, 02 + i + j)).ToList();
+                var historicalResponse = GetRandomCryptoCompareHistoryResponse(dates);
+                MockDailyHistoricalResponse(historicalResponse, _composition.ComponentQuantities[i].ComponentDefinition.Symbol);
+            }
+            
+            var valuations = (await _navCalculator.GetCompositionValuations(_composition, _mockCreator.GetRandomDateTime(),
+                    Period.Day)).ToList();
+
+            var expectedCommonDates = Enumerable.Range(0, _constituentCount)
+                .Select(i => Enumerable.Range(0, 4).Select(j => new DateTime(2019, 05, 02 + i + j)))
+                .IntersectMany()
+                .ToList();
+
+            valuations.Count.Should().Be(expectedCommonDates.Count);
+            valuations.Select(v => v.TimeStamp).Should().BeEquivalentTo(expectedCommonDates);
+        }
+
+
+        [Fact]
+        public void GetIndexValuations_should_fail_if_one_component_has_no_price()
+        {
+            var failingSymbol = _composition.ComponentQuantities[1].ComponentDefinition.Symbol;
+            var dates = Enumerable.Range(0, 2).Select(_ => _mockCreator.GetRandomDateTime()).ToList();
+            var historicalResponse = GetRandomCryptoCompareHistoryResponse(dates);
+
+            MockDailyHistoricalResponse(historicalResponse, Arg.Is<string>(s => s != failingSymbol));
+
+            _cryptoCompareClient.History.DailyAsync(Arg.Is<string>(s => s == failingSymbol),
+                    Arg.Any<string>(), Arg.Any<int?>(), toDate: Arg.Any<DateTimeOffset>(), tryConversion: Arg.Any<bool>())
+                .Throws(new TimeoutException("couldn't fetch prices'"));
+
+            var getValuations = new Func<Task<IEnumerable<IIndiceValuation>>>(async () => await _navCalculator.GetCompositionValuations(_composition, _mockCreator.GetRandomDateTime(),
+                Period.Day));
+
+            getValuations.Should()
+                .Throw<NavCalculator.FailedToRetrievePriceException>("prices cannot be calculated without all prices.")
+                .And.InnerException?.Message.Should().Contain(failingSymbol);
+        }
+
+        [Fact]
+        public async Task GetIndexValuations_should_fetch_daily_when_after_3_years()
+        {
+            var now = MockNow();
+
+            var historicalResponse = GetRandomCryptoCompareHistoryResponse();
+            MockDailyHistoricalResponse(historicalResponse, Arg.Any<string>());
+
+            var moreThan3YearsAgo = now.Subtract(TimeSpan.FromDays(366 * 4));
+            await _navCalculator.GetCompositionValuations(_composition, moreThan3YearsAgo, Period.Hour);
+
+            await _cryptoCompareClient.History.ReceivedWithAnyArgs(_constituentCount)
+                .DailyAsync(default, default, default);
+        }
+
+        [Fact]
+        public async Task GetIndexValuations_should_fetch_hourly_after_1_week()
+        {
+            var now = MockNow();
+
+            var historicalResponse = GetRandomCryptoCompareHistoryResponse();
+            MockHourlyHistoricalResponse(historicalResponse);
+
+            var moreThan1WeekAgo = now.Subtract(TimeSpan.FromDays(8));
+            await _navCalculator.GetCompositionValuations(_composition, moreThan1WeekAgo, Period.Minute);
+
+            await _cryptoCompareClient.History.ReceivedWithAnyArgs(_constituentCount)
+                .HourlyAsync(default, default);
+        }
+
+        [Fact] public async Task GetIndexValuations_should_fetch_minutely_before_1_week()
+        {
+            var now = MockNow();
+
+            _cryptoCompareClient.History.MinutelyAsync(Arg.Any<string>(),
+                    Arg.Any<string>(), Arg.Any<int?>(), toDate: Arg.Any<DateTimeOffset>(), tryConversion: Arg.Any<bool>())
+                .Returns(GetRandomCryptoCompareHistoryResponse());
+            
+            var moreThan1WeekAgo = now.Subtract(TimeSpan.FromDays(6));
+            await _navCalculator.GetCompositionValuations(_composition, moreThan1WeekAgo, Period.Minute);
+
+            await _cryptoCompareClient.History.ReceivedWithAnyArgs(_constituentCount)
+                .MinutelyAsync(default, default);
+        }
+
+        private DateTime MockNow()
+        {
+            var now = _mockCreator.GetRandomDateTime();
+            _dateTimeProvider.UtcNow.Returns(now);
+            return now;
+        }
+
+        [Fact]
+        public async Task GetIndexValuations_should_produce_valuations()
+        {
+            var now = MockNow();
+            var startTime = now.Subtract(TimeSpan.FromHours(10));
+            var endTime = startTime.AddHours(6);
+
+            var expectedLimit = (int)endTime.Subtract(startTime).Divide(Period.Hour.ToTimeSpan()) + 1;
+            var expectedResultsTimeStamps = Enumerable.Range(0, expectedLimit).Select(i => startTime.AddHours(i)).ToList();
+
+            var historicalResponse = GetRandomCryptoCompareHistoryResponse(expectedResultsTimeStamps);
+            MockHourlyHistoricalResponse(historicalResponse, expectedLimit);
+
+            var valuations = (await _navCalculator.GetCompositionValuations(_composition, startTime, Period.Hour, endTime))
+                .ToList();
+
+            valuations.Count.Should().Be(expectedLimit);
+            valuations.Select(t => t.TimeStamp).Should().BeEquivalentTo(expectedResultsTimeStamps);
+            valuations.SelectMany(v => v.ComponentValuations.Select(c => c.TimeStamp)).Distinct().Should()
+                .BeEquivalentTo(expectedResultsTimeStamps);
+
+            foreach (var valuation in valuations)
+            {
+                valuation.ComponentValuations.Count.Should().Be(_constituentCount);
+                valuation.ComponentValuations.Select(c => c.TimeStamp).Distinct().Count().Should().Be(1);
+                valuation.NetAssetValue.Should().Be(valuation.ComponentValuations.Sum(c => c.Value));
+            }
+        }
+
+        private void MockHourlyHistoricalResponse(HistoryResponse historicalResponse, int? expectedLimit = default)
+        {
+            _cryptoCompareClient.History.HourlyAsync(Arg.Any<string>(),
+                    Arg.Any<string>(), expectedLimit ?? Arg.Any<int?>(), toDate: Arg.Any<DateTimeOffset>(), tryConversion: Arg.Any<bool>())
+                .Returns(historicalResponse);
+        }
+
+        private void MockDailyHistoricalResponse(HistoryResponse historicalResponse, string symbol)
+        {
+            _cryptoCompareClient.History.DailyAsync(symbol,
+                    Arg.Any<string>(), Arg.Any<int?>(), toDate: Arg.Any<DateTimeOffset>(), tryConversion: Arg.Any<bool>())
+                .Returns(historicalResponse);
+        }
+
     }
 }

@@ -35,8 +35,8 @@ namespace Trakx.MarketData.Server.Models
                 NaturalUnit = initialValuation.IndiceComposition.IndiceDefinition.NaturalUnit,
                 Name = initialValuation.IndiceComposition.IndiceDefinition.Name,
                 Address = initialValuation.IndiceComposition.IndiceDefinition.Address,
-                InitialValuation = IndiceValuationModel.FromIIndiceValuation(initialValuation),
-                CurrentValuation = IndiceValuationModel.FromIIndiceValuation(currentValuation),
+                InitialValuation = new IndiceValuationModel(initialValuation),
+                CurrentValuation = new IndiceValuationModel(currentValuation),
                 CreationDate = currentValuation.IndiceComposition.CreationDate,
                 ComponentDefinitions = currentValuation.IndiceComposition
                     .ComponentQuantities.Select(ComponentModel.FromIComponent)

@@ -111,6 +111,30 @@ namespace Trakx.Persistence.Tests.Unit
         }
 
         [Fact]
+        public async Task GetDefinitionFromSymbol_should_retrieve_index_definition_by_symbol()
+        {
+            var definition = await PersistRandomIndice().ConfigureAwait(false);
+
+            var result = await _indiceDataProvider.GetDefinitionFromSymbol(definition.Symbol)
+                .ConfigureAwait(false);
+
+            result.Should().NotBeNull();
+            result!.Symbol.Should().Be(definition.Symbol);
+            result!.Address.Should().Be(definition.Address);
+        }
+
+        [Fact]
+        public async Task GetDefinitionFromSymbol_should_return_null_on_unknown_defintion_symbol()
+        {
+            var definitionSymbol = _mockDaoCreator.GetRandomIndiceSymbol();
+
+            var result = await _indiceDataProvider.GetDefinitionFromSymbol(definitionSymbol)
+                .ConfigureAwait(false);
+
+            result.Should().BeNull();
+        }
+
+        [Fact]
         public async Task GetCompositionAtDate_should_save_to_memory_cache_on_retrieved_valid_data()
         {
             var composition = await PersistRandomComposition();

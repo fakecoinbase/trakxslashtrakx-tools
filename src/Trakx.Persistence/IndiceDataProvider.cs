@@ -83,6 +83,21 @@ namespace Trakx.Persistence
         }
 
         /// <inheritdoc />
+        public async Task<IIndiceDefinition?> GetDefinitionFromSymbol(string indexSymbol, CancellationToken cancellationToken = default)
+        {
+            try
+            {
+                var definition = await _dbContext.IndiceDefinitions.FindAsync(new [] {indexSymbol}, cancellationToken);
+                return definition;
+            }
+            catch (Exception ex)
+            {
+                _logger.LogError(ex, "Failed to retrieve index definition for {0}", indexSymbol);
+                return default;
+            }
+        }
+
+        /// <inheritdoc />
         public async Task<IIndiceComposition?> GetCompositionFromSymbol(string compositionSymbol, CancellationToken cancellationToken = default)
         {
             try

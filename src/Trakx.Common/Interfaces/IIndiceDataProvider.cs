@@ -24,7 +24,22 @@ namespace Trakx.Common.Interfaces
         /// <returns>The list of all compositions associated to a given CTI.</returns>
         Task<List<string>> GetCompositionSymbolsFromIndice(string indiceSymbol, CancellationToken cancellationToken = default);
 
+        /// <summary>
+        /// Retrieves the composition for a given indice at a given point in time.
+        /// </summary>
+        /// <param name="indiceSymbol">Symbol of the indice.</param>
+        /// <param name="asOfUtc">UTC date and time as o f which we want the composition.</param>
+        /// <param name="cancellationToken">A token that can be used to request cancellation of the asynchronous operation.</param>
+        /// <returns>The active index composition as of <paramref name="asOfUtc"/>.</returns>
         Task<IIndiceComposition?> GetCompositionAtDate(string indiceSymbol, DateTime asOfUtc, CancellationToken cancellationToken = default);
+
+        /// <summary>
+        /// Retrieves the definition of an index by its symbol.
+        /// </summary>
+        /// <param name="indexSymbol">Symbol of the index.</param>
+        /// <param name="cancellationToken">A token that can be used to request cancellation of the asynchronous operation.</param>
+        Task<IIndiceDefinition?> GetDefinitionFromSymbol(string indexSymbol, CancellationToken cancellationToken = default);
+
 
         /// <summary>
         /// Retrieve a composition from database using its unique symbol.

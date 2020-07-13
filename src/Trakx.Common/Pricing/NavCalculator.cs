@@ -1,6 +1,7 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Linq;
+using System.Threading;
 using System.Threading.Tasks;
 using CryptoCompare;
 using Microsoft.Extensions.Caching.Distributed;
@@ -97,7 +98,90 @@ namespace Trakx.Common.Pricing
             return indiceValuation;
         }
 
+        /// <inheritdoc />
+        public async Task<IEnumerable<IIndiceValuation>> GetCompositionValuations(IIndiceComposition composition, 
+            DateTime startTime, 
+            Period period,
+            DateTime? endTime = default, 
+            CancellationToken cancellationToken = default)
+        {
+            var now = DateTime.UtcNow;
+            var fetch = GetCryptoCompareMostGranularHistoricalPriceMethod(startTime, period);
+
+            var limit = (int)(endTime ?? now).Subtract(startTime).Divide(period.ToTimeSpan()) + 1;
+            var fetchTasks = composition.ComponentQuantities
+                .ToDictionary(q => q.ComponentDefinition.Symbol,
+                    async q =>
+                    {
+                        try
+                        {
+                            var historicalPrices = await fetch(q.ComponentDefinition.Symbol, limit)
+                                .ConfigureAwait(false);
+                            return historicalPrices;
+                        }
+                        catch (Exception e)
+                        {
+                            _logger.LogError(e, "Failed to retrieve historical price for {0}", q.ComponentDefinition.Symbol);
+                            return new HistoryResponse {ErrorsSummary = e.Message};
+                        }
+                    });
+
+            var results = await WaitAndCheckHistoricalResultsForComposition(fetchTasks)
+                .ConfigureAwait(false);
+
+            var timeStamps = results.Values.Select(r => r.Data.Select(d => d.Time.DateTime))
+                .IntersectMany()
+                .OrderBy(t => t);
+
+            var pricesBySymbolByTimeStamp = results.ToDictionary(r => r.Key,
+                r => timeStamps.ToDictionary(t => t, t => r.Value.Data.Single(d => d.Time.DateTime == t).Close));
+
+            var valuations = timeStamps.Select(t =>
+                new IndiceValuation(composition, 
+                    composition.ComponentQuantities
+                        .Select(q => GetComponentValuationFromQuantity(q, t, pricesBySymbolByTimeStamp)).ToList(),
+                    t));
+
+            return valuations;
+        }
+
+        /// <inheritdoc />
+        public async Task<IEnumerable<IIndiceValuation>> GetIndexValuations(IIndiceDefinition definition,
+            DateTime startTime, Period period, DateTime? endTime = default,
+            CancellationToken cancellationToken = default)
+        {
+            throw new NotImplementedException("need to bring the IIndexDataProvider " +
+                                              "in and find out about historical compositions, " +
+                                              "then call GetCompositionValuations for each of them");
+        }
+
         #endregion
+
+        private async Task<Dictionary<string, HistoryResponse>> WaitAndCheckHistoricalResultsForComposition(
+            Dictionary<string, Task<HistoryResponse>> fetchTasks)
+        {
+            await Task.WhenAll(fetchTasks.Values.ToArray());
+            var results = fetchTasks.ToDictionary(s => s.Key, t => t.Value.Result);
+
+            var failures = results.Where(r => !string.IsNullOrWhiteSpace(r.Value.ErrorsSummary)).ToList();
+
+            if (!failures.Any()) return results;
+
+            var messages = failures.Select(
+                f => $"failed to get prices for {f.Key}: {f.Value.StatusMessage} - {f.Value.ErrorsSummary}.");
+            throw new FailedToRetrievePriceException("Failed to retrieve historical prices"
+                                                     + Environment.NewLine +
+                                                     string.Join(Environment.NewLine, messages));
+        }
+
+        private IComponentValuation GetComponentValuationFromQuantity(IComponentQuantity quantity, DateTime timeStamp, Dictionary<string, Dictionary<DateTime, decimal>> pricesBySymbolByTimeStamp)
+        {
+            var componentValuation = new ComponentValuation(quantity, "usdc",
+                pricesBySymbolByTimeStamp[quantity.ComponentDefinition.Symbol][timeStamp], "cryptoCompare",
+                timeStamp);
+            return componentValuation;
+        }
+
 
         private async Task<SourcedPrice> GetLatestUsdcPrice(IComponentDefinition component)
         {
@@ -164,30 +248,37 @@ namespace Trakx.Common.Pricing
                 : new SourcedPrice(c.Symbol, "coinGecko", price.Value);
         }
 
+        private async ValueTask<SourcedPrice> GetCryptoCompareUsdPriceAsOf(IComponentDefinition component, DateTime asOf)
+        {
+            var fetchPrice = GetCryptoCompareMostGranularHistoricalPriceMethod(asOf);
+
+            var price = await fetchPrice(component.Symbol, 1).ConfigureAwait(false);
+            return price == default
+                ? default
+                : new SourcedPrice(component.Symbol, "cryptoCompare", price.Data.Last().Close);
+        }
+
         /// <summary>
         /// With our current CryptoCompare subscription, we only have historical minute data for 7 days,
         /// and hourly for 3 years, the rest is daily history. This function tries to get the most accurate
         /// price given those restrictions.
         /// </summary>
-        /// <param name="component">Definition of the component for which we want the price.</param>
-        /// <param name="asOf">Date as of which we want the price.</param>
-        /// <returns></returns>
-        private async ValueTask<SourcedPrice> GetCryptoCompareUsdPriceAsOf(IComponentDefinition component, DateTime asOf)
+        private Func<string, int, Task<HistoryResponse>> GetCryptoCompareMostGranularHistoricalPriceMethod(DateTime startTime, Period? period = default)
         {
+            period ??= 0;
             var now = _dateTimeProvider.UtcNow;
-            Func<Task<HistoryResponse>> fetchPrice;
+            Func<string, int, Task<HistoryResponse>> fetchPrice;
 
-            if (asOf > now.AddDays(-7))
-                fetchPrice = () => _cryptoCompareClient.History.MinutelyAsync(component.Symbol, "usdc", 1, toDate: asOf, tryConversion: true);
-            else if (asOf > now.AddYears(-3))
-                fetchPrice = () => _cryptoCompareClient.History.HourlyAsync(component.Symbol, "usdc", 1, toDate: asOf, tryConversion: true);
+            if (startTime > now.AddDays(-7) && period <= Period.Minute)
+                fetchPrice = (symbol, limit) =>
+                    _cryptoCompareClient.History.MinutelyAsync(symbol, "usdc", limit, toDate: startTime, tryConversion: true);
+            else if (startTime > now.AddYears(-3) && period <= Period.Hour)
+                fetchPrice = (symbol, limit) =>
+                    _cryptoCompareClient.History.HourlyAsync(symbol, "usdc", limit, toDate: startTime, tryConversion: true);
             else
-                fetchPrice = () => _cryptoCompareClient.History.DailyAsync(component.Symbol, "usdc", 1, toDate: asOf, tryConversion: true);
-           
-            var price = await fetchPrice().ConfigureAwait(false);
-            return price == default
-                ? default
-                : new SourcedPrice(component.Symbol, "cryptoCompare", price.Data.Last().Close);
+                fetchPrice = (symbol, limit) =>
+                    _cryptoCompareClient.History.DailyAsync(symbol, "usdc", limit, toDate: startTime, tryConversion: true);
+            return fetchPrice;
         }
 
         public class FailedToRetrievePriceException : Exception

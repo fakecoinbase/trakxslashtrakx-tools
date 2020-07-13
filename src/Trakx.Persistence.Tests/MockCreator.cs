@@ -198,12 +198,12 @@ namespace Trakx.Persistence.Tests
             return transactionReceipt;
         }
 
-        public static IIndiceValuation GetIndiceValuation(IIndiceComposition composition, string quoteCurrency = "usdc")
+        public IIndiceValuation GetRandomIndexValuation(IIndiceComposition composition, string quoteCurrency = "usdc")
         {
             var componentValuations = composition.ComponentQuantities.Select(
                 c =>
                 {
-                    var valuation = new ComponentValuation(c, quoteCurrency, (decimal)202.23,"coingecko", DateTime.Now);
+                    var valuation = new ComponentValuation(c, quoteCurrency, GetRandomPrice(),"fakeSource", DateTime.Now);
                     return (IComponentValuation)valuation;
                 }).ToList();
 

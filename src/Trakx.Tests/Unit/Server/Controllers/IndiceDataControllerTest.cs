@@ -41,7 +41,7 @@ namespace Trakx.Tests.Unit.Server.Controllers
             var composition = _mockCreator.GetIndiceComposition(3);
             _indiceProvider.GetCurrentComposition(symbol, default).ReturnsForAnyArgs(composition);
 
-            var valuations = MockCreator.GetIndiceValuation(composition);
+            var valuations = _mockCreator.GetRandomIndexValuation(composition);
             _indiceProvider.GetInitialValuation(composition).Returns(valuations);
             _navCalculator.GetIndiceValuation(composition).Returns(valuations);
 
