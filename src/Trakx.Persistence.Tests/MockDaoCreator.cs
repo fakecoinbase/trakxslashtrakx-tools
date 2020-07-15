@@ -1,8 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Linq;
-using NSubstitute;
-using Trakx.Common.Interfaces;
 using Trakx.Persistence.DAO;
 using Trakx.Persistence.Tests;
 using Xunit.Abstractions;
@@ -19,17 +17,22 @@ namespace Trakx.Tests.Data
             name ??= "indice name " + GetRandomString(15);
             var description = "description " + GetRandomString(15);
             var indiceDefinition = new IndiceDefinitionDao(indiceSymbol,
-                name, description, GetRandomNaturalUnit(), GetRandomAddressEthereum(), GetRandomDateTime());
+                name, description, GetRandomNaturalUnit(), GetRandomAddressEthereum(), GetRandomUtcDateTime());
 
             return indiceDefinition;
         }
 
-        public IndiceCompositionDao GetRandomCompositionDao(IndiceDefinitionDao? indiceDefinition = default)
+        public IndiceCompositionDao GetRandomCompositionDao(
+            IndiceDefinitionDao? indiceDefinition = default,
+            DateTime? creationDateTime = null, 
+            uint? version = default)
         {
             indiceDefinition ??= GetRandomIndiceDefinitionDao();
+            creationDateTime ??= GetRandomUtcDateTime();
+            version ??= GetRandomCompositionVersion();
             return new IndiceCompositionDao(indiceDefinition,
-                GetRandomCompositionVersion(),
-                GetRandomDateTime(),
+                version.Value,
+                creationDateTime.Value,
                 GetRandomAddressEthereum());
         }
 

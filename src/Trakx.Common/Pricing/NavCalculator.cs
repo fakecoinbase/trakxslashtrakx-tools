@@ -1,4 +1,5 @@
 ﻿using System;
+using System.Collections;
 using System.Collections.Generic;
 using System.Linq;
 using System.Threading;
@@ -23,6 +24,7 @@ namespace Trakx.Common.Pricing
         private readonly ICoinGeckoClient _coinGeckoClient;
         private readonly IDistributedCache _cache;
         private readonly ICryptoCompareClient _cryptoCompareClient;
+        private readonly IIndiceDataProvider _indiceDataProvider;
         private readonly IDateTimeProvider _dateTimeProvider;
         private readonly ILogger<NavCalculator> _logger;
         private readonly Dictionary<string, 
@@ -34,6 +36,7 @@ namespace Trakx.Common.Pricing
             ICoinGeckoClient coinGeckoClient,
             IDistributedCache cache,
             ICryptoCompareClient cryptoCompareClient,
+            IIndiceDataProvider indiceDataProvider,
             IDateTimeProvider dateTimeProvider,
             ILogger<NavCalculator> logger)
         {
@@ -41,6 +44,7 @@ namespace Trakx.Common.Pricing
             _coinGeckoClient = coinGeckoClient;
             _cache = cache;
             _cryptoCompareClient = cryptoCompareClient;
+            _indiceDataProvider = indiceDataProvider;
             _dateTimeProvider = dateTimeProvider;
             _logger = logger;
 
@@ -105,17 +109,18 @@ namespace Trakx.Common.Pricing
             DateTime? endTime = default, 
             CancellationToken cancellationToken = default)
         {
-            var now = DateTime.UtcNow;
+            var now = _dateTimeProvider.UtcNow;
+            endTime ??= now;
             var fetch = GetCryptoCompareMostGranularHistoricalPriceMethod(startTime, period);
 
-            var limit = (int)(endTime ?? now).Subtract(startTime).Divide(period.ToTimeSpan()) + 1;
+            var limit = (int)endTime.Value.Subtract(startTime).Divide(period.ToTimeSpan());
             var fetchTasks = composition.ComponentQuantities
                 .ToDictionary(q => q.ComponentDefinition.Symbol,
                     async q =>
                     {
                         try
                         {
-                            var historicalPrices = await fetch(q.ComponentDefinition.Symbol, limit)
+                            var historicalPrices = await fetch(q.ComponentDefinition.Symbol, endTime, limit)
                                 .ConfigureAwait(false);
                             return historicalPrices;
                         }
@@ -150,9 +155,40 @@ namespace Trakx.Common.Pricing
             DateTime startTime, Period period, DateTime? endTime = default,
             CancellationToken cancellationToken = default)
         {
-            throw new NotImplementedException("need to bring the IIndexDataProvider " +
-                                              "in and find out about historical compositions, " +
-                                              "then call GetCompositionValuations for each of them");
+            var compositionsByTimeInterval = await _indiceDataProvider.GetCompositionsBetweenDates(definition.Symbol, startTime, endTime, cancellationToken);
+            var getCompositionValuationsTasks = compositionsByTimeInterval.Select(async p => await
+                GetCompositionValuations(p.Value, p.Key.StartTime, period, p.Key.EndTime, cancellationToken).ConfigureAwait(false))
+                .ToArray();
+            await Task.WhenAll(getCompositionValuationsTasks);
+
+            var compositionsInOrder = getCompositionValuationsTasks
+                .SelectMany(t => t.Result)
+                .OrderBy(v => v.TimeStamp)
+                .Where(v => startTime <= v.TimeStamp)
+                .Distinct(ValuationByTimeStampComparer.Instance);
+            
+            return compositionsInOrder;
+        }
+
+        private class ValuationByTimeStampComparer : IEqualityComparer<IIndiceValuation>
+        {
+            public static readonly ValuationByTimeStampComparer Instance = new ValuationByTimeStampComparer();
+
+            #region Implementation of IEqualityComparer<in IIndiceValuation>
+
+            /// <inheritdoc />
+            public bool Equals(IIndiceValuation x, IIndiceValuation y)
+            {
+                return x.TimeStamp.Equals(y.TimeStamp);
+            }
+
+            /// <inheritdoc />
+            public int GetHashCode(IIndiceValuation obj)
+            {
+                return obj.TimeStamp.GetHashCode();
+            }
+
+            #endregion
         }
 
         #endregion
@@ -252,7 +288,7 @@ namespace Trakx.Common.Pricing
         {
             var fetchPrice = GetCryptoCompareMostGranularHistoricalPriceMethod(asOf);
 
-            var price = await fetchPrice(component.Symbol, 1).ConfigureAwait(false);
+            var price = await fetchPrice(component.Symbol, asOf, 1).ConfigureAwait(false);
             return price == default
                 ? default
                 : new SourcedPrice(component.Symbol, "cryptoCompare", price.Data.Last().Close);
@@ -263,21 +299,21 @@ namespace Trakx.Common.Pricing
         /// and hourly for 3 years, the rest is daily history. This function tries to get the most accurate
         /// price given those restrictions.
         /// </summary>
-        private Func<string, int, Task<HistoryResponse>> GetCryptoCompareMostGranularHistoricalPriceMethod(DateTime startTime, Period? period = default)
+        private Func<string, DateTimeOffset?, int, Task<HistoryResponse>> GetCryptoCompareMostGranularHistoricalPriceMethod(DateTime startTime, Period? period = default)
         {
             period ??= 0;
             var now = _dateTimeProvider.UtcNow;
-            Func<string, int, Task<HistoryResponse>> fetchPrice;
+            Func<string, DateTimeOffset?, int, Task<HistoryResponse>> fetchPrice;
 
             if (startTime > now.AddDays(-7) && period <= Period.Minute)
-                fetchPrice = (symbol, limit) =>
-                    _cryptoCompareClient.History.MinutelyAsync(symbol, "usdc", limit, toDate: startTime, tryConversion: true);
+                fetchPrice = (symbol, endTime, limit) =>
+                    _cryptoCompareClient.History.MinutelyAsync(symbol, "usdc", limit, toDate: endTime, tryConversion: true);
             else if (startTime > now.AddYears(-3) && period <= Period.Hour)
-                fetchPrice = (symbol, limit) =>
-                    _cryptoCompareClient.History.HourlyAsync(symbol, "usdc", limit, toDate: startTime, tryConversion: true);
+                fetchPrice = (symbol, endTime, limit) =>
+                    _cryptoCompareClient.History.HourlyAsync(symbol, "usdc", limit, toDate: endTime, tryConversion: true);
             else
-                fetchPrice = (symbol, limit) =>
-                    _cryptoCompareClient.History.DailyAsync(symbol, "usdc", limit, toDate: startTime, tryConversion: true);
+                fetchPrice = (symbol, endTime, limit) =>
+                    _cryptoCompareClient.History.DailyAsync(symbol, "usdc", limit, toDate: endTime, tryConversion: true);
             return fetchPrice;
         }
 

@@ -41,7 +41,7 @@ namespace Trakx.MarketData.Server.Models
         /// <summary>
         /// A history of the valuations of the Index, indexed by timestamp.
         /// </summary>
-        [JsonConverter(typeof(JsonNonStringKeyDictionaryConverter<DateTime, IndiceValuationModel>))]
+        [JsonConverter(typeof(JsonDateTimeKeyDictionaryConverter<IndiceValuationModel>))]
         public IDictionary<DateTime, IndiceValuationModel> ValuationsByTimeStamp { get; set; }
 
         /// <summary>

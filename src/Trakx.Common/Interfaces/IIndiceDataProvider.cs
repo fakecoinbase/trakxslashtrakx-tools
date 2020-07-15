@@ -4,6 +4,7 @@ using System.Threading;
 using System.Threading.Tasks;
 using Trakx.Common.Interfaces.Indice;
 using Trakx.Common.Pricing;
+using Trakx.Common.Utils;
 
 namespace Trakx.Common.Interfaces
 {
@@ -32,6 +33,17 @@ namespace Trakx.Common.Interfaces
         /// <param name="cancellationToken">A token that can be used to request cancellation of the asynchronous operation.</param>
         /// <returns>The active index composition as of <paramref name="asOfUtc"/>.</returns>
         Task<IIndiceComposition?> GetCompositionAtDate(string indiceSymbol, DateTime asOfUtc, CancellationToken cancellationToken = default);
+
+        /// <summary>
+        /// Retrieves the composition for a given indice at a given point in time.
+        /// </summary>
+        /// <param name="indiceSymbol">Symbol of the indice.</param>
+        /// <param name="startTime">Earliest UTC date and time at which you require the composition for.</param>
+        /// <param name="endTime">Latest UTC date and time at which you require the compositions for.</param>
+        /// <param name="cancellationToken">A token that can be used to request cancellation of the asynchronous operation.</param>
+        /// <returns>The active index compositions between <paramref name="startTime"/> and <paramref name="endTime"/>,
+        /// indexed by the time interval during which they were actively traded.</returns>
+        Task<Dictionary<TimeInterval, IIndiceComposition>> GetCompositionsBetweenDates(string indiceSymbol, DateTime startTime, DateTime? endTime = default, CancellationToken cancellationToken = default);
 
         /// <summary>
         /// Retrieves the definition of an index by its symbol.

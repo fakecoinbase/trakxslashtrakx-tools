@@ -8,6 +8,7 @@ using System.Text.Json.Serialization;
 using System.Threading.Tasks;
 using Microsoft.Extensions.Caching.Memory;
 using Microsoft.Extensions.DependencyInjection;
+using Trakx.Common.Interfaces;
 using Trakx.Common.Interfaces.Indice;
 using Trakx.Persistence;
 using Trakx.Persistence.Tests.Model;
@@ -28,7 +29,7 @@ namespace Trakx.Tests.Tools
             serviceCollection.AddMemoryCache();
             var logger = output.ToLogger<IndiceDataProvider>();
             IServiceProvider serviceProvider = serviceCollection.BuildServiceProvider();
-            _indiceDetailProvider = new IndiceDataProvider(context, serviceProvider.GetService<IMemoryCache>(), logger);
+            _indiceDetailProvider = new IndiceDataProvider(context, serviceProvider.GetService<IMemoryCache>(), new DateTimeProvider(), logger);
         }
 
         [Theory(Skip = "not a test")]

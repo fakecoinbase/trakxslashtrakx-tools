@@ -11,7 +11,7 @@ namespace Trakx.Common.Serialisation.Converters
     /// <summary>
     /// Credits to https://github.com/dotnet/runtime/issues/30524#issuecomment-524619972
     /// </summary>
-    public sealed class JsonNonStringKeyDictionaryConverter<TKey, TValue> : JsonConverter<IDictionary<TKey, TValue>>
+    public class JsonNonStringKeyDictionaryConverter<TKey, TValue> : JsonConverter<IDictionary<TKey, TValue>>
     {
         public override IDictionary<TKey, TValue> Read(ref Utf8JsonReader reader, Type typeToConvert, JsonSerializerOptions options)
         {
@@ -39,31 +39,21 @@ namespace Trakx.Common.Serialisation.Converters
         {
             var convertedDictionary = new Dictionary<string?, TValue>(value.Count);
             foreach (var (k, v) in value) convertedDictionary[k?.ToString()] = v;
+
             JsonSerializer.Serialize(writer, convertedDictionary, options);
             convertedDictionary.Clear();
         }
     }
 
-    public sealed class JsonNonStringKeyDictionaryConverterFactory : JsonConverterFactory
+    public sealed class JsonDateTimeKeyDictionaryConverter<TValue> : JsonNonStringKeyDictionaryConverter<DateTime, TValue>
     {
-        public override bool CanConvert(Type typeToConvert)
+        public override void Write(Utf8JsonWriter writer, IDictionary<DateTime, TValue> value, JsonSerializerOptions options)
         {
-            if (!typeToConvert.IsGenericType) return false;
-            if (typeToConvert.GenericTypeArguments[0] == typeof(string)) return false;
-            return typeToConvert.GetInterface("IDictionary") != null;
-        }
+            var convertedDictionary = new Dictionary<string?, TValue>(value.Count);
+            foreach (var (k, v) in value) convertedDictionary[k.ToString("yyyy-MM-ddTHH:mm:ssK")] = v;
 
-        public override JsonConverter CreateConverter(Type typeToConvert, JsonSerializerOptions options)
-        {
-            var converterType = typeof(JsonNonStringKeyDictionaryConverter<,>)
-                .MakeGenericType(typeToConvert.GenericTypeArguments[0], typeToConvert.GenericTypeArguments[1]);
-            var converter = (JsonConverter)Activator.CreateInstance(
-                converterType,
-                BindingFlags.Instance | BindingFlags.Public,
-                null,
-                null,
-                CultureInfo.CurrentCulture);
-            return converter;
+            JsonSerializer.Serialize(writer, convertedDictionary, options);
+            convertedDictionary.Clear();
         }
     }
 }

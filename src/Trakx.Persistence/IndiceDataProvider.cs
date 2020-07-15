@@ -8,6 +8,7 @@ using Microsoft.Extensions.Caching.Memory;
 using Microsoft.Extensions.Logging;
 using Trakx.Common.Interfaces;
 using Trakx.Common.Interfaces.Indice;
+using Trakx.Common.Utils;
 
 namespace Trakx.Persistence
 {
@@ -15,14 +16,17 @@ namespace Trakx.Persistence
     {
         private readonly IndiceRepositoryContext _dbContext;
         private readonly IMemoryCache _memoryCache;
+        private readonly IDateTimeProvider _dateTimeProvider;
         private readonly ILogger<IndiceDataProvider> _logger;
 
         public IndiceDataProvider(IndiceRepositoryContext dbContext, 
             IMemoryCache memoryCache,
+            IDateTimeProvider dateTimeProvider,
             ILogger<IndiceDataProvider> logger)
         {
             _dbContext = dbContext;
             _memoryCache = memoryCache;
+            _dateTimeProvider = dateTimeProvider;
             _logger = logger;
         }
 
@@ -80,6 +84,40 @@ namespace Trakx.Persistence
                 _logger.LogError(ex, "Failed to retrieve composition for {0} at date {1}", indiceSymbol, asOfUtc);
                 return default;
             }
+        }
+
+        /// <inheritdoc />
+        public async Task<Dictionary<TimeInterval, IIndiceComposition>> GetCompositionsBetweenDates(string indiceSymbol, DateTime startTime, DateTime? endTime = default,
+            CancellationToken cancellationToken = default)
+        {
+            endTime ??= _dateTimeProvider.UtcNow;
+            var compositions = _dbContext.IndiceCompositions;
+
+            var firstComposition = await GetCompositionAtDate(indiceSymbol, startTime, cancellationToken)
+                .ConfigureAwait(false);
+            
+            var laterCompositions = await compositions
+                .IncludeAllLinkedEntities()
+                .Where(c => c.IndiceDefinitionDao.Symbol == indiceSymbol)
+                .AsNoTracking()
+                .Where(c => startTime < c.CreationDate && c.CreationDate < endTime.Value)
+                .OrderBy(c => c.CreationDate)
+                .ToListAsync(cancellationToken);
+
+            var activeCompositions = new[] {firstComposition!}
+                .Concat(laterCompositions).ToList();
+
+            var compositionByTimeInterval = activeCompositions
+                .Where((c, i) => i < activeCompositions.Count - 1)
+                .Select((composition, index) => (composition, index))
+                .ToDictionary(
+                    p => new TimeInterval(p.index == 0 ? startTime : p.composition.CreationDate, activeCompositions[p.index + 1].CreationDate), 
+                    p => p.composition);
+            var lastComposition = activeCompositions.Last();
+            compositionByTimeInterval.Add(
+                new TimeInterval(compositionByTimeInterval.Any() ? lastComposition.CreationDate : startTime, endTime.Value), lastComposition);
+
+            return compositionByTimeInterval;
         }
 
         /// <inheritdoc />

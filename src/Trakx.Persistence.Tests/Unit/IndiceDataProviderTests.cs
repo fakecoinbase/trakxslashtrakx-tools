@@ -1,9 +1,14 @@
 ﻿using System;
+using System.Collections.Generic;
+using System.Linq;
 using System.Threading.Tasks;
 using FluentAssertions;
 using Microsoft.Extensions.Caching.Memory;
 using Microsoft.Extensions.Logging;
 using NSubstitute;
+using Trakx.Common.Interfaces;
+using Trakx.Common.Interfaces.Indice;
+using Trakx.Common.Utils;
 using Trakx.Persistence.DAO;
 using Trakx.Persistence.Tests.Model;
 using Trakx.Tests.Data;
@@ -19,12 +24,14 @@ namespace Trakx.Persistence.Tests.Unit
         private readonly IndiceDataProvider _indiceDataProvider;
         private readonly MockDaoCreator _mockDaoCreator;
         private readonly IMemoryCache _memoryCache;
+        private readonly IDateTimeProvider _dateTimeProvider;
 
         public IndiceDataProviderTests(EmptyDbContextFixture fixture, ITestOutputHelper output)
         {
             _context = fixture.Context;
             _memoryCache = Substitute.For<IMemoryCache>();
-            _indiceDataProvider = new IndiceDataProvider(_context, _memoryCache, Substitute.For<ILogger<IndiceDataProvider>>());
+            _dateTimeProvider = Substitute.For<IDateTimeProvider>();
+            _indiceDataProvider = new IndiceDataProvider(_context, _memoryCache, _dateTimeProvider, Substitute.For<ILogger<IndiceDataProvider>>());
             _mockDaoCreator = new MockDaoCreator(output);
         }
 
@@ -110,6 +117,7 @@ namespace Trakx.Persistence.Tests.Unit
             result.Should().NotBeNullOrEmpty();
         }
 
+
         [Fact]
         public async Task GetDefinitionFromSymbol_should_retrieve_index_definition_by_symbol()
         {
@@ -159,7 +167,7 @@ namespace Trakx.Persistence.Tests.Unit
             var cacheEntry = SetUpCacheExpectation();
 
             var retrieved = await _indiceDataProvider.GetCompositionAtDate(_mockDaoCreator.GetRandomIndiceSymbol(), 
-                _mockDaoCreator.GetRandomDateTime());
+                _mockDaoCreator.GetRandomUtcDateTime());
 
             CheckInvalidEntryHasImmediateExpiration(retrieved, cacheEntry);
         }
@@ -223,6 +231,88 @@ namespace Trakx.Persistence.Tests.Unit
             CheckInvalidEntryHasImmediateExpiration(retrieved, cacheEntry);
         }
 
+        [Fact]
+        public async Task GetCompositionBetweenDates_without_end_date_should_return_ordered_dictionary_of_composition_by_time_interval()
+        {
+            var indiceDefinition = await PersistRandomIndice().ConfigureAwait(false);
+            var baseDate = await PersistMonthlyCompositions(indiceDefinition, 10).ConfigureAwait(false);
+
+            var startTime = baseDate.AddMonths(2).AddDays(15);
+            var expectedEndTime = baseDate.AddMonths(11);
+            _dateTimeProvider.UtcNow.Returns(expectedEndTime);
+
+            var compositions = await _indiceDataProvider
+                .GetCompositionsBetweenDates(indiceDefinition.Symbol, 
+                    startTime);
+
+            compositions.Count.Should().Be(8);
+
+            CheckCompositionsByInterval(compositions, startTime, expectedEndTime);
+        }
+
+        [Fact]
+        public async Task GetCompositionBetweenDates_with_end_date_should_return_ordered_dictionary_of_composition_by_time_interval()
+        {
+            var indiceDefinition = await PersistRandomIndice();
+            var baseDate = await PersistMonthlyCompositions(indiceDefinition, 10);
+
+            var startTime = baseDate.AddMonths(2);
+            var endTime = baseDate.AddMonths(6).AddDays(10);
+
+            var compositions = await _indiceDataProvider
+                .GetCompositionsBetweenDates(indiceDefinition.Symbol,
+                    startTime, endTime);
+
+            compositions.Count.Should().Be(5);
+
+            CheckCompositionsByInterval(compositions, startTime, endTime);
+        }
+
+        [Fact]
+        public async Task GetCompositionBetweenDates_with_end_date_on_same_composition_as_start_date_should_have_startTime_as_interval_startTime()
+        {
+            var indiceDefinition = await PersistRandomIndice().ConfigureAwait(false);
+            var baseDate = await PersistMonthlyCompositions(indiceDefinition, 1).ConfigureAwait(false);
+
+            var startTime = baseDate.AddDays(2);
+            var endTime = baseDate.AddDays(6);
+
+            var compositions = await _indiceDataProvider.GetCompositionsBetweenDates(indiceDefinition.Symbol, startTime, endTime);
+
+            compositions.Count.Should().Be(1);
+            compositions.Keys.Single().StartTime.Should().Be(startTime);
+            compositions.Keys.Single().EndTime.Should().Be(endTime);
+        }
+
+        private static void CheckCompositionsByInterval(Dictionary<TimeInterval, IIndiceComposition> compositions, DateTime startTime, DateTime expectedEndTime)
+        {
+            var compositionsAsList = compositions.ToList();
+            for (var i = 0; i < compositions.Count - 1; i++)
+            {
+                compositionsAsList[i].Key.EndTime.Should().Be(
+                    compositionsAsList[i + 1].Key.StartTime);
+                compositionsAsList[i].Key.StartTime.Should()
+                    .Be(i == 0 ? startTime : compositionsAsList[i].Value.CreationDate);
+            }
+
+            compositionsAsList.Last().Key.EndTime.Should().Be(expectedEndTime);
+        }
+
+        private async Task<DateTime> PersistMonthlyCompositions(IndiceDefinitionDao indiceDefinition, int compositionCount)
+        {
+            var baseDate = _mockDaoCreator.GetRandomUtcDateTime();
+            for (var i = 0; i < compositionCount; i++)
+            {
+                var creationDate = baseDate.AddMonths(i);
+                var composition = _mockDaoCreator
+                    .GetRandomCompositionDao(indiceDefinition, creationDate, (uint)i);
+                indiceDefinition.IndiceCompositionDaos.Add(composition);
+            }
+
+            await _context.SaveChangesAsync();
+            return baseDate;
+        }
+        
         private static void CheckInvalidEntryHasImmediateExpiration(object retrieved, ICacheEntry cacheEntry)
         {
             retrieved.Should().BeNull();

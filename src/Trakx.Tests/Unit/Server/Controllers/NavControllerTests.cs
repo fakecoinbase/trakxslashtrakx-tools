@@ -38,7 +38,7 @@ namespace Trakx.Tests.Unit.Server.Controllers
             _navController = new NavController(_indiceProvider, _navCalculator, _dateTimeProvider,
                 Substitute.For<ILogger<NavController>>());
             _mockCreator = new MockCreator(output);
-            _startTime = _mockCreator.GetRandomDateTime();
+            _startTime = _mockCreator.GetRandomUtcDateTime();
             _endTime = _startTime.AddDays(50);
         }
 

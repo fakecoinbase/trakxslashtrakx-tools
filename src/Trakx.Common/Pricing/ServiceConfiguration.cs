@@ -7,8 +7,8 @@ namespace Trakx.Common.Pricing
     {
         public static IServiceCollection AddPricing(this IServiceCollection serviceCollection)
         {
-            serviceCollection.AddSingleton<INavCalculator, NavCalculator>();
-            serviceCollection.AddSingleton<INavUpdater, NavUpdater>();
+            serviceCollection.AddScoped<INavCalculator, NavCalculator>();
+            serviceCollection.AddScoped<INavUpdater, NavUpdater>();
             return serviceCollection;
         }
     }

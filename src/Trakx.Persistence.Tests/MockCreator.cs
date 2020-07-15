@@ -2,6 +2,7 @@
 using System.Collections.Generic;
 using System.Linq;
 using System.Reflection;
+using FluentAssertions.Extensions;
 using Nethereum.RPC.Eth.DTOs;
 using Newtonsoft.Json.Linq;
 using NSubstitute;
@@ -62,10 +63,10 @@ namespace Trakx.Persistence.Tests
 
         public string GetRandomYearMonthSuffix() => $"{_random.Next(20, 36):00}{_random.Next(1, 13):00}";
 
-        public DateTime GetRandomDateTime()
+        public DateTime GetRandomUtcDateTime()
         {
-            var firstJan2020 = new DateTime(2020, 01, 01);
-            var firstJan2050 = new DateTime(2050, 01, 01);
+            var firstJan2020 = new DateTime(2020, 01, 01).AsUtc();
+            var firstJan2050 = new DateTime(2050, 01, 01).AsUtc();
             var timeBetween2020And2050 = firstJan2050.Subtract(firstJan2020);
 
             var randomDay = firstJan2020 + TimeSpan.FromDays(_random.Next(0, (int)timeBetween2020And2050.TotalDays));
@@ -78,22 +79,38 @@ namespace Trakx.Persistence.Tests
         public long GetRandomUnscaledAmount() => _random.Next(1, int.MaxValue);
         public TimeSpan GetRandomTimeSpan() => TimeSpan.FromSeconds(_random.Next(1, (int)TimeSpan.FromDays(1000).TotalSeconds));
 
-        public IIndiceComposition GetIndiceComposition(int componentCount)
+        public IIndiceComposition GetIndiceComposition(int componentCount,
+            IIndiceDefinition? definition = default,
+            DateTime? creationDate = default)
+        {
+            var componentQuantities = GetComponentQuantities(componentCount);
+
+            return GetIndiceComposition(definition, creationDate, componentQuantities);
+        }
+
+        public IIndiceComposition GetIndiceComposition(
+            IIndiceDefinition? definition, 
+            DateTime? creationDate,
+            List<IComponentQuantity> componentQuantities)
+        {
+            var indiceComposition = Substitute.For<IIndiceComposition>();
+            indiceComposition.ComponentQuantities.Returns(componentQuantities);
+            definition ??= GetRandomIndiceDefinition();
+            indiceComposition.IndiceDefinition.Returns(definition);
+            indiceComposition.Address.Returns(GetRandomAddressEthereum());
+            creationDate ??= GetRandomUtcDateTime();
+            indiceComposition.CreationDate.Returns(creationDate.Value);
+            var compositionSymbol = definition.GetCompositionSymbol(creationDate.Value);
+            indiceComposition.Symbol.Returns(compositionSymbol);
+            return indiceComposition;
+        }
+
+        private List<IComponentQuantity> GetComponentQuantities(int componentCount)
         {
             var componentQuantities = Enumerable.Range(0, componentCount)
                 .Select(i => GetComponentQuantity(symbol: $"sym{i}", coinGeckoId: $"id-{i}"))
                 .ToList();
-
-            var indiceComposition = Substitute.For<IIndiceComposition>();
-            indiceComposition.ComponentQuantities.Returns(componentQuantities);
-            var randomIndiceDefinition = GetRandomIndiceDefinition();
-            indiceComposition.IndiceDefinition.Returns(randomIndiceDefinition);
-            indiceComposition.Address.Returns(GetRandomAddressEthereum());
-            var creationDate = GetRandomDateTime();
-            indiceComposition.CreationDate.Returns(creationDate);
-            var compositionSymbol = randomIndiceDefinition.GetCompositionSymbol(creationDate);
-            indiceComposition.Symbol.Returns(compositionSymbol);
-            return indiceComposition;
+            return componentQuantities;
         }
 
         public IWrappingTransaction GetWrappingTransaction(TransactionState transactionState = TransactionState.Complete)
@@ -108,7 +125,7 @@ namespace Trakx.Persistence.Tests
             transaction.ReceiverAddress.Returns(GetRandomAddressEthereum());
             transaction.NativeChainTransactionHash.Returns(GetRandomAddressEthereum());
             transaction.EthereumTransactionHash.Returns(GetRandomEthereumTransactionHash());
-            transaction.TimeStamp.Returns(GetRandomDateTime());
+            transaction.TimeStamp.Returns(GetRandomUtcDateTime());
             transaction.TransactionState.Returns(transactionState);
             transaction.TransactionType.Returns(TransactionType.Wrap);
             if (transactionState != TransactionState.Complete) return transaction;
@@ -118,7 +135,9 @@ namespace Trakx.Persistence.Tests
             return transaction;
         }
 
-        public IIndiceDefinition GetRandomIndiceDefinition(string? indiceSymbol = default, string? name = default)
+        public IIndiceDefinition GetRandomIndiceDefinition(
+            string? indiceSymbol = default, string? name = default,
+            DateTime? creationDate = default)
         {
             var indiceDefinition = Substitute.For<IIndiceDefinition>();
             indiceDefinition.NaturalUnit.Returns((ushort)10);
@@ -129,8 +148,20 @@ namespace Trakx.Persistence.Tests
             var description = "description " + GetRandomString(15);
             indiceDefinition.Description.Returns(description);
             indiceDefinition.Address.Returns(GetRandomAddressEthereum());
-            indiceDefinition.CreationDate.Returns(GetRandomDateTime());
+            creationDate ??= GetRandomUtcDateTime();
+            indiceDefinition.CreationDate.Returns(creationDate);
+
             return indiceDefinition;
+        }
+
+        public List<IIndiceComposition> GetIndiceCompositions(int count, IIndiceDefinition? indexDefinition = default)
+        {
+            indexDefinition ??= GetRandomIndiceDefinition();
+            var componentQuantities = GetComponentQuantities(3);
+            var compositions = Enumerable.Range(0, count).Select(i =>
+                GetIndiceComposition(indexDefinition,
+                    indexDefinition.CreationDate?.AddMonths(i), componentQuantities));
+            return compositions.ToList();
         }
 
         public IComponentQuantity GetComponentQuantity(string? address = default,
