@@ -13,6 +13,7 @@ namespace Trakx.MarketData.Collector
         public static void Main(string[] args)
         {
             CreateHostBuilder(args)
+                .ConfigureAppConfiguration(b => b.AddEnvironmentVariables())
                 .Build().Run();
         }
 
@@ -23,7 +24,12 @@ namespace Trakx.MarketData.Collector
                     services.AddHostedService<Worker>();
                     services.AddCryptoCompareClient();
 
+                    services.AddOptions();
+                    services.Configure<PriceCacheConfiguration>(
+                        hostContext.Configuration.GetSection(nameof(PriceCacheConfiguration)));
+
                     services.AddSingleton<IPriceCache, PriceCache>();
+                    services.AddSingleton<IDateTimeProvider, DateTimeProvider>();
 
                     services.AddDistributedRedisCache(options =>
                     {

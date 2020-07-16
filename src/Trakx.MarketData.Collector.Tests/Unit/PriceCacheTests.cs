@@ -10,6 +10,7 @@ using CryptoCompare;
 using FluentAssertions;
 using Microsoft.Extensions.Caching.Distributed;
 using Microsoft.Extensions.DependencyInjection;
+using Microsoft.Extensions.Options;
 using Microsoft.Reactive.Testing;
 using NSubstitute;
 using Trakx.Common.Interfaces;
@@ -19,7 +20,6 @@ using Trakx.MarketData.Collector.CryptoCompare;
 using Trakx.MarketData.Collector.CryptoCompare.DTOs.Inbound;
 using Trakx.MarketData.Collector.CryptoCompare.DTOs.Outbound;
 using Trakx.Persistence.Tests;
-using Trakx.Tests.Data;
 using Xunit;
 using Xunit.Abstractions;
 
@@ -36,9 +36,19 @@ namespace Trakx.MarketData.Collector.Tests.Unit
         private readonly PriceCache _priceCache;
         private readonly ICryptoCompareClient _restSocketClient;
         private readonly TestScheduler _testScheduler;
+        private const int RetryDbConnectionPeriod = 50;
+        private const int RestApiPollingPeriod = 1234;
 
         public PriceCacheTests(ITestOutputHelper output)
         {
+            var options = Substitute.For<IOptions<PriceCacheConfiguration>>();
+            var configuration = new PriceCacheConfiguration
+            {
+                CryptoCompareRestApiPollingPeriodMs = RestApiPollingPeriod,
+                RetryDbConnectionPeriodMs = RetryDbConnectionPeriod
+            };
+            options.Value.Returns(configuration);
+
             _indiceDataProvider = Substitute.For<IIndiceDataProvider>();
             _webSocketClient = Substitute.For<ICryptoCompareWebSocketClient>();
             _restSocketClient = Substitute.For<ICryptoCompareClient>();
@@ -56,8 +66,7 @@ namespace Trakx.MarketData.Collector.Tests.Unit
 
             _testScheduler = new TestScheduler();
             _priceCache = new PriceCache(_webSocketClient, _restSocketClient, _cache,
-                serviceScopeFactory, logger,
-                TimeSpan.FromMilliseconds(50), _testScheduler);
+                serviceScopeFactory, options, logger, _testScheduler);
 
             _mockCreator = new MockCreator(output);
         }
@@ -162,7 +171,7 @@ namespace Trakx.MarketData.Collector.Tests.Unit
             var expectedSymbols = PrepareIndiceDataProviderExpectations().ToList();
             var loadCompleteObservable = GetStartableLoadComplete();
 
-            using var disposable = _testScheduler.Schedule(PriceCache.RestPollingInterval.Multiply(2.1), 
+            using var disposable = _testScheduler.Schedule(TimeSpan.FromMilliseconds(RestApiPollingPeriod).Multiply(2.1), 
                 () => _priceCache.StopPolling());
 
             await _priceCache.StartCaching(_cancellationToken);

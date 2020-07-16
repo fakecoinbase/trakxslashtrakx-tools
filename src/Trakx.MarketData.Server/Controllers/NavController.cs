@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.ComponentModel.DataAnnotations;
 using System.Threading;
 using System.Threading.Tasks;
 using Microsoft.AspNetCore.Http;
@@ -98,9 +99,9 @@ namespace Trakx.MarketData.Server.Controllers
         [ProducesResponseType(StatusCodes.Status200OK)]
         [ProducesResponseType(StatusCodes.Status400BadRequest)]
         public async Task<ActionResult<DetailedHistoricalNavsByTimestampModel>> GetHistoricalUsdcNetAssetValues(
-            [FromQuery] string indiceOrCompositionSymbol,
-            [FromQuery] DateTimeOffset startTime,
-            [FromQuery] Period period,
+            [FromQuery, Required] string indiceOrCompositionSymbol,
+            [FromQuery, Required] DateTimeOffset startTime,
+            [FromQuery, Required] Period period,
             [FromQuery] DateTimeOffset? endTime = default,
             CancellationToken cancellationToken = default)
         {

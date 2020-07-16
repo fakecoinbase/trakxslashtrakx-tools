@@ -36,6 +36,8 @@ services:
       - ConnectionStrings__SqlServerConnection=Server=sqlserver;Database=IndiceRepository;Trusted_Connection=True;MultipleActiveResultSets=true;User=SA;Password=Ch@ngeMe123;Integrated Security=false
       - ConnectionStrings__RedisConnection=redis:6379,abortConnect=False
       - CRYPTOCOMPARE_API_KEY=xxx
+      - PriceCacheConfiguration__CryptoCompareRestApiPollingPeriodMs=5678
+      - PriceCacheConfiguration__RetryDbConnectionPeriodMs=1234
     depends_on:
       - marketdata_api
     links:

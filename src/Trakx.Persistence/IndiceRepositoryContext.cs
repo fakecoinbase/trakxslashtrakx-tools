@@ -8,6 +8,11 @@ namespace Trakx.Persistence
 {
     public partial class IndiceRepositoryContext : DbContext
     {
+        public IndiceRepositoryContext() : base(new DbContextOptionsBuilder<IndiceRepositoryContext>()
+            .UseSqlServer("")
+            .Options)
+        { }
+
         /// <inheritdoc />
         public IndiceRepositoryContext(DbContextOptions options)
             : base(options)
@@ -18,14 +23,14 @@ namespace Trakx.Persistence
 
         void OnEntityTracked(object? sender, EntityTrackedEventArgs e)
         {
-            if (!e.FromQuery && e.Entry.State == EntityState.Added 
+            if (!e.FromQuery && e.Entry.State == EntityState.Added
                              && e.Entry.Entity is IHasCreatedLastModified entity)
                 entity.Created = DateTime.UtcNow;
         }
 
         void OnEntityStateChanged(object? sender, EntityStateChangedEventArgs e)
         {
-            if (e.NewState == EntityState.Modified 
+            if (e.NewState == EntityState.Modified
                 && e.Entry.Entity is IHasCreatedLastModified entity)
                 entity.LastModified = DateTime.UtcNow;
         }
@@ -40,13 +45,13 @@ namespace Trakx.Persistence
         public DbSet<WrappingTransactionDao> WrappingTransactions { get; set; }
         public DbSet<UserDao> Users { get; set; }
         public DbSet<DepositorAddressDao> DepositorAddresses { get; set; }
-        
+
         #region Overrides of DbContext
 
         /// <inheritdoc />
         protected override void OnModelCreating(ModelBuilder modelBuilder)
         {
-            base.OnModelCreating(modelBuilder); 
+            base.OnModelCreating(modelBuilder);
         }
 
         #endregion

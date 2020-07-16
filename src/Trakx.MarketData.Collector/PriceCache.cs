@@ -12,6 +12,7 @@ using CryptoCompare;
 using Microsoft.Extensions.Caching.Distributed;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Logging;
+using Microsoft.Extensions.Options;
 using Polly;
 using Trakx.Common.Extensions;
 using Trakx.Common.Interfaces;
@@ -27,7 +28,7 @@ namespace Trakx.MarketData.Collector
     /// <inheritdoc cref="IDisposable"/>
     public class PriceCache : IPriceCache, IDisposable
     {
-        private readonly TimeSpan _waitForDbDelays;
+        private readonly TimeSpan _retryDbConnectionPeriod;
         private IIndiceDataProvider _indiceDataProvider;
         private readonly ICryptoCompareWebSocketClient _webSocketClient;
         private readonly ICryptoCompareClient _restClient;
@@ -40,18 +41,19 @@ namespace Trakx.MarketData.Collector
         private readonly List<string> _allConstituentsSymbols = new List<string>();
         private readonly List<string> _webSocketSourcedSymbols = new List<string>();
         private readonly List<string> _restSourcedSymbols = new List<string>();
-        public static readonly TimeSpan RestPollingInterval = TimeSpan.FromSeconds(5);
+        private readonly TimeSpan _cryptoCompareRestApiPollingPeriod;
         private readonly List<IDisposable> _subscriptions = new List<IDisposable>();
 
-        internal PriceCache(ICryptoCompareWebSocketClient webSocketClient,
+        public PriceCache(ICryptoCompareWebSocketClient webSocketClient,
             ICryptoCompareClient restClient,
             IDistributedCache cache,
             IServiceScopeFactory serviceScopeFactory,
+            IOptions<PriceCacheConfiguration> configuration,
             ILogger<PriceCache> logger,
-            TimeSpan waitForDbDelays,
             IScheduler scheduler = default)
         {
-            _waitForDbDelays = waitForDbDelays;
+            _retryDbConnectionPeriod = TimeSpan.FromMilliseconds(configuration.Value.RetryDbConnectionPeriodMs);
+            _cryptoCompareRestApiPollingPeriod = TimeSpan.FromMilliseconds(configuration.Value.CryptoCompareRestApiPollingPeriodMs);
             _webSocketClient = webSocketClient;
             _restClient = restClient;
             _cache = cache;
@@ -60,14 +62,9 @@ namespace Trakx.MarketData.Collector
             _scheduler = scheduler ?? Scheduler.Default;
             _pollingCancellationTokenSource = new CancellationTokenSource();
             _restCurrencyPairStream = BuildStartRestPriceStream(_pollingCancellationTokenSource.Token);
-        }
 
-        public PriceCache(ICryptoCompareWebSocketClient webSocketClient,
-            ICryptoCompareClient restClient,
-            IDistributedCache cache, 
-            IServiceScopeFactory serviceScopeFactory, 
-            ILogger<PriceCache> logger) :this(webSocketClient, restClient, cache, serviceScopeFactory, logger, 
-            TimeSpan.FromMilliseconds(500)) { }
+            _logger.LogInformation("PriceCache started with polling period of {0}", _cryptoCompareRestApiPollingPeriod);
+        }
         
         /// <inheritdoc />
         public async Task StartCaching(CancellationToken cancellationToken)
@@ -100,7 +97,7 @@ namespace Trakx.MarketData.Collector
         {
             var retryPolicy = Policy.Handle<Exception>()
                 .WaitAndRetryForeverAsync(
-                    i => _waitForDbDelays.Multiply(Math.Min(10, i)),
+                    i => _retryDbConnectionPeriod.Multiply(Math.Min(10, i)),
                     (exception, _, timespan) => 
                 {
                     _logger.LogInformation("Waiting for {0} to provide data. Received error message {1}",
@@ -138,7 +135,7 @@ namespace Trakx.MarketData.Collector
 
         private IObservable<CurrencyPair> BuildStartRestPriceStream(CancellationToken cancellationToken)
         {
-            var currencyPairStream = Observable.Interval(RestPollingInterval, _scheduler)
+            var currencyPairStream = Observable.Interval(_cryptoCompareRestApiPollingPeriod, _scheduler)
                 .TakeUntil(_ => cancellationToken.IsCancellationRequested)
                 .SelectMany(async _ =>
                 {
