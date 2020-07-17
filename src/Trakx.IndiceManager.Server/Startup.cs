@@ -72,6 +72,7 @@ namespace Trakx.IndiceManager.Server
             });
 
             services.AddScoped<IDepositorAddressRetriever, DepositorAddressRetriever>();
+            services.AddSingleton<IDateTimeProvider, DateTimeProvider>();
 
             services.AddEthereumInteraction(Environment.GetEnvironmentVariable("INFURA_API_KEY"));
             services.AddMemoryCache();
