@@ -11,7 +11,7 @@ on:
 
 env:
   IMAGE_NAME: "trakx-marketdata-server"
-  BASE_VERSION: "0.1.4"
+  BASE_VERSION: "0.1.5"
 
 jobs:
   # Run tests.
@@ -46,6 +46,7 @@ jobs:
         uses: einaregilsson/build-number@v2 
         with:
           token: ${{secrets.GITHUB_TOKEN}}
+          prefix: marketDataServer
   
       - name: Upload build number
         uses: actions/upload-artifact@v1

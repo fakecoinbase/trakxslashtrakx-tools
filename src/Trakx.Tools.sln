@@ -12,10 +12,12 @@ Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "SolutionItems", "SolutionIt
 		Collector.Dockerfile = Collector.Dockerfile
 		Common.Projects.props = Common.Projects.props
 		..\.github\workflows\dockerpublish.collector.yml = ..\.github\workflows\dockerpublish.collector.yml
-		dockerpublish.IndiceManager.yml = dockerpublish.IndiceManager.yml
+		..\.github\workflows\dockerpublish.IndexManagerClient.yml = ..\.github\workflows\dockerpublish.IndexManagerClient.yml
+		..\.github\workflows\dockerpublish.IndexManagerServer.yml = ..\.github\workflows\dockerpublish.IndexManagerServer.yml
 		..\.github\workflows\dockerpublish.server.yml = ..\.github\workflows\dockerpublish.server.yml
 		generate-migrations.md = generate-migrations.md
-		IndiceManager.Dockerfile = IndiceManager.Dockerfile
+		IndexManagerClient.Dockerfile = IndexManagerClient.Dockerfile
+		IndexManagerServer.Dockerfile = IndexManagerServer.Dockerfile
 		..\LICENSE = ..\LICENSE
 		..\README.md = ..\README.md
 		Server.Dockerfile = Server.Dockerfile
@@ -65,7 +67,7 @@ Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Trakx.IndiceManager.ApiClie
 EndProject
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Trakx.Persistence.Tests", "Trakx.Persistence.Tests\Trakx.Persistence.Tests.csproj", "{D0BA0E6B-3533-4D42-BE2E-B2C70B894533}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Trakx.Exchange.ApiClient", "Trakx.Exchange.ApiClient\Trakx.Exchange.ApiClient.csproj", "{C803AF8A-9904-4D05-9DA3-A058411C4E4F}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Trakx.Exchange.ApiClient", "Trakx.Exchange.ApiClient\Trakx.Exchange.ApiClient.csproj", "{C803AF8A-9904-4D05-9DA3-A058411C4E4F}"
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution

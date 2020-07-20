@@ -19,4 +19,6 @@ COPY --from=publish /app/publish .
 ENV ASPNETCORE_URLS http://+:4000
 ENV MESSARI_API_KEY "replace me"
 ENV INFURA_API_KEY "replace me"
+ENV COINBASE_PASSPHRASE_KEY "replace me"
+ENV COINBASE_API_KEY "replace me"
 ENTRYPOINT ["dotnet", "Trakx.IndiceManager.Server.dll"]

@@ -1,4 +1,4 @@
-name: Docker Build and Publish Collector Service
+name: Docker Build and Publish IndexManager Client Service
 
 on:
   push:
@@ -10,7 +10,7 @@ on:
   pull_request:
 
 env:
-  IMAGE_NAME: "trakx-marketdata-collector"
+  IMAGE_NAME: "trakx-indexmanager-client"
   BASE_VERSION: "0.1.5"
 
 jobs:
@@ -28,7 +28,7 @@ jobs:
             docker-compose --file src/docker-compose.test.yml build
             docker-compose --file src/docker-compose.test.yml run sut
           else
-            docker build . --file src/Collector.Dockerfile
+            docker build . --file src/IndexManagerClient.Dockerfile
           fi
 
   # Push image to GitHub Packages.
@@ -46,7 +46,7 @@ jobs:
         uses: einaregilsson/build-number@v2 
         with:
           token: ${{secrets.GITHUB_TOKEN}}
-          prefix: collector
+          prefix: indexManagerClient
   
       - name: Upload build number
         uses: actions/upload-artifact@v1
@@ -57,7 +57,7 @@ jobs:
       - uses: actions/checkout@v2
 
       - name: Build image and tag image
-        run: docker build . --file src/Collector.Dockerfile --tag "docker.pkg.github.com/$GITHUB_REPOSITORY/$IMAGE_NAME:$BASE_VERSION.$BUILD_NUMBER"
+        run: docker build . --file src/IndexManagerClient.Dockerfile --tag "docker.pkg.github.com/$GITHUB_REPOSITORY/$IMAGE_NAME:$BASE_VERSION.$BUILD_NUMBER"
 
       - name: Log into registry
         run: echo "${{ secrets.GITHUB_TOKEN }}" | docker login docker.pkg.github.com -u ${{ github.actor }} --password-stdin
