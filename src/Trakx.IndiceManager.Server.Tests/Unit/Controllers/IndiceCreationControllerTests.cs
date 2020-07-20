@@ -291,9 +291,10 @@ namespace Trakx.IndiceManager.Server.Tests.Unit.Controllers
         [Fact]
         public async Task SaveComponentDefinition_should_send_badRequestError_if_component_incomplete()
         {
-            var component = new ComponentDetailModel(_mockCreator.GetComponentQuantity().ComponentDefinition);
-            component.CoinGeckoId = null;
-            component.Name = null;
+            var component = new ComponentDetailModel(_mockCreator.GetComponentQuantity().ComponentDefinition)
+            {
+                CoinGeckoId = null, Name = null
+            };
 
             await _controller.SaveComponentDefinition(component);
             await _componentRetriever.DidNotReceiveWithAnyArgs().TryToSaveComponentDefinition(component);
@@ -302,7 +303,10 @@ namespace Trakx.IndiceManager.Server.Tests.Unit.Controllers
         [Fact]
         public async Task SaveComponentDefinition_should_return_error_if_object_already_in_database()
         {
-            var component = new ComponentDetailModel(_mockCreator.GetComponentQuantity().ComponentDefinition);
+            var component = new ComponentDetailModel(_mockCreator.GetComponentQuantity().ComponentDefinition)
+            {
+                CoinGeckoId = "btc", Name = "bitcoin"
+            };
             _componentRetriever.TryToSaveComponentDefinition(component).Returns(false);
 
             var result = await _controller.SaveComponentDefinition(component);
@@ -312,7 +316,11 @@ namespace Trakx.IndiceManager.Server.Tests.Unit.Controllers
         [Fact]
         public async Task SaveComponentDefinition_should_return_status_code_201_if_addition_success()
         {
-            var component = new ComponentDetailModel(_mockCreator.GetComponentQuantity().ComponentDefinition);
+            var component = new ComponentDetailModel(_mockCreator.GetComponentQuantity().ComponentDefinition)
+            {
+                CoinGeckoId = "eth",
+                Name = "ether"
+            };
             _componentRetriever.TryToSaveComponentDefinition(component).Returns(true);
 
             var result = await _controller.SaveComponentDefinition(component);
