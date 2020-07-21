@@ -111,6 +111,7 @@ namespace Trakx.IndiceManager.Server
             if (env.IsDevelopment())
             {
                 app.UseDeveloperExceptionPage();
+                SeedDatabase(app);
             }
 
             app.UseHttpsRedirection();
@@ -126,7 +127,7 @@ namespace Trakx.IndiceManager.Server
             app.UseAuthentication();
             app.UseAuthorization();
 
-            SeedDatabase(app);
+            
 
             app.UseEndpoints(endpoints =>
             {
