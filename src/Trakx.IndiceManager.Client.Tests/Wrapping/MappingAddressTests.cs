@@ -2,7 +2,6 @@ using System.Collections.Generic;
 using System.Threading.Tasks;
 using FluentAssertions;
 using Trakx.IndiceManager.Client.Pages.Wrapping;
-using Trakx.Common.Models;
 using Xunit;
 using Xunit.Abstractions;
 using Syncfusion.Blazor;
@@ -10,7 +9,6 @@ using Microsoft.Extensions.DependencyInjection;
 using NSubstitute;
 using NSubstitute.ExceptionExtensions;
 using Trakx.IndiceManager.ApiClient;
-using Trakx.Persistence.Tests;
 
 namespace Trakx.IndiceManager.Client.Tests.Wrapping
 {
@@ -36,7 +34,16 @@ namespace Trakx.IndiceManager.Client.Tests.Wrapping
 
         public void SetMockApiClient()
         {
-            var componentDetail = new ComponentDetailModel(_mockCreator.GetComponentQuantity());
+            var quantity = _mockCreator.GetComponentQuantity();
+            var componentDetail = new ComponentDetailModel
+            {
+                Quantity = quantity.Quantity,
+                Address = quantity.ComponentDefinition.Address,
+                CoinGeckoId = quantity.ComponentDefinition.CoinGeckoId,
+                Decimals = quantity.ComponentDefinition.Decimals,
+                Name = quantity.ComponentDefinition.Name,
+                Symbol = quantity.ComponentDefinition.Symbol,
+            };
             var componentCollection = new List<ComponentDetailModel>();
             componentCollection.Add(componentDetail);
             var response = new Response<List<ComponentDetailModel>>(200, null, componentCollection);

@@ -8,7 +8,7 @@ using Trakx.Common.Interfaces.Indice;
 using Trakx.Common.Sources.CoinGecko;
 using Trakx.Common.Sources.Web3.Client;
 using Trakx.IndiceManager.Server.Managers;
-using Trakx.Tests.Tools;
+using Trakx.Tests.Helpers;
 using Xunit;
 using Xunit.Abstractions;
 

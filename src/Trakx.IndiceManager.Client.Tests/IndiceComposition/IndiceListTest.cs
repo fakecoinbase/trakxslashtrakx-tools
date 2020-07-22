@@ -9,11 +9,8 @@ using Microsoft.Extensions.Logging;
 using NSubstitute;
 using NSubstitute.ExceptionExtensions;
 using Syncfusion.Blazor;
-using Trakx.Common.Models;
 using Trakx.IndiceManager.ApiClient;
 using Trakx.IndiceManager.Client.Pages.IndiceComposition;
-using Trakx.Persistence.Tests;
-using Trakx.Tests.Data;
 using Xunit;
 using Xunit.Abstractions;
 
@@ -43,7 +40,7 @@ namespace Trakx.IndiceManager.Client.Tests.IndiceComposition
 
         private List<IndiceDetailModel> SetupMockIndicesResponse()
         {
-            var indiceDetailModel = new IndiceDetailModel(_mockCreator.GetRandomIndiceDefinition());
+            var indiceDetailModel = _mockCreator.GetRandomIndiceDetailModel();
             var indices = new List<IndiceDetailModel> {indiceDetailModel};
             var indicesResponse =
                 new Response<List<IndiceDetailModel>>((int) HttpStatusCode.Created, default, indices);
@@ -68,8 +65,10 @@ namespace Trakx.IndiceManager.Client.Tests.IndiceComposition
         public async Task IndiceComposition_should_not_be_null_after_calling_the_server()
         {
             var firstIndex = Component.Instance.IndexList.First();
+
+            firstIndex.IndiceCompositions.Clear();
             firstIndex.IndiceCompositions.Should()
-                .BeNull("otherwise api is not called");
+                .BeNullOrEmpty("otherwise api is not called");
             
             var expectedCompositions = SetupMockCompositionsResponse();
 
@@ -80,7 +79,7 @@ namespace Trakx.IndiceManager.Client.Tests.IndiceComposition
 
         private List<IndiceCompositionModel> SetupMockCompositionsResponse()
         {
-            var indiceComposition = new IndiceCompositionModel(_mockCreator.GetIndiceComposition(1));
+            var indiceComposition = _mockCreator.GetRandomIndiceCompositionModel(1);
             var indiceCompositionList = new List<IndiceCompositionModel> { indiceComposition };
             var newResponse = new Response<List<IndiceCompositionModel>>((int)HttpStatusCode.Created, default, indiceCompositionList);
             _apiClient.GetCompositionsBySymbolAsync(indiceCompositionList.First().Symbol).ReturnsForAnyArgs(newResponse);
@@ -108,7 +107,7 @@ namespace Trakx.IndiceManager.Client.Tests.IndiceComposition
 
             await Component.Instance.GetCompositionsForIndex(Component.Instance.IndexList.First());
             await _apiClient.ReceivedWithAnyArgs(1).GetCompositionsBySymbolAsync(default);
-            Component.Instance.IndexList.First().IndiceCompositions.Should().BeNull();
+            Component.Instance.IndexList.First().IndiceCompositions.Should().BeNullOrEmpty();
         }
     }
 }

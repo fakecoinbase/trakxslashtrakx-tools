@@ -3,9 +3,9 @@ using System.Threading.Tasks;
 using FluentAssertions;
 using Microsoft.EntityFrameworkCore;
 using Trakx.Common.Interfaces;
+using Trakx.Common.Tests;
 using Trakx.Persistence.DAO;
 using Trakx.Persistence.Tests.Model;
-using Trakx.Tests.Data;
 using Xunit;
 using Xunit.Abstractions;
 

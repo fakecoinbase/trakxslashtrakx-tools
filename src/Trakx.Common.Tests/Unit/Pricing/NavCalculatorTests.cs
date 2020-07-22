@@ -7,7 +7,6 @@ using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
-using Trakx.Common.Core;
 using Trakx.Common.Extensions;
 using Trakx.Common.Interfaces;
 using Trakx.Common.Interfaces.Indice;
@@ -15,7 +14,6 @@ using Trakx.Common.Pricing;
 using Trakx.Common.Sources.CoinGecko;
 using Trakx.Common.Sources.Messari.Client;
 using Trakx.Common.Utils;
-using Trakx.Persistence.Tests;
 using Xunit;
 using Xunit.Abstractions;
 

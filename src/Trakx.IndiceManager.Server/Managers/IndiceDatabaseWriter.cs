@@ -5,6 +5,8 @@ using Trakx.Common.Interfaces.Indice;
 using Trakx.Common.Models;
 using Trakx.Persistence;
 using Trakx.Persistence.DAO;
+using IndiceCompositionModel = Trakx.IndiceManager.Server.Models.IndiceCompositionModel;
+using IndiceDetailModel = Trakx.IndiceManager.Server.Models.IndiceDetailModel;
 
 namespace Trakx.IndiceManager.Server.Managers
 {

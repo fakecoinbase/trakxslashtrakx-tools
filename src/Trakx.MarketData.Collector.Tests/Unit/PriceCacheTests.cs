@@ -15,11 +15,11 @@ using Microsoft.Reactive.Testing;
 using NSubstitute;
 using Trakx.Common.Interfaces;
 using Trakx.Common.Interfaces.Indice;
+using Trakx.Common.Tests;
 using Trakx.Common.Utils;
 using Trakx.MarketData.Collector.CryptoCompare;
 using Trakx.MarketData.Collector.CryptoCompare.DTOs.Inbound;
 using Trakx.MarketData.Collector.CryptoCompare.DTOs.Outbound;
-using Trakx.Persistence.Tests;
 using Xunit;
 using Xunit.Abstractions;
 

@@ -10,6 +10,7 @@ using Trakx.Common.Core;
 using Trakx.Common.Interfaces;
 using Trakx.Common.Models;
 using Trakx.IndiceManager.Server.Controllers;
+using Trakx.IndiceManager.Server.Models;
 using Trakx.Persistence.Tests;
 using Xunit;
 using Xunit.Abstractions;

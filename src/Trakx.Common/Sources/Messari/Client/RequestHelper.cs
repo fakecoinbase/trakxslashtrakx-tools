@@ -7,6 +7,7 @@ using System.Threading;
 using System.Threading.Tasks;
 using Microsoft.AspNetCore.WebUtilities;
 using Microsoft.Extensions.Logging;
+using Trakx.Common.Pricing;
 using Trakx.Common.Sources.Messari.DTOs;
 
 namespace Trakx.Common.Sources.Messari.Client

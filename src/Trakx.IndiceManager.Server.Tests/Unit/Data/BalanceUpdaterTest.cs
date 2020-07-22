@@ -5,7 +5,7 @@ using NSubstitute;
 using Trakx.Coinbase.Custody.Client.Models;
 using Trakx.Common.Interfaces;
 using Trakx.IndiceManager.Server.Data;
-using Trakx.Tests.Data;
+using Trakx.Persistence.Tests;
 using Xunit;
 using Xunit.Abstractions;
 

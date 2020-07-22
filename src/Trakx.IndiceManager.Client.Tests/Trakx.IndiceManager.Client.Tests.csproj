@@ -9,6 +9,10 @@
   <Import Project="../Common.Projects.props" />
 
   <ItemGroup>
+    <PackageReference Include="coverlet.msbuild" Version="2.8.1">
+      <PrivateAssets>all</PrivateAssets>
+      <IncludeAssets>runtime; build; native; contentfiles; analyzers; buildtransitive</IncludeAssets>
+    </PackageReference>
     <PackageReference Include="FluentAssertions" Version="5.10.3" />
     <PackageReference Include="Flurl.Http" Version="2.4.2" />
     <PackageReference Include="Microsoft.NET.Test.Sdk" Version="16.5.0" />
@@ -27,9 +31,8 @@
   </ItemGroup>
 
   <ItemGroup>
+    <ProjectReference Include="..\Trakx.Common.Tests\Trakx.Common.Tests.csproj" />
     <ProjectReference Include="..\Trakx.IndiceManager.Client\Trakx.IndiceManager.Client.csproj" />
-    <ProjectReference Include="..\Trakx.Persistence.Tests\Trakx.Persistence.Tests.csproj" />
-    <ProjectReference Include="..\Trakx.Tests\Trakx.Tests.csproj" />
   </ItemGroup>
 
 </Project>

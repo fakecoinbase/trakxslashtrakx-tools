@@ -7,6 +7,9 @@ using Microsoft.AspNetCore.Mvc;
 using Nethereum.Util;
 using Trakx.Common.Models;
 using Trakx.IndiceManager.Server.Managers;
+using ComponentDetailModel = Trakx.IndiceManager.Server.Models.ComponentDetailModel;
+using IndiceCompositionModel = Trakx.IndiceManager.Server.Models.IndiceCompositionModel;
+using IndiceDetailModel = Trakx.IndiceManager.Server.Models.IndiceDetailModel;
 
 namespace Trakx.IndiceManager.Server.Controllers
 {

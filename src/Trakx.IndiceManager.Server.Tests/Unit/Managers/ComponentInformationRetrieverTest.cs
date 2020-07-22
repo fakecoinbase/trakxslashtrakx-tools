@@ -10,6 +10,7 @@ using Trakx.Common.Models;
 using Trakx.Common.Sources.CoinGecko;
 using Trakx.Common.Sources.Web3.Client;
 using Trakx.IndiceManager.Server.Managers;
+using Trakx.IndiceManager.Server.Models;
 using Trakx.Persistence.Tests;
 using Xunit;
 using Xunit.Abstractions;

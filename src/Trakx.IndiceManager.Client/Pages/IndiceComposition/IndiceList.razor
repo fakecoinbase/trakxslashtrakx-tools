@@ -115,7 +115,7 @@
 
     public async Task GetCompositionsForIndex(IndiceDetailModel indice)
     {
-        if (indice.IndiceCompositions != null) return;
+        if (indice.IndiceCompositions != null && indice.IndiceCompositions.Any()) return;
         try
         {
             var compositions = (await ApiClient.GetCompositionsBySymbolAsync(indice.Symbol)).Result;

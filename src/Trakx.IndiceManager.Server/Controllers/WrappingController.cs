@@ -7,6 +7,8 @@ using Microsoft.AspNetCore.Mvc;
 using Trakx.Coinbase.Custody.Client.Interfaces;
 using Trakx.Common.Models;
 using Trakx.IndiceManager.Server.Managers;
+using Trakx.IndiceManager.Server.Models;
+using WrappingTransactionModel = Trakx.IndiceManager.Server.Models.WrappingTransactionModel;
 
 namespace Trakx.IndiceManager.Server.Controllers
 {

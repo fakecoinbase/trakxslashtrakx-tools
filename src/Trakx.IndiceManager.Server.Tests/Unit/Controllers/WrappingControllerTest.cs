@@ -8,10 +8,9 @@ using NSubstitute;
 using Trakx.Coinbase.Custody.Client.Interfaces;
 using Trakx.Coinbase.Custody.Client.Models;
 using Trakx.Common.Interfaces.Transaction;
-using Trakx.Common.Models;
 using Trakx.IndiceManager.Server.Controllers;
 using Trakx.IndiceManager.Server.Managers;
-using Trakx.Persistence.Tests;
+using Trakx.IndiceManager.Server.Models;
 using Xunit;
 using Xunit.Abstractions;
 

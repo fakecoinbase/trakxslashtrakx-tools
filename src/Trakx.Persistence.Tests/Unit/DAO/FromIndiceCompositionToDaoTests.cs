@@ -1,7 +1,7 @@
 ﻿using FluentAssertions;
 using Trakx.Common.Interfaces.Indice;
+using Trakx.Common.Tests;
 using Trakx.Persistence.DAO;
-using Trakx.Tests.Data;
 using Xunit;
 using Xunit.Abstractions;
 

@@ -6,16 +6,13 @@ using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Logging;
 using NSubstitute;
 using Trakx.IndiceManager.Client.Pages.IndiceComposition;
-using Trakx.Tests.Data;
 using Xunit;
 using Xunit.Abstractions;
 using Syncfusion.Blazor;
 using Syncfusion.Blazor.Grids;
-using Trakx.Common.Models;
 using System.Linq;
 using Trakx.Common.Composition;
 using Trakx.IndiceManager.ApiClient;
-using Trakx.Persistence.Tests;
 
 namespace Trakx.IndiceManager.Client.Tests.IndiceComposition
 {
@@ -35,7 +32,7 @@ namespace Trakx.IndiceManager.Client.Tests.IndiceComposition
             _apiClient = Substitute.For<IIndiceCreationClient>();
             _weightCalculator = Substitute.For<IWeightCalculator>();
             _mockCreator = new MockCreator(output);
-            var componentDetail = new ComponentDetailModel(_mockCreator.GetComponentQuantity());
+            var componentDetail = _mockCreator.GetRandomComponentDetailModel();
             var componentCollection = new List<ComponentDetailModel>();
             componentCollection.Add(componentDetail);
             var response = new Response<List<ComponentDetailModel>>(200, null, componentCollection);

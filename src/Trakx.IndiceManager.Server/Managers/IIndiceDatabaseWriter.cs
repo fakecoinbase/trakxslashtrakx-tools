@@ -1,5 +1,7 @@
 ﻿using System.Threading.Tasks;
 using Trakx.Common.Models;
+using IndiceCompositionModel = Trakx.IndiceManager.Server.Models.IndiceCompositionModel;
+using IndiceDetailModel = Trakx.IndiceManager.Server.Models.IndiceDetailModel;
 
 namespace Trakx.IndiceManager.Server.Managers
 {

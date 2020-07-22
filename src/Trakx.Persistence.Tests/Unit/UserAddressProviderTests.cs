@@ -5,7 +5,6 @@ using Microsoft.EntityFrameworkCore;
 using Trakx.Common.Interfaces;
 using Trakx.Persistence.DAO;
 using Trakx.Persistence.Tests.Model;
-using Trakx.Tests.Data;
 using Xunit;
 using Xunit.Abstractions;
 

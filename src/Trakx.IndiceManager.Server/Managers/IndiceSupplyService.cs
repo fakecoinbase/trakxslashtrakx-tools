@@ -3,6 +3,7 @@ using System.Threading.Tasks;
 using Trakx.Common.Interfaces;
 using Trakx.Common.Interfaces.Transaction;
 using Trakx.Common.Models;
+using IndiceSupplyTransactionModel = Trakx.IndiceManager.Server.Models.IndiceSupplyTransactionModel;
 
 namespace Trakx.IndiceManager.Server.Managers
 {

@@ -23,8 +23,7 @@
       <ApiClientBuildEnvironmentVariables Include="COINBASE_PASSPHRASE_KEY=notempty" />
     </ItemGroup>
     <Copy SourceFiles="@(Reference)" DestinationFolder="$(OutDir)References" />
-    <Exec Command="$(NSwagExe_Core31) run nswag.json /variables:Configuration=$(Configuration) /runtime:NetCore31" 
-          EnvironmentVariables="@(ApiClientBuildEnvironmentVariables)" />
+    <Exec Command="$(NSwagExe_Core31) run nswag.json /variables:Configuration=$(Configuration) /runtime:NetCore31" EnvironmentVariables="@(ApiClientBuildEnvironmentVariables)" />
     <RemoveDir Directories="$(OutDir)References" />
   </Target>
 

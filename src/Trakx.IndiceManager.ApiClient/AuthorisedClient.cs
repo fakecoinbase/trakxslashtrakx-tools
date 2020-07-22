@@ -22,7 +22,7 @@ namespace Trakx.IndiceManager.ApiClient
 
             var token = await RetrieveAuthorizationToken().ConfigureAwait(false);
             msg.Headers.Authorization = new System.Net.Http.Headers.AuthenticationHeaderValue("Bearer", token);
-            
+
             return msg;
         }
 

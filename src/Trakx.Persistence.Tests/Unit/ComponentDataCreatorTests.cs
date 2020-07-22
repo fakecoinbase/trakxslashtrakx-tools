@@ -2,9 +2,9 @@
 using FluentAssertions;
 using Microsoft.EntityFrameworkCore;
 using Trakx.Common.Interfaces;
+using Trakx.Common.Tests;
 using Trakx.Persistence.DAO;
 using Trakx.Persistence.Tests.Model;
-using Trakx.Tests.Data;
 using Xunit;
 using Xunit.Abstractions;
 
@@ -17,9 +17,9 @@ namespace Trakx.Persistence.Tests.Unit
         private readonly IComponentDataCreator _componentDataCreator;
         private readonly MockCreator _mockCreator;
 
-        public ComponentDataCreatorTests(EmptyDbContextFixture fixture,ITestOutputHelper output)
+        public ComponentDataCreatorTests(EmptyDbContextFixture fixture, ITestOutputHelper output)
         {
-            _mockCreator=new MockCreator(output);
+            _mockCreator = new MockCreator(output);
             _context = fixture.Context;
             _componentDataCreator = new ComponentDataCreator(_context);
         }
@@ -28,7 +28,7 @@ namespace Trakx.Persistence.Tests.Unit
         public async Task TryToSaveComponentDefinition_should_return_false_if_object_already_in_database()
         {
             var component = _mockCreator.GetComponentQuantity().ComponentDefinition;
-            
+
             var componentDao = new ComponentDefinitionDao(component);
 
             await _context.ComponentDefinitions.AddAsync(componentDao);
@@ -46,7 +46,7 @@ namespace Trakx.Persistence.Tests.Unit
             var result = await _componentDataCreator.TryAddComponentDefinition(component);
             result.Should().BeTrue();
 
-            var retrievedComponent = await 
+            var retrievedComponent = await
                 _context.ComponentDefinitions.FirstOrDefaultAsync(c => c.Address == component.Address);
 
             retrievedComponent.Address.Should().Be(component.Address);

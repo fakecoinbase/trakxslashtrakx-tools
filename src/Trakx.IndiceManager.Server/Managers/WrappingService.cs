@@ -1,6 +1,5 @@
 ﻿using System;
 using System.Collections.Generic;
-using System.Linq;
 using System.Runtime.CompilerServices;
 using System.Threading;
 using System.Threading.Tasks;
@@ -8,7 +7,8 @@ using Microsoft.Extensions.Logging;
 using Trakx.Coinbase.Custody.Client.Interfaces;
 using Trakx.Coinbase.Custody.Client.Models;
 using Trakx.Common.Interfaces.Transaction;
-using Trakx.Common.Models;
+using Trakx.IndiceManager.Server.Models;
+using WrappingTransactionModel = Trakx.IndiceManager.Server.Models.WrappingTransactionModel;
 
 namespace Trakx.IndiceManager.Server.Managers
 {

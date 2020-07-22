@@ -11,6 +11,7 @@ using Trakx.Common.Interfaces;
 using Trakx.MarketData.Collector.CryptoCompare;
 using Trakx.MarketData.Collector.CryptoCompare.DTOs.Inbound;
 using Trakx.MarketData.Collector.CryptoCompare.DTOs.Outbound;
+using Trakx.Tests.Helpers;
 using Xunit;
 using Xunit.Abstractions;
 
@@ -27,7 +28,7 @@ namespace Trakx.MarketData.Collector.Tests.Integration
             _output = output;
             var logger = output.ToLogger<CryptoCompareWebSocketClient>();
             var streamer = new WebSocketStreamer(output.ToLogger<WebSocketStreamer>());
-            var apiDetailsProvider = new ApiDetailsProvider(Trakx.Tests.Tools.Secrets.CryptoCompareApiKey!);
+            var apiDetailsProvider = new ApiDetailsProvider(Secrets.CryptoCompareApiKey!);
             var clientWebSocket = new WrappedClientWebsocket();
             _client = new CryptoCompareWebSocketClient(clientWebSocket, apiDetailsProvider, streamer, logger);
         }

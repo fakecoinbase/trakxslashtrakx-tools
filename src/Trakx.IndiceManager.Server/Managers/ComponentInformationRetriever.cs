@@ -7,6 +7,7 @@ using Trakx.Common.Interfaces.Indice;
 using Trakx.Common.Models;
 using Trakx.Common.Sources.CoinGecko;
 using Trakx.Common.Sources.Web3.Client;
+using ComponentDetailModel = Trakx.IndiceManager.Server.Models.ComponentDetailModel;
 
 namespace Trakx.IndiceManager.Server.Managers
 {

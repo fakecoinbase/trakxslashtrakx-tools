@@ -7,9 +7,14 @@
   <Import Project="../Common.Projects.props" />
   
   <ItemGroup>
+    <PackageReference Include="coverlet.msbuild" Version="2.8.1">
+      <PrivateAssets>all</PrivateAssets>
+      <IncludeAssets>runtime; build; native; contentfiles; analyzers; buildtransitive</IncludeAssets>
+    </PackageReference>
     <PackageReference Include="FluentAssertions" Version="5.10.3" />
     <PackageReference Include="Flurl" Version="2.8.2" />
     <PackageReference Include="Flurl.Http" Version="2.4.2" />
+    <PackageReference Include="MartinCostello.Logging.XUnit" Version="0.1.0" />
     <PackageReference Include="Microsoft.Extensions.DependencyInjection" Version="3.1.4" />
     <PackageReference Include="Microsoft.NET.Test.Sdk" Version="16.5.0" />
     <PackageReference Include="NSubstitute" Version="4.2.1" />
@@ -20,6 +25,7 @@
   
   <ItemGroup>
     <ProjectReference Include="..\Trakx.Coinbase.Custody.Client\Trakx.Coinbase.Custody.Client.csproj" />
+    <ProjectReference Include="..\Trakx.Tests.Helpers\Trakx.Tests.Helpers.csproj" />
   </ItemGroup>
 
   <ItemGroup>

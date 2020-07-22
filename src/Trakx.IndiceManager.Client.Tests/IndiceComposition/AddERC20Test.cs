@@ -6,11 +6,8 @@ using Microsoft.Extensions.Logging;
 using NSubstitute;
 using NSubstitute.ExceptionExtensions;
 using Syncfusion.Blazor;
-using Trakx.Common.Models;
 using Trakx.IndiceManager.ApiClient;
 using Trakx.IndiceManager.Client.Pages.IndiceComposition;
-using Trakx.Persistence.Tests;
-using Trakx.Tests.Data;
 using Xunit;
 using Xunit.Abstractions;
 

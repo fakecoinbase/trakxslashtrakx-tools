@@ -9,7 +9,12 @@
   <Import Project="../Common.Projects.props" />
 
  <ItemGroup>
+    <PackageReference Include="coverlet.msbuild" Version="2.8.1">
+      <PrivateAssets>all</PrivateAssets>
+      <IncludeAssets>runtime; build; native; contentfiles; analyzers; buildtransitive</IncludeAssets>
+    </PackageReference>
     <PackageReference Include="FluentAssertions" Version="5.10.3" />
+    <PackageReference Include="MartinCostello.Logging.XUnit" Version="0.1.0" />
     <PackageReference Include="Microsoft.NET.Test.Sdk" Version="16.5.0" />
     <PackageReference Include="Microsoft.Reactive.Testing" Version="4.4.1" />
     <PackageReference Include="System.Linq.Async" Version="4.1.1" />
@@ -25,9 +30,10 @@
     </PackageReference>
   </ItemGroup>
   <ItemGroup>
+    <ProjectReference Include="..\Trakx.Coinbase.Custody.Client.Tests\Trakx.Coinbase.Custody.Client.Tests.csproj" />
+    <ProjectReference Include="..\Trakx.Common.Tests\Trakx.Common.Tests.csproj" />
     <ProjectReference Include="..\Trakx.IndiceManager.Server\Trakx.IndiceManager.Server.csproj" />
     <ProjectReference Include="..\Trakx.Persistence.Tests\Trakx.Persistence.Tests.csproj" />
-    <ProjectReference Include="..\Trakx.Tests\Trakx.Tests.csproj" />
   </ItemGroup>
 
 </Project>

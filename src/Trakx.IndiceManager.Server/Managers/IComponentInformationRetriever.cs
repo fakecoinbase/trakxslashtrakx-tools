@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using System.Threading.Tasks;
 using Trakx.Common.Interfaces.Indice;
 using Trakx.Common.Models;
+using ComponentDetailModel = Trakx.IndiceManager.Server.Models.ComponentDetailModel;
 
 namespace Trakx.IndiceManager.Server.Managers
 {

@@ -11,7 +11,6 @@ using Trakx.Common.Interfaces.Indice;
 using Trakx.Common.Utils;
 using Trakx.Persistence.DAO;
 using Trakx.Persistence.Tests.Model;
-using Trakx.Tests.Data;
 using Xunit;
 using Xunit.Abstractions;
 

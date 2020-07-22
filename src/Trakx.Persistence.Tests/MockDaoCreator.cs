@@ -2,12 +2,11 @@
 using System.Collections.Generic;
 using System.Linq;
 using Trakx.Persistence.DAO;
-using Trakx.Persistence.Tests;
 using Xunit.Abstractions;
 
-namespace Trakx.Tests.Data
+namespace Trakx.Persistence.Tests
 {
-    public class MockDaoCreator : MockCreator
+    public class MockDaoCreator : Trakx.Common.Tests.MockCreator
     {
         /// <inheritdoc />
         public MockDaoCreator(ITestOutputHelper output) : base(output) { }

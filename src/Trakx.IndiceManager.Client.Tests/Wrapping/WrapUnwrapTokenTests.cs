@@ -9,7 +9,7 @@ using Xunit.Abstractions;
 using Syncfusion.Blazor;
 using Flurl.Http.Testing;
 using Flurl.Http;
-using Trakx.Persistence.Tests;
+using Trakx.IndiceManager.ApiClient;
 
 namespace Trakx.IndiceManager.Client.Tests.Wrapping
 {
@@ -189,7 +189,7 @@ namespace Trakx.IndiceManager.Client.Tests.Wrapping
         [Fact]
         public async Task ToWrappingTransactionModel_should_work()
         {
-            string fakeHttp = "https://localhost:44373/";
+            var fakeHttp = "https://localhost:44373/";
 
             var currencyToWrap = Component.Instance.CurrencyOptions[0];
             _model.FromCurrency = currencyToWrap;
@@ -199,9 +199,9 @@ namespace Trakx.IndiceManager.Client.Tests.Wrapping
             (await Dispatch(() => Component.Instance.EditContext.Validate()))
                 .Should().BeTrue();
 
-            WrappingTransactionModel wrappingTransaction = _model.ToWrappingTransactionModel();
+            var wrappingTransaction = _model.ToWrappingTransactionModel();
 
-            string jsonModel = JsonSerializer.Serialize(wrappingTransaction);
+            var jsonModel = JsonSerializer.Serialize(wrappingTransaction);
 
             _httpTest.RespondWith(jsonModel);
 

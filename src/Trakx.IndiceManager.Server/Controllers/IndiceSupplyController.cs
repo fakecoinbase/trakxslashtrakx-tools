@@ -4,6 +4,7 @@ using System.Threading.Tasks;
 using Microsoft.AspNetCore.Mvc;
 using Trakx.Common.Models;
 using Trakx.IndiceManager.Server.Managers;
+using IndiceSupplyTransactionModel = Trakx.IndiceManager.Server.Models.IndiceSupplyTransactionModel;
 
 namespace Trakx.IndiceManager.Server.Controllers
 {

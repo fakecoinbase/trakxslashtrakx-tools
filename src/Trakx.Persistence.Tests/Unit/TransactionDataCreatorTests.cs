@@ -1,10 +1,10 @@
 ﻿using System;
-using System.Linq;
 using System.Threading.Tasks;
 using FluentAssertions;
 using Microsoft.EntityFrameworkCore;
 using Trakx.Common.Interfaces;
 using Trakx.Common.Interfaces.Transaction;
+using Trakx.Common.Tests;
 using Trakx.Persistence.DAO;
 using Trakx.Persistence.Tests.Model;
 using Xunit;

@@ -7,11 +7,9 @@ using Microsoft.Extensions.DependencyInjection;
 using NSubstitute;
 using NSubstitute.ExceptionExtensions;
 using Syncfusion.Blazor;
-using Trakx.Common.Models;
 using Trakx.IndiceManager.ApiClient;
 using Trakx.IndiceManager.Client.Pages.Wrapping;
 using Trakx.IndiceManager.Client.Shared;
-using Trakx.Persistence.Tests;
 using Xunit;
 using Xunit.Abstractions;
 

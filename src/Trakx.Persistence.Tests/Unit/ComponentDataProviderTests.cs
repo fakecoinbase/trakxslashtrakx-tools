@@ -1,9 +1,9 @@
 ﻿using System.Threading.Tasks;
 using FluentAssertions;
 using Trakx.Common.Interfaces;
+using Trakx.Common.Tests;
 using Trakx.Persistence.DAO;
 using Trakx.Persistence.Tests.Model;
-using Trakx.Tests.Data;
 using Xunit;
 using Xunit.Abstractions;
 
@@ -16,11 +16,11 @@ namespace Trakx.Persistence.Tests.Unit
         private readonly IComponentDataProvider _componentDataProvider;
         private readonly MockCreator _mockCreator;
 
-        public ComponentDataProviderTests(EmptyDbContextFixture fixture,ITestOutputHelper output)
+        public ComponentDataProviderTests(EmptyDbContextFixture fixture, ITestOutputHelper output)
         {
-            _mockCreator=new MockCreator(output);
+            _mockCreator = new MockCreator(output);
             _context = fixture.Context;
-            _componentDataProvider=new ComponentDataProvider(_context);
+            _componentDataProvider = new ComponentDataProvider(_context);
         }
 
         [Fact(Skip = "Cannot run with the other tests")]
@@ -29,8 +29,8 @@ namespace Trakx.Persistence.Tests.Unit
             _context.ComponentDefinitions.RemoveRange(_context.ComponentDefinitions);
             await _context.SaveChangesAsync();
 
-           var result = await _componentDataProvider.GetAllComponentsFromDatabase();
-           result.Should().BeEmpty();
+            var result = await _componentDataProvider.GetAllComponentsFromDatabase();
+            result.Should().BeEmpty();
         }
 
         [Fact]

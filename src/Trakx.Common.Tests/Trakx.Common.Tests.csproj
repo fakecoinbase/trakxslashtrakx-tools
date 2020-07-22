@@ -1,15 +1,38 @@
-<Project Sdk="Microsoft.NET.Sdk">
+﻿<Project Sdk="Microsoft.NET.Sdk">
 
   <PropertyGroup>
     <TargetFramework>netcoreapp3.1</TargetFramework>
     <IsPackable>false</IsPackable>
   </PropertyGroup>
   <Import Project="../Common.Projects.props" />
+  <ItemGroup>
+    <None Remove="Unit\Sources\Messari\allAssets.json" />
+    <None Remove="Unit\Sources\Messari\assetMetrics.btc.json" />
+    <None Remove="Unit\Sources\Messari\assetMetrics.eth.json" />
+    <None Remove="Unit\Sources\Messari\assetMetrics.sym1.json" />
+    <None Remove="Unit\Sources\Messari\assetMetrics.sym2.json" />
+    <None Remove="Unit\Sources\Messari\assetProfile.btc.json" />
+    <None Remove="Unit\Sources\Messari\assetProfile.eth.json" />
+  </ItemGroup>
+  <ItemGroup>
+    <EmbeddedResource Include="Unit\Sources\Messari\allAssets.json" />
+    <EmbeddedResource Include="Unit\Sources\Messari\assetMetrics.btc.json" />
+    <EmbeddedResource Include="Unit\Sources\Messari\assetMetrics.eth.json" />
+    <EmbeddedResource Include="Unit\Sources\Messari\assetMetrics.sym1.json" />
+    <EmbeddedResource Include="Unit\Sources\Messari\assetMetrics.sym2.json" />
+    <EmbeddedResource Include="Unit\Sources\Messari\assetProfile.btc.json" />
+    <EmbeddedResource Include="Unit\Sources\Messari\assetProfile.eth.json" />
+  </ItemGroup>
 
   <ItemGroup>
+    <PackageReference Include="coverlet.msbuild" Version="2.8.1">
+      <PrivateAssets>all</PrivateAssets>
+      <IncludeAssets>runtime; build; native; contentfiles; analyzers; buildtransitive</IncludeAssets>
+    </PackageReference>
     <PackageReference Include="FluentAssertions" Version="5.10.3" />
     <PackageReference Include="Flurl" Version="2.8.2" />
     <PackageReference Include="Flurl.Http" Version="2.4.2" />
+    <PackageReference Include="MartinCostello.Logging.XUnit" Version="0.1.0" />
     <PackageReference Include="Microsoft.Extensions.DependencyInjection" Version="3.1.4" />
     <PackageReference Include="Microsoft.NET.Test.Sdk" Version="16.5.0" />
     <PackageReference Include="NSubstitute" Version="4.2.1" />
@@ -19,7 +42,7 @@
 
   <ItemGroup>
     <ProjectReference Include="..\Trakx.Common\Trakx.Common.csproj" />
-    <ProjectReference Include="..\Trakx.Tests\Trakx.Tests.csproj" />
+    <ProjectReference Include="..\Trakx.Tests.Helpers\Trakx.Tests.Helpers.csproj" />
   </ItemGroup>
 
 </Project>

@@ -10,6 +10,7 @@ using Trakx.Coinbase.Custody.Client.Interfaces;
 using Trakx.Common.Core;
 using Trakx.Common.Interfaces;
 using Trakx.Common.Models;
+using DepositAddressModel = Trakx.IndiceManager.Server.Models.DepositAddressModel;
 
 namespace Trakx.IndiceManager.Server.Controllers
 {

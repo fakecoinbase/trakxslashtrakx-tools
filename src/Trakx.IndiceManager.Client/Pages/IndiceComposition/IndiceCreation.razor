@@ -305,7 +305,7 @@
         compositionModel.IndiceDetail = indiceDetailModel;
         compositionModel.Symbol = IndexSymbol;
         compositionModel.TargetedNav = TargetedNav ?? 100m;
-        compositionModel.Components = ConstituentRows.Select(c => c.ToComponentDetailModel(EqualWeights) ?? null).ToList();
+        compositionModel.Components.AddRange(ConstituentRows.Select(c => c.ToComponentDetailModel(EqualWeights)));
 
         return compositionModel;
     }
