@@ -81,7 +81,6 @@ namespace Trakx.IndiceManager.Server
             services.AddSingleton<IBalanceUpdater, BalanceUpdater>();
 
             services.AddMemoryCache();
-            services.AddSingleton<ICurrencyCache, CurrencyCache>();
             services.AddCoinbaseLibrary(Environment.GetEnvironmentVariable("COINBASE_API_KEY"),
                 Environment.GetEnvironmentVariable("COINBASE_PASSPHRASE_KEY"));
 

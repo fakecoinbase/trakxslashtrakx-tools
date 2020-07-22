@@ -41,16 +41,17 @@ namespace Trakx.IndiceManager.Server.Data
         private readonly CancellationTokenSource _cancellationTokenSource;
         private readonly ILogger<CoinbaseTransactionListener> _logger;
         private readonly IServiceScope _initialisationScope;
-        private readonly ICurrencyCache _currencyCache;
 
-        /// <inheritdoc />
+
+        /// <summary>
+        /// A service used to poll the Coinbase Custody Api to be notified of new deposits
+        /// on Trakx' Coinbase Wallets.
+        /// </summary>
         public CoinbaseTransactionListener(ICoinbaseClient coinbaseClient,
             IServiceScopeFactory serviceScopeFactory,
-            ICurrencyCache currencyCache,
             ILogger<CoinbaseTransactionListener> logger,
             IScheduler? scheduler = default)
         {
-            _currencyCache = currencyCache;
             _logger = logger;
             _initialisationScope = serviceScopeFactory.CreateScope();
             var transactionDataProvider = _initialisationScope.ServiceProvider.GetService<ITransactionDataProvider>();
@@ -66,8 +67,7 @@ namespace Trakx.IndiceManager.Server.Data
                         var transactions = coinbaseClient.GetTransactions(endTime:
                             await transactionDataProvider.GetLastWrappingTransactionDatetime(),
                             paginationOptions: new PaginationOptions(pageSize:100));
-                        var processedTransaction = GetDecimalAmount(transactions);
-                        return processedTransaction.ToObservable();
+                        return transactions.ToObservable();
                     }
                     catch (Exception e)
                     {
@@ -109,15 +109,5 @@ namespace Trakx.IndiceManager.Server.Data
         }
 
         #endregion
-
-        private async IAsyncEnumerable<CoinbaseTransaction> GetDecimalAmount(IAsyncEnumerable<CoinbaseRawTransaction> transactionsList)
-        {
-            await foreach (var transaction in transactionsList)
-            {
-                var retrievedDecimal = await _currencyCache.GetDecimalsForCurrency(transaction.Currency);
-                if (retrievedDecimal.HasValue)
-                    yield return new CoinbaseTransaction(transaction, retrievedDecimal.Value);
-            }
-        }
     }
 }

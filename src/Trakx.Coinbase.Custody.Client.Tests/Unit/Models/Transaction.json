@@ -1,14 +1,17 @@
 ﻿{
-  "id": "08396aef-3126-4ed4-b109-46b82ff1857b",
+  "id": "8937cba9-2e49-43cb-aaa1-3b06e0d74d52",
   "type": "withdrawal",
   "state": "done",
-  "amount": 400,
-  "source": "fake_btc_cold_address",
-  "destination": "fake_btc_cold_address_2",
+  "amount": 100,
+  "destination": null,
   "created_at": "2019-08-19T18:15:29.787Z",
-  "updated_at": "1998-03-01T18:15:29.787Z",
-  "wallet_id": "6b4be175-793f-4d99-b922-b90e8b6677be",
-  "currency": "btc",
-  "fee": 40,
-  "hashes": []
+  "updated_at": "1998-03-01T18:15:29.751Z",
+  "wallet_id": "5d57dd0b-50c0-4c06-bfbd-b31f58a25a8a",
+  "amount_whole_units": "0.000001",
+  "currency": "BTC",
+  "fee": 10.30665,
+  "hashes": [
+    "ccf2459f5fce52834c5bb5bbcfa93ff3"
+  ],
+  "source": null
 }

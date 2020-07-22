@@ -22,7 +22,6 @@ namespace Trakx.IndiceManager.Server.Tests.Unit.Data
         private readonly CoinbaseTransactionListener _coinbaseListener;
         private readonly TestScheduler _testScheduler;
         private readonly TimeSpan _runningTime;
-        private readonly ICurrencyCache _cache;
         private readonly ITransactionDataProvider _transactionDataProvider;
 
         public CoinbaseTransactionListenerTests(ITestOutputHelper output)
@@ -32,13 +31,12 @@ namespace Trakx.IndiceManager.Server.Tests.Unit.Data
 
             var serviceScopeFactory = PrepareScopeResolution();
             _coinbaseClient = Substitute.For<ICoinbaseClient>();
-            _cache = Substitute.For<ICurrencyCache>();
             _testScheduler = new TestScheduler();
             _runningTime = CoinbaseTransactionListener
                 .PollingInterval.Multiply(10)
                 .Add(TimeSpan.FromMilliseconds(100));
             _coinbaseListener = new CoinbaseTransactionListener(
-                _coinbaseClient, serviceScopeFactory, _cache, output.ToLogger<CoinbaseTransactionListener>(), _testScheduler);
+                _coinbaseClient, serviceScopeFactory, output.ToLogger<CoinbaseTransactionListener>(), _testScheduler);
         }
 
         private IServiceScopeFactory PrepareScopeResolution()
@@ -75,40 +73,20 @@ namespace Trakx.IndiceManager.Server.Tests.Unit.Data
         [Fact]
         public void TransactionStream_should_not_show_duplicates()
         {
-            var transactionEnumerable = new List<CoinbaseRawTransaction>
+            var transactionEnumerable = new List<CoinbaseTransaction>
             {
-                new CoinbaseRawTransaction {Currency = "btc", Hashes = new[] { "abc" }},
-                new CoinbaseRawTransaction {Currency = "btc", Hashes = new[] { "def" }},
-                new CoinbaseRawTransaction {Currency = "btc", Hashes = new[] { "def" }}
+                new CoinbaseTransaction {Currency = "btc", Hashes = new List<string>{"abc"}},
+                new CoinbaseTransaction {Currency = "btc", Hashes = new List<string>{"def"}},
+                new CoinbaseTransaction {Currency = "btc", Hashes = new List<string>{"def"}}
             };
 
             _coinbaseClient.GetTransactions().ReturnsForAnyArgs(transactionEnumerable.ToAsyncEnumerable());
-            _cache.GetDecimalsForCurrency("btc").ReturnsForAnyArgs((ushort)5);
-            
+
             var observer = SimulateObservationsDuringRunningTime();
 
             observer.ReceivedWithAnyArgs(2).OnNext(default);
         }
-
-        [Fact]
-        public void TransactionStream_should_not_stop_when_currency_cannot_be_retrieved()
-        {
-            var transactionEnumerable = new List<CoinbaseRawTransaction>
-            {
-                new CoinbaseRawTransaction {Currency = "btc", Hashes = new[] { "abc" }},
-                new CoinbaseRawTransaction {Currency = "btc", Hashes = new[] { "def" }},
-                new CoinbaseRawTransaction {Currency = "eth", Hashes = new[] { "ght" }}
-            };
-            _coinbaseClient.GetTransactions().ReturnsForAnyArgs(transactionEnumerable.ToAsyncEnumerable());
-
-            _cache.GetDecimalsForCurrency("btc").Returns((ushort?)null);
-            _cache.GetDecimalsForCurrency("eth").Returns((ushort)10);
-
-            var observer = SimulateObservationsDuringRunningTime();
-            observer.ReceivedWithAnyArgs(1);
-        }
-
-
+        
         private IObserver<CoinbaseTransaction> SimulateObservationsDuringRunningTime()
         {
             var observer = Substitute.For<IObserver<CoinbaseTransaction>>();

@@ -25,7 +25,7 @@ namespace Trakx.Coinbase.Custody.Client
         }
 
         /// <inheritdoc />
-        public async IAsyncEnumerable<CoinbaseRawTransaction> GetTransactions(string? currency = null,
+        public async IAsyncEnumerable<CoinbaseTransaction> GetTransactions(string? currency = null,
             TransactionState? state = null,
             string? walletId = null,
             TransactionType? type = null,
@@ -34,7 +34,7 @@ namespace Trakx.Coinbase.Custody.Client
             PaginationOptions? paginationOptions = null,
             [EnumeratorCancellation] CancellationToken cancellationToken = default)
         {
-            async Task<PagedResponse<CoinbaseRawTransaction>> FetchPage(PaginationOptions? pagination) => 
+            async Task<PagedResponse<CoinbaseTransaction>> FetchPage(PaginationOptions? pagination) => 
                 await _transactionEndpoint.ListTransactionsAsync(currency, state, walletId, type, 
                 startTime, endTime,
                 pagination, cancellationToken);
@@ -115,7 +115,7 @@ namespace Trakx.Coinbase.Custody.Client
         #region Implementation of ITransactionEndpoint
 
         /// <inheritdoc />
-        public async Task<PagedResponse<CoinbaseRawTransaction>> ListTransactionsAsync(string? currency = null, TransactionState? state = null, string? walletId = null,
+        public async Task<PagedResponse<CoinbaseTransaction>> ListTransactionsAsync(string? currency = null, TransactionState? state = null, string? walletId = null,
             TransactionType? type = null, DateTime? startTime = null, DateTime? endTime = null,
             PaginationOptions paginationOptions = default, CancellationToken cancellationToken = default)
         {
@@ -123,7 +123,7 @@ namespace Trakx.Coinbase.Custody.Client
         }
 
         /// <inheritdoc />
-        public async Task<CoinbaseRawTransaction> GetTransactionAsync(string transactionId, CancellationToken cancellationToken = default)
+        public async Task<CoinbaseTransaction> GetTransactionAsync(string transactionId, CancellationToken cancellationToken = default)
         {
             return await _transactionEndpoint.GetTransactionAsync(transactionId, cancellationToken);
         }

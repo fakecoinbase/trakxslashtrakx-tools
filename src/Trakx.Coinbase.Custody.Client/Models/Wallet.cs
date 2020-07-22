@@ -69,6 +69,6 @@ namespace Trakx.Coinbase.Custody.Client.Models
         [JsonPropertyName("currency")]
         public string CurrencySymbol { get; set; }
 
-        #nullable restore
+#nullable restore
     }
 }

@@ -37,13 +37,12 @@ namespace Trakx.IndiceManager.Server.Tests.Unit.Data
 
         private CoinbaseTransaction GetRandomCoinbaseTransaction()
         {
-            var transaction = new CoinbaseTransaction(
-                    new CoinbaseRawTransaction
-                    {
-                        Currency = _daoCreator.GetRandomString(3), 
-                        Source = _daoCreator.GetRandomAddressEthereum(),
-                        UnscaledAmount = _daoCreator.GetRandomUnscaledAmount(),
-                    }, _daoCreator.GetRandomNaturalUnit());
+            var transaction = new CoinbaseTransaction
+            {
+                Currency = _daoCreator.GetRandomString(3),
+                Source = _daoCreator.GetRandomAddressEthereum(),
+                Amount = _daoCreator.GetRandomPrice()
+            };
             return transaction;
         }
 
@@ -56,8 +55,8 @@ namespace Trakx.IndiceManager.Server.Tests.Unit.Data
 
             _balanceUpdater.OnNext(transaction);
             _depositorAddressRetriever.ReceivedWithAnyArgs(1)
-                .AddNewAddress(Arg.Is<IDepositorAddress>(a => a.Address == transaction.Source 
-                                                              && a.Balance == transaction.ScaledAmount));
+                .AddNewAddress(Arg.Is<IDepositorAddress>(a => a.Address == transaction.Source
+                                                              && a.Balance == transaction.Amount));
             _depositorAddressRetriever.DidNotReceiveWithAnyArgs().UpdateDepositorAddress(default);
         }
 
@@ -65,7 +64,7 @@ namespace Trakx.IndiceManager.Server.Tests.Unit.Data
         public void OnNext_should_verify_address_when_sentAmount_is_verificationAmount()
         {
             var transaction = GetRandomCoinbaseTransaction();
-            var retrievedAddress = _daoCreator.GetRandomDepositorAddressDao(transaction.ScaledAmount);
+            var retrievedAddress = _daoCreator.GetRandomDepositorAddressDao(transaction.Amount);
             retrievedAddress.IsVerified.Should().BeFalse();
 
             _balanceUpdater.OnNext(transaction);
@@ -82,7 +81,7 @@ namespace Trakx.IndiceManager.Server.Tests.Unit.Data
             var transaction = GetRandomCoinbaseTransaction();
             _balanceUpdater.OnNext(transaction);
             _depositorAddressRetriever.Received(1)
-                .UpdateDepositorAddress(Arg.Is<IDepositorAddress>(t => t.Balance == address.Balance + transaction.ScaledAmount));
+                .UpdateDepositorAddress(Arg.Is<IDepositorAddress>(t => t.Balance == address.Balance + transaction.Amount));
         }
 
     }

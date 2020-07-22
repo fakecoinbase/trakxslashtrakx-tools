@@ -20,7 +20,7 @@ namespace Trakx.Coinbase.Custody.Client.Endpoints
 
 
         /// <inheritdoc />
-        public async Task<PagedResponse<CoinbaseRawTransaction>> ListTransactionsAsync(string? currency = null, 
+        public async Task<PagedResponse<CoinbaseTransaction>> ListTransactionsAsync(string? currency = null, 
             TransactionState? state = null, 
             string? walletId = null, 
             TransactionType? type = null,
@@ -43,17 +43,17 @@ namespace Trakx.Coinbase.Custody.Client.Endpoints
                     after = paginationOptions?.After,
                     limit = paginationOptions?.PageSize,
                 })
-                .GetJsonAsync<PagedResponse<CoinbaseRawTransaction>>(cancellationToken);
+                .GetJsonAsync<PagedResponse<CoinbaseTransaction>>(cancellationToken);
             return page;
         }
 
 
         /// <inheritdoc />
-        public async Task<CoinbaseRawTransaction> GetTransactionAsync(string transactionId, CancellationToken cancellationToken = default)
+        public async Task<CoinbaseTransaction> GetTransactionAsync(string transactionId, CancellationToken cancellationToken = default)
         {
             Guard.Against.NullOrEmpty(transactionId, nameof(transactionId));
             return await _client.Request("transactions", transactionId)
-                .GetJsonAsync<CoinbaseRawTransaction>(cancellationToken);
+                .GetJsonAsync<CoinbaseTransaction>(cancellationToken);
         }
     }
 }

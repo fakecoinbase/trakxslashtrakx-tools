@@ -50,7 +50,7 @@ namespace Trakx.IndiceManager.Server.Data
 
         private void ManageRetrievedTransaction(CoinbaseTransaction transaction)
         {
-            if(transaction.ScaledAmount == 0m) return;
+            if(transaction.Amount == 0m) return;
 
             var depositorAddressId = DepositorAddressExtension.GetDepositorAddressId(transaction.Currency, transaction.Source);
             var retrievedAddress = _addressRetriever
@@ -60,7 +60,7 @@ namespace Trakx.IndiceManager.Server.Data
             if (retrievedAddress == null)
             {
                 var newDepositorAddress = new DepositorAddress(transaction.Source, 
-                    transaction.Currency, transaction.ScaledAmount);
+                    transaction.Currency, transaction.Amount);
                 _addressRetriever.AddNewAddress(newDepositorAddress);
             }
             else
@@ -68,12 +68,12 @@ namespace Trakx.IndiceManager.Server.Data
                 var address = new DepositorAddress(retrievedAddress);
                 if (!retrievedAddress.IsVerified
                     && retrievedAddress.User != default
-                    && retrievedAddress.VerificationAmount == transaction.ScaledAmount)
+                    && retrievedAddress.VerificationAmount == transaction.Amount)
                 {
                     address.IsVerified = true;
                 }
 
-                address.TryUpdateBalance(transaction.ScaledAmount);
+                address.TryUpdateBalance(transaction.Amount);
                 _addressRetriever.UpdateDepositorAddress(address);
             }
         }

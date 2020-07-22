@@ -4,8 +4,6 @@ using FluentAssertions;
 using Microsoft.VisualStudio.TestPlatform.Utilities;
 using NSubstitute;
 using Trakx.Coinbase.Custody.Client.Interfaces;
-using Trakx.Coinbase.Custody.Client.Models;
-using Trakx.IndiceManager.Server.Data;
 using Trakx.IndiceManager.Server.Managers;
 using Trakx.Persistence.Tests;
 using Xunit;

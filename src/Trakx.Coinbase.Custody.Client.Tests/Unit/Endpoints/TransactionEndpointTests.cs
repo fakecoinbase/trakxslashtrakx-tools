@@ -49,13 +49,7 @@ namespace Trakx.Coinbase.Custody.Client.Tests.Unit.Endpoints
             var response = await _transactionEndpoint.ListTransactionsAsync(paginationOptions: new PaginationOptions(pageSize: 20), currency: "btc");
 
             response.Pagination.After.Should().Be("820d3373-a050-435e-85d3-72f3f9a15f03");
-            response.Data[0].Id.Should().Be("08396aef-3126-4ed4-b109-46b82ff1857b");
-            response.Data[0].State.Should().Be("done");
-            response.Data[0].CreatedAt.Should().Be(new DateTimeOffset(2019, 8, 19, 18, 15, 29, 787, TimeSpan.Zero));
-            response.Data[0].UpdatedAt.Should().Be(new DateTimeOffset(2020, 7, 2, 18, 15, 29, 787, TimeSpan.Zero));
-            response.Data[0].UnscaledAmount.Should().Be(400);
-            response.Data[0].Hashes[0].Should().Be("hash1");
-            response.Data[0].WalletId.Should().Be("6b4be175-793f-4d99-b922-b90e8b6677be");
+            VerifyTransaction(response.Data[0]);
         }
 
         [Fact]
@@ -83,16 +77,24 @@ namespace Trakx.Coinbase.Custody.Client.Tests.Unit.Endpoints
         {
             SampleResponse =SampleResponseHelper.GetSampleResponseContent("Transaction").Result;
             HttpTest.RespondWith(SampleResponse);
-            var response = await _transactionEndpoint.GetTransactionAsync("2");
+            var response = await _transactionEndpoint.GetTransactionAsync("08396aef-3126-4ed4-b109-46b82ff1857b");
 
-            response.Id.Should().Be("08396aef-3126-4ed4-b109-46b82ff1857b");
-            response.State.Should().Be("done");
-            response.CreatedAt.Should().Be(new DateTimeOffset(2019, 8, 19, 18, 15, 29, 787, TimeSpan.Zero));
-            response.UpdatedAt.Should().Be(new DateTimeOffset(1998, 3, 1, 18, 15, 29, 787, TimeSpan.Zero));
-            response.UnscaledAmount.Should().Be(400);
-            response.Hashes.Should().BeEmpty();
-            response.WalletId.Should().Be("6b4be175-793f-4d99-b922-b90e8b6677be");
+            VerifyTransaction(response);
         }
 
+        private static void VerifyTransaction(CoinbaseTransaction response)
+        {
+            response.Id.Should().Be("8937cba9-2e49-43cb-aaa1-3b06e0d74d52");
+            response.State.Should().Be(TransactionState.done);
+            response.Type.Should().Be(TransactionType.withdrawal);
+            response.CreatedAt.Should().Be(new DateTimeOffset(2019, 8, 19, 18, 15, 29, 787, TimeSpan.Zero));
+            response.UpdatedAt.Should().Be(new DateTimeOffset(1998, 3, 1, 18, 15, 29, 751, TimeSpan.Zero));
+            response.UnscaledAmount.Should().Be(100);
+            response.Hashes.Should().Contain("ccf2459f5fce52834c5bb5bbcfa93ff3");
+            response.WalletId.Should().Be("5d57dd0b-50c0-4c06-bfbd-b31f58a25a8a");
+            response.Amount.Should().Be(0.000001m);
+            response.Fee.Should().Be(10.30665m);
+            response.Source.Should().BeNullOrEmpty();
+        }
     }
 }
