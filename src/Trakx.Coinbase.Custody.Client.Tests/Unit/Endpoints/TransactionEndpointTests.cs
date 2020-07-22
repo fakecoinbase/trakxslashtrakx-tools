@@ -53,7 +53,7 @@ namespace Trakx.Coinbase.Custody.Client.Tests.Unit.Endpoints
             response.Data[0].State.Should().Be("done");
             response.Data[0].CreatedAt.Should().Be(new DateTimeOffset(2019, 8, 19, 18, 15, 29, 787, TimeSpan.Zero));
             response.Data[0].UpdatedAt.Should().Be(new DateTimeOffset(2020, 7, 2, 18, 15, 29, 787, TimeSpan.Zero));
-            response.Data[0].UnscaledAmount.Should().Be(-400);
+            response.Data[0].UnscaledAmount.Should().Be(400);
             response.Data[0].Hashes[0].Should().Be("hash1");
             response.Data[0].WalletId.Should().Be("6b4be175-793f-4d99-b922-b90e8b6677be");
         }
@@ -89,7 +89,7 @@ namespace Trakx.Coinbase.Custody.Client.Tests.Unit.Endpoints
             response.State.Should().Be("done");
             response.CreatedAt.Should().Be(new DateTimeOffset(2019, 8, 19, 18, 15, 29, 787, TimeSpan.Zero));
             response.UpdatedAt.Should().Be(new DateTimeOffset(1998, 3, 1, 18, 15, 29, 787, TimeSpan.Zero));
-            response.UnscaledAmount.Should().Be(-400);
+            response.UnscaledAmount.Should().Be(400);
             response.Hashes.Should().BeEmpty();
             response.WalletId.Should().Be("6b4be175-793f-4d99-b922-b90e8b6677be");
         }

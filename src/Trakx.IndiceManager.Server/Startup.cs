@@ -19,6 +19,7 @@ using Trakx.Common.Ethereum;
 using Trakx.Common.Interfaces;
 using Trakx.Common.Sources.CoinGecko;
 using Trakx.Common.Utils;
+using Trakx.IndiceManager.Server.Managers;
 using Trakx.IndiceManager.Server.Middlewares;
 
 
@@ -75,12 +76,18 @@ namespace Trakx.IndiceManager.Server
             services.AddSingleton<IDateTimeProvider, DateTimeProvider>();
 
             services.AddEthereumInteraction(Environment.GetEnvironmentVariable("INFURA_API_KEY"));
-            services.AddMemoryCache();
             services.AddCoinGeckoClient();
             services.AddSingleton<ICoinbaseTransactionListener, CoinbaseTransactionListener>();
             services.AddSingleton<IBalanceUpdater, BalanceUpdater>();
+
+            services.AddMemoryCache();
+            services.AddSingleton<ICurrencyCache, CurrencyCache>();
             services.AddCoinbaseLibrary(Environment.GetEnvironmentVariable("COINBASE_API_KEY"),
                 Environment.GetEnvironmentVariable("COINBASE_PASSPHRASE_KEY"));
+
+            services.AddSingleton<IWrappingService, WrappingService>();
+
+            services.AddSingleton<IDateTimeProvider, DateTimeProvider>();
             services.AddHostedService<BalanceUpdaterService>();
 
             services.AddAuthorization();
@@ -127,8 +134,6 @@ namespace Trakx.IndiceManager.Server
             app.UseAuthentication();
             app.UseAuthorization();
 
-            
-
             app.UseEndpoints(endpoints =>
             {
                 endpoints.MapGet("/", async context =>
@@ -139,6 +144,7 @@ namespace Trakx.IndiceManager.Server
                 endpoints.MapControllers();
             });
         }
+
         private static void SeedDatabase(IApplicationBuilder app)
         {
             using var serviceScope = app.ApplicationServices.GetRequiredService<IServiceScopeFactory>().CreateScope();

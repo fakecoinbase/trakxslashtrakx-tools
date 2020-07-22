@@ -47,15 +47,11 @@ namespace Trakx.Coinbase.Custody.Client.Tests.Unit.Endpoints
             HttpTest.RespondWith(SampleResponse);
             var response = await _walletEndpoint.ListWalletsAsync(paginationOptions: new PaginationOptions(pageSize: 2));
 
-            response.Pagination.After.Should().Be("97881a38-fba1-4563-992c-130a306c5a14");
-            response.Data[0].Id.Should().Be("575f6845-9508-4cd7-a794-cb9ab7faf441");
-            response.Data[0].Name.Should().Be("test");
-            response.Data[0].CreatedAt.Should().Be(new DateTimeOffset(2019, 8, 19, 18, 15, 34, 803, TimeSpan.Zero));
-            response.Data[0].UpdatedAt.Should().Be(new DateTimeOffset(1998, 8, 10, 18, 15, 34, 803, TimeSpan.Zero));
-            response.Data[0].Balance.Should().Be("1.26");
-            response.Data[0].WithdrawableBalance.Should().Be("2.235");
-            response.Data[0].ColdAddress.Should().Be("fake_btc_cold_address");
-            response.Data[0].Currency.Should().Be("btc");
+            response.Pagination.After.Should().Be("d3c50a5d-6abc-47dd-8300-36c4ed837504");
+            response.Pagination.Before.Should().Be("32b34b7f-1555-4701-b017-e4c93ff9eaf7");
+
+            PagedResponseWalletTest.CheckFirstWalletFromResponse(response.Data[0]);
+            
         }
 
         [Fact]
@@ -86,13 +82,7 @@ namespace Trakx.Coinbase.Custody.Client.Tests.Unit.Endpoints
             HttpTest.RespondWith(SampleResponse);
             var response = await _walletEndpoint.GetWalletAsync("5");
 
-            response.Id.Should().Be("575f6845-9508-4cd7-a794-cb9ab7faf441");
-            response.Name.Should().Be("test");
-            response.CreatedAt.Should().Be(new DateTimeOffset(2019, 8, 19, 18, 15, 34, 803, TimeSpan.Zero));
-            response.UpdatedAt.Should().Be(new DateTimeOffset(2000, 1, 1, 18, 15, 34, 803, TimeSpan.Zero));
-            response.Balance.Should().Be("2.23");
-            response.WithdrawableBalance.Should().Be("1.25");
-            response.ColdAddress.Should().Be("fake_btc_cold_address");
+            PagedResponseWalletTest.CheckFirstWalletFromResponse(response);
         }
     }
 }

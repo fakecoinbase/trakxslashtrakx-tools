@@ -6,10 +6,14 @@ using FluentAssertions.Extensions;
 using Nethereum.RPC.Eth.DTOs;
 using Newtonsoft.Json.Linq;
 using NSubstitute;
+using Trakx.Coinbase.Custody.Client.Models;
 using Trakx.Common.Core;
+using Trakx.Common.Extensions;
 using Trakx.Common.Interfaces;
 using Trakx.Common.Interfaces.Indice;
 using Trakx.Common.Interfaces.Transaction;
+using Trakx.Common.Models;
+using Trakx.IndiceManager.ApiClient;
 using Xunit.Abstractions;
 
 namespace Trakx.Persistence.Tests
@@ -73,10 +77,17 @@ namespace Trakx.Persistence.Tests
             return randomDay;
         }
 
+        public DateTimeOffset GetRandomUtcDateTimeOffset()
+        {
+            var dateTime = GetRandomUtcDateTime();
+            return new DateTimeOffset(dateTime);
+        }
+
         public ushort GetRandomNaturalUnit() => (ushort)_random.Next(0, 18);
+        public ushort GetRandomDecimals() => GetRandomNaturalUnit();
         public uint GetRandomCompositionVersion() => (uint)_random.Next(0, 30);
         public decimal GetRandomPrice() => _random.Next(1, int.MaxValue)/1e5m;
-        public long GetRandomUnscaledAmount() => _random.Next(1, int.MaxValue);
+        public ulong GetRandomUnscaledAmount() => (ulong)_random.Next(1, int.MaxValue);
         public TimeSpan GetRandomTimeSpan() => TimeSpan.FromSeconds(_random.Next(1, (int)TimeSpan.FromDays(1000).TotalSeconds));
 
         public IIndiceComposition GetIndiceComposition(int componentCount,
@@ -113,7 +124,7 @@ namespace Trakx.Persistence.Tests
             return componentQuantities;
         }
 
-        public IWrappingTransaction GetWrappingTransaction(TransactionState transactionState = TransactionState.Complete)
+        public IWrappingTransaction GetWrappingTransaction(Common.Interfaces.Transaction.TransactionState transactionState = Common.Interfaces.Transaction.TransactionState.Complete)
         {
             var transaction = Substitute.For<IWrappingTransaction>();
             transaction.SenderAddress.Returns(GetRandomAddressEthereum());
@@ -127,8 +138,8 @@ namespace Trakx.Persistence.Tests
             transaction.EthereumTransactionHash.Returns(GetRandomEthereumTransactionHash());
             transaction.TimeStamp.Returns(GetRandomUtcDateTime());
             transaction.TransactionState.Returns(transactionState);
-            transaction.TransactionType.Returns(TransactionType.Wrap);
-            if (transactionState != TransactionState.Complete) return transaction;
+            transaction.TransactionType.Returns(Common.Interfaces.Transaction.TransactionType.Wrap);
+            if (transactionState != Common.Interfaces.Transaction.TransactionState.Complete) return transaction;
 
             transaction.NativeChainBlockId.Returns(_random.Next(600000));
             transaction.EthereumBlockId.Returns(_random.Next(800000));
@@ -154,6 +165,31 @@ namespace Trakx.Persistence.Tests
             return indiceDefinition;
         }
 
+        public IndiceDetailModel GetRandomIndexDetailModel()
+        {
+            var indexDefinition = GetRandomIndiceDefinition();
+            var indexDetails = new IndiceDetailModel
+            {
+                Address = indexDefinition.Address,
+                CreationDate = indexDefinition.CreationDate,
+                Description = indexDefinition.Description,
+                IndiceCompositions = new List<IndiceCompositionModel>(),
+                IndiceState = "Published",
+                Name = indexDefinition.Name,
+                NaturalUnit = indexDefinition.NaturalUnit,
+                Symbol = indexDefinition.Symbol
+            };
+            return indexDetails;
+        }
+
+        public IndiceCompositionModel GetRandomIndiceCompositionModel()
+        {
+            var composition = GetIndiceComposition(3);
+            var compositonModel = new IndiceCompositionModel(composition);
+            return compositonModel;
+        }
+            
+        
         public List<IIndiceComposition> GetIndiceCompositions(int count, IIndiceDefinition? indexDefinition = default)
         {
             indexDefinition ??= GetRandomIndiceDefinition();
@@ -163,6 +199,8 @@ namespace Trakx.Persistence.Tests
                     indexDefinition.CreationDate?.AddMonths(i), componentQuantities));
             return compositions.ToList();
         }
+
+
 
         public IComponentQuantity GetComponentQuantity(string? address = default,
             string? symbol = default,
@@ -250,6 +288,43 @@ namespace Trakx.Persistence.Tests
             var list = new List<IDepositorAddress>();
             user.Addresses.Returns(list);
             return user;
+        }
+
+        public Wallet GetRandomWallet()
+        {
+            var decimals = GetRandomDecimals();
+            var unscaledAmount = GetRandomUnscaledAmount();
+            var scaledAmount = unscaledAmount / (decimal)decimals.AsAPowerOf10();
+            return new Wallet
+            {
+                UnscaledBalance = unscaledAmount,
+                ColdAddress = GetRandomAddressEthereum(),
+                CreatedAt = DateTimeOffset.Now,
+                CurrencySymbol = GetRandomString(3),
+                Name ="name " + GetRandomString(24),
+                Balance = scaledAmount,
+                Id = Guid.NewGuid().ToString(),
+                UpdatedAt = GetRandomUtcDateTimeOffset(),
+            };
+        }
+
+        public Currency GetRandomCurrency(string? symbol = default)
+        {
+            return new Currency
+            {
+                Decimals = GetRandomNaturalUnit(),
+                Name = "name " + GetRandomString(24),
+                Symbol = symbol ?? GetRandomString(3)
+            };
+        }
+
+        public AccountBalanceModel GetRandomAccountBalanceModel()
+        {
+            var wallet = GetRandomWallet();
+            var accountBalanceModel = new AccountBalanceModel(wallet.CurrencySymbol,
+                wallet.Balance, wallet.UnscaledBalance, wallet.Name, wallet.ColdAddress, wallet.UpdatedAt);
+
+            return accountBalanceModel;
         }
     }
 }

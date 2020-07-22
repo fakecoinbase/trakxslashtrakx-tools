@@ -5,7 +5,6 @@ using System.Threading.Tasks;
 using FluentAssertions;
 using Microsoft.Extensions.DependencyInjection;
 using Trakx.Common.Ethereum;
-using Trakx.Common.Sources.Coinbase;
 using Trakx.Common.Sources.CoinGecko;
 using Trakx.Common.Sources.Messari;
 using Trakx.Common.Sources.Messari.Client;
@@ -22,7 +21,6 @@ namespace Trakx.Tests.Tools
         private const string NullString = "null";
         private readonly ITestOutputHelper _output;
         private readonly IMessariClient _messariClient;
-        private readonly ICoinbaseClient _coinbaseClient;
         private readonly ICoinGeckoClient _coinGeckoClient;
         private readonly IWeb3Client _web3Client;
         private static readonly List<string> BadAssetNames = new List<string>() {"uniswap", "metacartel ventures", "tari", "synthetix network token" };
@@ -51,14 +49,12 @@ namespace Trakx.Tests.Tools
             var serviceCollection = new ServiceCollection();
 
             serviceCollection.AddMessariClient();
-            serviceCollection.AddCoinbaseClient();
             serviceCollection.AddCoinGeckoClient();
             serviceCollection.AddMemoryCache();
             serviceCollection.AddEthereumInteraction(Secrets.InfuraApiKey);
 
             var serviceProvider = serviceCollection.BuildServiceProvider();
             _messariClient = serviceProvider.GetRequiredService<IMessariClient>();
-            _coinbaseClient = serviceProvider.GetRequiredService<ICoinbaseClient>();
             _coinGeckoClient = serviceProvider.GetRequiredService<ICoinGeckoClient>();
             _web3Client = serviceProvider.GetRequiredService<IWeb3Client>();
         }
@@ -136,8 +132,8 @@ namespace Trakx.Tests.Tools
                         componentSymbol = symbol.ToUpper();
                     }
 
-                    var coinbaseCustodied = _coinbaseClient.CustodiedCoins.Contains(componentSymbol,
-                        StringComparer.InvariantCultureIgnoreCase);
+                    //var coinbaseCustodied = _coinbaseClient.CustodiedCoins.Contains(componentSymbol,
+                    //    StringComparer.InvariantCultureIgnoreCase);
 
                     _coinGeckoClient.RetrieveContractDetailsFromCoinSymbolName(componentSymbol, component.Name,
                         out var coinGeckoId, out var coinGeckoSymbol, out var contractAddress);
@@ -152,7 +148,7 @@ namespace Trakx.Tests.Tools
 
                     componentLines.Add(new ComponentLine
                     {
-                        CoinbaseCustody = coinbaseCustodied,
+                        //CoinbaseCustody = coinbaseCustodied,
                         CoinGeckoHistoricalUsdcPrice = marketData.Price ?? 0,
                         CoinGeckoId = coinGeckoId ?? NullString,
                         CoinGeckoSymbol = coinGeckoSymbol ?? NullString,

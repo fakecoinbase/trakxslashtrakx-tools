@@ -8,7 +8,6 @@ using Microsoft.Extensions.DependencyInjection;
 using Nethereum.Web3;
 using Trakx.Common.Ethereum;
 using Trakx.Common.Extensions;
-using Trakx.Common.Sources.Coinbase;
 using Trakx.Common.Sources.CoinGecko;
 using Trakx.Common.Sources.Messari.Client;
 using Trakx.Persistence.DAO;
@@ -32,7 +31,6 @@ namespace Trakx.Tests.Tools
             var serviceCollection = new ServiceCollection();
 
             serviceCollection.AddMessariClient();
-            serviceCollection.AddCoinbaseClient();
             serviceCollection.AddCoinGeckoClient();
             serviceCollection.AddMemoryCache();
             serviceCollection.AddEthereumInteraction(

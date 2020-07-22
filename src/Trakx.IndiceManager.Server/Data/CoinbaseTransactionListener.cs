@@ -4,7 +4,6 @@ using System.Linq;
 using System.Reactive.Concurrency;
 using System.Reactive.Linq;
 using System.Threading;
-using Microsoft.Extensions.Caching.Memory;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Logging;
 using Trakx.Coinbase.Custody.Client.Interfaces;
@@ -32,26 +31,27 @@ namespace Trakx.IndiceManager.Server.Data
 
     /// <inheritdoc cref="ICoinbaseTransactionListener"/>
     /// <inheritdoc cref="IDisposable"/>
-    public class CoinbaseTransactionListener : ICoinbaseTransactionListener, IDisposable
+    public sealed class CoinbaseTransactionListener : ICoinbaseTransactionListener, IDisposable
     {
+        /// <summary>
+        /// Interval at which we try to retrieve new transactions from Coinbase Custody.
+        /// </summary>
         public static readonly TimeSpan PollingInterval = TimeSpan.FromSeconds(10);
         
         private readonly CancellationTokenSource _cancellationTokenSource;
-        private readonly ICoinbaseClient _coinbaseClient;
-        private readonly IMemoryCache _cache;
         private readonly ILogger<CoinbaseTransactionListener> _logger;
         private readonly IServiceScope _initialisationScope;
+        private readonly ICurrencyCache _currencyCache;
 
-        public CoinbaseTransactionListener(
-            ICoinbaseClient coinbaseClient,
-            ILogger<CoinbaseTransactionListener> logger,
+        /// <inheritdoc />
+        public CoinbaseTransactionListener(ICoinbaseClient coinbaseClient,
             IServiceScopeFactory serviceScopeFactory,
-            IMemoryCache memoryCache,
-            IScheduler scheduler = default)
+            ICurrencyCache currencyCache,
+            ILogger<CoinbaseTransactionListener> logger,
+            IScheduler? scheduler = default)
         {
-            _cache = memoryCache;
+            _currencyCache = currencyCache;
             _logger = logger;
-            _coinbaseClient = coinbaseClient;
             _initialisationScope = serviceScopeFactory.CreateScope();
             var transactionDataProvider = _initialisationScope.ServiceProvider.GetService<ITransactionDataProvider>();
             scheduler ??= Scheduler.Default;
@@ -63,7 +63,7 @@ namespace Trakx.IndiceManager.Server.Data
                     try
                     {
                         logger.LogDebug("Querying Coinbase Custody for new transactions.");
-                        var transactions = _coinbaseClient.GetTransactions(endTime:
+                        var transactions = coinbaseClient.GetTransactions(endTime:
                             await transactionDataProvider.GetLastWrappingTransactionDatetime(),
                             paginationOptions: new PaginationOptions(pageSize:100));
                         var processedTransaction = GetDecimalAmount(transactions);
@@ -81,7 +81,7 @@ namespace Trakx.IndiceManager.Server.Data
                 //it looks like here the only way to do a distinct would be to keep in memory all the
                 //transactions that ever appeared in the stream to perform comparison. This is probably
                 //slow and leaky.
-                .Distinct(t => string.Join("", t.Hashes))
+                .Distinct(t => string.Join("|", t.Hashes))
                 .Do(t => logger.LogDebug("New transaction found on wallet {0}", t.WalletId));
         }
 
@@ -90,6 +90,7 @@ namespace Trakx.IndiceManager.Server.Data
         /// <inheritdoc />
         public void StopListening()
         {
+            _logger.LogDebug("Stopping to look for coinbase transactions.");
             _cancellationTokenSource.Cancel();
         }
 
@@ -113,27 +114,9 @@ namespace Trakx.IndiceManager.Server.Data
         {
             await foreach (var transaction in transactionsList)
             {
-                var retrievedDecimal = GetDecimalsForCurrency(transaction.Currency);
-                if (retrievedDecimal != default)
-                    yield return new CoinbaseTransaction(transaction, retrievedDecimal!.Value);
-            }
-        }
-
-        private ushort? GetDecimalsForCurrency(string symbol)
-        {
-            if (_cache.TryGetValue("coinbase_decimal_" + symbol, out var cacheEntry))
-                return (ushort)cacheEntry;
-
-            try
-            {
-                var coinbaseDecimals = _coinbaseClient.GetCurrencyAsync(symbol).GetAwaiter().GetResult().Decimals;
-                _cache.Set("coinbase_decimal_" + symbol, coinbaseDecimals, TimeSpan.FromDays(1));
-                return coinbaseDecimals;
-            }
-            catch (Exception e)
-            {
-                _logger.LogError(e, "Failed to get decimal amounts for transactions from Coinbase Custody");
-                return default;
+                var retrievedDecimal = await _currencyCache.GetDecimalsForCurrency(transaction.Currency);
+                if (retrievedDecimal.HasValue)
+                    yield return new CoinbaseTransaction(transaction, retrievedDecimal.Value);
             }
         }
     }

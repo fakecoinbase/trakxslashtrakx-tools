@@ -1,13 +1,19 @@
 ﻿using System.Collections.Generic;
 using System.Linq;
+using System.Threading;
 using System.Threading.Tasks;
+using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
+using Trakx.Coinbase.Custody.Client.Interfaces;
 using Trakx.Common.Models;
-using Trakx.Common.Sources.Coinbase;
 using Trakx.IndiceManager.Server.Managers;
 
 namespace Trakx.IndiceManager.Server.Controllers
 {
+    /// <summary>
+    /// Provides methods around non erc-20 wrapping, allowing to create wrapping/unwrapping transactions
+    /// and checking the status of Trakx collateral reserves.
+    /// </summary>
     [ApiController]
     [Route("[controller]/[action]")]
     public class WrappingController : ControllerBase
@@ -15,20 +21,26 @@ namespace Trakx.IndiceManager.Server.Controllers
         private readonly IWrappingService _wrappingService;
         private readonly ICoinbaseClient _coinbaseClient;
 
-        public WrappingController(IWrappingService wrappingService, ICoinbaseClient coinbaseClient)
+        /// <inheritdoc />
+        public WrappingController(IWrappingService wrappingService,
+            ICoinbaseClient coinbaseClient)
         {
             _wrappingService = wrappingService;
             _coinbaseClient = coinbaseClient;
         }
-            /// <summary>
+        
+        /// <summary>
         /// Allows to return a corresponding address to a token in order for the user to make the transfer to a specific address. 
         /// </summary>
-        /// <param name="symbol">The symbol of the token for which we want the Trakx's address.</param>
+        /// <param name="symbol">The symbol of the token for which we want Trakx' address.</param>
         /// <returns>The Trakx address associated to the <paramref name="symbol"/></returns>
         [HttpGet]
+        [ProducesResponseType(StatusCodes.Status200OK)]
+        [ProducesResponseType(StatusCodes.Status404NotFound)]
+        [ProducesResponseType(StatusCodes.Status400BadRequest)]
         public async Task<ActionResult<string>> GetTrakxAddressFromSymbol([FromBody]string symbol)
         {
-            if (!_coinbaseClient.CustodiedCoins.Contains(symbol))
+            if (await _coinbaseClient.GetCurrencyAsync(symbol) == null)
                 return NotFound("Coinbase Custody don't have this type of token.");
 
             var address = await _wrappingService.RetrieveAddressFromSymbol(symbol);
@@ -46,10 +58,12 @@ namespace Trakx.IndiceManager.Server.Controllers
         /// </summary>
         /// <param name="transaction">The <see cref="WrappingTransactionModel"/> which that has all the information needed to
         /// complete the transaction.</param>
-        /// <returns>Return a BadRequest object if the informations in <paramref name="transaction"/> are wrong.
+        /// <returns>Return a BadRequest object if the information in <paramref name="transaction"/> are wrong.
         /// Else it return an OK object result.
         /// </returns>
         [HttpPost]
+        [ProducesResponseType(StatusCodes.Status200OK)]
+        [ProducesResponseType(StatusCodes.Status400BadRequest)]
         public async Task<ActionResult<string>> WrapTokens([FromBody] WrappingTransactionModel transaction)
         {
             var transactionHash = await _wrappingService.TryToFindTransaction(transaction);
@@ -69,6 +83,8 @@ namespace Trakx.IndiceManager.Server.Controllers
         /// <param name="user">Here is the name of the user that is register in all the transactions.</param>
         /// <returns>All the transaction or a BadRequest object if the user doesn't have any transaction associated.</returns>
         [HttpGet]
+        [ProducesResponseType(StatusCodes.Status200OK)]
+        [ProducesResponseType(StatusCodes.Status400BadRequest)]
         public async Task<ActionResult<List<WrappingTransactionModel>>> GetAllTransactionByUser([FromBody] string user)
         {
             var transactions = await _wrappingService.GetTransactionByUser(user);
@@ -80,16 +96,20 @@ namespace Trakx.IndiceManager.Server.Controllers
         }
 
         /// <summary>
-        /// This route allows to retrieve the Trakx's balance, either with native or wrapped tokens.
+        /// This route allows to retrieve the Trakx' balance, either with native or wrapped tokens.
         /// </summary>
-        /// <returns>An Ok object list composed by all the balances with status 200 or a BadRequest Object if it failed.</returns>
+        /// <returns>An Ok object list composed by all the balances with status 200 or a InternalServerError object if it failed.</returns>
         [HttpGet]
-        public async Task<ActionResult<List<AccountBalanceModel>>> GetTrakxBalance()
+        [ProducesResponseType(StatusCodes.Status200OK)]
+        [ProducesResponseType(StatusCodes.Status500InternalServerError)]
+        public async Task<ActionResult<IAsyncEnumerable<AccountBalanceModel>>> 
+            GetTrakxBalances(CancellationToken cancellationToken = default)
         {
-            var balances = await _wrappingService.GetBalances();
+            var balances = _wrappingService.GetTrakxBalances(cancellationToken);
 
-            if (balances == null)
-                return BadRequest("An error occurred, please try again.");
+            if (!await balances.AnyAsync(cancellationToken))
+                return StatusCode(StatusCodes.Status500InternalServerError, 
+                    "An error occurred, please try again.");
 
             return Ok(balances);
         }

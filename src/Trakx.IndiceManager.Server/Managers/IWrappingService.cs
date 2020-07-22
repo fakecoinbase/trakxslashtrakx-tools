@@ -1,4 +1,5 @@
 ﻿using System.Collections.Generic;
+using System.Threading;
 using System.Threading.Tasks;
 using Trakx.Common.Interfaces.Transaction;
 using Trakx.Common.Models;
@@ -49,7 +50,8 @@ namespace Trakx.IndiceManager.Server.Managers
         /// <summary>
         /// Allows to retrieve Trakx balance, either with native or wrapped tokens.
         /// </summary>
+        /// <param name="cancellationToken">A token that can be used to request cancellation of the asynchronous enumeration.</param>
         /// <returns>Return a list of <see cref="AccountBalanceModel"/>.</returns>
-        Task<List<AccountBalanceModel>> GetBalances();
+        IAsyncEnumerable<AccountBalanceModel> GetTrakxBalances(CancellationToken cancellationToken = default);
     }
 }

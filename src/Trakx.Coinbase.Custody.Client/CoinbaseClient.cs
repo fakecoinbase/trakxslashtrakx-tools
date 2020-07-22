@@ -156,7 +156,7 @@ namespace Trakx.Coinbase.Custody.Client
         }
 
         /// <inheritdoc />
-        public async Task<Currency> GetCurrencyAsync(string symbol, CancellationToken cancellationToken = default)
+        public async Task<Currency?> GetCurrencyAsync(string symbol, CancellationToken cancellationToken = default)
         {
             return await _currencyEndpoint.GetCurrencyAsync(symbol, cancellationToken);
         }

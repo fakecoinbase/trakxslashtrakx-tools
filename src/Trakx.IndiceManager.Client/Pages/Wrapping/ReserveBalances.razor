@@ -1,0 +1,60 @@
+﻿@page "/Wrapping/reserve_balances"
+@using Syncfusion.Blazor.Grids
+@using Syncfusion.Blazor.Notifications
+@using Trakx.Common.Models
+@using Trakx.IndiceManager.ApiClient
+@using Trakx.IndiceManager.Client.Shared
+@inject IToaster Toaster
+@inject IWrappingClient WrappingClient
+
+
+    <Toaster @ref="Toaster"/>
+    <SfGrid DataSource="@AccountBalances" AllowPaging="true" @ref="DataGrid">
+        <GridColumns>
+            <GridColumn Field=@nameof(AccountBalanceModel.Symbol) IsPrimaryKey="true"></GridColumn>
+            <GridColumn Field=@nameof(AccountBalanceModel.Name)></GridColumn>
+            <GridColumn Field=@nameof(AccountBalanceModel.Balance)></GridColumn>
+            <GridColumn Field=@nameof(AccountBalanceModel.LastUpDate) Type="ColumnType.DateTime" Format="yyyy-MM-dd HH:mm:ss"></GridColumn>
+        </GridColumns>
+    </SfGrid>
+
+@code {
+
+    #region Variables
+#nullable disable
+    public SfGrid<AccountBalanceModel> DataGrid { get; set; }
+#nullable restore
+    public List<AccountBalanceModel> AccountBalances { get; } = new List<AccountBalanceModel>();
+
+    #endregion
+
+    #region Methods
+
+    private async Task<List<AccountBalanceModel>> GetAccountBalances()
+    {
+        try
+        {
+            return (await WrappingClient.GetTrakxBalancesAsync()
+                .ConfigureAwait(false))
+                .Result;
+        }
+        catch (Exception)
+        {
+            await Toaster.ShowError("Failed to load balances from Index Manager Api.");
+            return new List<AccountBalanceModel>();
+        }
+    }
+
+    #endregion
+
+    #region Overrides of ComponentBase
+
+    /// <inheritdoc />
+    protected override async Task OnInitializedAsync()
+    {
+        AccountBalances.AddRange(await GetAccountBalances().ConfigureAwait(false));
+        DataGrid?.Refresh();
+    }
+
+    #endregion
+}

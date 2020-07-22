@@ -1,4 +1,5 @@
-﻿using System.Threading;
+﻿using System;
+using System.Threading;
 using System.Threading.Tasks;
 using Ardalis.GuardClauses;
 using Flurl.Http;
@@ -32,10 +33,18 @@ namespace Trakx.Coinbase.Custody.Client.Endpoints
         }
 
         /// <inheritdoc />
-        public async Task<Currency> GetCurrencyAsync(string symbol, CancellationToken cancellationToken = default)
+        public async Task<Currency?> GetCurrencyAsync(string symbol, CancellationToken cancellationToken = default)
         {
             Guard.Against.NullOrEmpty(symbol, nameof(symbol));
-            return await _client.Request("currencies", symbol).GetJsonAsync<Currency>(cancellationToken);
+            try
+            {
+                return await _client.Request("currencies", symbol).GetJsonAsync<Currency>(cancellationToken);
+            }
+            catch (Exception)
+            {
+                return default;
+            }
+            
         }
     }
 }

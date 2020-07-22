@@ -1,11 +1,14 @@
 ﻿using System.Collections.Generic;
+using System.Linq;
 using System.Threading.Tasks;
 using FluentAssertions;
+using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
 using NSubstitute;
+using Trakx.Coinbase.Custody.Client.Interfaces;
+using Trakx.Coinbase.Custody.Client.Models;
 using Trakx.Common.Interfaces.Transaction;
 using Trakx.Common.Models;
-using Trakx.Common.Sources.Coinbase;
 using Trakx.IndiceManager.Server.Controllers;
 using Trakx.IndiceManager.Server.Managers;
 using Trakx.Persistence.Tests;
@@ -33,7 +36,7 @@ namespace Trakx.IndiceManager.Server.Tests.Unit.Controllers
         public async Task GetTrakxAddressFromSymbol_should_not_send_200status_if_symbol_not_supported_by_coinbase()
         {
             var fakeSymbol = "FAKESYMBOL";
-            _coinbaseClient.CustodiedCoins.Returns(new List<string>{"btc","eth"});
+            _coinbaseClient.GetCurrencyAsync(Arg.Any<string>()).Returns((Currency?)default);
 
             await _controller.GetTrakxAddressFromSymbol(fakeSymbol);
             await _wrappingService.DidNotReceive().RetrieveAddressFromSymbol(fakeSymbol);
@@ -44,7 +47,8 @@ namespace Trakx.IndiceManager.Server.Tests.Unit.Controllers
         {
             var symbol = "btc";
             var accountAddress = "0x734Ac651Dd95a339c633cdEd410228515F97fAfF";
-            _coinbaseClient.CustodiedCoins.Returns(new List<string> {"btc", "eth", "ltc"});
+            _coinbaseClient.GetCurrencyAsync(Arg.Any<string>()).Returns(c =>
+                _mockCreator.GetRandomCurrency(c[0].ToString()));
             _wrappingService.RetrieveAddressFromSymbol(symbol).Returns(accountAddress);
 
             var result = await _controller.GetTrakxAddressFromSymbol(symbol);
@@ -55,8 +59,9 @@ namespace Trakx.IndiceManager.Server.Tests.Unit.Controllers
         public async Task GetTrakxAddressFromSymbol_should_send_badrequest_if_error_occurs_when_connecting_to_coinbase()
         {
             var symbol = "btc";
-            
-            _coinbaseClient.CustodiedCoins.Returns(new List<string> { "btc", "eth", "ltc" });
+
+            _coinbaseClient.GetCurrencyAsync(Arg.Any<string>()).Returns(c =>
+                _mockCreator.GetRandomCurrency(c[0].ToString()));
             _wrappingService.RetrieveAddressFromSymbol(symbol).Returns((string)null);
 
             var result = await _controller.GetTrakxAddressFromSymbol(symbol);
@@ -114,28 +119,28 @@ namespace Trakx.IndiceManager.Server.Tests.Unit.Controllers
         }
 
         [Fact]
-        public async Task GetTrakxBalance_should_not_send_balance_if_error_occurs_at_coinbase()
+        public async Task GetTrakxBalances_should_return_500_if_no_balance_was_retrieved()
         {
-            _wrappingService.GetBalances().Returns((List<AccountBalanceModel>) null);
+            _wrappingService.GetTrakxBalances().Returns(Enumerable.Empty<AccountBalanceModel>().ToAsyncEnumerable());
             
-            var result = await _controller.GetTrakxBalance();
-            ((BadRequestObjectResult) result.Result).Value.Should().Be("An error occurred, please try again.");
+            var result = await _controller.GetTrakxBalances();
+            ((ObjectResult) result.Result).StatusCode.Should().Be(StatusCodes.Status500InternalServerError);
         }
 
         [Fact]
-        public async Task GetTrakxBalance_should_send_TrakxBalance()
+        public async Task GetTrakxBalances_should_return_TrakxBalances_from_wrapping_services()
         {
-            var balance = new List<AccountBalanceModel>
+            var balances = new List<AccountBalanceModel>
             {
-                new AccountBalanceModel("BTC", 0.2m),
-                new AccountBalanceModel("ETH", 25.3m),
-                new AccountBalanceModel("WBTC", 62.2m)
+                _mockCreator.GetRandomAccountBalanceModel(),
+                _mockCreator.GetRandomAccountBalanceModel(),
             };
-            _wrappingService.GetBalances().Returns(balance);
-            var result = await _controller.GetTrakxBalance();
-            var finalResult = (List<AccountBalanceModel>) ((OkObjectResult) result.Result).Value;
-            finalResult[0].Should().Be(balance[0]);
-            finalResult[1].Should().Be(balance[1]);
+            _wrappingService.GetTrakxBalances().Returns(balances.ToAsyncEnumerable());
+            var result = await _controller.GetTrakxBalances();
+            var finalResult = await ((IAsyncEnumerable<AccountBalanceModel>) 
+                ((OkObjectResult) result.Result).Value).ToListAsync();
+            finalResult[0].Should().Be(balances[0]);
+            finalResult[1].Should().Be(balances[1]);
         }
     }
 }

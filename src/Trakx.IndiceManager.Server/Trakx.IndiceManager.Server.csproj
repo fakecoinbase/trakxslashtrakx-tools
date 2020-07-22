@@ -39,5 +39,9 @@
     <ProjectReference Include="..\Trakx.Persistence\Trakx.Persistence.csproj" />
   </ItemGroup>
 
+  <ItemGroup>
+    <Folder Include="Models\" />
+  </ItemGroup>
+
 
 </Project>

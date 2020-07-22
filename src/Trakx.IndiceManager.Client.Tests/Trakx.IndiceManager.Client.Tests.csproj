@@ -28,6 +28,7 @@
 
   <ItemGroup>
     <ProjectReference Include="..\Trakx.IndiceManager.Client\Trakx.IndiceManager.Client.csproj" />
+    <ProjectReference Include="..\Trakx.Persistence.Tests\Trakx.Persistence.Tests.csproj" />
     <ProjectReference Include="..\Trakx.Tests\Trakx.Tests.csproj" />
   </ItemGroup>
 

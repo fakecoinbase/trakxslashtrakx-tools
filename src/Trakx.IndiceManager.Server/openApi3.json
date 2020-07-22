@@ -7,6 +7,121 @@
     "version": "v0.1"
   },
   "paths": {
+    "/AddressMapping/GetTrakxAddress": {
+      "get": {
+        "tags": [
+          "AddressMapping"
+        ],
+        "summary": "Get one trakx address on coinbase for currencySymbol.",
+        "operationId": "AddressMapping_GetTrakxAddress",
+        "parameters": [
+          {
+            "name": "currencySymbol",
+            "in": "query",
+            "description": "Symbol of the currency in which the amount is calculated.",
+            "schema": {
+              "type": "string",
+              "nullable": true
+            },
+            "x-position": 1
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Trakx address for currencySymbol.",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "string"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/AddressMapping/GetAllSymbolAvailableOnCoinbase": {
+      "get": {
+        "tags": [
+          "AddressMapping"
+        ],
+        "summary": "Get symbols of all trakx wallets available on coinbase.",
+        "operationId": "AddressMapping_GetAllSymbolAvailableOnCoinbase",
+        "responses": {
+          "200": {
+            "description": "List of symbols.",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "array",
+                  "items": {
+                    "type": "string"
+                  }
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/AddressMapping/RegisterUserAsAddressOwner": {
+      "post": {
+        "tags": [
+          "AddressMapping"
+        ],
+        "summary": "Links a user to an address with a verification amount. Once the transfer has been sent to the\naddress, the  will be set to verified, and the caller of the\nmethod will be the owner.",
+        "operationId": "AddressMapping_RegisterUserAsAddressOwner",
+        "requestBody": {
+          "x-name": "claimedAddress",
+          "description": "The address for which the ownership is claimed.",
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/DepositAddressModel"
+              }
+            }
+          },
+          "required": true,
+          "x-position": 1
+        },
+        "responses": {
+          "202": {
+            "description": ""
+          },
+          "400": {
+            "description": "",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ProblemDetails"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/Authentification/GetBearerToken": {
+      "get": {
+        "tags": [
+          "Authentification"
+        ],
+        "summary": "Use this route to get information about the bearer issued during the request.",
+        "operationId": "Authentification_GetBearerToken",
+        "responses": {
+          "200": {
+            "description": "",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "string"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
     "/IndiceCreation/GetComponentByAddress": {
       "get": {
         "tags": [
@@ -189,12 +304,22 @@
           "x-position": 1
         },
         "responses": {
-          "200": {
+          "201": {
             "description": "An object with a response 201 if the adding was successful",
             "content": {
               "application/json": {
                 "schema": {
                   "$ref": "#/components/schemas/IndiceDetailModel"
+                }
+              }
+            }
+          },
+          "400": {
+            "description": "",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ProblemDetails"
                 }
               }
             }
@@ -223,7 +348,7 @@
           "x-position": 1
         },
         "responses": {
-          "200": {
+          "201": {
             "description": "An object with a response 201 if the adding was successful.",
             "content": {
               "application/json": {
@@ -232,23 +357,13 @@
                 }
               }
             }
-          }
-        }
-      }
-    },
-    "/IndiceCreation/GetBearerToken": {
-      "get": {
-        "tags": [
-          "IndiceCreation"
-        ],
-        "operationId": "IndiceCreation_GetBearerToken",
-        "responses": {
-          "200": {
+          },
+          "400": {
             "description": "",
             "content": {
               "application/json": {
                 "schema": {
-                  "type": "string"
+                  "$ref": "#/components/schemas/ProblemDetails"
                 }
               }
             }
@@ -336,7 +451,7 @@
         "operationId": "Wrapping_GetTrakxAddressFromSymbol",
         "requestBody": {
           "x-name": "symbol",
-          "description": "The symbol of the token for which we want the Trakx's address.",
+          "description": "The symbol of the token for which we want Trakx' address.",
           "content": {
             "application/json": {
               "schema": {
@@ -354,6 +469,26 @@
               "application/json": {
                 "schema": {
                   "type": "string"
+                }
+              }
+            }
+          },
+          "404": {
+            "description": "",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ProblemDetails"
+                }
+              }
+            }
+          },
+          "400": {
+            "description": "",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ProblemDetails"
                 }
               }
             }
@@ -383,11 +518,21 @@
         },
         "responses": {
           "200": {
-            "description": "Return a BadRequest object if the informations in  are wrong.\n            Else it return an OK object result.\n            ",
+            "description": "Return a BadRequest object if the information in  are wrong.\n            Else it return an OK object result.\n            ",
             "content": {
               "application/json": {
                 "schema": {
                   "type": "string"
+                }
+              }
+            }
+          },
+          "400": {
+            "description": "",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ProblemDetails"
                 }
               }
             }
@@ -428,20 +573,30 @@
                 }
               }
             }
+          },
+          "400": {
+            "description": "",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ProblemDetails"
+                }
+              }
+            }
           }
         }
       }
     },
-    "/Wrapping/GetTrakxBalance": {
+    "/Wrapping/GetTrakxBalances": {
       "get": {
         "tags": [
           "Wrapping"
         ],
-        "summary": "This route allows to retrieve the Trakx's balance, either with native or wrapped tokens.",
-        "operationId": "Wrapping_GetTrakxBalance",
+        "summary": "This route allows to retrieve the Trakx' balance, either with native or wrapped tokens.",
+        "operationId": "Wrapping_GetTrakxBalances",
         "responses": {
           "200": {
-            "description": "An Ok object list composed by all the balances with status 200 or a BadRequest Object if it failed.",
+            "description": "An Ok object list composed by all the balances with status 200 or a InternalServerError object if it failed.",
             "content": {
               "application/json": {
                 "schema": {
@@ -452,6 +607,9 @@
                 }
               }
             }
+          },
+          "500": {
+            "description": ""
           }
         }
       }
@@ -459,34 +617,6 @@
   },
   "components": {
     "schemas": {
-      "ComponentDetailModel": {
-        "type": "object",
-        "additionalProperties": false,
-        "properties": {
-          "address": {
-            "type": "string"
-          },
-          "symbol": {
-            "type": "string"
-          },
-          "quantity": {
-            "type": "number",
-            "format": "decimal",
-            "nullable": true
-          },
-          "name": {
-            "type": "string",
-            "nullable": true
-          },
-          "coinGeckoId": {
-            "type": "string",
-            "nullable": true
-          },
-          "decimals": {
-            "type": "integer"
-          }
-        }
-      },
       "ProblemDetails": {
         "type": "object",
         "additionalProperties": false,
@@ -519,15 +649,85 @@
           }
         }
       },
+      "DepositAddressModel": {
+        "type": "object",
+        "additionalProperties": false,
+        "required": [
+          "currencySymbol",
+          "address"
+        ],
+        "properties": {
+          "currencySymbol": {
+            "type": "string",
+            "minLength": 1,
+            "pattern": "[\\w]{2,}"
+          },
+          "address": {
+            "type": "string",
+            "minLength": 1,
+            "pattern": "[\\w]{10,}"
+          }
+        }
+      },
+      "ComponentDetailModel": {
+        "type": "object",
+        "additionalProperties": false,
+        "required": [
+          "symbol",
+          "weight"
+        ],
+        "properties": {
+          "address": {
+            "type": "string"
+          },
+          "symbol": {
+            "type": "string",
+            "minLength": 1
+          },
+          "quantity": {
+            "type": "number",
+            "format": "decimal",
+            "nullable": true
+          },
+          "name": {
+            "type": "string",
+            "nullable": true
+          },
+          "coinGeckoId": {
+            "type": "string",
+            "nullable": true
+          },
+          "decimals": {
+            "type": "integer"
+          },
+          "usdcValue": {
+            "type": "number",
+            "format": "decimal",
+            "nullable": true
+          },
+          "weight": {
+            "type": "number",
+            "format": "decimal",
+            "maximum": 1.0,
+            "minimum": 0.000001
+          }
+        }
+      },
       "IndiceDetailModel": {
         "type": "object",
         "additionalProperties": false,
+        "required": [
+          "symbol",
+          "name"
+        ],
         "properties": {
           "symbol": {
-            "type": "string"
+            "type": "string",
+            "minLength": 1
           },
           "name": {
-            "type": "string"
+            "type": "string",
+            "minLength": 1
           },
           "creationDate": {
             "type": "string",
@@ -543,7 +743,8 @@
             "nullable": true
           },
           "description": {
-            "type": "string"
+            "type": "string",
+            "nullable": true
           },
           "naturalUnit": {
             "type": "integer"
@@ -560,12 +761,16 @@
       "IndiceCompositionModel": {
         "type": "object",
         "additionalProperties": false,
+        "required": [
+          "targetedNav"
+        ],
         "properties": {
           "indiceDetail": {
             "$ref": "#/components/schemas/IndiceDetailModel"
           },
           "address": {
-            "type": "string"
+            "type": "string",
+            "nullable": true
           },
           "symbol": {
             "type": "string"
@@ -582,6 +787,10 @@
           },
           "version": {
             "type": "integer"
+          },
+          "targetedNav": {
+            "type": "number",
+            "format": "decimal"
           }
         }
       },
@@ -684,12 +893,26 @@
         "type": "object",
         "additionalProperties": false,
         "properties": {
-          "token": {
+          "symbol": {
             "type": "string"
+          },
+          "nativeBalance": {
+            "type": "integer",
+            "format": "int64"
           },
           "balance": {
             "type": "number",
             "format": "decimal"
+          },
+          "name": {
+            "type": "string"
+          },
+          "address": {
+            "type": "string"
+          },
+          "lastUpDate": {
+            "type": "string",
+            "format": "date-time"
           }
         }
       }

@@ -21,6 +21,6 @@ namespace Trakx.Coinbase.Custody.Client.Interfaces
         /// <param name="symbol">The symbol of the currency that we want.</param>
         /// <param name="cancellationToken">A token that can be used to request cancellation of the asynchronous operation.</param>
         /// <returns>A <see cref="Currency"/> response.</returns>
-        Task<Currency> GetCurrencyAsync(string symbol, CancellationToken cancellationToken = default);
+        Task<Currency?> GetCurrencyAsync(string symbol, CancellationToken cancellationToken = default);
     }
 }

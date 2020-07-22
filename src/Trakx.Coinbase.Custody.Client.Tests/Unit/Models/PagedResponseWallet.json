@@ -1,28 +1,50 @@
 ﻿{
   "data": [
     {
-      "id": "575f6845-9508-4cd7-a794-cb9ab7faf441",
-      "name": "test",
-      "balance": "1.26",
-      "withdrawable_balance": "2.235",
-      "created_at": "2019-08-19T18:15:34.803Z",
-      "updated_at": "1998-08-10T18:15:34.803Z",
-      "cold_address": "fake_btc_cold_address",
-      "currency": "btc"
+      "id": "32b34b7f-1555-4701-b017-e4c93ff9eaf7",
+      "name": "USDC Wallet",
+      "created_at": "2020-07-08T07:42:08.860Z",
+      "updated_at": "2020-07-08T07:42:09.084Z",
+      "balance": "12345600.0",
+      "balance_whole_units": "12.3456",
+      "withdrawable_balance": "12345600",
+      "withdrawable_balance_whole_units": "12.3456",
+      "unvested_balance": "0",
+      "unvested_balance_whole_units": "0.0",
+      "cold_address": "0xE68Af24BD324156C773C714E5137A532398B0A15",
+      "currency": "USDC"
     },
     {
-      "id": "97881a38-fba1-4563-992c-130a306c5a14",
-      "name": "test",
-      "balance": "0.0",
-      "withdrawable_balance": "0.0",
-      "created_at": "2019-08-19T18:15:34.808Z",
-      "updated_at": "2019-08-19T18:15:34.808Z",
-      "cold_address": "fake_eth_cold_address",
-      "currency": "eth"
+      "id": "9805c5f8-5167-4843-b8e9-7802f55480cc",
+      "name": "ETH Wallet",
+      "created_at": "2020-07-08T07:38:28.127Z",
+      "updated_at": "2020-07-08T07:38:28.344Z",
+      "balance": "40000000000000000.0",
+      "balance_whole_units": "0.04",
+      "withdrawable_balance": "40000000000000000",
+      "withdrawable_balance_whole_units": "0.04",
+      "unvested_balance": "0",
+      "unvested_balance_whole_units": "0.0",
+      "cold_address": "0x0cdbb27d014994071756e50bb6597236Cf0243A7",
+      "currency": "ETH"
+    },
+    {
+      "id": "d3c50a5d-6abc-47dd-8300-36c4ed837504",
+      "name": "STORJ Wallet",
+      "created_at": "2020-07-08T07:31:37.365Z",
+      "updated_at": "2020-07-08T07:31:37.643Z",
+      "balance": "200000000.0",
+      "balance_whole_units": "2.0",
+      "withdrawable_balance": "200000000",
+      "withdrawable_balance_whole_units": "2.0",
+      "unvested_balance": "0",
+      "unvested_balance_whole_units": "0.0",
+      "cold_address": "0x31758cc9df24f07c309D212c0D6ddF76837BeAD4",
+      "currency": "STORJ"
     }
   ],
   "pagination": {
-    "before": "575f6845-9508-4cd7-a794-cb9ab7faf441",
-    "after": "97881a38-fba1-4563-992c-130a306c5a14"
+    "before": "32b34b7f-1555-4701-b017-e4c93ff9eaf7",
+    "after": "d3c50a5d-6abc-47dd-8300-36c4ed837504"
   }
 }

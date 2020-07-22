@@ -9,7 +9,7 @@ using Microsoft.AspNetCore.Mvc;
 using Trakx.Coinbase.Custody.Client.Interfaces;
 using Trakx.Common.Core;
 using Trakx.Common.Interfaces;
-using Trakx.IndiceManager.Server.Models;
+using Trakx.Common.Models;
 
 namespace Trakx.IndiceManager.Server.Controllers
 {

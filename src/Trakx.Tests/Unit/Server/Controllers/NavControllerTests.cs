@@ -4,6 +4,7 @@ using System.Linq;
 using System.Threading;
 using System.Threading.Tasks;
 using FluentAssertions;
+using FluentAssertions.Extensions;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.Extensions.Logging;
 using NSubstitute;
@@ -89,8 +90,8 @@ namespace Trakx.Tests.Unit.Server.Controllers
         public async Task GetUsdNetAssetValue_should_retrieve_composition_asOf_utcNow_if_compositionAsOf_unspecified()
         {
             var cancellationToken = new CancellationToken();
-            var utcNow = new DateTime(2020, 02, 29);
-            var priceAsOf = new DateTime(2020, 02, 10);
+            var utcNow = new DateTimeOffset(new DateTime(2020, 02, 29)).UtcDateTime ;
+            var priceAsOf = new DateTimeOffset(new DateTime(2020, 02, 10)).UtcDateTime;
             _dateTimeProvider.UtcNow.Returns(utcNow);
 
             var composition = _mockCreator.GetIndiceComposition(2);
@@ -118,7 +119,7 @@ namespace Trakx.Tests.Unit.Server.Controllers
         {
             var cancellationToken = new CancellationToken();
             var valuationAsOf = default(DateTime?);
-            var compositionAsOf = new DateTime(2020, 03, 01);
+            var compositionAsOf = new DateTimeOffset(new DateTime(2020, 03, 01)).UtcDateTime;
 
             var composition = _mockCreator.GetIndiceComposition(3);
             _indiceProvider.GetCompositionAtDate(Arg.Any<string>(), compositionAsOf, cancellationToken)

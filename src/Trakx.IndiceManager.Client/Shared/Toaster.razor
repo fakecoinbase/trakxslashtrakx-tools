@@ -1,0 +1,63 @@
+﻿@using Syncfusion.Blazor.Notifications
+@namespace  Trakx.IndiceManager.Client.Shared
+@implements IToaster
+
+<SfToast @ref="SfToaster" ShowCloseButton="true" ShowProgressBar="true">
+    <ToastPosition X="Center" Y="Bottom"></ToastPosition>
+</SfToast>
+
+@code {
+
+    #nullable disable
+    public SfToast SfToaster { get; set; }
+    #nullable restore
+
+    #region Implementation of IToaster
+
+    /// <inheritdoc />
+    public async Task ShowInfo(string content, string title = "Info")
+    {
+        const string toastClass = "e-toast-info";
+        const string icon = "e-info toast-icons";
+        await DispatchShowToaster(content, title, toastClass, icon);
+    }
+
+    /// <inheritdoc />
+    public async Task ShowSuccess(string content, string title = "Success")
+    {
+        const string toastClass = "e-toast-success";
+        const string icon = "e-success toast-icons";
+        await DispatchShowToaster(content, title, toastClass, icon);
+    }
+
+    /// <inheritdoc />
+    public async Task ShowWarning(string content, string title = "Warning")
+    {
+        const string toastClass = "e-toast-warning";
+        const string icon = "e-warning toast-icons";
+        await DispatchShowToaster(content, title, toastClass, icon);
+    }
+    
+    /// <inheritdoc />
+    public async Task ShowError(string content, string title = "Error")
+    {
+        const string toastClass = "e-toast-danger";
+        const string icon = "e-error toast-icons";
+        await DispatchShowToaster(content, title, toastClass, icon);
+    }
+    #endregion
+
+    private async Task DispatchShowToaster(string content, string title, string toastClass, string icon)
+    {
+        await InvokeAsync(() => SfToaster.Show(new ToastModel
+        {
+            Title = title,
+            Content = content,
+            CssClass = toastClass,
+            Icon = icon
+        }));
+    }
+
+}
+
+

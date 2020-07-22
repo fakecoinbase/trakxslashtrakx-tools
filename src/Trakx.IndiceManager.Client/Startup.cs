@@ -6,6 +6,7 @@ using Microsoft.Extensions.Hosting;
 using Syncfusion.Blazor;
 using Trakx.Common.Composition;
 using Trakx.IndiceManager.ApiClient;
+using Trakx.IndiceManager.Client.Shared;
 
 namespace Trakx.IndiceManager.Client
 {
@@ -22,11 +23,14 @@ namespace Trakx.IndiceManager.Client
         // For more information on how to configure your application, visit https://go.microsoft.com/fwlink/?LinkID=398940
         public void ConfigureServices(IServiceCollection services)
         {
-            services.AddSingleton<IWeightCalculator, WeightCalculator>();
             services.AddRazorPages();
             services.AddServerSideBlazor();
             services.AddSyncfusionBlazor();
-            services.AddIndexManagerApiClient("https://localhost:5001/");
+            services.AddTransient<IToaster, Toaster>();
+            services.AddTransient<IWeightCalculator, WeightCalculator>();
+            services.AddIndexManagerApiClient(
+                Configuration.GetSection(nameof(IndexManagerApiConfiguration))
+                    .Get<IndexManagerApiConfiguration>().BaseUrl);
         }
 
         // This method gets called by the runtime. Use this method to configure the HTTP request pipeline.

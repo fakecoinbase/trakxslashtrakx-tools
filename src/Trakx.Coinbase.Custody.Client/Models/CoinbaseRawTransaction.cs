@@ -46,7 +46,7 @@ namespace Trakx.Coinbase.Custody.Client.Models
 
         [JsonPropertyName("amount")]
         [JsonProperty("amount")]
-        public long UnscaledAmount { get; set; }
+        public ulong UnscaledAmount { get; set; }
 
         [JsonPropertyName("source")]
         public string Source { get; set; }

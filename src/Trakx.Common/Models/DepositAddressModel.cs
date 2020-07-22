@@ -2,7 +2,7 @@
 using Trakx.Common.Core;
 using Trakx.Common.Interfaces;
 
-namespace Trakx.IndiceManager.Server.Models
+namespace Trakx.Common.Models
 {
     public class DepositAddressModel
     {

@@ -3,7 +3,6 @@
 @using System.Linq
 @using Microsoft.AspNetCore.Authentication.OAuth
 @using Microsoft.Extensions.Logging
-@using Trakx.Common.Models
 @using Syncfusion.Blazor.Buttons
 @using Syncfusion.Blazor.DropDowns
 @using Syncfusion.Blazor.Grids
@@ -12,10 +11,10 @@
 @using Syncfusion.Blazor.Charts
 @using Trakx.Common.Composition
 @using Trakx.Common.Extensions
+@using Trakx.Common.Models
 @using Trakx.IndiceManager.ApiClient
 @using Action = Syncfusion.Blazor.Grids.Action
 @using ActionCompleteEventArgs = Syncfusion.Blazor.DropDowns.ActionCompleteEventArgs
-@using Trakx.Common.Models
 @page "/IndiceComposition/indice_creation"
 @inject ILogger<IndiceCreation> Logger
 @inject IIndiceCreationClient ApiClient
@@ -305,7 +304,7 @@
         };
         compositionModel.IndiceDetail = indiceDetailModel;
         compositionModel.Symbol = IndexSymbol;
-        compositionModel.TargetedNav = TargetedNav;
+        compositionModel.TargetedNav = TargetedNav ?? 100m;
         compositionModel.Components = ConstituentRows.Select(c => c.ToComponentDetailModel(EqualWeights) ?? null).ToList();
 
         return compositionModel;

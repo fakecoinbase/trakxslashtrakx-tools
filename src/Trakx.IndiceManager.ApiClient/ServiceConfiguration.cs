@@ -17,7 +17,7 @@ namespace Trakx.IndiceManager.ApiClient
             serviceCollection.AddSingleton<IIndiceCreationClient, IndiceCreationClient>(serviceProvider => new IndiceCreationClient(baseUrl, new HttpClient(clientHandler)));
             serviceCollection.AddSingleton<IIndiceSupplyClient, IndiceSupplyClient>(serviceProvider => new IndiceSupplyClient(baseUrl, new HttpClient(clientHandler)));
             serviceCollection.AddSingleton<IWrappingClient, WrappingClient>(serviceProvider => new WrappingClient(baseUrl, new HttpClient(clientHandler)));
-            
+
             return serviceCollection;
         }
     }
