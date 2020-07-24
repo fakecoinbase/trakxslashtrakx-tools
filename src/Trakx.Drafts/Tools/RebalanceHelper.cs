@@ -7,7 +7,7 @@ using Trakx.Persistence.Tests.Model;
 using Xunit;
 using Xunit.Abstractions;
 
-namespace Trakx.Persistence.Tests.Tools
+namespace Trakx.Drafts.Tools
 {
     [Collection(nameof(SeededDbContextCollection))]
     public sealed class RebalanceHelper : IDisposable

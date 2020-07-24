@@ -673,8 +673,7 @@
         "type": "object",
         "additionalProperties": false,
         "required": [
-          "symbol",
-          "weight"
+          "symbol"
         ],
         "properties": {
           "address": {
@@ -709,7 +708,8 @@
             "type": "number",
             "format": "decimal",
             "maximum": 1.0,
-            "minimum": 0.000001
+            "minimum": 0.000001,
+            "nullable": true
           }
         }
       },

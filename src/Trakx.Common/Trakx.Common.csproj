@@ -7,23 +7,23 @@
   <Import Project="../Common.Projects.props" />
 
   <ItemGroup>
-    <PackageReference Include="Ardalis.GuardClauses" Version="1.4.2" />
-    <PackageReference Include="AutoMapper" Version="9.0.0" />
-    <PackageReference Include="AutoMapper.Extensions.Microsoft.DependencyInjection" Version="7.0.0" />
-    <PackageReference Include="CoinGeckoAsyncApi" Version="1.2.6" />
+    <PackageReference Include="Ardalis.GuardClauses" Version="2.0.0" />
+    <PackageReference Include="AutoMapper" Version="10.0.0" />
+    <PackageReference Include="AutoMapper.Extensions.Microsoft.DependencyInjection" Version="8.0.1" />
+    <PackageReference Include="CoinGeckoAsyncApi" Version="1.3.0" />
     <PackageReference Include="CryptoCompare" Version="1.4.0" />
-    <PackageReference Include="CsvHelper" Version="15.0.4" />
+    <PackageReference Include="CsvHelper" Version="15.0.5" />
     <PackageReference Include="Macross.Json.Extensions" Version="1.5.0" />
     <PackageReference Include="Microsoft.AspNetCore.Http.Extensions" Version="2.2.0" />
     <PackageReference Include="Microsoft.AspNetCore.WebUtilities" Version="2.2.0" />
-    <PackageReference Include="Microsoft.Extensions.Caching.Abstractions" Version="3.1.3" />
-    <PackageReference Include="Microsoft.Extensions.DependencyInjection.Abstractions" Version="3.1.3" />
-    <PackageReference Include="Microsoft.Extensions.Http" Version="3.1.3" />
-    <PackageReference Include="Nethereum.StandardTokenEIP20" Version="3.7.1" />
-    <PackageReference Include="Nethereum.Web3" Version="3.7.1" />
-    <PackageReference Include="Polly" Version="7.2.0" />
+    <PackageReference Include="Microsoft.Extensions.Caching.Abstractions" Version="3.1.6" />
+    <PackageReference Include="Microsoft.Extensions.DependencyInjection.Abstractions" Version="3.1.6" />
+    <PackageReference Include="Microsoft.Extensions.Http" Version="3.1.6" />
+    <PackageReference Include="Nethereum.StandardTokenEIP20" Version="3.8.0" />
+    <PackageReference Include="Nethereum.Web3" Version="3.8.0" />
+    <PackageReference Include="Polly" Version="7.2.1" />
 
-    <PackageReference Include="System.IdentityModel.Tokens.Jwt" Version="6.5.1" />
+    <PackageReference Include="System.IdentityModel.Tokens.Jwt" Version="6.7.1" />
     <PackageReference Include="System.Reactive" Version="4.4.1" />
     <PackageReference Include="System.Text.Json" Version="4.7.2" />
   </ItemGroup>

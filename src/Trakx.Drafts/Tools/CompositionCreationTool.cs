@@ -16,7 +16,7 @@ using Trakx.Tests.Helpers;
 using Xunit;
 using Xunit.Abstractions;
 
-namespace Trakx.Persistence.Tests.Tools
+namespace Trakx.Drafts.Tools
 {
     [Collection(nameof(SeededDbContextCollection))]
     public class CompositionCreationTool : IClassFixture<SeededDbContextFixture>

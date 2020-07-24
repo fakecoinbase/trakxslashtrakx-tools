@@ -9,7 +9,7 @@ using Microsoft.Extensions.DependencyInjection;
 using Xunit;
 using Xunit.Abstractions;
 
-namespace Trakx.Persistence.Tests.Tools
+namespace Trakx.Drafts.Tools
 {
     public class SmartContractAbiAndBinDownloader
     {

@@ -46,7 +46,7 @@ namespace Trakx.IndiceManager.Server.Models
         public ushort Decimals { get; set; }
         public decimal? UsdcValue { get; set; }
 
-        [Required, Range(1e-6, 1)]
+        [Range(1e-6, 1)]
         public decimal? Weight { get; set; }
 
         public bool IsValid()

@@ -2298,9 +2298,9 @@ namespace Trakx.IndiceManager.ApiClient
         [Newtonsoft.Json.JsonProperty("usdcValue", Required = Newtonsoft.Json.Required.Default, NullValueHandling = Newtonsoft.Json.NullValueHandling.Ignore)]
         public decimal? UsdcValue { get; set; }
     
-        [Newtonsoft.Json.JsonProperty("weight", Required = Newtonsoft.Json.Required.Always)]
+        [Newtonsoft.Json.JsonProperty("weight", Required = Newtonsoft.Json.Required.Default, NullValueHandling = Newtonsoft.Json.NullValueHandling.Ignore)]
         [System.ComponentModel.DataAnnotations.Range(0.000001D, 1.0D)]
-        public decimal Weight { get; set; }
+        public decimal? Weight { get; set; }
     
     
     }

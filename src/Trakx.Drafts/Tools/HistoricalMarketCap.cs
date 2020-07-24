@@ -12,7 +12,7 @@ using Polly;
 using Polly.Retry;
 using Xunit;
 
-namespace Trakx.Persistence.Tests.Tools
+namespace Trakx.Drafts.Tools
 {
     public class HistoricalMarketCap : IDisposable
     {

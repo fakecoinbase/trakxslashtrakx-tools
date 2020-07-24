@@ -1,8 +1,7 @@
 
 [![Build Status](https://dev.azure.com/trakx-io/trakx-tools/_apis/build/status/trakx-tools-ASP.NET%20Core-CI?branchName=dev)](https://dev.azure.com/trakx-io/trakx-tools/_build/latest?definitionId=1&branchName=dev)
 [![Codacy Badge](https://api.codacy.com/project/badge/Grade/fb9de3c044504d1abd8994d4c38819d8)](https://www.codacy.com/gh/trakx/trakx-tools?utm_source=github.com&amp;utm_medium=referral&amp;utm_content=trakx/trakx-tools&amp;utm_campaign=Badge_Grade)
-[![Coverage Status](https://coveralls.io/repos/github/trakx/trakx-tools/badge.svg?branch=dev)](https://coveralls.io/github/trakx/trakx-tools?branch=dev)
-
+[![Codacy Badge](https://app.codacy.com/project/badge/Coverage/fb9de3c044504d1abd8994d4c38819d8)](https://www.codacy.com/gh/trakx/trakx-tools?utm_source=github.com&utm_medium=referral&utm_content=trakx/trakx-tools&utm_campaign=Badge_Coverage)
 
 
 # Trakx Tools

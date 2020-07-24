@@ -14,7 +14,7 @@ using Xunit;
 using Xunit.Abstractions;
 using CgMarketData = Trakx.Common.Sources.CoinGecko.MarketData;
 
-namespace Trakx.Persistence.Tests.Tools
+namespace Trakx.Drafts.Tools
 {
     internal static class Constants
     {

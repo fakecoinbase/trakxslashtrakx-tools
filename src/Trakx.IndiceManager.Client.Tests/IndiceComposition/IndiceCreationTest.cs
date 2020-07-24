@@ -32,9 +32,9 @@ namespace Trakx.IndiceManager.Client.Tests.IndiceComposition
             _apiClient = Substitute.For<IIndiceCreationClient>();
             _weightCalculator = Substitute.For<IWeightCalculator>();
             _mockCreator = new MockCreator(output);
-            var componentDetail = _mockCreator.GetRandomComponentDetailModel();
-            var componentCollection = new List<ComponentDetailModel>();
-            componentCollection.Add(componentDetail);
+            var componentCollection = Enumerable.Range(0,3)
+                .Select(i => _mockCreator.GetRandomComponentDetailModel())
+                .ToList();
             var response = new Response<List<ComponentDetailModel>>(200, null, componentCollection);
             _apiClient.GetAllComponentsAsync().Returns(response);
 
@@ -42,8 +42,7 @@ namespace Trakx.IndiceManager.Client.Tests.IndiceComposition
             Services.AddSingleton(_weightCalculator);
             Component = RenderComponent<IndiceCreation>();
             _componentInstance = Component.Instance;
-
-            _constituent = new IndiceCreation.ConstituentRow { Symbol = componentDetail.Symbol, CustomWeight = 0.15m };
+            _constituent = new IndiceCreation.ConstituentRow { Symbol = componentCollection[1].Symbol, CustomWeight = 0.15m };
         }
 
         [Fact]
@@ -92,23 +91,6 @@ namespace Trakx.IndiceManager.Client.Tests.IndiceComposition
         public async Task DataGrid_should_be_bound_to_Model_component_list()
         {
             _componentInstance.ConstituentsGrid.DataSource.Should().BeEquivalentTo(Component.Instance.ConstituentRows);
-        }
-
-        [Fact]
-        public async Task Adding_new_component_should_fail_if_component_already_added()
-        {
-            Component.Instance.ConstituentRows.Add(_constituent);
-
-            var newChange = new ActionEventArgs<IndiceCreation.ConstituentRow>
-            {
-                Data = _constituent,
-                PreviousData = new IndiceCreation.ConstituentRow(),
-                RequestType = Syncfusion.Blazor.Grids.Action.Save
-            };
-            
-            await Component.TestContext.Renderer.Dispatcher.InvokeAsync(() =>
-                Component.Instance.CheckRowChange(newChange));
-            newChange.Cancel.Should().BeTrue();
         }
 
         [Fact]

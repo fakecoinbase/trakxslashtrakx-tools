@@ -332,11 +332,6 @@
                     await Toaster.Show(new ToastModel { Content = "Total weight should be less than 1.", TimeOut = 1500 });
                     args.Cancel = true;
                 }
-                if (ConstituentRows.Any(o => o.Symbol == newSymbol))
-                {
-                    await Toaster.Show(new ToastModel { Content = "This symbol is already added.", TimeOut = 1500 });
-                    args.Cancel = true;
-                }
                 break;
 
         }
@@ -347,8 +342,6 @@
         switch (args.RequestType)
         {
             case Action.Save:
-                RefreshWeights();
-                break;
             case Action.Delete:
                 RefreshWeights();
                 break;
