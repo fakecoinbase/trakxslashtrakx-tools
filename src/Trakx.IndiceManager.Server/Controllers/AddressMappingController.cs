@@ -10,7 +10,7 @@ using Trakx.Coinbase.Custody.Client.Interfaces;
 using Trakx.Common.Core;
 using Trakx.Common.Interfaces;
 using Trakx.Common.Models;
-using DepositAddressModel = Trakx.IndiceManager.Server.Models.DepositAddressModel;
+using Trakx.IndiceManager.Server.Models;
 
 namespace Trakx.IndiceManager.Server.Controllers
 {
@@ -19,13 +19,13 @@ namespace Trakx.IndiceManager.Server.Controllers
     public class AddressMappingController : Controller
     {
         private readonly ICoinbaseClient _coinbaseClient;
-        private readonly IDepositorAddressRetriever _depositorAddressRetriever;
+        private readonly IExternalAddressRetriever _externalAddressRetriever;
 
         public AddressMappingController(ICoinbaseClient coinbaseClient,
-            IDepositorAddressRetriever depositorAddressRetriever)
+            IExternalAddressRetriever externalAddressRetriever)
         {
             _coinbaseClient = coinbaseClient;
-            _depositorAddressRetriever = depositorAddressRetriever;
+            _externalAddressRetriever = externalAddressRetriever;
         }
 
         /// <summary>
@@ -78,41 +78,41 @@ namespace Trakx.IndiceManager.Server.Controllers
         [HttpPost]
         [ProducesResponseType(StatusCodes.Status202Accepted)]
         [ProducesResponseType(StatusCodes.Status400BadRequest)]
-        public async Task<ActionResult<IDepositorAddress>> RegisterUserAsAddressOwner(
-            [FromBody] DepositAddressModel claimedAddress,
+        public async Task<ActionResult<IExternalAddress>> RegisterUserAsAddressOwner(
+            [FromBody] ExternalAddressModel claimedAddress,
             CancellationToken cancellationToken = default)
         {
             var validationContext = new ValidationContext(claimedAddress);
             var validationResults = new List<ValidationResult>();
             if (!Validator.TryValidateObject(claimedAddress, validationContext, validationResults, true))
-                return BadRequest("Invalid deposit address, please try again." + Environment.NewLine +
+                return BadRequest("Invalid external address, please try again." + Environment.NewLine +
                                   string.Join(Environment.NewLine, validationResults.Select(v => v.ErrorMessage).ToList()));
 
-            var depositorAddressId = DepositorAddressExtension.GetDepositorAddressId(claimedAddress.CurrencySymbol, claimedAddress.Address);
-            var existingAddress = await _depositorAddressRetriever.GetDepositorAddressById(depositorAddressId, cancellationToken: cancellationToken)
+            var externalAddressId = ExternalAddressExtension.GetExternalAddressId(claimedAddress.CurrencySymbol, claimedAddress.Address);
+            var existingAddress = await _externalAddressRetriever.GetExternalAddressById(externalAddressId, cancellationToken: cancellationToken)
                 .ConfigureAwait(false);
             if (existingAddress?.IsVerified ?? false)
                 return BadRequest("This address has already been verified.");
 
-            var depositAddress = existingAddress ?? claimedAddress.ToDepositAddress();
+            var externalAddress = existingAddress ?? claimedAddress.ToExternalAddress();
 
             var currency = await _coinbaseClient.GetCurrencyAsync(claimedAddress.CurrencySymbol, cancellationToken)
                 .ConfigureAwait(false);
             var decimals = currency.Decimals;
 
-            var candidate = new User("blablablassfrr", new List<IDepositorAddress>());
-            var candidateRegistered = await _depositorAddressRetriever.AssociateCandidateUser(depositAddress, candidate, decimals,
+            var candidate = new User("blablablassfrr", new List<IExternalAddress>());
+            var candidateRegistered = await _externalAddressRetriever.AssociateCandidateUser(externalAddress, candidate, decimals,
                 cancellationToken).ConfigureAwait(false);
 
             if (!candidateRegistered)
                 return BadRequest("The addition in the database has failed. " +
                                   "Please verify the parameters of the indice and try again.");
 
-            var updatedDepositAddress = await
-                _depositorAddressRetriever.GetDepositorAddressById(depositAddress.Id, true, cancellationToken)
+            var updatedExternalAddress = await
+                _externalAddressRetriever.GetExternalAddressById(externalAddress.Id, true, cancellationToken)
                     .ConfigureAwait(false);
 
-            return Accepted(updatedDepositAddress);
+            return Accepted(updatedExternalAddress);
         }
     }
 }

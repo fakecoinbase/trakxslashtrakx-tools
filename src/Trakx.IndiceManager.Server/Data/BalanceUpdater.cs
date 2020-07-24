@@ -17,13 +17,13 @@ namespace Trakx.IndiceManager.Server.Data
     public sealed class BalanceUpdater : IBalanceUpdater, IDisposable
     {
         private readonly IServiceScope _initialisationScope;
-        private readonly IDepositorAddressRetriever _addressRetriever;
+        private readonly IExternalAddressRetriever _addressRetriever;
 
         /// <inheritdoc />
         public BalanceUpdater(IServiceScopeFactory serviceScopeFactory)
         {
             _initialisationScope = serviceScopeFactory.CreateScope();
-            _addressRetriever = _initialisationScope.ServiceProvider.GetService<IDepositorAddressRetriever>();
+            _addressRetriever = _initialisationScope.ServiceProvider.GetService<IExternalAddressRetriever>();
         }
 
         #region Implementation of IObserver<in CoinbaseTransaction>
@@ -52,20 +52,20 @@ namespace Trakx.IndiceManager.Server.Data
         {
             if(transaction.Amount == 0m) return;
 
-            var depositorAddressId = DepositorAddressExtension.GetDepositorAddressId(transaction.Currency, transaction.Source);
+            var externalAddressId = ExternalAddressExtension.GetExternalAddressId(transaction.Currency, transaction.Source);
             var retrievedAddress = _addressRetriever
-                    .GetDepositorAddressById(depositorAddressId)
+                    .GetExternalAddressById(externalAddressId)
                     .ConfigureAwait(false).GetAwaiter().GetResult();
 
             if (retrievedAddress == null)
             {
-                var newDepositorAddress = new DepositorAddress(transaction.Source, 
+                var newExternalAddress = new ExternalAddress(transaction.Source, 
                     transaction.Currency, transaction.Amount);
-                _addressRetriever.AddNewAddress(newDepositorAddress);
+                _addressRetriever.AddNewAddress(newExternalAddress);
             }
             else
             {
-                var address = new DepositorAddress(retrievedAddress);
+                var address = new ExternalAddress(retrievedAddress);
                 if (!retrievedAddress.IsVerified
                     && retrievedAddress.User != default
                     && retrievedAddress.VerificationAmount == transaction.Amount)
@@ -74,7 +74,7 @@ namespace Trakx.IndiceManager.Server.Data
                 }
 
                 address.TryUpdateBalance(transaction.Amount);
-                _addressRetriever.UpdateDepositorAddress(address);
+                _addressRetriever.UpdateExternalAddress(address);
             }
         }
 

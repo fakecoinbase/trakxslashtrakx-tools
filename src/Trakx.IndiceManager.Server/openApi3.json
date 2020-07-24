@@ -77,7 +77,7 @@
           "content": {
             "application/json": {
               "schema": {
-                "$ref": "#/components/schemas/DepositAddressModel"
+                "$ref": "#/components/schemas/ExternalAddressModel"
               }
             }
           },
@@ -649,7 +649,7 @@
           }
         }
       },
-      "DepositAddressModel": {
+      "ExternalAddressModel": {
         "type": "object",
         "additionalProperties": false,
         "required": [

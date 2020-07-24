@@ -17,6 +17,6 @@ namespace Trakx.Common.Interfaces
         /// A list of addresses for the current User.
         /// </summary>
         [JsonIgnore]
-        List<IDepositorAddress> Addresses { get; }
+        List<IExternalAddress> Addresses { get; }
     }
 }

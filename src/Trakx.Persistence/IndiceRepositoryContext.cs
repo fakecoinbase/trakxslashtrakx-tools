@@ -44,7 +44,7 @@ namespace Trakx.Persistence
         public DbSet<IndiceValuationDao> IndiceValuations { get; set; }
         public DbSet<WrappingTransactionDao> WrappingTransactions { get; set; }
         public DbSet<UserDao> Users { get; set; }
-        public DbSet<DepositorAddressDao> DepositorAddresses { get; set; }
+        public DbSet<ExternalAddressDao> ExternalAddresses { get; set; }
 
         #region Overrides of DbContext
 

@@ -198,7 +198,7 @@ namespace Trakx.Common.Tests
             var user = Substitute.For<IUser>();
             var id = GetRandomString(8);
             user.Id.Returns(id);
-            var list = new List<IDepositorAddress>();
+            var list = new List<IExternalAddress>();
             user.Addresses.Returns(list);
             return user;
         }

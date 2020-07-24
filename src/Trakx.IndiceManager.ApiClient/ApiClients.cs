@@ -49,7 +49,7 @@ namespace Trakx.IndiceManager.ApiClient
         /// method will be the owner.</summary>
         /// <param name="claimedAddress">The address for which the ownership is claimed.</param>
         /// <exception cref="ApiException">A server side error occurred.</exception>
-        System.Threading.Tasks.Task<Response> RegisterUserAsAddressOwnerAsync(DepositAddressModel claimedAddress);
+        System.Threading.Tasks.Task<Response> RegisterUserAsAddressOwnerAsync(ExternalAddressModel claimedAddress);
     
         /// <param name="cancellationToken">A cancellation token that can be used by other objects or threads to receive notice of cancellation.</param>
         /// <summary>Links a user to an address with a verification amount. Once the transfer has been sent to the
@@ -57,7 +57,7 @@ namespace Trakx.IndiceManager.ApiClient
         /// method will be the owner.</summary>
         /// <param name="claimedAddress">The address for which the ownership is claimed.</param>
         /// <exception cref="ApiException">A server side error occurred.</exception>
-        System.Threading.Tasks.Task<Response> RegisterUserAsAddressOwnerAsync(DepositAddressModel claimedAddress, System.Threading.CancellationToken cancellationToken);
+        System.Threading.Tasks.Task<Response> RegisterUserAsAddressOwnerAsync(ExternalAddressModel claimedAddress, System.Threading.CancellationToken cancellationToken);
     
     }
     
@@ -245,7 +245,7 @@ namespace Trakx.IndiceManager.ApiClient
         /// method will be the owner.</summary>
         /// <param name="claimedAddress">The address for which the ownership is claimed.</param>
         /// <exception cref="ApiException">A server side error occurred.</exception>
-        public System.Threading.Tasks.Task<Response> RegisterUserAsAddressOwnerAsync(DepositAddressModel claimedAddress)
+        public System.Threading.Tasks.Task<Response> RegisterUserAsAddressOwnerAsync(ExternalAddressModel claimedAddress)
         {
             return RegisterUserAsAddressOwnerAsync(claimedAddress, System.Threading.CancellationToken.None);
         }
@@ -256,7 +256,7 @@ namespace Trakx.IndiceManager.ApiClient
         /// method will be the owner.</summary>
         /// <param name="claimedAddress">The address for which the ownership is claimed.</param>
         /// <exception cref="ApiException">A server side error occurred.</exception>
-        public async System.Threading.Tasks.Task<Response> RegisterUserAsAddressOwnerAsync(DepositAddressModel claimedAddress, System.Threading.CancellationToken cancellationToken)
+        public async System.Threading.Tasks.Task<Response> RegisterUserAsAddressOwnerAsync(ExternalAddressModel claimedAddress, System.Threading.CancellationToken cancellationToken)
         {
             if (claimedAddress == null)
                 throw new System.ArgumentNullException("claimedAddress");
@@ -2258,7 +2258,7 @@ namespace Trakx.IndiceManager.ApiClient
     }
     
     [System.CodeDom.Compiler.GeneratedCode("NJsonSchema", "10.1.18.0 (Newtonsoft.Json v12.0.0.0)")]
-    public partial class DepositAddressModel 
+    public partial class ExternalAddressModel 
     {
         [Newtonsoft.Json.JsonProperty("currencySymbol", Required = Newtonsoft.Json.Required.Always)]
         [System.ComponentModel.DataAnnotations.Required]

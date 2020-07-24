@@ -1,6 +1,10 @@
 ﻿namespace Trakx.Common.Interfaces
 {
-    public interface IDepositorAddress : IHasCreatedLastModified
+    /// <summary>
+    /// Represents an externally owned address which can be verified by a user
+    /// and used for deposits and withdrawals of user funds.
+    /// </summary>
+    public interface IExternalAddress : IHasCreatedLastModified
     {
         /// <summary>
         /// The balance of the user currently held at Trakx.
@@ -36,18 +40,5 @@
         /// The symbol of the currency.
         /// </summary>
         string CurrencySymbol { get; }
-    }
-
-    public static class DepositorAddressExtension
-    {
-        public static string GetId(this IDepositorAddress depositorAddress)
-        {
-            return $"{depositorAddress.CurrencySymbol}|{depositorAddress.Address}";
-        }
-
-        public static string GetDepositorAddressId(string currencySymbol, string address)
-        {
-            return $"{currencySymbol}|{address}";
-        }
     }
 }

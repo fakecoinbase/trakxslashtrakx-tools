@@ -7,61 +7,61 @@ using Trakx.Persistence.DAO;
 
 namespace Trakx.Persistence
 {
-    public class DepositorAddressRetriever : IDepositorAddressRetriever
+    public class ExternalAddressRetriever : IExternalAddressRetriever
     {
         private readonly IndiceRepositoryContext _dbContext;
         private readonly Random _random;
 
-        public DepositorAddressRetriever(IndiceRepositoryContext dbContext)
+        public ExternalAddressRetriever(IndiceRepositoryContext dbContext)
         {
             _dbContext = dbContext;
             _random = new Random();
         }
 
-        #region Implementation of IDepositorAddressRetriever
+        #region Implementation of IExternalAddressRetriever
 
         /// <inheritdoc />
-        public async Task<bool> UpdateDepositorAddress(IDepositorAddress addressToModify,
+        public async Task<bool> UpdateExternalAddress(IExternalAddress addressToModify,
             CancellationToken cancellationToken = default)
         {
-            var existingDepositorAddress = await _dbContext.DepositorAddresses
+            var existingExternalAddress = await _dbContext.ExternalAddresses
                 .FirstOrDefaultAsync(i => i.Id == addressToModify.Id, cancellationToken);
 
-            if (existingDepositorAddress == default) return false;
+            if (existingExternalAddress == default) return false;
 
-            var addressDao = new DepositorAddressDao(addressToModify);
+            var addressDao = new ExternalAddressDao(addressToModify);
 
             if (addressDao.UserDao != null)
             {
-                if (existingDepositorAddress.UserDao != null)
+                if (existingExternalAddress.UserDao != null)
                 {
-                    existingDepositorAddress.UserDao?.AddressDaos.Remove(existingDepositorAddress);
-                    _dbContext.Entry(existingDepositorAddress.UserDao).State = EntityState.Modified;
+                    existingExternalAddress.UserDao?.AddressDaos.Remove(existingExternalAddress);
+                    _dbContext.Entry(existingExternalAddress.UserDao).State = EntityState.Modified;
                 }
-                existingDepositorAddress.UserDao = addressDao.UserDao;
+                existingExternalAddress.UserDao = addressDao.UserDao;
                 
                 if (await _dbContext.Users.AsNoTracking().FirstOrDefaultAsync(u => u.Id == addressDao.UserDao.Id,
                     cancellationToken: cancellationToken) != null)
                 {
-                    _dbContext.Users.Attach(existingDepositorAddress.UserDao);
+                    _dbContext.Users.Attach(existingExternalAddress.UserDao);
                 }
             }
 
-            _dbContext.Entry(existingDepositorAddress).CurrentValues.SetValues(addressDao);
+            _dbContext.Entry(existingExternalAddress).CurrentValues.SetValues(addressDao);
 
             return await _dbContext.SaveChangesAsync(cancellationToken) > 0;
         }
 
         /// <inheritdoc />
-        public async Task<bool> AddNewAddress(IDepositorAddress addressToSave,
+        public async Task<bool> AddNewAddress(IExternalAddress addressToSave,
             CancellationToken cancellationToken = default)
         {
-            var addressExists = await _dbContext.DepositorAddresses.AsNoTracking()
+            var addressExists = await _dbContext.ExternalAddresses.AsNoTracking()
                 .AnyAsync(a => a.Id == addressToSave.Id, cancellationToken);
 
             if (addressExists) return false;
 
-            var addressDao = new DepositorAddressDao(addressToSave);
+            var addressDao = new ExternalAddressDao(addressToSave);
 
             if (addressDao.UserDao != null)
             {
@@ -74,38 +74,38 @@ namespace Trakx.Persistence
         }
 
         /// <inheritdoc />
-        public async Task<IDepositorAddress?> GetDepositorAddressById(string depositorAddressId,bool includeUser=false,
+        public async Task<IExternalAddress?> GetExternalAddressById(string externalAddressId,bool includeUser=false,
             CancellationToken cancellationToken = default)
         {
 
-            var retrievedDepositorAddress = !includeUser?await _dbContext.DepositorAddresses.AsNoTracking()
-                .FirstOrDefaultAsync(d => d.Id == depositorAddressId, cancellationToken):await _dbContext.DepositorAddresses.Include(d=>d.UserDao).AsNoTracking()
-                .FirstOrDefaultAsync(d => d.Id == depositorAddressId, cancellationToken);
+            var retrievedExternalAddress = !includeUser?await _dbContext.ExternalAddresses.AsNoTracking()
+                .FirstOrDefaultAsync(d => d.Id == externalAddressId, cancellationToken):await _dbContext.ExternalAddresses.Include(d=>d.UserDao).AsNoTracking()
+                .FirstOrDefaultAsync(d => d.Id == externalAddressId, cancellationToken);
 
-            return retrievedDepositorAddress;
+            return retrievedExternalAddress;
         }
 
         /// <inheritdoc />
         public async Task<bool> AssociateCandidateUser(
-            IDepositorAddress claimedAddress,
+            IExternalAddress claimedAddress,
             IUser candidate,
             int decimals,
             CancellationToken cancellationToken = default)
         {
-            var existingDepositorAddress = await GetDepositorAddressById(claimedAddress.Id,cancellationToken: cancellationToken)
+            var existingExternalAddress = await GetExternalAddressById(claimedAddress.Id,cancellationToken: cancellationToken)
                 .ConfigureAwait(false);
             var verificationAmount = _random.Next(1, 100_000) * (decimal)Math.Pow(10, -decimals);
-            var updatedAddress = new DepositorAddressDao(claimedAddress.Address, claimedAddress.CurrencySymbol, 0,
+            var updatedAddress = new ExternalAddressDao(claimedAddress.Address, claimedAddress.CurrencySymbol, 0,
                 verificationAmount, false, candidate);
 
-            if (existingDepositorAddress == null)
+            if (existingExternalAddress == null)
             {
                 return await AddNewAddress(updatedAddress, cancellationToken).ConfigureAwait(false);
             }
 
-            if (existingDepositorAddress.IsVerified) return false;
+            if (existingExternalAddress.IsVerified) return false;
 
-            return await UpdateDepositorAddress(updatedAddress, cancellationToken).ConfigureAwait(false);
+            return await UpdateExternalAddress(updatedAddress, cancellationToken).ConfigureAwait(false);
         }
 
         #endregion

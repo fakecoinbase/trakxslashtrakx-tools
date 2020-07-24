@@ -116,7 +116,7 @@ namespace Trakx.Persistence.Migrations
                     b.ToTable("ComponentValuations");
                 });
 
-            modelBuilder.Entity("Trakx.Persistence.DAO.DepositorAddressDao", b =>
+            modelBuilder.Entity("Trakx.Persistence.DAO.ExternalAddressDao", b =>
                 {
                     b.Property<string>("Id")
                         .HasColumnType("nvarchar(450)");
@@ -151,7 +151,7 @@ namespace Trakx.Persistence.Migrations
 
                     b.HasIndex("UserDaoId");
 
-                    b.ToTable("DepositorAddresses");
+                    b.ToTable("ExternalAddresses");
                 });
 
             modelBuilder.Entity("Trakx.Persistence.DAO.IndiceCompositionDao", b =>
@@ -383,7 +383,7 @@ namespace Trakx.Persistence.Migrations
                         .HasForeignKey("IndiceValuationDaoId");
                 });
 
-            modelBuilder.Entity("Trakx.Persistence.DAO.DepositorAddressDao", b =>
+            modelBuilder.Entity("Trakx.Persistence.DAO.ExternalAddressDao", b =>
                 {
                     b.HasOne("Trakx.Persistence.DAO.UserDao", "UserDao")
                         .WithMany("AddressDaos")

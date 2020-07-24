@@ -5,19 +5,19 @@ using Trakx.Common.Interfaces;
 
 namespace Trakx.Persistence.DAO
 {
-    public class DepositorAddressDao : IDepositorAddress
+    public class ExternalAddressDao : IExternalAddress
     {
         #nullable disable
-        public DepositorAddressDao() { }
+        public ExternalAddressDao() { }
         #nullable restore
 
-        public DepositorAddressDao(IDepositorAddress address)
+        public ExternalAddressDao(IExternalAddress address)
             : this(address.Address, address.CurrencySymbol, 
                 address.Balance, address.VerificationAmount,
                 address.IsVerified, address.User,
                 address.Created, address.LastModified) {}
 
-        public DepositorAddressDao(string address, 
+        public ExternalAddressDao(string address, 
             string currencySymbol, 
             decimal balance = 0,
             decimal? verificationAmount = default,
@@ -39,7 +39,7 @@ namespace Trakx.Persistence.DAO
 
         public UserDao? UserDao { get; set; }
 
-        #region Implementation of IDepositorAddress
+        #region Implementation of IExternalAddress
         /// <inheritdoc />
         [Column(TypeName = "decimal(38, 18)")]
         public decimal Balance { get; set; }

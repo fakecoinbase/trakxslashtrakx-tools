@@ -175,9 +175,9 @@
     /// <returns></returns>
     private IUser ToIUserAddress()
     {
-        var depositorAddress = new DepositorAddress(AddressToVerify, ChosenCurrencySymbol, VerificationAmount);
+        var externalAddress = new ExternalAddress(AddressToVerify, ChosenCurrencySymbol, VerificationAmount);
         return new User("HARDCODED_USER_IS_SHOULD_COME_FROM_AUTHENTICATION",
-            new [] {(IDepositorAddress)depositorAddress}.ToList());
+            new [] {(IExternalAddress)externalAddress}.ToList());
     }
 
     #endregion

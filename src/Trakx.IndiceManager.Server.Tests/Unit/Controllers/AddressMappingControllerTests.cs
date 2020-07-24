@@ -22,14 +22,14 @@ namespace Trakx.IndiceManager.Server.Tests.Unit.Controllers
         private readonly AddressMappingController _controller;
         private readonly MockCreator _mockCreator;
         private readonly ICoinbaseClient _coinbaseClient;
-        private readonly IDepositorAddressRetriever _depositorAddressRetriever;
+        private readonly IExternalAddressRetriever _externalAddressRetriever;
 
         public AddressMappingControllerTests(ITestOutputHelper output)
         {
             _coinbaseClient = Substitute.For<ICoinbaseClient>();
-            _depositorAddressRetriever = Substitute.For<IDepositorAddressRetriever>();
+            _externalAddressRetriever = Substitute.For<IExternalAddressRetriever>();
             _mockCreator = new MockCreator(output);
-            _controller = new AddressMappingController(_coinbaseClient, _depositorAddressRetriever);
+            _controller = new AddressMappingController(_coinbaseClient, _externalAddressRetriever);
         }
 
         [Fact]
@@ -118,14 +118,14 @@ namespace Trakx.IndiceManager.Server.Tests.Unit.Controllers
         public async Task RegisterUserAsAddressOwner_should_not_process_invalid_depositAddress(string currencySymbol, string address)
         {
             var user = Substitute.For<IUser>();
-            var badAddress = new DepositAddressModel { CurrencySymbol = currencySymbol, Address = address };
+            var badAddress = new ExternalAddressModel { CurrencySymbol = currencySymbol, Address = address };
 
             var result = await _controller.RegisterUserAsAddressOwner(badAddress).ConfigureAwait(false);
             var errorMessage = ((BadRequestObjectResult)result.Result).Value.ToString();
-            errorMessage.Should().StartWith("Invalid deposit address, please try again.");
+            errorMessage.Should().StartWith("Invalid external address, please try again.");
 
-            await _depositorAddressRetriever.DidNotReceiveWithAnyArgs().GetDepositorAddressById(default);
-            await _depositorAddressRetriever.DidNotReceiveWithAnyArgs().AssociateCandidateUser(default, default, default);
+            await _externalAddressRetriever.DidNotReceiveWithAnyArgs().GetExternalAddressById(default);
+            await _externalAddressRetriever.DidNotReceiveWithAnyArgs().AssociateCandidateUser(default, default, default);
             await _coinbaseClient.DidNotReceiveWithAnyArgs().GetCurrencyAsync(default);
         }
 
@@ -133,18 +133,18 @@ namespace Trakx.IndiceManager.Server.Tests.Unit.Controllers
         public async Task RegisterUserAsAddressOwner_should_failed_on_previously_verified_address()
         {
             var user = Substitute.For<IUser>();
-            var verifiedAddress = new DepositAddressModel { CurrencySymbol = "abc", Address = "alreadyverified" };
-            var depositAddress = verifiedAddress.ToDepositAddress();
-            depositAddress.IsVerified = true;
+            var verifiedAddress = new ExternalAddressModel { CurrencySymbol = "abc", Address = "alreadyverified" };
+            var externalAddress = verifiedAddress.ToExternalAddress();
+            externalAddress.IsVerified = true;
 
-            _depositorAddressRetriever.GetDepositorAddressById(verifiedAddress.ToDepositAddress().Id)
-                .Returns(depositAddress);
+            _externalAddressRetriever.GetExternalAddressById(verifiedAddress.ToExternalAddress().Id)
+                .Returns(externalAddress);
 
             var result = await _controller.RegisterUserAsAddressOwner(verifiedAddress).ConfigureAwait(false);
             var errorMessage = ((BadRequestObjectResult)result.Result).Value.ToString();
             errorMessage.Should().Be("This address has already been verified.");
 
-            await _depositorAddressRetriever.DidNotReceiveWithAnyArgs().AssociateCandidateUser(default, default, default);
+            await _externalAddressRetriever.DidNotReceiveWithAnyArgs().AssociateCandidateUser(default, default, default);
             await _coinbaseClient.DidNotReceiveWithAnyArgs().GetCurrencyAsync(default);
         }
 
@@ -153,27 +153,27 @@ namespace Trakx.IndiceManager.Server.Tests.Unit.Controllers
         public async Task RegisterUserAsAddressOwner_should_find_decimals_and_associate_user_with_address()
         {
             var user = Substitute.For<IUser>();
-            var verifiedAddress = new DepositAddressModel { CurrencySymbol = "abc", Address = "neververified" };
-            var depositAddress = verifiedAddress.ToDepositAddress();
-            depositAddress.IsVerified = false;
+            var verifiedAddress = new ExternalAddressModel { CurrencySymbol = "abc", Address = "neververified" };
+            var externalAddress = verifiedAddress.ToExternalAddress();
+            externalAddress.IsVerified = false;
 
-            var addressAfterAssociationWithCandidate = new DepositorAddress(depositAddress.Address,
-                depositAddress.CurrencySymbol,
+            var addressAfterAssociationWithCandidate = new ExternalAddress(externalAddress.Address,
+                externalAddress.CurrencySymbol,
                 verificationAmount: 12.34m, user: user);
 
-            _depositorAddressRetriever.GetDepositorAddressById(verifiedAddress.ToDepositAddress().Id)
-                .Returns(depositAddress);
-            _depositorAddressRetriever.GetDepositorAddressById(verifiedAddress.ToDepositAddress().Id, includeUser: true)
+            _externalAddressRetriever.GetExternalAddressById(verifiedAddress.ToExternalAddress().Id)
+                .Returns(externalAddress);
+            _externalAddressRetriever.GetExternalAddressById(verifiedAddress.ToExternalAddress().Id, includeUser: true)
                 .Returns(addressAfterAssociationWithCandidate);
 
-            _depositorAddressRetriever.AssociateCandidateUser(depositAddress, Arg.Any<IUser?>(), 2)
+            _externalAddressRetriever.AssociateCandidateUser(externalAddress, Arg.Any<IUser?>(), 2)
                 .Returns(true);
 
-            _coinbaseClient.GetCurrencyAsync(depositAddress.CurrencySymbol).Returns(new Currency { Decimals = 2 });
+            _coinbaseClient.GetCurrencyAsync(externalAddress.CurrencySymbol).Returns(new Currency { Decimals = 2 });
 
             var result = await _controller.RegisterUserAsAddressOwner(verifiedAddress)
                 .ConfigureAwait(false);
-            var acceptedResult = (IDepositorAddress)((AcceptedResult)result.Result).Value;
+            var acceptedResult = (IExternalAddress)((AcceptedResult)result.Result).Value;
 
             acceptedResult.User.Should().Be(user);
             acceptedResult.VerificationAmount.Should().Be(12.34m);

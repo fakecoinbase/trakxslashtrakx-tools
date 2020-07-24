@@ -61,13 +61,13 @@ namespace Trakx.Persistence.Tests
             return new UserDao(GetRandomUser());
         }
 
-        public DepositorAddressDao GetRandomDepositorAddressDao(
+        public ExternalAddressDao GetRandomExternalAddressDao(
             decimal? verificationAmount = default,
             bool isVerified = false,
             bool associateUser = true)
         {
             verificationAmount ??= GetRandomPrice();
-            return new DepositorAddressDao(GetRandomAddressEthereum(), 
+            return new ExternalAddressDao(GetRandomAddressEthereum(), 
                 GetRandomString(3), 0, 
                 verificationAmount, isVerified, 
                 user: associateUser ? GetRandomUser() : default);

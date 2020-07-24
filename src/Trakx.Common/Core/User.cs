@@ -9,7 +9,7 @@ namespace Trakx.Common.Core
     {
         #region Implementation of IUserAddress
 
-        public User(string userId, List<IDepositorAddress> addresses, 
+        public User(string userId, List<IExternalAddress> addresses, 
             DateTime? created = default,
             DateTime? lastModified = default)
         {
@@ -25,7 +25,7 @@ namespace Trakx.Common.Core
         public string Id { get; }
 
         /// <inheritdoc />
-        public List<IDepositorAddress> Addresses { get; }
+        public List<IExternalAddress> Addresses { get; }
 
         #endregion
 

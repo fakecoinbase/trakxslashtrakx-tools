@@ -4,7 +4,7 @@ using Trakx.Common.Interfaces;
 
 namespace Trakx.IndiceManager.Server.Models
 {
-    public class DepositAddressModel
+    public class ExternalAddressModel
     {
         [Required, RegularExpression(@"[\w]{2,}")]
         public string CurrencySymbol { get; set; }
@@ -12,9 +12,9 @@ namespace Trakx.IndiceManager.Server.Models
         [Required, RegularExpression(@"[\w]{10,}")]
         public string Address { get; set; }
 
-        public IDepositorAddress ToDepositAddress()
+        public IExternalAddress ToExternalAddress()
         {
-            return new DepositorAddress(Address, CurrencySymbol);
+            return new ExternalAddress(Address, CurrencySymbol);
         }
     }
 }

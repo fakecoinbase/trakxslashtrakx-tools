@@ -98,7 +98,7 @@ namespace Trakx.Persistence.Migrations
                 });
 
             migrationBuilder.CreateTable(
-                name: "DepositorAddresses",
+                name: "ExternalAddresses",
                 columns: table => new
                 {
                     Id = table.Column<string>(nullable: false),
@@ -113,9 +113,9 @@ namespace Trakx.Persistence.Migrations
                 },
                 constraints: table =>
                 {
-                    table.PrimaryKey("PK_DepositorAddresses", x => x.Id);
+                    table.PrimaryKey("PK_ExternalAddresses", x => x.Id);
                     table.ForeignKey(
-                        name: "FK_DepositorAddresses_Users_UserDaoId",
+                        name: "FK_ExternalAddresses_Users_UserDaoId",
                         column: x => x.UserDaoId,
                         principalTable: "Users",
                         principalColumn: "Id",
@@ -246,8 +246,8 @@ namespace Trakx.Persistence.Migrations
                 column: "IndiceValuationDaoId");
 
             migrationBuilder.CreateIndex(
-                name: "IX_DepositorAddresses_UserDaoId",
-                table: "DepositorAddresses",
+                name: "IX_ExternalAddresses_UserDaoId",
+                table: "ExternalAddresses",
                 column: "UserDaoId");
 
             migrationBuilder.CreateIndex(
@@ -272,7 +272,7 @@ namespace Trakx.Persistence.Migrations
                 name: "ComponentValuations");
 
             migrationBuilder.DropTable(
-                name: "DepositorAddresses");
+                name: "ExternalAddresses");
 
             migrationBuilder.DropTable(
                 name: "IndiceSupplyTransactions");

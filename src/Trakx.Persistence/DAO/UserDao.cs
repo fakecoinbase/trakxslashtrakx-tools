@@ -16,13 +16,13 @@ namespace Trakx.Persistence.DAO
         #nullable restore
 
         public UserDao(string userId, 
-            List<IDepositorAddress> addresses,
+            List<IExternalAddress> addresses,
             DateTime? creationDate = default,
             DateTime? lastModified = default)
         {
             Guard.Against.NullOrWhiteSpace(userId, nameof(userId));
             Id = userId;
-            AddressDaos = addresses.Select(a => new DepositorAddressDao(a)).ToList();
+            AddressDaos = addresses.Select(a => new ExternalAddressDao(a)).ToList();
             var utcNow = DateTime.UtcNow;
             Created = creationDate ?? utcNow;
             LastModified = lastModified ?? utcNow;
@@ -32,7 +32,7 @@ namespace Trakx.Persistence.DAO
             : this(user.Id, user.Addresses, user.Created, user.LastModified) { }
 
         [JsonIgnore]
-        public List<DepositorAddressDao> AddressDaos { get; set; }
+        public List<ExternalAddressDao> AddressDaos { get; set; }
 
         #region Implementation of IUserAddress
 
@@ -43,7 +43,7 @@ namespace Trakx.Persistence.DAO
         /// <inheritdoc />
         [NotMapped]
         [JsonIgnore]
-        public List<IDepositorAddress> Addresses => AddressDaos.Cast<IDepositorAddress>().ToList();
+        public List<IExternalAddress> Addresses => AddressDaos.Cast<IExternalAddress>().ToList();
 
         #endregion
 

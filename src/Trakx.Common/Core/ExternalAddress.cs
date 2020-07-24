@@ -4,11 +4,11 @@ using Trakx.Common.Interfaces;
 
 namespace Trakx.Common.Core
 {
-    public class DepositorAddress : IDepositorAddress
+    public class ExternalAddress : IExternalAddress
     {
         private readonly object _balanceLock = new object();
 
-        public DepositorAddress(string address,
+        public ExternalAddress(string address,
             string currencySymbol,
             decimal balance = 0,
             decimal? verificationAmount = default,
@@ -30,7 +30,7 @@ namespace Trakx.Common.Core
             LastModified = lastModified ?? now;
         }
 
-        public DepositorAddress(IDepositorAddress address, decimal? newBalance = default)
+        public ExternalAddress(IExternalAddress address, decimal? newBalance = default)
             : this(address.Address,
                 address.CurrencySymbol,
                 newBalance ?? address.Balance,
@@ -41,7 +41,7 @@ namespace Trakx.Common.Core
                 address.LastModified)
         { }
 
-        #region Implementation of IDepositorAddress
+        #region Implementation of IExternalAddress
         /// <inheritdoc />
         public decimal Balance { get; private set; }
 
